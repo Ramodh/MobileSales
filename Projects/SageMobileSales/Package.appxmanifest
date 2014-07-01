@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest">
+  <Identity Name="F60E5379.SageMobileSales" Publisher="CN=42E6EAEC-9438-4377-A59D-B5F8154DC3A7" Version="2.5.1.1" />
+  <Properties>
+    <DisplayName>Sage Mobile Sales</DisplayName>
+    <PublisherDisplayName>Sage Software Inc.</PublisherDisplayName>
+    <Logo>Assets\SageMobileSales_50x50.png</Logo>
+  </Properties>
+  <Prerequisites>
+    <OSMinVersion>6.3.0</OSMinVersion>
+    <OSMaxVersionTested>6.3.0</OSMaxVersionTested>
+  </Prerequisites>
+  <Resources>
+    <Resource Language="x-generate" />
+  </Resources>
+  <Applications>
+    <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="SageMobileSales.App">
+      <m2:VisualElements DisplayName="Sage Mobile Sales" Square150x150Logo="Assets\SageMobileSales_150x150.png" Square30x30Logo="Assets\SageMobileSales_30x30.png" Description="SageMobileSales" ForegroundText="light" BackgroundColor="#41a940">
+        <m2:DefaultTile ShortName="Sage Sales" DefaultSize="wide310x150Logo" Wide310x150Logo="Assets\SaleMobileSales_310x150.png">
+          <m2:ShowNameOnTiles>
+            <m2:ShowOn Tile="square150x150Logo" />
+            <m2:ShowOn Tile="wide310x150Logo" />
+          </m2:ShowNameOnTiles>
+        </m2:DefaultTile>
+        <m2:SplashScreen Image="Assets\SageMobileSales_Splash_620x300.png" BackgroundColor="#ffffff" />
+      </m2:VisualElements>
+    </Application>
+  </Applications>
+  <Capabilities>
+    <Capability Name="internetClient" />
+  </Capabilities>
+</Package>

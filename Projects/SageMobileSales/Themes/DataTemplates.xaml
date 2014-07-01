@@ -1,0 +1,426 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:SageMobileSales"
+    xmlns:controls="using:SageMobileSales.Views">
+
+    <!-- CatalogItemTemlate -->
+    <DataTemplate x:Key="CatalogItemTemplate">
+        <Grid Height="90" Margin="2" Background="#FF355B4E" Width="300">
+            <TextBlock Text="{Binding CategoryName}" Style="{StaticResource SubheaderTextBlockStyle}" VerticalAlignment="Top" TextWrapping="NoWrap" Margin="10,5"/>
+        </Grid>
+    </DataTemplate>
+
+    <!-- CatalogItemTemlate Zoomed Out View-->
+    <DataTemplate x:Key="CustomerSemanticZoomedOutItemTemplate">
+        <TextBlock Text="{Binding Group.GroupName}" FontFamily="Segoe UI Light" FontSize="24" Foreground="White" />
+    </DataTemplate>
+
+    <!-- CatalogItemTemlate Zoomed In View-->
+    <DataTemplate x:Key="CustomerSemanticZoomedInItemTemplate">
+        <StackPanel Height="80" Margin="2" Background="#FF355B4E" Width="400">
+            <TextBlock Text="{Binding CustomerName}" Style="{StaticResource SubheaderTextBlockStyle}" VerticalAlignment="Center" TextWrapping="NoWrap" Margin="7,5"/>
+            <!--<TextBlock Text="{Binding Street1}" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis"/>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding City}" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis"/>
+                <TextBlock Text="{Binding StateProvince}" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis"/>
+                <TextBlock Text="{Binding PostalCode}" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis"/>
+            </StackPanel>
+            <TextBlock Text="{Binding Phone}" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis"/>-->
+        </StackPanel>
+    </DataTemplate>
+
+    <!-- ItemImageFlipViewItemTemplate -->
+    <DataTemplate x:Key="ProductImageItemTemplate">
+        <Grid HorizontalAlignment="Left">
+            <!--<Image Source="{Binding Url}" Stretch="Fill"/>-->
+            <controls:ImageplaceHolderUserControl Placeholder="/Assets/imagePlaceholder_1024x768.png" Source="{Binding Url}"/>
+        </Grid>
+    </DataTemplate>
+
+    <!-- Other products item Template in "You may also like" -->
+    <DataTemplate x:Key="OtherProductsItemTemplate">
+        <Grid HorizontalAlignment="Left" Width="200" Height="200">
+            <Border Background="{StaticResource ListViewItemPlaceholderBackgroundThemeBrush}">
+                <!--<Image Source="{Binding Url}" Stretch="UniformToFill"/>-->
+                <controls:ImageplaceHolderUserControl Placeholder="/Assets/imagePlaceholder_200x200.png" Source="{Binding Url}"/>
+            </Border>
+            <StackPanel VerticalAlignment="Bottom" Background="{StaticResource ListViewItemOverlayBackgroundThemeBrush}">
+                <TextBlock Text="{Binding Name}" Foreground="{StaticResource ListViewItemOverlayForegroundThemeBrush}" Height="60" Margin="15,15,15,0" FontSize="18" Style="{StaticResource SubheaderTextBlockStyle}" TextTrimming="WordEllipsis" TextWrapping="NoWrap"/>
+            </StackPanel>
+        </Grid>
+    </DataTemplate>
+
+
+    <!-- Product Items -->
+    <DataTemplate x:Key="ProductsItemTemplate">
+        <Grid Height="110" Width="400" Margin="10" Background="#FF355B4E">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Border Background="{StaticResource ListViewItemPlaceholderBackgroundThemeBrush}" Width="110" Height="110" VerticalAlignment="Top">
+                <!--<Image Source="{Binding Url}" Stretch="UniformToFill" Height="100" Width="100"/>-->
+                <controls:ImageplaceHolderUserControl Placeholder="/Assets/imagePlaceholder_100x100.png" Source="{Binding Url}" Height="100" Width="100"/>
+            </Border>
+            <StackPanel Grid.Column="1" VerticalAlignment="Top" Margin="10,0,0,0">
+                <TextBlock Text="{Binding ProductName}" Style="{StaticResource SubheaderTextBlockStyle}" TextWrapping="NoWrap"/>
+                <TextBlock Text="{Binding Sku}" Style="{StaticResource CaptionTextBlockStyle}" TextWrapping="NoWrap"/>
+                <TextBlock Text="{Binding PriceStd,Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:C}'}" Style="{StaticResource BodyTextBlockStyle}" MaxHeight="60"/>
+            </StackPanel>
+        </Grid>
+    </DataTemplate>
+
+    <!--Customers-->
+
+    <!-- Customers ItemTemplate-->
+    <DataTemplate x:Key="CustomerItemTemplate">
+        <Grid Height="110" Width="400" Margin="10" Background="#FF355B4E">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel VerticalAlignment="Top" Margin="10,0,0,0">
+                <TextBlock Text="{Binding CustomerName}" Style="{StaticResource SubheaderTextBlockStyle}" TextWrapping="NoWrap"/>
+                <TextBlock Text="{Binding MainAddress}" Style="{StaticResource CaptionTextBlockStyle}" TextWrapping="NoWrap"/>
+                <!--<StackPanel Orientation="Horizontal">                  
+                    <TextBlock Text="{Binding City}" Style="{StaticResource BodyTextBlockStyle}" MaxHeight="60" Width="300"/>    
+                    <TextBlock Text="{Binding State}" Style="{StaticResource BodyTextBlockStyle}" MaxHeight="60" />                              
+                </StackPanel>-->
+                <TextBlock Text="{Binding ZipCode}" Style="{StaticResource BodyTextBlockStyle}" MaxHeight="60"/>
+                <TextBlock Text="{Binding PhoneNumber}" Style="{StaticResource BodyTextBlockStyle}" MaxHeight="60"/>
+            </StackPanel>
+        </Grid>
+    </DataTemplate>
+
+    <!-- CustomerContacts DashBoard ItemTemplate-->
+    <DataTemplate x:Key="CustomerOtherAddressTemplate">
+        <StackPanel Height="120" Margin="2" Background="#FF355B4E" Width="400">
+            <TextBlock Text="{Binding Street1}" Style="{StaticResource SubheaderTextBlockStyle}" TextWrapping="NoWrap" Margin="7,5" TextTrimming="WordEllipsis"/>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding City}" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis"/>
+                <TextBlock Text="{Binding StateProvince}" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis"/>
+                <TextBlock Text="{Binding PostalCode}" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis"/>
+            </StackPanel>
+            <TextBlock Text="{Binding Phone}" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis"/>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="CustomerOtherAddressDarkTemplate">
+        <StackPanel Height="120" Margin="2" Background="Gainsboro" Width="400">
+            <TextBlock Text="{Binding Street1}" Style="{StaticResource SubheaderTextBlockStyle}" Foreground="Black" TextWrapping="NoWrap" Margin="7,5" TextTrimming="WordEllipsis"/>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding City}" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" Foreground="Black" TextTrimming="WordEllipsis"/>
+                <TextBlock Text="{Binding StateProvince}" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" Foreground="Black" TextTrimming="WordEllipsis"/>
+                <TextBlock Text="{Binding PostalCode}" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" Foreground="Black" TextTrimming="WordEllipsis"/>
+            </StackPanel>
+            <TextBlock Text="{Binding Phone}" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" Foreground="Black" TextTrimming="WordEllipsis"/>
+        </StackPanel>
+    </DataTemplate>
+
+    <!-- CustomerContacts DashBoard ItemTemplate-->
+    <DataTemplate x:Key="CustomerContactsDashBoradTemplate">
+        <StackPanel Height="140" Margin="2" Background="#FF355B4E" Width="400">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="195"/>
+                    <ColumnDefinition Width="195"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="{Binding FirstName}" Style="{StaticResource SubheaderTextBlockStyle}" VerticalAlignment="Top" TextWrapping="NoWrap" TextTrimming="WordEllipsis" Margin="7,5"/>
+                <TextBlock  Grid.Column="1" Text="{Binding LastName}" Style="{StaticResource SubheaderTextBlockStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis" Margin="7,5"/>
+            </Grid>
+            <TextBlock Text="{Binding Title}" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis"/>
+            <TextBlock Text="{Binding PhoneWork}" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis"/>
+            <TextBlock Text="{Binding PhoneMobile,Converter={StaticResource StringFormatConverter},ConverterParameter='{}{0:###-###-####}'}" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis"/>
+            <TextBlock Text="{Binding EmailWork}" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis"/>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="CustomerContactsDashBoardDarkTemplate">
+        <StackPanel Height="140" Margin="2" Background="Gainsboro" Width="400">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="195"/>
+                    <ColumnDefinition Width="195"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="{Binding FirstName}" Style="{StaticResource SubheaderTextBlockStyle}" Foreground="Black" VerticalAlignment="Top" TextTrimming="WordEllipsis" TextWrapping="NoWrap" Margin="7,5"/>
+                <TextBlock Grid.Column="1" Text="{Binding LastName}" Style="{StaticResource SubheaderTextBlockStyle}" Foreground="Black" TextWrapping="NoWrap" TextTrimming="WordEllipsis" Margin="7,5"/>
+            </Grid>
+            <TextBlock Text="{Binding Title}" Style="{StaticResource AddressTextStyle}" Foreground="Black" TextWrapping="NoWrap" TextTrimming="WordEllipsis"/>
+            <TextBlock Text="{Binding PhoneWork}" Style="{StaticResource AddressTextStyle}" Foreground="Black" TextWrapping="NoWrap" TextTrimming="WordEllipsis"/>
+            <TextBlock Text="{Binding PhoneMobile,Converter={StaticResource StringFormatConverter},ConverterParameter='{}{0:###-###-####}'}" Style="{StaticResource AddressTextStyle}" Foreground="Black" TextWrapping="NoWrap" TextTrimming="WordEllipsis"/>
+            <TextBlock Text="{Binding EmailWork}" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" Foreground="Black" TextTrimming="WordEllipsis"/>
+        </StackPanel>
+    </DataTemplate>
+    <!--CustomerContacts DashBoard ItemTemplate
+    <DataTemplate x:Key="CustomerContactsDashBoradTemplate">
+        <Grid Height="110" Margin="2" Background="#FF355B4E" Width="300">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel VerticalAlignment="Top" Margin="10,0,0,0">
+                <TextBlock Text="{Binding ContactName}" Style="{StaticResource SubheaderTextBlockStyle}" Width="290" TextWrapping="NoWrap"/>
+                <TextBlock Text="{Binding Address}" Style="{StaticResource CaptionTextBlockStyle}" Width="290" TextWrapping="NoWrap"/>
+                <TextBlock Text="{Binding Phone}" Style="{StaticResource CaptionTextBlockStyle}" TextWrapping="NoWrap"/>
+                <TextBlock/>
+            </StackPanel>
+        </Grid>
+    </DataTemplate>-->
+
+    <!-- CustomerOrders DashBoard ItemTemplate-->
+    <DataTemplate x:Key="CustomerOrdersTemplate">
+        <StackPanel Height="120" Margin="2" Background="#FF355B4E" Width="400">
+            <TextBlock Text="{Binding CustomerName}" Style="{StaticResource SubheaderTextBlockStyle}" VerticalAlignment="Top" TextWrapping="NoWrap" Margin="7,5"/>
+            <TextBlock Text="{Binding OrderDescription}" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis"/>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding ExternalReferenceNumber}" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis"/>
+                <TextBlock Text="{Binding CreatedOn,Converter={StaticResource StringFormatConverter},ConverterParameter='{}{0:MM/dd/yyyy}'}" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis"/>
+                <!--<TextBlock Text="{Binding Status}" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis"/>-->
+                <TextBlock Text="{Binding Amount}" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis"/>
+            </StackPanel>
+            <TextBlock Text="{Binding RepName}" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis"/>
+        </StackPanel>
+    </DataTemplate>
+
+    <!--CustomerOrders DashBoard ItemTemplate
+    <DataTemplate x:Key="CustomerOrdersDashBoradTemplate">
+        <Grid Height="110" Margin="2" Background="#FF355B4E" Width="300">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel VerticalAlignment="Top" Margin="10,0,0,0">
+                <TextBlock Text="{Binding Name}" Style="{StaticResource SubheaderTextBlockStyle}" Width="290" TextWrapping="NoWrap"/>
+                <TextBlock Text="{Binding OrderDate}" Style="{StaticResource CaptionTextBlockStyle}" TextWrapping="NoWrap"/>
+                <TextBlock Text="{Binding Status}" Style="{StaticResource CaptionTextBlockStyle}" TextWrapping="NoWrap"/>
+                <TextBlock Text="{Binding Amount}" Style="{StaticResource CaptionTextBlockStyle}" TextWrapping="NoWrap"/>
+                <TextBlock/>
+            </StackPanel>
+        </Grid>
+    </DataTemplate>-->
+
+    <DataTemplate x:Key="OrdersTemplate">
+        <Grid  Height="120" Margin="2" Background="#FF355B4E" Width="350">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="90"/>
+                <ColumnDefinition Width="160"/>
+                <ColumnDefinition Width="100"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Row="0" Text="{Binding CustomerName}" Style="{StaticResource SubheaderTextBlockStyle}" VerticalAlignment="Top" TextWrapping="NoWrap" Margin="7,5" Grid.ColumnSpan="3"/>
+            <TextBlock Grid.Row="1"  Text="{Binding OrderDescription}" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.ColumnSpan="3"/>
+
+            <TextBlock Grid.Row="2" Text="{Binding ExternalReferenceNumber}" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="0"/>
+            <TextBlock Grid.Row="2" Text="{Binding CreatedOn,Converter={StaticResource StringFormatConverter},ConverterParameter='{}{0:MM/dd/yyyy}'}" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="1" HorizontalAlignment="Left"/>                   
+            <TextBlock Grid.Row="3" Text="{Binding OrderStatus}" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis"  Grid.Column="2" FontWeight="Bold"/>
+            <TextBlock Grid.Row="2" Text="{Binding Amount,Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:C}'}" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="2"/>
+
+            <TextBlock Grid.Row="3" Text="{Binding RepName}" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.ColumnSpan="2"/>
+
+        </Grid>
+    </DataTemplate>
+
+    <DataTemplate x:Key="OrderItemsTemplate">
+        <Border BorderThickness="1" BorderBrush="{StaticResource ItemBorderBrush}">
+            <Grid Margin="10"
+              Height="150" Width="410"
+              Background="#FF355B4E" >
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="110" />
+                    <ColumnDefinition  Width="Auto"/>
+                    <ColumnDefinition Width="290" />
+                    <ColumnDefinition  Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Image Source="{Binding Url}"
+                   Grid.Column="0"
+                  Height="120" Width="120"
+                   Margin="10" />
+                <Grid Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="30" />
+                        <RowDefinition Height="Auto"/>
+                        
+                    </Grid.RowDefinitions>
+                    <!--<Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="120"/>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="140"/>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="120"/>
+                    </Grid.ColumnDefinitions>-->
+                    <TextBlock Text="{Binding ProductName}" Grid.Row="0" TextWrapping="NoWrap" Style="{StaticResource SubheaderTextBlockStyle}" VerticalAlignment="Bottom" Width="Auto" HorizontalAlignment="Left"/>
+                    <TextBlock Text="{Binding ProductSku}" Grid.Row="1" TextWrapping="NoWrap" TextTrimming="WordEllipsis" Style="{StaticResource AddressTextStyle}"  VerticalAlignment="Top"/>                    
+                    <Border Grid.Row="2" VerticalAlignment="Bottom"      
+                            Width="290"
+                            Height="80"
+                         Background="{StaticResource ItemDarkerBackgroundBrush}">
+                        <!--<StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding UnitPrice}" TextWrapping="NoWrap" TextTrimming="WordEllipsis" Style="{StaticResource AddressTextStyle}"  VerticalAlignment="Bottom"/>
+                            <TextBlock Text="{Binding Quantity}" Foreground="White"  VerticalAlignment="Bottom"/>
+                            <TextBlock Text="{Binding Amount}" TextWrapping="NoWrap" TextTrimming="WordEllipsis" Style="{StaticResource AddressTextStyle}"  VerticalAlignment="Bottom"/>
+                        </StackPanel>-->
+                        <Grid VerticalAlignment="Bottom"  Width="300"
+                            Height="80">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="90"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <!--<ColumnDefinition Width="Auto"/>-->
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Price :" Grid.Row="0" TextWrapping="NoWrap" Grid.Column="0" Style="{StaticResource AddressTextStyle}" VerticalAlignment="Bottom"/>
+                            <TextBlock Text="Qty :" Grid.Row="1" TextWrapping="NoWrap" Grid.Column="0" Style="{StaticResource AddressTextStyle}" VerticalAlignment="Bottom"/>
+                            <TextBlock Text="Subtotal :" Grid.Row="2" TextWrapping="NoWrap" Grid.Column="0" Style="{StaticResource AddressTextStyle}" VerticalAlignment="Bottom"/>
+
+                            <TextBlock Text="{Binding LineItemPrice,Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:C}'}" Grid.Row="0" Grid.Column="1" TextWrapping="NoWrap" FontSize="23" FontWeight="Light" TextTrimming="WordEllipsis" Style="{StaticResource AddressTextStyle}"  VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Text="{Binding LineItemQuantity}" Grid.Row="1" TextWrapping="NoWrap" FontSize="23" FontWeight="Light" TextTrimming="WordEllipsis" VerticalAlignment="Center" Style="{StaticResource AddressTextStyle}"/>
+                            <TextBlock Text="{Binding Amount,Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:C}'}" Grid.Column="1" Grid.Row="2" TextWrapping="NoWrap" FontSize="23" FontWeight="Light"  Style="{StaticResource AddressTextStyle}"  VerticalAlignment="Center"/>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Grid>
+        </Border>
+    </DataTemplate>
+    
+    <!-- Quotes ItemTemplate-->
+    <DataTemplate x:Key="QuotesTemplate">
+        <Grid  Height="120" Margin="2" Background="#FF355B4E" Width="350">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="170"/>
+                <ColumnDefinition Width="80"/>
+                <ColumnDefinition Width="100"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Row="0" Text="{Binding CustomerName}" Style="{StaticResource SubheaderTextBlockStyle}" VerticalAlignment="Top" TextWrapping="NoWrap" Margin="7,5" Grid.ColumnSpan="3"/>
+                <TextBlock Grid.Row="1"  Text="{Binding QuoteDescription}" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.ColumnSpan="3"/>
+
+            <TextBlock Grid.Row="2" Text="{Binding CreatedOn,Converter={StaticResource StringFormatConverter},ConverterParameter='{}{0:MM/dd/yyyy}'}" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="0" Grid.ColumnSpan="2"/>
+           
+            <TextBlock Grid.Row="3" Text="{Binding QuoteStatus}" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis"  Grid.Column="2" FontWeight="Bold"/>
+            <TextBlock Grid.Row="2" Text="{Binding Amount,Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:C}'}" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="2"/>
+            
+                <TextBlock Grid.Row="3" Text="{Binding RepName}" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.ColumnSpan="2"/>
+           
+        </Grid>
+    </DataTemplate>
+
+    <DataTemplate x:Key="QuoteItemsTemplate">
+        <Border BorderThickness="1" BorderBrush="{StaticResource ItemBorderBrush}">
+            <Grid Margin="10"
+              Height="160" Width="410"
+              Background="#FF355B4E" >
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="110" />
+                    <ColumnDefinition  Width="Auto"/>
+                    <ColumnDefinition Width="290" />
+                    <ColumnDefinition  Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Image Source="{Binding ImageUri}"
+                   Grid.Column="0"
+                  Height="120" Width="120"
+                   Margin="10" />
+                <Grid Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="Auto"/>                      
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="120"/>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="140"/>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="120"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="{Binding ProductName}" Grid.Row="0" TextWrapping="NoWrap" Grid.ColumnSpan="4" Style="{StaticResource SubheaderTextBlockStyle}" VerticalAlignment="Bottom" Width="Auto" HorizontalAlignment="Left" TextTrimming="WordEllipsis"/>
+                    <TextBlock Text="{Binding RecentOrders}" Grid.Row="1" Grid.ColumnSpan="3" TextWrapping="NoWrap" TextTrimming="WordEllipsis" Style="{StaticResource AddressTextStyle}" VerticalAlignment="Bottom"/>
+                    <TextBlock Text="{Binding ProductSku}" Grid.Row="2" Grid.Column="1" TextWrapping="NoWrap" TextTrimming="WordEllipsis" Style="{StaticResource AddressTextStyle}"  VerticalAlignment="Top"/>
+                    <TextBlock Text="Stock on hand:" Grid.Row="2" Grid.Column="1" TextWrapping="NoWrap" TextTrimming="WordEllipsis" Style="{StaticResource AddressTextStyle}"  VerticalAlignment="Top" FontWeight="Bold" HorizontalAlignment="Right"/>
+                    <TextBlock Text="{Binding ProductQuantity}" Grid.Row="2" Grid.Column="2" TextWrapping="NoWrap" TextTrimming="WordEllipsis" Style="{StaticResource AddressTextStyle}"  VerticalAlignment="Top" FontWeight="Bold" HorizontalAlignment="Left"/>
+                    <Border Grid.Row="4" Grid.ColumnSpan="3" VerticalAlignment="Bottom"      
+                            Width="290"
+                            Height="80"
+                         Background="{StaticResource ItemDarkerBackgroundBrush}">
+                        <!--<StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding UnitPrice}" TextWrapping="NoWrap" TextTrimming="WordEllipsis" Style="{StaticResource AddressTextStyle}"  VerticalAlignment="Bottom"/>
+                            <TextBlock Text="{Binding Quantity}" Foreground="White"  VerticalAlignment="Bottom"/>
+                            <TextBlock Text="{Binding Amount}" TextWrapping="NoWrap" TextTrimming="WordEllipsis" Style="{StaticResource AddressTextStyle}"  VerticalAlignment="Bottom"/>
+                        </StackPanel>-->
+                        <Grid VerticalAlignment="Bottom"  Width="300"
+                            Height="80">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="90"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <!--<ColumnDefinition Width="Auto"/>-->
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Price : " Grid.Row="0" TextWrapping="NoWrap" Grid.Column="0" Style="{StaticResource AddressTextStyle}" VerticalAlignment="Bottom"/>
+                            <TextBlock Text="Qty : " Grid.Row="1" TextWrapping="NoWrap" Grid.Column="0" Style="{StaticResource AddressTextStyle}" VerticalAlignment="Bottom"/>
+                            <TextBlock Text="Amount : " Grid.Row="2" TextWrapping="NoWrap" Grid.Column="0" Style="{StaticResource AddressTextStyle}" VerticalAlignment="Bottom"/>
+
+                            <TextBlock Text="{Binding LineItemPrice,Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:C}'}" Grid.Row="0" Grid.Column="1" TextWrapping="NoWrap" FontSize="23" FontWeight="Light" TextTrimming="WordEllipsis" Style="{StaticResource AddressTextStyle}"  VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Text="{Binding LineItemQuantity}" Grid.Row="1" TextWrapping="NoWrap" FontSize="23" FontWeight="Light" TextTrimming="WordEllipsis" VerticalAlignment="Center" Style="{StaticResource AddressTextStyle}"/>
+                            <TextBlock Text="{Binding Amount,Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:C}'}" Grid.Column="1" Grid.Row="2" TextWrapping="NoWrap" FontSize="23" FontWeight="Light"  Style="{StaticResource AddressTextStyle}"  VerticalAlignment="Center"/>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Grid>
+        </Border>
+    </DataTemplate>    
+    
+    <DataTemplate x:Key="ChangeAddressDataTemplate">
+        <Grid Width="240"
+              Height="30">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="25" />
+                <RowDefinition Height="25" />
+            </Grid.RowDefinitions>
+            <TextBlock Text="{Binding CustomerName}" Foreground="Black" FontWeight="SemiBold"
+                       Grid.Row="0"
+                       Margin="10,5,0,0"
+                      />
+        </Grid>
+    </DataTemplate>
+    <!-- CustomerQuotes DashBoard ItemTemplate-->
+    <DataTemplate x:Key="CustomerQuotesTemplate">
+        <StackPanel Height="120" Margin="2" Background="#FF355B4E" Width="400">
+            <TextBlock Text="{Binding CustomerName}" Style="{StaticResource SubheaderTextBlockStyle}" VerticalAlignment="Top" TextWrapping="NoWrap" Margin="7,5"/>
+            <TextBlock Text="{Binding QuoteDescription}" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis"/>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding Quotedate}" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis"/>              
+                <TextBlock Text="{Binding Amount}" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding Salesperson}" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis" Width="300"/>
+                <TextBlock Text="{Binding Status}" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis" HorizontalAlignment="Right" FontWeight="Bold"/>
+            </StackPanel>
+        </StackPanel>
+    </DataTemplate>
+
+</ResourceDictionary>

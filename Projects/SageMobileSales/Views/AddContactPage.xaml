@@ -1,0 +1,237 @@
+﻿<prism:VisualStateAwarePage
+    x:Name="pageRoot"
+    IsTabStop="False"
+    x:Class="SageMobileSales.Views.AddContactPage"
+    DataContext="{Binding DefaultViewModel, RelativeSource={RelativeSource Self}}"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:views="using:SageMobileSales.Views"
+    xmlns:common="using:SageMobileSales.Common"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:prism="using:Microsoft.Practices.Prism.StoreApps"
+    xmlns:behaviors="using:SageMobileSales.Behaviors"
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    mc:Ignorable="d"
+    prism:ViewModelLocator.AutoWireViewModel="true"
+    x:Uid="Page">
+
+    <prism:VisualStateAwarePage.Resources>
+    </prism:VisualStateAwarePage.Resources>
+
+    <!--Bottom AppBar-->
+    <!--<Page.BottomAppBar>
+        <AppBar>
+            <Grid Style="{StaticResource BottomAppbarStyle}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50*"/>
+                    <ColumnDefinition Width="50*"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel x:Name="RightPanel" Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right">
+                    <AppBarButton x:Uid="saveNewContact" Icon="Save" Label="">
+                        <interactivity:Interaction.Behaviors>
+                            <core:EventTriggerBehavior EventName="Click">
+                                <core:CallMethodAction MethodName="SaveContactButton_Click"
+                TargetObject="{Binding Mode=OneWay}" />
+                            </core:EventTriggerBehavior>
+                        </interactivity:Interaction.Behaviors>
+                    </AppBarButton>
+                </StackPanel>
+            </Grid>
+        </AppBar>
+    </Page.BottomAppBar>-->
+    <!--
+        This grid acts as a root panel for the page that defines two rows:
+        * Row 0 contains the back button and page title
+        * Row 1 contains the rest of the page layout
+    -->
+    <Grid Style="{StaticResource LayoutRootStyle}">
+        <Grid.ChildrenTransitions>
+            <TransitionCollection>
+                <EntranceThemeTransition/>
+            </TransitionCollection>
+        </Grid.ChildrenTransitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="140"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <ProgressRing Grid.Row="1" Height="70" Width="70" 
+                      IsActive="{Binding InProgress, Mode=TwoWay}" 
+                      Visibility="{Binding InProgress, Mode=TwoWay,Converter={StaticResource InProgessVisibilityConverter}}"
+                      Style="{StaticResource GridViewProgressRingStyle}"/>
+        <!-- Back button and page title -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="120"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Button x:Name="backButton" Command="{Binding GoBackCommand, ElementName=pageRoot}"
+                        Style="{StaticResource NavigationCustomBackButtonNormalStyle}"
+                        VerticalAlignment="Top"
+                        AutomationProperties.Name="Back"
+                        AutomationProperties.AutomationId="BackButton"
+                        AutomationProperties.ItemType="Navigation Button"/>
+            <TextBlock x:Name="AddContactPageTitle" Text="" x:Uid="AddContactPageTitle" Grid.Column="1" Style="{StaticResource PageTitleTextStyle}"
+                        IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom"/>
+        </Grid>
+        <Grid x:Name="ContentGrid"  Grid.Row="1" RenderTransformOrigin="0.5,0.5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="5" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="5" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="5" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="5" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="5" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="120"/>
+                <ColumnDefinition Width="300"/>
+                <ColumnDefinition Width="10"/>
+                <ColumnDefinition Width="300"/>
+                
+            </Grid.ColumnDefinitions>
+
+            <!-- Name -->
+
+            <StackPanel Grid.Row="0"  Grid.Column="1" >
+                <!-- First Name -->
+                <TextBox x:Name="firstName" 
+                                       x:Uid="firstName"
+                                       Header=""
+                                       AutomationProperties.AutomationId="FirstNameTextBox"
+                                       AutomationProperties.IsRequiredForForm="True"
+                                    Style="{StaticResource AddContactTextBoxStyle}"
+                                       Text="{Binding Contact.FirstName, Mode=TwoWay}"
+                          IsEnabled="{Binding IsEnabled}">
+                    <interactivity:Interaction.Behaviors>
+                        <behaviors:HighlightFormFieldOnErrors PropertyErrors="{Binding Contact.Errors[FirstName]}" />
+                    </interactivity:Interaction.Behaviors>
+                </TextBox>
+                <TextBlock x:Name="ErrorsFirstName"
+                       Style="{StaticResource ErrorMessageStyle}"                                           
+                         HorizontalAlignment="Left"
+                       Text="{Binding Contact.Errors[FirstName], Converter={StaticResource ErrorConverter}}"
+                       TextWrapping="NoWrap" Height="19" VerticalAlignment="Bottom" />
+
+            </StackPanel>
+
+            <StackPanel Grid.Row="0" Grid.Column="3">
+                <!-- Last Name -->
+                <TextBox x:Name="lastName" 
+                                       x:Uid="lastName"
+                                       Header=""
+                                       AutomationProperties.AutomationId="LastNameTextBox"
+                                       AutomationProperties.IsRequiredForForm="True"
+                                       Style="{StaticResource AddContactTextBoxStyle}" Height="62"
+                                       Text="{Binding Contact.LastName, Mode=TwoWay}" 
+                               IsEnabled="{Binding IsEnabled}">
+                    <interactivity:Interaction.Behaviors>
+                        <behaviors:HighlightFormFieldOnErrors PropertyErrors="{Binding Contact.Errors[LastName]}" />
+                    </interactivity:Interaction.Behaviors>
+
+                </TextBox>
+                <TextBlock x:Name="ErrorsLastName"                         
+                       Style="{StaticResource ErrorMessageStyle}"
+                       Text="{Binding Contact.Errors[LastName], Converter={StaticResource ErrorConverter}}"
+                       TextWrapping="NoWrap" 
+                       HorizontalAlignment="Left"/>
+            </StackPanel>
+
+            <StackPanel Grid.Row="4" Grid.ColumnSpan="4" Grid.Column="1">
+                <TextBox x:Name="contactTitle"
+                                       x:Uid="contactTitle"
+                                       Header=""
+                                       AutomationProperties.AutomationId="contactTitleTextBox"                         
+                                                 Style="{StaticResource CreateShippingAddressTextBoxStyle}"                        
+                                       Text="{Binding Contact.Title, Mode=TwoWay}">
+                    <interactivity:Interaction.Behaviors>
+                        <behaviors:HighlightFormFieldOnErrors PropertyErrors="{Binding Contact.Errors[Title]}" />
+                    </interactivity:Interaction.Behaviors>
+                </TextBox>
+                <TextBlock                         
+                       Style="{StaticResource ErrorMessageStyle}"                       
+                       TextWrapping="NoWrap" 
+                       HorizontalAlignment="Left"/>
+            </StackPanel>
+            <!-- Phone -->
+            <StackPanel Grid.Row="6" Grid.Column="1">
+                <TextBox x:Name="phoneWork"
+                                       x:Uid="phoneWork"
+                                       Header=""
+                                       AutomationProperties.AutomationId="PhoneWorkTextBox"
+                                       AutomationProperties.IsRequiredForForm="True"
+                         InputScope="TelephoneNumber"
+                                       Style="{StaticResource AddContactTextBoxStyle}"
+                                       Text="{Binding Contact.PhoneWork, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}">
+                    <interactivity:Interaction.Behaviors>
+                        <behaviors:HighlightFormFieldOnErrors PropertyErrors="{Binding Contact.Errors[PhoneWork]}" />
+                        <!--<core:EventTriggerBehavior EventName="TextChanged">
+                            <core:InvokeCommandAction Command="{Binding TextChangedCommand}" CommandParameter="{Binding ElementName=phoneWork,UpdateSourceTrigger=PropertyChanged}"/>
+                        </core:EventTriggerBehavior>-->
+                    </interactivity:Interaction.Behaviors>
+                </TextBox>
+
+                <TextBlock x:Name="ErrorPhoneWork"
+                       Style="{StaticResource ErrorMessageStyle}"                      
+                       Text="{Binding Contact.Errors[PhoneWork], Converter={StaticResource ErrorConverter}}"
+                       TextWrapping="Wrap"/>
+            </StackPanel>
+            <StackPanel Grid.Row="6" Grid.Column="3">
+                <TextBox x:Name="phoneMobile" 
+                                       x:Uid="phoneMobile"
+                                       Header=""
+                                       AutomationProperties.AutomationId="phoneMobileTextBox"
+                                       AutomationProperties.IsRequiredForForm="True"       
+                         InputScope="TelephoneNumber"
+                     HorizontalAlignment="Left"
+                                       Style="{StaticResource AddContactTextBoxStyle}"
+                                       Text="{Binding Contact.PhoneMobile, Mode=TwoWay}" 
+                               IsEnabled="{Binding IsEnabled}">
+                    <interactivity:Interaction.Behaviors>
+                        <behaviors:HighlightFormFieldOnErrors PropertyErrors="{Binding Contact.Errors[PhoneMobile]}" />
+                    </interactivity:Interaction.Behaviors>
+                </TextBox>
+                <TextBlock x:Name="ErrorPhoneMobile"
+                       Style="{StaticResource ErrorMessageStyle}"
+                       Text="{Binding Contact.Errors[PhoneMobile], Converter={StaticResource ErrorConverter}}"
+                       TextWrapping="NoWrap"/>
+            </StackPanel>
+
+
+
+            <StackPanel Grid.Row="10" Grid.Column="1" Grid.ColumnSpan="3">
+                <TextBox x:Name="contactEmail"
+                                       x:Uid="contactEmail"
+                                       Header=""
+                                       AutomationProperties.AutomationId="contactEmailTextBox"
+                                       Text="{Binding Contact.EmailWork, Mode=TwoWay}"
+                     Style="{StaticResource CreateShippingAddressTextBoxStyle}" Width="610">
+                    <interactivity:Interaction.Behaviors>
+                        <behaviors:HighlightFormFieldOnErrors PropertyErrors="{Binding Contact.Errors[EmailWork]}" />
+                    </interactivity:Interaction.Behaviors>
+                </TextBox>
+                <TextBlock x:Name="ErrorEmailWork"
+                       Style="{StaticResource ErrorMessageStyle}"                      
+                       Text="{Binding Contact.Errors[EmailWork], Converter={StaticResource ErrorConverter}}"
+                       TextWrapping="NoWrap"/>
+            </StackPanel>
+            <Button x:Uid="saveNewContact" Content="" Grid.Row="11" IsTapEnabled="{Binding IsSaveEnabled,Mode=TwoWay}" Style="{StaticResource ButtonNormalStyle}" Grid.Column="3" HorizontalAlignment="Right">
+                <interactivity:Interaction.Behaviors>
+                    <core:EventTriggerBehavior EventName="Click">
+                        <core:CallMethodAction MethodName="SaveContactButton_Click"
+                TargetObject="{Binding Mode=OneWay}" />
+                    </core:EventTriggerBehavior>
+                </interactivity:Interaction.Behaviors>
+            </Button>
+        </Grid>
+
+    </Grid>
+</prism:VisualStateAwarePage>

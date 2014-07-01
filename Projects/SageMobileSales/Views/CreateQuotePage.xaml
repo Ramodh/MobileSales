@@ -1,0 +1,155 @@
+﻿<prism:VisualStateAwarePage
+    x:Name="pageRoot"
+    x:Class="SageMobileSales.Views.CreateQuotePage"
+    DataContext="{Binding DefaultViewModel, RelativeSource={RelativeSource Self}}"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:views="using:SageMobileSales.Views"
+    xmlns:common="using:SageMobileSales.Common"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+   xmlns:prism="using:Microsoft.Practices.Prism.StoreApps"
+    xmlns:behaviors="using:SageMobileSales.Behaviors"
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    prism:ViewModelLocator.AutoWireViewModel="true"
+    mc:Ignorable="d"
+    x:Uid="Page">
+
+    <prism:VisualStateAwarePage.Resources>
+
+    </prism:VisualStateAwarePage.Resources>
+
+    <!--<prism:VisualStateAwarePage.TopAppBar>
+        <AppBar x:Name="TopAppBar" Style="{StaticResource TopAppBarUserControlStyle}" x:Uid="TopAppBar">
+            <views:TopAppBarUserControl/>
+        </AppBar>
+    </prism:VisualStateAwarePage.TopAppBar>-->
+    <!--<Page.BottomAppBar>
+        <AppBar>
+            <Grid Style="{StaticResource BottomAppbarStyle}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50*"/>
+                    <ColumnDefinition Width="50*"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel x:Name="RightPanel" Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right">
+                    <AppBarButton x:Uid="saveQuote" Icon="Save" Label="">
+                        <interactivity:Interaction.Behaviors>
+                            <core:EventTriggerBehavior EventName="Click">
+                                <core:CallMethodAction MethodName="SaveQuoteButton_Click" 
+                TargetObject="{Binding Mode=OneWay}" />
+                            </core:EventTriggerBehavior>
+                        </interactivity:Interaction.Behaviors>
+                    </AppBarButton>
+                </StackPanel>
+            </Grid>
+        </AppBar>
+    </Page.BottomAppBar>-->
+    <!--
+        This grid acts as a root panel for the page that defines two rows:
+        * Row 0 contains the back button and page title
+        * Row 1 contains the rest of the page layout
+    -->
+    <Grid Style="{StaticResource LayoutRootStyle}">
+        <Grid.ChildrenTransitions>
+            <TransitionCollection>
+                <EntranceThemeTransition/>
+            </TransitionCollection>
+        </Grid.ChildrenTransitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="140"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <ProgressRing Grid.Row="1" Height="70" Width="70" 
+                      IsActive="{Binding InProgress, Mode=TwoWay}" 
+                      Visibility="{Binding InProgress, Mode=TwoWay,Converter={StaticResource InProgessVisibilityConverter}}" 
+                      Style="{StaticResource GridViewProgressRingStyle}"/>
+        
+        <!-- Back button and page title -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="120"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="10"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Button x:Name="backButton" Command="{Binding GoBackCommand, ElementName=pageRoot}" Grid.Column="0"
+                        Style="{StaticResource NavigationCustomBackButtonNormalStyle}"
+                        VerticalAlignment="Top"
+                        AutomationProperties.Name="Back"
+                        AutomationProperties.AutomationId="BackButton"
+                        AutomationProperties.ItemType="Navigation Button"/>
+            <TextBlock x:Name="CustomerName" Text="{Binding CustomerName}" Style="{StaticResource PageTitleTextStyle}" Grid.Column="1" 
+                        Visibility="{Binding IsTextBlockVisible}" TextWrapping="NoWrap" VerticalAlignment="Bottom"/>
+            <TextBlock x:Name="createQuotePageTitle" Text="Customer" Style="{StaticResource ProductTextblockTextStyle}" Grid.Column="1"
+                        IsHitTestVisible="false" Visibility="{Binding IsCustomerSearchVisible}" TextWrapping="NoWrap" VerticalAlignment="Center"/>
+            <!--<TextBox Grid.Column="2" Height="50" Width="300" Margin="5,59,-5,31">            
+            </TextBox>-->
+
+            <SearchBox x:Name="CreateQuoteCustomerSearchBox" Grid.Column="3"  Grid.Row="0" 
+                   x:Uid="CreateCustomerSearchBox"
+                   PlaceholderText="{Binding CustomerSearchBoxText}"
+                   VerticalAlignment="Center"
+                   SearchHistoryEnabled="False" 
+                   Visibility="{Binding IsCustomerSearchVisible}"
+                  Style="{StaticResource SearchBoxStyle}" ChooseSuggestionOnEnter="False">
+                <interactivity:Interaction.Behaviors>
+                    <core:EventTriggerBehavior EventName="SuggestionsRequested">
+                        <core:InvokeCommandAction Command="{Binding SearchSuggestionsCommand}"/>
+                    </core:EventTriggerBehavior>
+                    <core:EventTriggerBehavior EventName="ResultSuggestionChosen">
+                        <core:InvokeCommandAction Command="{Binding ResultSuggestionChosenCommand}"/>
+                    </core:EventTriggerBehavior>
+                </interactivity:Interaction.Behaviors>
+            </SearchBox>
+           
+        </Grid>
+        <Grid Grid.Row="1" Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="120"/>
+                <ColumnDefinition Width="400"/>
+                <ColumnDefinition Width="50"/>
+                <ColumnDefinition Width="400"/>
+                <ColumnDefinition Width="10"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <ListView x:Uid="QuoteType" x:Name="QuoteType" Width="400" Grid.Row="1" Grid.Column="1" ItemsSource="{Binding CreateQuoteFrom}" SelectedItem="{Binding SelectedType, Mode=TwoWay}" SelectionMode="Single">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Style="{StaticResource ListViewStackpnlStyle}" MaxWidth="375">
+                            <TextBlock Text="{Binding createFrom}" Style="{StaticResource ListviewTextblkStyle}" Margin="5,0,0,0" Padding="3"/>
+                            <TextBlock Text="{Binding createFromText}" Style="{StaticResource AddressTextStyle}" Margin="5,0,0,3" Padding="3,0,0,0" TextWrapping="Wrap"/>
+
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+                <interactivity:Interaction.Behaviors>
+                    <core:EventTriggerBehavior EventName="SelectionChanged">
+                        <core:InvokeCommandAction Command="{Binding QuoteTypeListViewSelectionChanged}" CommandParameter="{Binding ElementName=QuoteType}"/>
+                    </core:EventTriggerBehavior>
+                </interactivity:Interaction.Behaviors>
+            </ListView>
+            <TextBlock x:Name="createQuote" x:Uid="createQuote"  Style="{StaticResource FormTitleStyle}" HorizontalAlignment="Left" Grid.Column="1" TextWrapping="Wrap" Text="" VerticalAlignment="Center"/>
+
+            <TextBlock x:Name="quoteDescription" x:Uid="quoteDescription" Style="{StaticResource FormTitleStyle}" HorizontalAlignment="Left"  Grid.Column="3" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
+            <TextBox HorizontalAlignment="Left" Grid.Row="1" Grid.Column="3" VerticalAlignment="Top" Style="{StaticResource createQuoteEditBlockStyle}" Text="{Binding QuoteDescription, Mode=TwoWay}" AcceptsReturn="True" TextWrapping="Wrap"/>
+            <Button x:Uid="saveQuote" Content="" Grid.Column="5" Grid.Row="1" VerticalAlignment="Bottom" Style="{StaticResource ButtonNormalStyle}">
+                <interactivity:Interaction.Behaviors>
+                    <core:EventTriggerBehavior EventName="Click">
+                        <core:CallMethodAction MethodName="SaveQuoteButton_Click" 
+                TargetObject="{Binding Mode=OneWay}" />
+                    </core:EventTriggerBehavior>
+                </interactivity:Interaction.Behaviors>
+            </Button>
+        </Grid>
+    </Grid>
+</prism:VisualStateAwarePage>

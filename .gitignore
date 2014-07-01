@@ -6,6 +6,10 @@
 [Bb]ld/
 [Aa]pp[Pp]ackages/
 
+# NuGet Packages Directory
+packages
+Nuget/*.nupkg
+
 #Ignore files created by ReSharper
 _ReSharper*
 
