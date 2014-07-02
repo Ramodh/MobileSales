@@ -1,0 +1,41 @@
+﻿<prism:VisualStateAwarePage
+    x:Class="SageMobileSales.Views.MainMenuPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:SageMobileSales.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+     xmlns:prism="using:Microsoft.Practices.Prism.StoreApps"
+    prism:ViewModelLocator.AutoWireViewModel="true"
+    mc:Ignorable="d">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Canvas HorizontalAlignment="Left" Height="274" Margin="197,85,0,0" VerticalAlignment="Top" Width="417" Background="Green">
+            <Image Height="241" Width="417" Source="/Assets/Catalog.png"/>
+            <TextBlock Canvas.Left="160" TextWrapping="Wrap" x:Uid="Catalog" Canvas.Top="241" FontSize="29.333" Width="108"/>
+        </Canvas>
+        <Canvas HorizontalAlignment="Left" Height="274" Margin="716,85,0,0" VerticalAlignment="Top" Width="417" Background="Green">
+            <Image Height="241" Width="417" Source="/Assets/Quotes.png"/>
+            <TextBlock Canvas.Left="160" TextWrapping="Wrap" x:Uid="Quotes" Canvas.Top="241" FontSize="29.333" Width="103"/>
+        </Canvas>
+        <Canvas HorizontalAlignment="Left" Height="274" Margin="197,429,0,0" VerticalAlignment="Top" Width="417" Background="Green">
+            <Image Height="241" Width="417" Source="/Assets/Orders.png"/>
+            <TextBlock Canvas.Left="160" TextWrapping="Wrap" x:Uid="Orders" Canvas.Top="241" FontSize="29.333" Width="103"/>
+        </Canvas>
+        <Canvas HorizontalAlignment="Left" Height="274" Margin="716,429,0,0" VerticalAlignment="Top" Width="417" Background="Green">
+            <Image Height="241" Width="417" Source="/Assets/Customers.png"/>
+            <TextBlock Canvas.Left="148" TextWrapping="Wrap" x:Uid="Customers" Canvas.Top="241" FontSize="29.333" Width="151"/>
+        </Canvas>
+    </Grid>
+    <Page.BottomAppBar>
+        <CommandBar>
+            <AppBarButton x:Uid="Logout" Icon="Cancel" Command="{Binding CleanUpCommand}"/>
+            <AppBarButton x:Uid="Help" Icon="Help"/>
+
+            <!-- <CommandBar.SecondaryCommands>
+                <AppBarButton  />              
+            </CommandBar.SecondaryCommands>-->
+        </CommandBar>
+    </Page.BottomAppBar>
+
+</prism:VisualStateAwarePage>
