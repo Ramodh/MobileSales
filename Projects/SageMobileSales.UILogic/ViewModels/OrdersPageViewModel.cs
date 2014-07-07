@@ -1,4 +1,15 @@
-﻿using Microsoft.Practices.Prism.PubSubEvents;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Input;
+using Windows.ApplicationModel.Resources;
+using Windows.Foundation;
+using Windows.System.Threading;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
+using Microsoft.Practices.Prism.PubSubEvents;
 using Microsoft.Practices.Prism.StoreApps;
 using Microsoft.Practices.Prism.StoreApps.Interfaces;
 using SageMobileSales.DataAccess.Common;
@@ -9,49 +20,57 @@ using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
 using SageMobileSales.ServiceAgents.Services;
 using SageMobileSales.UILogic.Common;
-using SageMobileSales.UILogic.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
-using Windows.ApplicationModel.Resources;
-using Windows.Foundation;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Navigation;
 
 namespace SageMobileSales.UILogic.ViewModels
 {
-    class OrdersPageViewModel : ViewModel
+    internal class OrdersPageViewModel : ViewModel
     {
-        private INavigationService _navigationService;
-        private ISalesRepRepository _salesRepRepository;
-        private IOrderRepository _orderRepository;
-        private ICustomerRepository _customerRepository;
-        private readonly ISyncCoordinatorService _syncCoordinatorService;
+        private readonly ICustomerRepository _customerRepository;
         private readonly IEventAggregator _eventAggregator;
-        private List<OrderDetails> _ordersList;
+        private readonly INavigationService _navigationService;
+        private readonly IOrderRepository _orderRepository;
+        private readonly ISalesRepRepository _salesRepRepository;
+        private readonly ISyncCoordinatorService _syncCoordinatorService;
         private string _customerId;
         private string _customerName;
-        private string _ordersPageTitle;
+        private string _emptyOrders;
+        private bool _inProgress;
         private bool _isAscending;
         private bool _isDescending;
+        private string _log = string.Empty;
+        private List<OrderDetails> _ordersList;
+        private string _ordersPageTitle;
+        private bool _selectedColumn;
+        private string _selectedItem;
         private ToggleMenuFlyoutItem _sortByAscending;
         private ToggleMenuFlyoutItem _sortByDescending;
+        private bool _syncProgress;
+        private ToggleMenuFlyoutItem selectedItem;
+
+        public OrdersPageViewModel(INavigationService navigationService, ISalesRepRepository salesRepRepository,
+            IOrderRepository orderRepository, ICustomerRepository customerRepository, IEventAggregator eventAggregator,
+            ISyncCoordinatorService syncCoordinatorService)
+        {
+            _navigationService = navigationService;
+            _orderRepository = orderRepository;
+            _salesRepRepository = salesRepRepository;
+            _customerRepository = customerRepository;
+            _syncCoordinatorService = syncCoordinatorService;
+            _eventAggregator = eventAggregator;
+            SortOrdersCommand = new DelegateCommand<object>(SortOrders);
+            SortByAscendingCommand = new DelegateCommand<object>(SortByAscending);
+            SortByDescendingCommand = new DelegateCommand<object>(SortByDescending);
+            _eventAggregator.GetEvent<OrderDataChangedEvent>().Subscribe(UpdateOrderList, ThreadOption.UIThread);
+            _eventAggregator.GetEvent<OrderSyncChangedEvent>()
+                .Subscribe(OrdersSyncIndicator, ThreadOption.UIThread);
+        }
+
         public ICommand SortOrdersCommand { get; set; }
         public ICommand SortByAscendingCommand { get; set; }
         public ICommand SortByDescendingCommand { get; set; }
-        private string _selectedItem;
-        private bool _selectedColumn;
-        private ToggleMenuFlyoutItem selectedItem = null;
-        private string _log = string.Empty;
-        private string _emptyOrders;
-        private bool _syncProgress;
 
         /// <summary>
-        /// Display empty results text
+        ///     Display empty results text
         /// </summary>
         public string EmptyOrders
         {
@@ -72,25 +91,8 @@ namespace SageMobileSales.UILogic.ViewModels
             }
         }
 
-        public OrdersPageViewModel(INavigationService navigationService, ISalesRepRepository salesRepRepository,
-            IOrderRepository orderRepository, ICustomerRepository customerRepository, IEventAggregator eventAggregator, ISyncCoordinatorService syncCoordinatorService)
-        {
-            _navigationService = navigationService;
-            _orderRepository = orderRepository;
-            _salesRepRepository = salesRepRepository;
-            _customerRepository = customerRepository;
-            _syncCoordinatorService = syncCoordinatorService;
-            _eventAggregator = eventAggregator;
-            SortOrdersCommand = new DelegateCommand<object>(SortOrders);
-            SortByAscendingCommand = new DelegateCommand<object>(SortByAscending);
-            SortByDescendingCommand = new DelegateCommand<object>(SortByDescending);
-            _eventAggregator.GetEvent<OrderDataChangedEvent>().Subscribe(UpdateOrderList, ThreadOption.UIThread);
-            _eventAggregator.GetEvent<OrderSyncChangedEvent>()
-                .Subscribe(OrdersSyncIndicator, ThreadOption.UIThread);
-        }
-
         /// <summary>
-        ///Checks which column to sort by
+        ///     Checks which column to sort by
         /// </summary>
         public bool SelectedColumn
         {
@@ -99,14 +101,12 @@ namespace SageMobileSales.UILogic.ViewModels
             {
                 SetProperty(ref _selectedColumn, value);
                 OnPropertyChanged("SelectedColumn");
-
             }
         }
 
         /// <summary>
-        ///checks whether Ascending MenuItem is selected
+        ///     checks whether Ascending MenuItem is selected
         /// </summary>
-
         public bool IsAscending
         {
             get { return _isAscending; }
@@ -118,9 +118,8 @@ namespace SageMobileSales.UILogic.ViewModels
         }
 
         /// <summary>
-        ///checks whether Descending MenuItem selected
+        ///     checks whether Descending MenuItem selected
         /// </summary>
-
         public bool IsDescending
         {
             get { return _isDescending; }
@@ -132,33 +131,25 @@ namespace SageMobileSales.UILogic.ViewModels
         }
 
         /// <summary>
-        /// Holds Customer Name
+        ///     Holds Customer Name
         /// </summary>
         public string CustomerName
         {
             get { return _customerName; }
-            private set
-            {
-                SetProperty(ref _customerName, value);
-
-            }
+            private set { SetProperty(ref _customerName, value); }
         }
+
         /// <summary>
-        /// Orders Page title
+        ///     Orders Page title
         /// </summary>
         public string OrdersPageTitle
         {
             get { return _ordersPageTitle; }
-            private set
-            {
-                SetProperty(ref _ordersPageTitle, value);
-
-            }
+            private set { SetProperty(ref _ordersPageTitle, value); }
         }
 
-        private bool _inProgress;
         /// <summary>
-        /// Data loading indicator
+        ///     Data loading indicator
         /// </summary>
         public bool InProgress
         {
@@ -167,7 +158,7 @@ namespace SageMobileSales.UILogic.ViewModels
         }
 
         /// <summary>
-        /// Dummy Quotes Data
+        ///     Dummy Quotes Data
         /// </summary>
         public List<OrderDetails> OrdersList
         {
@@ -183,12 +174,13 @@ namespace SageMobileSales.UILogic.ViewModels
         }
 
         /// <summary>
-        /// Load dummy data
+        ///     Load dummy data
         /// </summary>
         /// <param name="navigationParameter"></param>
         /// <param name="navigationMode"></param>
         /// <param name="viewModelState"></param>
-        public async override void OnNavigatedTo(object navigationParameter, Windows.UI.Xaml.Navigation.NavigationMode navigationMode, Dictionary<string, object> viewModelState)
+        public override async void OnNavigatedTo(object navigationParameter, NavigationMode navigationMode,
+            Dictionary<string, object> viewModelState)
         {
             try
             {
@@ -196,8 +188,8 @@ namespace SageMobileSales.UILogic.ViewModels
 
                 if (!Constants.OrdersSyncProgress)
                 {
-                    IAsyncAction asyncAction = Windows.System.Threading.ThreadPool.RunAsync(
-                        (IAsyncAction) =>
+                    IAsyncAction asyncAction = ThreadPool.RunAsync(
+                        IAsyncAction =>
                         {
                             // Data Sync will Start.
                             _syncCoordinatorService.StartOrdersSync();
@@ -235,7 +227,6 @@ namespace SageMobileSales.UILogic.ViewModels
                 _log = AppEventSource.Log.WriteLine(ex);
                 AppEventSource.Log.Error(_log);
             }
-
         }
 
 
@@ -245,7 +236,7 @@ namespace SageMobileSales.UILogic.ViewModels
         }
 
         /// <summary>
-        /// Grid View Item Click 
+        ///     Grid View Item Click
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="parameter"></param>
@@ -255,13 +246,13 @@ namespace SageMobileSales.UILogic.ViewModels
             {
                 var arg = (parameter as ItemClickEventArgs).ClickedItem as OrderDetails;
 
-                Frame rootFrame = Window.Current.Content as Frame;
+                var rootFrame = Window.Current.Content as Frame;
                 List<PageStackEntry> navigationHistory = rootFrame.BackStack.ToList();
                 PageStackEntry pageStack = navigationHistory.LastOrDefault();
 
                 if (pageStack != null)
                 {
-                    if (pageStack.SourcePageType.Name.ToString() == PageUtils.CreateQuotePage)
+                    if (pageStack.SourcePageType.Name == PageUtils.CreateQuotePage)
                     {
                         _navigationService.Navigate("CreateQuote", arg.OrderId);
                     }
@@ -304,9 +295,9 @@ namespace SageMobileSales.UILogic.ViewModels
         }
 
         /// <summary>
-        ///Gets Selected column by which Orders are to be sorted
+        ///     Gets Selected column by which Orders are to be sorted
         /// </summary>
-        /// <param name="sender"></param>     
+        /// <param name="sender"></param>
         public void SortOrders(object sender)
         {
             if (selectedItem != null)
@@ -320,14 +311,13 @@ namespace SageMobileSales.UILogic.ViewModels
                 selectedItem.IsChecked = true;
 
                 Sort(selectedItem.Text, IsAscending);
-
             }
         }
 
         /// <summary>
-        ///Sorts Orders by selected column name and order
+        ///     Sorts Orders by selected column name and order
         /// </summary>
-        /// <param name="sender"></param> 
+        /// <param name="sender"></param>
         private void Sort(string selectedItem, bool orderby)
         {
             try
@@ -336,15 +326,15 @@ namespace SageMobileSales.UILogic.ViewModels
                 {
                     if (IsAscending)
                     {
-                        var sortedQuoteDetails = OrdersList.OrderBy(sortby => sortby.CustomerName).ToList();
+                        List<OrderDetails> sortedQuoteDetails =
+                            OrdersList.OrderBy(sortby => sortby.CustomerName).ToList();
                         OrdersList = sortedQuoteDetails;
-
                     }
                     else
                     {
-                        var sortedQuoteDetails = OrdersList.OrderByDescending(sortby => sortby.CustomerName).ToList();
+                        List<OrderDetails> sortedQuoteDetails =
+                            OrdersList.OrderByDescending(sortby => sortby.CustomerName).ToList();
                         OrdersList = sortedQuoteDetails;
-
                     }
                     _selectedItem = selectedItem;
                     SelectedColumn = false;
@@ -353,12 +343,13 @@ namespace SageMobileSales.UILogic.ViewModels
                 {
                     if (IsAscending)
                     {
-                        var sortedQuoteDetails = OrdersList.OrderBy(sortby => sortby.CreatedOn).ToList();
+                        List<OrderDetails> sortedQuoteDetails = OrdersList.OrderBy(sortby => sortby.CreatedOn).ToList();
                         OrdersList = sortedQuoteDetails;
                     }
                     else
                     {
-                        var sortedQuoteDetails = OrdersList.OrderByDescending(sortby => sortby.CreatedOn).ToList();
+                        List<OrderDetails> sortedQuoteDetails =
+                            OrdersList.OrderByDescending(sortby => sortby.CreatedOn).ToList();
                         OrdersList = sortedQuoteDetails;
                     }
                     _selectedItem = selectedItem;
@@ -368,12 +359,14 @@ namespace SageMobileSales.UILogic.ViewModels
                 {
                     if (IsAscending)
                     {
-                        var sortedQuoteDetails = OrdersList.OrderBy(sortby => sortby.OrderStatus).ToList();
+                        List<OrderDetails> sortedQuoteDetails =
+                            OrdersList.OrderBy(sortby => sortby.OrderStatus).ToList();
                         OrdersList = sortedQuoteDetails;
                     }
                     else
                     {
-                        var sortedQuoteDetails = OrdersList.OrderByDescending(sortby => sortby.OrderStatus).ToList();
+                        List<OrderDetails> sortedQuoteDetails =
+                            OrdersList.OrderByDescending(sortby => sortby.OrderStatus).ToList();
                         OrdersList = sortedQuoteDetails;
                     }
                     _selectedItem = selectedItem;
@@ -383,12 +376,13 @@ namespace SageMobileSales.UILogic.ViewModels
                 {
                     if (IsAscending)
                     {
-                        var sortedQuoteDetails = OrdersList.OrderBy(sortby => sortby.Amount).ToList();
+                        List<OrderDetails> sortedQuoteDetails = OrdersList.OrderBy(sortby => sortby.Amount).ToList();
                         OrdersList = sortedQuoteDetails;
                     }
                     else
                     {
-                        var sortedQuoteDetails = OrdersList.OrderByDescending(sortby => sortby.Amount).ToList();
+                        List<OrderDetails> sortedQuoteDetails =
+                            OrdersList.OrderByDescending(sortby => sortby.Amount).ToList();
                         OrdersList = sortedQuoteDetails;
                         SelectedColumn = false;
                     }
@@ -398,12 +392,13 @@ namespace SageMobileSales.UILogic.ViewModels
                 {
                     if (IsAscending)
                     {
-                        var sortedQuoteDetails = OrdersList.OrderBy(sortby => sortby.RepName).ToList();
+                        List<OrderDetails> sortedQuoteDetails = OrdersList.OrderBy(sortby => sortby.RepName).ToList();
                         OrdersList = sortedQuoteDetails;
                     }
                     else
                     {
-                        var sortedQuoteDetails = OrdersList.OrderByDescending(sortby => sortby.RepName).ToList();
+                        List<OrderDetails> sortedQuoteDetails =
+                            OrdersList.OrderByDescending(sortby => sortby.RepName).ToList();
                         OrdersList = sortedQuoteDetails;
                     }
                     _selectedItem = selectedItem;
@@ -413,12 +408,14 @@ namespace SageMobileSales.UILogic.ViewModels
                 {
                     if (IsAscending)
                     {
-                        var sortedQuoteDetails = OrdersList.OrderBy(sortby => sortby.ExternalReferenceNumber).ToList();
+                        List<OrderDetails> sortedQuoteDetails =
+                            OrdersList.OrderBy(sortby => sortby.ExternalReferenceNumber).ToList();
                         OrdersList = sortedQuoteDetails;
                     }
                     else
                     {
-                        var sortedQuoteDetails = OrdersList.OrderByDescending(sortby => sortby.ExternalReferenceNumber).ToList();
+                        List<OrderDetails> sortedQuoteDetails =
+                            OrdersList.OrderByDescending(sortby => sortby.ExternalReferenceNumber).ToList();
                         OrdersList = sortedQuoteDetails;
                     }
                     _selectedItem = selectedItem;
@@ -430,13 +427,12 @@ namespace SageMobileSales.UILogic.ViewModels
                 _log = AppEventSource.Log.WriteLine(ex);
                 AppEventSource.Log.Error(_log);
             }
-
         }
 
         /// <summary>
-        ///Sorts Orders by Ascending
+        ///     Sorts Orders by Ascending
         /// </summary>
-        /// <param name="sender"></param> 
+        /// <param name="sender"></param>
         public void SortByAscending(object sender)
         {
             _sortByAscending = sender as ToggleMenuFlyoutItem;
@@ -447,9 +443,9 @@ namespace SageMobileSales.UILogic.ViewModels
         }
 
         /// <summary>
-        ///Sorts Orders by Descending
+        ///     Sorts Orders by Descending
         /// </summary>
-        /// <param name="sender"></param> 
+        /// <param name="sender"></param>
         public void SortByDescending(object sender)
         {
             _sortByDescending = sender as ToggleMenuFlyoutItem;

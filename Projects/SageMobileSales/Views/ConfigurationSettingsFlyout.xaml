@@ -12,12 +12,12 @@
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     prism:ViewModelLocator.AutoWireViewModel="true"
-  
+
     Title="Settings"
     d:DesignWidth="346">
 
     <!-- This StackPanel acts as a root panel for vertical layout of the content sections -->
-    <StackPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch" >
+    <StackPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
 
         <!-- The StackPanel(s) below define individual content sections -->
 
@@ -25,21 +25,23 @@
         <StackPanel Style="{StaticResource SettingsFlyoutSectionStyle}">
 
             <!-- Section 1 header -->
-            <TextBlock x:Uid="server" Style="{StaticResource FormTitleStyle}"  Text="Server" />
+            <TextBlock x:Uid="server" Style="{StaticResource FormTitleStyle}" Text="Server" />
 
             <!-- Section 1 body -->
 
-            <ComboBox x:Name="servers" Width="265" ItemsSource="{Binding Servers}" SelectedItem="{Binding SelectedType, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}">
+            <ComboBox x:Name="servers" Width="265" ItemsSource="{Binding Servers}"
+                      SelectedItem="{Binding SelectedType, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel>
-                            <TextBlock Text="{Binding}"  Margin="5,0,0,0" Padding="3" Foreground="Black"/>
+                            <TextBlock Text="{Binding}" Margin="5,0,0,0" Padding="3" Foreground="Black" />
                         </StackPanel>
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
                 <interactivity:Interaction.Behaviors>
                     <core:EventTriggerBehavior EventName="SelectionChanged">
-                        <core:InvokeCommandAction Command="{Binding SelectionChangedCommand}" CommandParameter="{Binding ElementName=servers}"/>
+                        <core:InvokeCommandAction Command="{Binding SelectionChangedCommand}"
+                                                  CommandParameter="{Binding ElementName=servers}" />
                     </core:EventTriggerBehavior>
                 </interactivity:Interaction.Behaviors>
             </ComboBox>

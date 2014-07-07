@@ -1,13 +1,13 @@
-﻿using Newtonsoft.Json;
-using Sage.Authorisation.WinRT.Exceptions;
-using Sage.Authorisation.WinRT.Storage;
-using System;
+﻿using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Xml;
 using Windows.ApplicationModel.Resources;
 using Windows.Security.Authentication.Web;
+using Newtonsoft.Json;
+using Sage.Authorisation.WinRT.Exceptions;
+using Sage.Authorisation.WinRT.Storage;
 
 namespace Sage.Authorisation.WinRT
 {
@@ -18,7 +18,7 @@ namespace Sage.Authorisation.WinRT
         private readonly Logger _log;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="HttpHelper" /> class.
+        ///     Initializes a new instance of the <see cref="HttpHelper" /> class.
         /// </summary>
         /// <param name="logger">The logger.</param>
         /// <param name="configuration">The configuration.</param>
@@ -30,15 +30,21 @@ namespace Sage.Authorisation.WinRT
         }
 
         /// <summary>
-        /// Authenticates the using WebAutheticationBroker.
+        ///     Authenticates the using WebAutheticationBroker.
         /// </summary>
         /// <param name="startUri">The start URI.</param>
         /// <param name="endUri">The end URI.</param>
         /// <returns>
-        /// The final URI from the authentication broker with the query string
+        ///     The final URI from the authentication broker with the query string
         /// </returns>
-        /// <exception cref="CommunicationException">Throws a CommunicationException if SageId returns a HTTP code other than 200 during the authorisation process</exception>
-        /// <exception cref="AuthorisationException">Throws an AuthorisationException if the user closes the web authentication broker</exception>
+        /// <exception cref="CommunicationException">
+        ///     Throws a CommunicationException if SageId returns a HTTP code other than 200
+        ///     during the authorisation process
+        /// </exception>
+        /// <exception cref="AuthorisationException">
+        ///     Throws an AuthorisationException if the user closes the web authentication
+        ///     broker
+        /// </exception>
         internal async Task<Uri> AuthenticateUsingBrokerAsync(Uri startUri, Uri endUri)
         {
             _log.Info(LogEventType.AuthenticateUsingBroker, _loader.GetString("LogAuthenticateUsingBroker"));
@@ -54,29 +60,33 @@ namespace Sage.Authorisation.WinRT
             {
                 return new Uri(auth.ResponseData);
             }
-            else if (auth.ResponseStatus == WebAuthenticationStatus.ErrorHttp)
+            if (auth.ResponseStatus == WebAuthenticationStatus.ErrorHttp)
             {
                 // throw authentication failed exception
                 throw new CommunicationException(_loader.GetString("ExceptionHttpErrorInAuthenticationBroker"));
             }
-            else
-            {
-                // throw user cancelled exception
-                throw new AuthorisationException(_loader.GetString("ExceptionUserClosedAuthenticationBroker"));
-            }
+            // throw user cancelled exception
+            throw new AuthorisationException(_loader.GetString("ExceptionUserClosedAuthenticationBroker"));
         }
 
         /// <summary>
-        /// Gets the client credential from Sage ID.
+        ///     Gets the client credential from Sage ID.
         /// </summary>
         /// <param name="accessCode">The access code.</param>
         /// <param name="password">The password.</param>
         /// <param name="deviceName">Name of the device.</param>
         /// <param name="state">The state.</param>
         /// <returns>CertificateMetadata containing the expiry and freidnly name of the certificate</returns>
-        /// <exception cref="CommunicationException">Throws a CommunicationException if SageID returns a HTTP BadRequest status with error details</exception>
-        /// <exception cref="ExpectedOKException">Throws ExpectedOKException if SageID doesn't return any HTTP status other thab BadRequest or Success when retreiving the certificate</exception>
-        internal async Task<CertificateMetadata> GetClientCredentialAsync(string accessCode, string password, string deviceName, string state)
+        /// <exception cref="CommunicationException">
+        ///     Throws a CommunicationException if SageID returns a HTTP BadRequest status
+        ///     with error details
+        /// </exception>
+        /// <exception cref="ExpectedOKException">
+        ///     Throws ExpectedOKException if SageID doesn't return any HTTP status other thab
+        ///     BadRequest or Success when retreiving the certificate
+        /// </exception>
+        internal async Task<CertificateMetadata> GetClientCredentialAsync(string accessCode, string password,
+            string deviceName, string state)
         {
             _log.Info(LogEventType.HttpGetClientCredential, _loader.GetString("LogHttpGetClientCredential"));
 
@@ -87,24 +97,24 @@ namespace Sage.Authorisation.WinRT
 
                 string xmlDateTimeUtc = XmlConvert.ToString(DateTime.UtcNow, "yyyy-MM-ddTHH:mm:ss.fffffffK");
 
-                Uri requestUri = new Uri(_configuration.GetClientCredentialUri, UriKind.Absolute);
+                var requestUri = new Uri(_configuration.GetClientCredentialUri, UriKind.Absolute);
 
                 string postData = String.Format(_configuration.GetClientCredentialPostDataFormatter
-                        , Uri.EscapeDataString(accessCode)
-                        , Uri.EscapeDataString(Configuration.ClientCredentialFormat)
-                        , Uri.EscapeDataString(password) // password 
-                        , Uri.EscapeDataString(deviceName) // device name
-                        , Uri.EscapeDataString(xmlDateTimeUtc)); // current client UTC time
+                    , Uri.EscapeDataString(accessCode)
+                    , Uri.EscapeDataString(Configuration.ClientCredentialFormat)
+                    , Uri.EscapeDataString(password) // password 
+                    , Uri.EscapeDataString(deviceName) // device name
+                    , Uri.EscapeDataString(xmlDateTimeUtc)); // current client UTC time
 
-                var result = await client.PostAsync(requestUri, new StringContent(postData));
+                HttpResponseMessage result = await client.PostAsync(requestUri, new StringContent(postData));
 
                 _log.Info(LogEventType.HttpGetClientCredential, _loader.GetString("LogHttpGetClientCredentialComplete"));
 
                 if (result.StatusCode == HttpStatusCode.OK)
                 {
-                    var responseString = await result.Content.ReadAsStringAsync();
+                    string responseString = await result.Content.ReadAsStringAsync();
 
-                    CertificateMetadata certData = ParseJsonString<CertificateMetadata>(responseString);
+                    var certData = ParseJsonString<CertificateMetadata>(responseString);
 
                     return certData;
                 }
@@ -121,7 +131,8 @@ namespace Sage.Authorisation.WinRT
             }
             catch (WebException wex)
             {
-                throw new CommunicationException(String.Format(_loader.GetString("ExceptionShieldedWebException"), "GetClientCredential"), state, wex);
+                throw new CommunicationException(
+                    String.Format(_loader.GetString("ExceptionShieldedWebException"), "GetClientCredential"), state, wex);
             }
             finally
             {
@@ -133,7 +144,7 @@ namespace Sage.Authorisation.WinRT
         }
 
         /// <summary>
-        /// Exchanges an access code for refresh and access tokens
+        ///     Exchanges an access code for refresh and access tokens
         /// </summary>
         /// <param name="accessCode">The access code.</param>
         /// <param name="state">The state.</param>
@@ -154,7 +165,7 @@ namespace Sage.Authorisation.WinRT
 
                 client = new HttpClient(handler);
 
-                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, _configuration.GetAccessTokenUri);
+                var request = new HttpRequestMessage(HttpMethod.Post, _configuration.GetAccessTokenUri);
 
                 string postData = String.Format(_configuration.GetAccessTokenPostDataFormatter
                     , Uri.EscapeDataString(Configuration.GetTokensGrantType)
@@ -163,16 +174,16 @@ namespace Sage.Authorisation.WinRT
 
                 request.Content = new StringContent(postData);
 
-                var result = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+                HttpResponseMessage result = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
 
                 _log.Info(LogEventType.HttpGetTokensComplete, _loader.GetString("LogHttpGetTokensComplete"));
 
-                var responseString = await result.Content.ReadAsStringAsync();
+                string responseString = await result.Content.ReadAsStringAsync();
 
                 if (result.StatusCode == HttpStatusCode.BadRequest)
                 {
                     // throw exception containing details from response
-                    ErrorResponse error = ParseJsonString<ErrorResponse>(responseString);
+                    var error = ParseJsonString<ErrorResponse>(responseString);
                     error.Throw(state);
                 }
 
@@ -183,11 +194,11 @@ namespace Sage.Authorisation.WinRT
                 }
 
                 throw new ExpectedOKException(result.StatusCode, state);
-
             }
             catch (WebException wex)
             {
-                throw new CommunicationException(String.Format(_loader.GetString("ExceptionShieldedWebException"), "GetAccessToken"), state, wex);
+                throw new CommunicationException(
+                    String.Format(_loader.GetString("ExceptionShieldedWebException"), "GetAccessToken"), state, wex);
             }
             finally
             {
@@ -203,11 +214,14 @@ namespace Sage.Authorisation.WinRT
         }
 
         /// <summary>
-        /// Refreshes the access token.
+        ///     Refreshes the access token.
         /// </summary>
         /// <param name="refreshToken">The refresh token.</param>
         /// <param name="state">The state.</param>
-        /// <returns>A TokenResponse containing an access token and refresh token based on the scope contained in the provided RefreshToken</returns>
+        /// <returns>
+        ///     A TokenResponse containing an access token and refresh token based on the scope contained in the provided
+        ///     RefreshToken
+        /// </returns>
         internal async Task<TokenResponse> RefreshAccessTokenAsync(RefreshToken refreshToken, string state)
         {
             _log.Info(LogEventType.HttpGetTokens, _loader.GetString("LogHttpGetTokens"));
@@ -222,7 +236,7 @@ namespace Sage.Authorisation.WinRT
 
                 client = new HttpClient(handler);
 
-                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, _configuration.GetAccessTokenUri);
+                var request = new HttpRequestMessage(HttpMethod.Post, _configuration.GetAccessTokenUri);
 
                 string postData = String.Format(_configuration.RefreshAccessTokenPostDataFormatter
                     , Uri.EscapeDataString(Configuration.RefreshAccessTokenPostGrantType)
@@ -231,16 +245,16 @@ namespace Sage.Authorisation.WinRT
 
                 request.Content = new StringContent(postData);
 
-                var result = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+                HttpResponseMessage result = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
 
                 _log.Info(LogEventType.HttpGetTokensComplete, _loader.GetString("LogHttpGetTokensComplete"));
 
-                var responseString = await result.Content.ReadAsStringAsync();
+                string responseString = await result.Content.ReadAsStringAsync();
 
                 if (result.StatusCode == HttpStatusCode.BadRequest)
                 {
                     // throw exception containing details from response
-                    ErrorResponse error = ParseJsonString<ErrorResponse>(responseString);
+                    var error = ParseJsonString<ErrorResponse>(responseString);
                     error.Throw(state);
                 }
 
@@ -254,7 +268,8 @@ namespace Sage.Authorisation.WinRT
             }
             catch (WebException wex)
             {
-                throw new CommunicationException(String.Format(_loader.GetString("ExceptionShieldedWebException"), "RefreshAccessToken"), state, wex);
+                throw new CommunicationException(
+                    String.Format(_loader.GetString("ExceptionShieldedWebException"), "RefreshAccessToken"), state, wex);
             }
             finally
             {
@@ -270,8 +285,9 @@ namespace Sage.Authorisation.WinRT
         }
 
         /// <summary>
-        /// Checks to see if we already have a valid cert and if we do, starts an authorisation. 
-        /// If we don't have a cert this method simpyly returns the start URI to be used directly by the WebAuthenticationBroker
+        ///     Checks to see if we already have a valid cert and if we do, starts an authorisation.
+        ///     If we don't have a cert this method simpyly returns the start URI to be used directly by the
+        ///     WebAuthenticationBroker
         /// </summary>
         /// <param name="startInfo">The start info.</param>
         /// <param name="hasCert">Use <c>true</c> if there is a valid client credential.</param>
@@ -301,7 +317,7 @@ namespace Sage.Authorisation.WinRT
         }
 
         /// <summary>
-        /// Parses a json string and return an instance of T.
+        ///     Parses a json string and return an instance of T.
         /// </summary>
         /// <typeparam name="T">The expected type described by the JSON string</typeparam>
         /// <param name="jsonString">The json String.</param>
@@ -314,12 +330,12 @@ namespace Sage.Authorisation.WinRT
             settings.DateParseHandling = DateParseHandling.DateTime;
             settings.MissingMemberHandling = MissingMemberHandling.Ignore;
 
-            T result = JsonConvert.DeserializeObject<T>(jsonString, settings);
+            var result = JsonConvert.DeserializeObject<T>(jsonString, settings);
             return result;
         }
 
         /// <summary>
-        /// Makes the actually HTTP request to SageID to start the authenticated attempt (when a credential is present)
+        ///     Makes the actually HTTP request to SageID to start the authenticated attempt (when a credential is present)
         /// </summary>
         /// <param name="uri">The URI.</param>
         /// <param name="startInfo">The start info.</param>
@@ -342,9 +358,9 @@ namespace Sage.Authorisation.WinRT
                 client = new HttpClient(handler);
                 request = new HttpRequestMessage(HttpMethod.Get, uri);
 
-                var result = await client.SendAsync(request);
+                HttpResponseMessage result = await client.SendAsync(request);
 
-                if (result.StatusCode != System.Net.HttpStatusCode.Found)
+                if (result.StatusCode != HttpStatusCode.Found)
                 {
                     throw new ExpectedFoundException(result.StatusCode, startInfo.State);
                 }
@@ -358,7 +374,9 @@ namespace Sage.Authorisation.WinRT
             }
             catch (WebException wex)
             {
-                throw new CommunicationException(String.Format(_loader.GetString("ExceptionShieldedWebException"), "StartAuthorisationAttempt"), startInfo.State, wex);
+                throw new CommunicationException(
+                    String.Format(_loader.GetString("ExceptionShieldedWebException"), "StartAuthorisationAttempt"),
+                    startInfo.State, wex);
             }
             finally
             {

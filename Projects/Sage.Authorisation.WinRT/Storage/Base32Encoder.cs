@@ -1,30 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 using Windows.Security.Cryptography;
 using Windows.Storage.Streams;
 
 namespace Sage.Authorisation.WinRT.Storage
 {
     /// <summary>
-    /// Base32 encoder is for generating encoding random data in a safe way to use as filenames. Base32 encoding isn't available by default in WinRT.
-    /// This is taken from a SSG project (I think, ask Darrell)
+    ///     Base32 encoder is for generating encoding random data in a safe way to use as filenames. Base32 encoding isn't
+    ///     available by default in WinRT.
+    ///     This is taken from a SSG project (I think, ask Darrell)
     /// </summary>
     internal class Base32Encoder
     {
         // Base 32 encoding constants
         private const int IN_BYTE_SIZE = 8;
         private const int OUT_BYTE_SIZE = 5;
-        private static char[] alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567".ToCharArray();
+        private static readonly char[] alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567".ToCharArray();
 
         /// <summary>
-        /// Encode to base 32 according to RFC3548
+        ///     Encode to base 32 according to RFC3548
         /// </summary>
         /// <param name="buffer">buffer to encode</param>
         /// <returns>
-        /// The buffer encoded as a string
+        ///     The buffer encoded as a string
         /// </returns>
         internal static string Base32Encode(IBuffer buffer)
         {
@@ -38,7 +35,7 @@ namespace Sage.Authorisation.WinRT.Storage
             int current_byte;
             int next_byte;
 
-            StringBuilder result = new StringBuilder();
+            var result = new StringBuilder();
 
             while (i < data.Length)
             {
@@ -54,7 +51,7 @@ namespace Sage.Authorisation.WinRT.Storage
                         next_byte = 0;
 
                     digit = current_byte & (0xFF >> index);
-                    index = (index + OUT_BYTE_SIZE) % IN_BYTE_SIZE;
+                    index = (index + OUT_BYTE_SIZE)%IN_BYTE_SIZE;
                     digit <<= index;
                     digit |= next_byte >> (IN_BYTE_SIZE - index);
                     i++;
@@ -62,7 +59,7 @@ namespace Sage.Authorisation.WinRT.Storage
                 else
                 {
                     digit = (current_byte >> (IN_BYTE_SIZE - (index + OUT_BYTE_SIZE))) & 0x1F;
-                    index = (index + OUT_BYTE_SIZE) % IN_BYTE_SIZE;
+                    index = (index + OUT_BYTE_SIZE)%IN_BYTE_SIZE;
                     if (index == 0)
                         i++;
                 }

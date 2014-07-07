@@ -8,7 +8,7 @@
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400">
-    
+
     <Grid>
         <Grid.Resources>
             <Storyboard x:Name="ImageFadeOut">
@@ -23,7 +23,6 @@
                Source="{Binding ElementName=ImageplaceHolderUserControl, Path=Placeholder}"
                Height="{Binding ElementName=ImageplaceHolderUserControl, Path=ActualHeight}"
                Width="{Binding ElementName=ImageplaceHolderUserControl, Path=ActualWidth}"
-               Stretch="Fill"
-               />
+               Stretch="Fill" />
     </Grid>
 </UserControl>

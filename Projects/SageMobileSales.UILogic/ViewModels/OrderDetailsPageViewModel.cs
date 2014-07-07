@@ -1,4 +1,9 @@
-﻿using Microsoft.Practices.Prism.StoreApps;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Windows.ApplicationModel.DataTransfer;
+using Windows.UI.Xaml.Navigation;
+using Microsoft.Practices.Prism.StoreApps;
 using Microsoft.Practices.Prism.StoreApps.Interfaces;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Entities;
@@ -6,50 +11,52 @@ using SageMobileSales.DataAccess.Model;
 using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
 using SageMobileSales.ServiceAgents.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.ApplicationModel.DataTransfer;
-using Windows.Foundation;
 
 namespace SageMobileSales.UILogic.ViewModels
 {
     public class OrderDetailsPageViewModel : ViewModel
     {
-        private IOrderLineItemService _orderLineItemService;
-        private INavigationService _navigationService;
-        private ICustomerRepository _customerRepository;
-        private IOrderLineItemRepository _orderLineItemRepository;
-        private IAddressRepository _addressRepostiory;
-        private OrderDetails _orderDtls;
+        private readonly IAddressRepository _addressRepostiory;
+        private readonly ICustomerRepository _customerRepository;
+        private readonly INavigationService _navigationService;
+        private readonly IOrderLineItemRepository _orderLineItemRepository;
+        private readonly IOrderLineItemService _orderLineItemService;
+        private readonly ITenantRepository _tenantRepository;
+        private readonly ITenantService _tenantService;
 
         private CustomerDetails _customerDtls;
-        private List<LineItemDetails> _orderLineItemsList;
+        private bool _inProgress;
+        private string _log = string.Empty;
         private string _orderDetailsPageTitle;
+        private OrderDetails _orderDtls;
+        private List<LineItemDetails> _orderLineItemsList;
         private ShippingAddressDetails _shippingAddress;
 
-        private bool _inProgress;
-        private DataTransferManager dataTransferManager;
-        private ITenantService _tenantService;
-        private ITenantRepository _tenantRepository;
         private Tenant _tenant;
-        private string _log = string.Empty;
+        private DataTransferManager dataTransferManager;
+
+        public OrderDetailsPageViewModel(INavigationService navigationService,
+            IOrderLineItemService orderLineItemService, ICustomerRepository customerRepository,
+            IOrderLineItemRepository orderLineItemRepository, IAddressRepository addressRepostiory,
+            ITenantService tenantService, ITenantRepository tenantRepository)
+        {
+            _navigationService = navigationService;
+            _orderLineItemService = orderLineItemService;
+            _customerRepository = customerRepository;
+            _orderLineItemRepository = orderLineItemRepository;
+            _addressRepostiory = addressRepostiory;
+            _tenantService = tenantService;
+            _tenantRepository = tenantRepository;
+            SendMailCommand = DelegateCommand.FromAsyncHandler(SendOrderDetailsMail);
+        }
 
 
         public DelegateCommand SendMailCommand { get; private set; }
 
         public ShippingAddressDetails ShippingAddress
         {
-            get
-            {
-                return _shippingAddress;
-            }
-            private set
-            {
-                SetProperty(ref _shippingAddress, value);
-            }
+            get { return _shippingAddress; }
+            private set { SetProperty(ref _shippingAddress, value); }
         }
 
         public decimal SubTotal
@@ -69,47 +76,26 @@ namespace SageMobileSales.UILogic.ViewModels
 
         public string OrderDetailsPageTitle
         {
-            get
-            {
-                return _orderDetailsPageTitle;
-            }
-            private set
-            {
-                SetProperty(ref _orderDetailsPageTitle, value);
-            }
+            get { return _orderDetailsPageTitle; }
+            private set { SetProperty(ref _orderDetailsPageTitle, value); }
         }
+
         public CustomerDetails CustomerDtls
         {
-            get
-            {
-                return _customerDtls;
-            }
-            private set
-            {
-                SetProperty(ref _customerDtls, value);
-            }
+            get { return _customerDtls; }
+            private set { SetProperty(ref _customerDtls, value); }
         }
+
         public OrderDetails OrderDtls
         {
-            get
-            {
-                return _orderDtls;
-            }
-            private set
-            {
-                SetProperty(ref _orderDtls, value);
-            }
+            get { return _orderDtls; }
+            private set { SetProperty(ref _orderDtls, value); }
         }
+
         public List<LineItemDetails> OrderLineItemsList
         {
-            get
-            {
-                return _orderLineItemsList;
-            }
-            private set
-            {
-                SetProperty(ref _orderLineItemsList, value);
-            }
+            get { return _orderLineItemsList; }
+            private set { SetProperty(ref _orderLineItemsList, value); }
         }
 
         /// Data loading indicator
@@ -120,43 +106,30 @@ namespace SageMobileSales.UILogic.ViewModels
             private set { SetProperty(ref _inProgress, value); }
         }
 
-        public OrderDetailsPageViewModel(INavigationService navigationService, IOrderLineItemService orderLineItemService, ICustomerRepository customerRepository, IOrderLineItemRepository orderLineItemRepository, IAddressRepository addressRepostiory, ITenantService tenantService, ITenantRepository tenantRepository)
-        {
-            _navigationService = navigationService;
-            _orderLineItemService = orderLineItemService;
-            _customerRepository = customerRepository;
-            _orderLineItemRepository = orderLineItemRepository;
-            _addressRepostiory = addressRepostiory;
-            _tenantService = tenantService;
-            _tenantRepository = tenantRepository;
-            SendMailCommand = DelegateCommand.FromAsyncHandler(SendOrderDetailsMail);
-
-        }
-
-        public override void OnNavigatedTo(object navigationParameter, Windows.UI.Xaml.Navigation.NavigationMode navigationMode, Dictionary<string, object> viewModelState)
+        public override void OnNavigatedTo(object navigationParameter, NavigationMode navigationMode,
+            Dictionary<string, object> viewModelState)
         {
             try
             {
                 OrderDtls = navigationParameter as OrderDetails;
                 DisplayOrderDtls();
                 base.OnNavigatedTo(navigationParameter, navigationMode, viewModelState);
-                this.dataTransferManager = DataTransferManager.GetForCurrentView();
-                this.dataTransferManager.DataRequested += new TypedEventHandler<DataTransferManager, DataRequestedEventArgs>(this.OnDataRequested);
+                dataTransferManager = DataTransferManager.GetForCurrentView();
+                dataTransferManager.DataRequested += OnDataRequested;
             }
             catch (Exception ex)
             {
                 _log = AppEventSource.Log.WriteLine(ex);
                 AppEventSource.Log.Error(_log);
             }
-
         }
 
         public override void OnNavigatedFrom(Dictionary<string, object> viewModelState, bool suspending)
         {
-            if (this.dataTransferManager != null)
+            if (dataTransferManager != null)
             {
                 // Unregister the current page as a share source.
-                this.dataTransferManager.DataRequested -= new TypedEventHandler<DataTransferManager, DataRequestedEventArgs>(this.OnDataRequested);
+                dataTransferManager.DataRequested -= OnDataRequested;
             }
             base.OnNavigatedFrom(viewModelState, suspending);
         }
@@ -187,9 +160,8 @@ namespace SageMobileSales.UILogic.ViewModels
             {
                 foreach (LineItemDetails orderlineItem in OrderLineItemsList)
                 {
-                    SubTotal += Math.Round((orderlineItem.LineItemPrice * orderlineItem.LineItemQuantity), 2);
+                    SubTotal += Math.Round((orderlineItem.LineItemPrice*orderlineItem.LineItemQuantity), 2);
                 }
-
             }
             return SubTotal;
         }
@@ -202,18 +174,15 @@ namespace SageMobileSales.UILogic.ViewModels
                 if (OrderDtls.DiscountPercent != 0 && SubTotal != 0)
                 {
                     // discountPercentage = Math.Round(((1 - ((SubTotal - DiscountPercentageValue) / SubTotal)) * 100), 2);
-                    discountPercentage = Math.Round(((OrderDtls.DiscountPercent / 100) * SubTotal), 2);
+                    discountPercentage = Math.Round(((OrderDtls.DiscountPercent/100)*SubTotal), 2);
                 }
             }
             return discountPercentage;
-
         }
-
 
 
         private void OnDataRequested(DataTransferManager mgr, DataRequestedEventArgs args)
         {
-
             if (GetShareContent(args.Request))
             {
                 if (String.IsNullOrEmpty(args.Request.Data.Properties.Title))
@@ -228,10 +197,9 @@ namespace SageMobileSales.UILogic.ViewModels
             bool succeeded = false;
             try
             {
-
-
-                MailViewModel objMail = new MailViewModel();
-                string HtmlContentString = objMail.BuildOrderEmailContent(_tenant, CustomerDtls, OrderDtls, OrderLineItemsList, SubTotal.ToString(), OrderDtls.Amount.ToString());
+                var objMail = new MailViewModel();
+                string HtmlContentString = objMail.BuildOrderEmailContent(_tenant, CustomerDtls, OrderDtls,
+                    OrderLineItemsList, SubTotal.ToString(), OrderDtls.Amount.ToString());
                 if (!String.IsNullOrEmpty(HtmlContentString))
                 {
                     DataPackage requestData = request.Data;
@@ -252,8 +220,8 @@ namespace SageMobileSales.UILogic.ViewModels
             }
 
             return succeeded;
-
         }
+
         private async Task SendOrderDetailsMail()
         {
             try

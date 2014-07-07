@@ -15,32 +15,32 @@
     <Grid>
         <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
             <!--<AppBarButton x:Name="appButtonContinue"  Label="Customers" Content="&#x1f465;" FontFamily="Segoe UI Symbol" FontSize="28" Margin="0,0,0,0"/>-->
-            <AppBarButton x:Name="appButtonCustomers"  Label="Customers">
+            <AppBarButton x:Name="appButtonCustomers" Label="Customers">
                 <AppBarButton.Content>
-                    <Image Source="/Assets/appBar_Customers.png" Height="25"/>
+                    <Image Source="/Assets/appBar_Customers.png" Height="25" />
                 </AppBarButton.Content>
                 <interactivity:Interaction.Behaviors>
                     <core:EventTriggerBehavior EventName="Click">
                         <core:CallMethodAction MethodName="CustomersButton_Click"
-                TargetObject="{Binding Mode=OneWay}" />
+                                               TargetObject="{Binding Mode=OneWay}" />
                     </core:EventTriggerBehavior>
                 </interactivity:Interaction.Behaviors>
             </AppBarButton>
             <AppBarButton x:Name="appButtonCatalog" Label="Catalog">
                 <AppBarButton.Content>
-                    <Image Source="/Assets/appBar_Catalog.png" Height="25"/>
+                    <Image Source="/Assets/appBar_Catalog.png" Height="25" />
                 </AppBarButton.Content>
                 <interactivity:Interaction.Behaviors>
                     <core:EventTriggerBehavior EventName="Click">
                         <core:CallMethodAction MethodName="CatalogButton_Click"
-                TargetObject="{Binding Mode=OneWay}" />
+                                               TargetObject="{Binding Mode=OneWay}" />
                     </core:EventTriggerBehavior>
                 </interactivity:Interaction.Behaviors>
             </AppBarButton>
             <!--<AppBarButton x:Name="appButtonQuotes"  Label="Quotes" Content="&#x1f4b2;" FontFamily="Segoe UI Symbol" FontSize="26"/>-->
-            <AppBarButton x:Name="appButtonQuotes"  Label="Quotes">
+            <AppBarButton x:Name="appButtonQuotes" Label="Quotes">
                 <AppBarButton.Content>
-                    <Image Source="/Assets/appBar_Quotes.png" Height="25"/>
+                    <Image Source="/Assets/appBar_Quotes.png" Height="25" />
                 </AppBarButton.Content>
                 <!--<Interactivity:Interaction.Behaviors>
                     <Core:EventTriggerBehavior EventName="Click">
@@ -50,22 +50,22 @@
                 <interactivity:Interaction.Behaviors>
                     <core:EventTriggerBehavior EventName="Click">
                         <core:CallMethodAction MethodName="QuotesButton_Click"
-                TargetObject="{Binding Mode=OneWay}" />
+                                               TargetObject="{Binding Mode=OneWay}" />
                     </core:EventTriggerBehavior>
                 </interactivity:Interaction.Behaviors>
             </AppBarButton>
-            <AppBarButton x:Name="appButtonOrders"  Label="Orders">
+            <AppBarButton x:Name="appButtonOrders" Label="Orders">
                 <AppBarButton.Content>
-                    <Image Source="/Assets/appBar_Orders.png" Height="25"/>
+                    <Image Source="/Assets/appBar_Orders.png" Height="25" />
                 </AppBarButton.Content>
                 <interactivity:Interaction.Behaviors>
                     <core:EventTriggerBehavior EventName="Click">
                         <core:CallMethodAction MethodName="OrdersButton_Click"
-                TargetObject="{Binding Mode=OneWay}" />
+                                               TargetObject="{Binding Mode=OneWay}" />
                     </core:EventTriggerBehavior>
                 </interactivity:Interaction.Behaviors>
             </AppBarButton>
-            
+
         </StackPanel>
     </Grid>
 </UserControl>

@@ -1,20 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
 
 namespace Sage.Authorisation.WinRT.Storage
 {
     /// <summary>
-    /// Base class for tokens
+    ///     Base class for tokens
     /// </summary>
-    [KnownType(typeof(RefreshToken))]
+    [KnownType(typeof (RefreshToken))]
     [DataContract]
     internal class Token
     {
-        protected string _scope;
         protected DateTime _retrievedUtc = DateTime.UtcNow;
+        protected string _scope;
 
         [DataMember]
         public DateTime RetrievedUtc
@@ -22,7 +19,7 @@ namespace Sage.Authorisation.WinRT.Storage
             get { return _retrievedUtc; }
             set { _retrievedUtc = value; }
         }
-        
+
         [DataMember]
         public string Scope
         {

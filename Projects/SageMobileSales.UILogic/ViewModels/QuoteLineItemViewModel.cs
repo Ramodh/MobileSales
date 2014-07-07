@@ -1,28 +1,22 @@
-﻿using Microsoft.Practices.Prism.StoreApps;
-using SageMobileSales.DataAccess.Entities;
-using SageMobileSales.DataAccess.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Practices.Prism.StoreApps;
+using SageMobileSales.DataAccess.Model;
 
 namespace SageMobileSales.UILogic.ViewModels
 {
     [DataContract]
     public class QuoteLineItemViewModel : ViewModel
     {
-
-        private string _productId;
-        private string _productName;                
+        private readonly string _imageUri;
+        private readonly string _lineItemId;
+        private readonly decimal _lineItemPrice;
+        private readonly string _productName;
+        private readonly int _productQuantity;
+        private readonly string _productSku;
+        private readonly string _quoteId;
         private int _lineItemQuantity;
-        private decimal _lineItemPrice;        
-        private string _imageUri;
-        private int _productQuantity;
-        private string _productSku;
-        private string _lineItemId;
-        private string _quoteId;
+        private string _productId;
 
 
         public QuoteLineItemViewModel(LineItemDetails quoteLineItemDetails)
@@ -54,16 +48,13 @@ namespace SageMobileSales.UILogic.ViewModels
 
         public string ProductName
         {
-            get { return _productName!=null?_productName.Trim():string.Empty; }
+            get { return _productName != null ? _productName.Trim() : string.Empty; }
         }
 
         public string LineItemId
         {
-            get
-            {
-                return _lineItemId;
-            }            
-        }    
+            get { return _lineItemId; }
+        }
 
         public decimal LineItemPrice
         {
@@ -90,12 +81,16 @@ namespace SageMobileSales.UILogic.ViewModels
             get { return _imageUri; }
         }
 
-        public decimal Amount { get { return Math.Round(LineItemQuantity * _lineItemPrice, 2); } }
+        public decimal Amount
+        {
+            get { return Math.Round(LineItemQuantity*_lineItemPrice, 2); }
+        }
 
         public int ProductQuantity
         {
             get { return _productQuantity; }
         }
+
         public string ProductSku
         {
             get { return _productSku; }

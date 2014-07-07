@@ -2,7 +2,7 @@
 
 namespace SageMobileSales.DataAccess.Events
 {
-   public class ProductSyncChangedEvent : PubSubEvent<bool>
+    public class ProductSyncChangedEvent : PubSubEvent<bool>
     {
     }
 }

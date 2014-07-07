@@ -13,31 +13,31 @@ using Windows.Storage.Streams;
 namespace Sage.Authorisation.WinRT.Storage
 {
     /// <summary>
-    /// TokenStore handles retrieval and secure storage of RefreshTokens and AccessTokens
+    ///     TokenStore handles retrieval and secure storage of RefreshTokens and AccessTokens
     /// </summary>
     internal class TokenStore
     {
         #region Fields
 
-        const string RefreshTokenFileNameFormat = "{0}.rt";
-        const string RefreshTokenFolderName = "SIDRTS";
+        private const string RefreshTokenFileNameFormat = "{0}.rt";
+        private const string RefreshTokenFolderName = "SIDRTS";
 
         /// <summary>
-        /// Static dictionary of access tokens
+        ///     Static dictionary of access tokens
         /// </summary>
-        private static Dictionary<string, AccessToken> _accessTokens = new Dictionary<string, AccessToken>();
-        
+        private static readonly Dictionary<string, AccessToken> _accessTokens = new Dictionary<string, AccessToken>();
+
         private readonly string _clientId;
+
+        private readonly SymmetricEncryptor _encryptor = new SymmetricEncryptor();
+        private readonly HttpHelper _httpHelper;
+        private readonly ResourceLoader _loader = new ResourceLoader("Sage.Authorisation.WinRT/Resources");
         private readonly Logger _logger;
-        
-        private SymmetricEncryptor _encryptor = new SymmetricEncryptor();
-        private HttpHelper _httpHelper;
-        private ResourceLoader _loader = new ResourceLoader("Sage.Authorisation.WinRT/Resources");
-       
+
         #endregion
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TokenStore" /> class.
+        ///     Initializes a new instance of the <see cref="TokenStore" /> class.
         /// </summary>
         /// <param name="clientId">The client id.</param>
         /// <param name="logger">The logger.</param>
@@ -50,7 +50,7 @@ namespace Sage.Authorisation.WinRT.Storage
         }
 
         /// <summary>
-        /// Clear in memory cache of access tokens and clear secure storage
+        ///     Clear in memory cache of access tokens and clear secure storage
         /// </summary>
         internal async Task CleanupAsync()
         {
@@ -60,11 +60,12 @@ namespace Sage.Authorisation.WinRT.Storage
 
             await tokenFolder.DeleteAsync();
 
-            _logger.Info(LogEventType.ClearedSecureStorage, String.Format(_loader.GetString("LogClearStorage"), tokenFolder.Path));
+            _logger.Info(LogEventType.ClearedSecureStorage,
+                String.Format(_loader.GetString("LogClearStorage"), tokenFolder.Path));
         }
 
         /// <summary>
-        /// Clear an access token from the cache.
+        ///     Clear an access token from the cache.
         /// </summary>
         /// <param name="scope">The scope with which to search for a refresh token</param>
         internal void ClearAccessToken(string scope)
@@ -75,7 +76,7 @@ namespace Sage.Authorisation.WinRT.Storage
         }
 
         /// <summary>
-        /// Clear a refresh token for the specified scope and current client ID
+        ///     Clear a refresh token for the specified scope and current client ID
         /// </summary>
         /// <param name="scope">The scope with which to search for a refresh token</param>
         internal void ClearRefreshToken(string scope)
@@ -86,14 +87,15 @@ namespace Sage.Authorisation.WinRT.Storage
         }
 
         /// <summary>
-        /// Retrieves the access tokens from SageID and stores them securely.
+        ///     Retrieves the access tokens from SageID and stores them securely.
         /// </summary>
         /// <param name="code"></param>
         /// <param name="scope"></param>
         /// <param name="redirectUri"></param>
         /// <param name="state"></param>
         /// <returns>The access token for the requested scope</returns>
-        internal async Task<AccessToken> GetAndStoreTokensAsync(string code, string scope, string redirectUri, string state)
+        internal async Task<AccessToken> GetAndStoreTokensAsync(string code, string scope, string redirectUri,
+            string state)
         {
             #region Validation
 
@@ -112,7 +114,7 @@ namespace Sage.Authorisation.WinRT.Storage
             TokenResponse response = await _httpHelper.ExchangeAccessCodeAsync(code, redirectUri);
 
             // Store refresh token in encrypted store.
-            RefreshToken refreshToken = new RefreshToken()
+            var refreshToken = new RefreshToken
             {
                 Token = response.Refresh_Token,
                 RetrievedUtc = DateTime.UtcNow,
@@ -120,7 +122,7 @@ namespace Sage.Authorisation.WinRT.Storage
             };
 
             // Store the access token in memory
-            AccessToken accessToken = new AccessToken()
+            var accessToken = new AccessToken
             {
                 Token = response.Access_Token,
                 ExpiryUtc = DateTime.UtcNow.AddSeconds(response.Expires_In),
@@ -137,7 +139,7 @@ namespace Sage.Authorisation.WinRT.Storage
         }
 
         /// <summary>
-        /// Read a refresh token for the specified scope and current client ID
+        ///     Read a refresh token for the specified scope and current client ID
         /// </summary>
         /// <param name="scope">The scope with which to search for a refresh token</param>
         /// <returns>True if refresh token was found</returns>
@@ -145,13 +147,14 @@ namespace Sage.Authorisation.WinRT.Storage
         {
             string hashedScope = HashScope(scope);
 
-            RefreshToken token = await GetValueAsync<RefreshToken>(String.Format(RefreshTokenFileNameFormat, hashedScope));
+            RefreshToken token =
+                await GetValueAsync<RefreshToken>(String.Format(RefreshTokenFileNameFormat, hashedScope));
 
             return token;
         }
 
         /// <summary>
-        /// Gets a valid access token if one exists for the given scope
+        ///     Gets a valid access token if one exists for the given scope
         /// </summary>
         /// <param name="scope">The scope.</param>
         /// <returns>The access token or null</returns>
@@ -175,7 +178,7 @@ namespace Sage.Authorisation.WinRT.Storage
         }
 
         /// <summary>
-        /// Refreshes an access token, stores the returned tokens and returns the new access token
+        ///     Refreshes an access token, stores the returned tokens and returns the new access token
         /// </summary>
         /// <param name="currentAuthorisationInfo"></param>
         /// <returns></returns>
@@ -193,10 +196,11 @@ namespace Sage.Authorisation.WinRT.Storage
                 throw new InvalidOperationException(_loader.GetString("ExceptionTokenStoreHttpHelperNull"));
             }
 
-            TokenResponse response = await _httpHelper.RefreshAccessTokenAsync(refreshToken, currentAuthorisationInfo.State);
+            TokenResponse response =
+                await _httpHelper.RefreshAccessTokenAsync(refreshToken, currentAuthorisationInfo.State);
 
             // Store refresh token in encrypted store.
-            RefreshToken newRefreshToken = new RefreshToken()
+            var newRefreshToken = new RefreshToken
             {
                 Token = response.Refresh_Token,
                 RetrievedUtc = DateTime.UtcNow,
@@ -204,7 +208,7 @@ namespace Sage.Authorisation.WinRT.Storage
             };
 
             // Store the access token in memory
-            AccessToken accessToken = new AccessToken()
+            var accessToken = new AccessToken
             {
                 Token = response.Access_Token,
                 ExpiryUtc = DateTime.UtcNow.AddSeconds(response.Expires_In),
@@ -221,17 +225,20 @@ namespace Sage.Authorisation.WinRT.Storage
         }
 
         /// <summary>
-        /// Gets the refresh token folder from application local storage.
+        ///     Gets the refresh token folder from application local storage.
         /// </summary>
         /// <returns></returns>
         private static async Task<StorageFolder> GetRefreshTokenFolderAsync()
         {
-            StorageFolder tokenFolder = await ApplicationData.Current.LocalFolder.CreateFolderAsync(RefreshTokenFolderName, CreationCollisionOption.OpenIfExists);
+            StorageFolder tokenFolder =
+                await
+                    ApplicationData.Current.LocalFolder.CreateFolderAsync(RefreshTokenFolderName,
+                        CreationCollisionOption.OpenIfExists);
             return tokenFolder;
         }
 
         /// <summary>
-        /// Clears a value from the application data file storage.
+        ///     Clears a value from the application data file storage.
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
@@ -243,11 +250,11 @@ namespace Sage.Authorisation.WinRT.Storage
         }
 
         /// <summary>
-        /// Read a refresh token for the specified scope and current client ID
+        ///     Read a refresh token for the specified scope and current client ID
         /// </summary>
         /// <param name="scope">The scope with which to search for a refresh token</param>
         /// <returns>
-        /// True if valid AccessToken found
+        ///     True if valid AccessToken found
         /// </returns>
         private AccessToken GetAccessToken(string scope)
         {
@@ -263,7 +270,7 @@ namespace Sage.Authorisation.WinRT.Storage
         }
 
         /// <summary>
-        /// Gets the file identified by the key from local storage and deserializes it.
+        ///     Gets the file identified by the key from local storage and deserializes it.
         /// </summary>
         /// <typeparam name="T">The type to deserialize to</typeparam>
         /// <param name="key">The key.</param>
@@ -277,13 +284,14 @@ namespace Sage.Authorisation.WinRT.Storage
                 StorageFolder tokenFolder = await GetRefreshTokenFolderAsync();
                 StorageFile sessionFile = await tokenFolder.GetFileAsync(key);
 
-                var serializer = new DataContractSerializer(typeof(T));
+                var serializer = new DataContractSerializer(typeof (T));
 
                 IBuffer refreshTokenFileBuffer = await FileIO.ReadBufferAsync(sessionFile);
                 string refreshTokenDecrypted = await _encryptor.DecryptAsync(refreshTokenFileBuffer);
-                IBuffer binaryToken = CryptographicBuffer.ConvertStringToBinary(refreshTokenDecrypted, BinaryStringEncoding.Utf8);
+                IBuffer binaryToken = CryptographicBuffer.ConvertStringToBinary(refreshTokenDecrypted,
+                    BinaryStringEncoding.Utf8);
                 Stream objectStream = binaryToken.AsStream();
-                T token1 = (T)serializer.ReadObject(objectStream);
+                var token1 = (T) serializer.ReadObject(objectStream);
                 return token1;
             }
             catch (FileNotFoundException)
@@ -293,7 +301,7 @@ namespace Sage.Authorisation.WinRT.Storage
         }
 
         /// <summary>
-        /// Stores the token in local file storage using the key as the file name
+        ///     Stores the token in local file storage using the key as the file name
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="_data">The _data.</param>
@@ -305,20 +313,20 @@ namespace Sage.Authorisation.WinRT.Storage
             StorageFolder tokenFolder = await GetRefreshTokenFolderAsync();
             StorageFile sessionFile = await tokenFolder.CreateFileAsync(key, CreationCollisionOption.ReplaceExisting);
 
-            DataContractSerializer sessionSerializer = new DataContractSerializer(typeof(Token));
-            MemoryStream stream = new MemoryStream();
+            var sessionSerializer = new DataContractSerializer(typeof (Token));
+            var stream = new MemoryStream();
             sessionSerializer.WriteObject(stream, _data);
 
             // reset the stream back to the start so we can read it
             stream.Position = 0;
-            StreamReader sr = new StreamReader(stream);
+            var sr = new StreamReader(stream);
             string encrypted = await _encryptor.EncryptAsync(sr.ReadToEnd());
 
             await FileIO.WriteTextAsync(sessionFile, encrypted);
         }
 
         /// <summary>
-        /// Hashes the scope and encodes it in a safe encoding for file names.
+        ///     Hashes the scope and encodes it in a safe encoding for file names.
         /// </summary>
         /// <param name="scope">The scope.</param>
         /// <returns></returns>
@@ -333,7 +341,7 @@ namespace Sage.Authorisation.WinRT.Storage
         }
 
         /// <summary>
-        /// Store a refresh token against a scope for the current client ID
+        ///     Store a refresh token against a scope for the current client ID
         /// </summary>
         /// <param name="token">the refresh token instance</param>
         private void StoreAccessToken(AccessToken token)
@@ -344,7 +352,7 @@ namespace Sage.Authorisation.WinRT.Storage
         }
 
         /// <summary>
-        /// Store a refresh token against a scope for the current client ID
+        ///     Store a refresh token against a scope for the current client ID
         /// </summary>
         /// <param name="refreshToken">the refresh token instance</param>
         private async void StoreRefreshTokenAsync(RefreshToken refreshToken)

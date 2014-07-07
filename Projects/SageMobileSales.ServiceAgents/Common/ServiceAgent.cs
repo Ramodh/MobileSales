@@ -1,9 +1,4 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using SageMobileSales.DataAccess.Common;
-using SageMobileSales.DataAccess.Entities;
-using SageMobileSales.ServiceAgents.Services;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -11,35 +6,36 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using Windows.ApplicationModel.Resources;
 using Windows.Data.Json;
 using Windows.Storage;
-using Windows.UI.Popups;
+using Newtonsoft.Json;
+using SageMobileSales.DataAccess.Common;
+using SageMobileSales.ServiceAgents.Services;
 
 namespace SageMobileSales.ServiceAgents.Common
 {
     public class ServiceAgent : IServiceAgent
     {
-
         private readonly IOAuthService _oAuthService;
+
         # region Local Variables
-        private string _requestUrl;
+
         private string _log = string.Empty;
-         
+        private string _requestUrl;
 
         # endregion
 
         public ServiceAgent(IOAuthService oAuthService)
         {
-            var configSettings = ApplicationData.Current.LocalSettings;
+            ApplicationDataContainer configSettings = ApplicationData.Current.LocalSettings;
             _oAuthService = oAuthService;
-          //  _requestUrl = Constants.Url;
-     
+            //  _requestUrl = Constants.Url;
         }
 
         #region public methods
+
         /// <summary>
-        /// Prepare's Request(Get) based on the parameters passed and make a call to service
+        ///     Prepare's Request(Get) based on the parameters passed and make a call to service
         /// </summary>
         /// <param name="entity"></param>
         /// <param name="queryEntity"></param>
@@ -47,106 +43,103 @@ namespace SageMobileSales.ServiceAgents.Common
         /// <param name="accessToken"></param>
         /// <param name="parameters"></param>
         /// <returns>HttpResponse</returns>
-        public async Task<HttpResponseMessage> BuildAndSendRequest(string entity, string queryEntity, string associatedItems, string accessToken, Dictionary<string, string> parameters)
+        public async Task<HttpResponseMessage> BuildAndSendRequest(string entity, string queryEntity,
+            string associatedItems, string accessToken, Dictionary<string, string> parameters)
         {
-          
-                _requestUrl = Constants.Url;
-                try
+            _requestUrl = Constants.Url;
+            try
+            {
+                if (!Constants.IsDbDeleted)
                 {
-                    if (!Constants.IsDbDeleted)
+                    if (Constants.ConnectedToInternet())
                     {
-                        if (Constants.ConnectedToInternet())
+                        string _url = string.Empty;
+                        string _parameters = string.Empty;
+                        HttpRequestMessage req = null;
+                        if (entity != null && queryEntity != null)
                         {
-                            string _url = string.Empty;
-                            string _parameters = string.Empty;
-                            HttpRequestMessage req = null;
-                            if (entity != null && queryEntity != null)
-                            {
-                                _url += _requestUrl + entity + "/" + queryEntity;
-                            }
-                            else if (entity != null && queryEntity == null)
-                            {
-                                _url += _requestUrl + entity;
-                            }
-                            else
-                            {
-                                _url += _requestUrl + queryEntity;
-                            }
-                            if (parameters != null)
-                            {
-                                for (int parameter = 0; parameter < parameters.Count; parameter++)
-                                {
-                                    if (parameter == parameters.Count - 1)
-                                    {
-                                        if (parameters.ElementAt(parameter).Value != null)
-                                            _parameters += parameters.ElementAt(parameter).Key + "=" + parameters.ElementAt(parameter).Value;
-                                    }
-                                    else
-                                    {
-                                        if (parameters.ElementAt(parameter).Value != null)
-                                            _parameters += parameters.ElementAt(parameter).Key + "=" + parameters.ElementAt(parameter).Value + "&";
-
-                                    }
-                                }
-                                _url += "?" + _parameters;
-                            }
-                            if (associatedItems != null)
-                            {
-                                _url += "," + associatedItems;
-                            }
-                            HttpClient httpClient = new HttpClient();
-                            HttpResponseMessage response = null;
-                            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-
-                            httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Accept", "application/json");
-                            httpClient.DefaultRequestHeaders.TryAddWithoutValidation("AppProtocol", "Mobile Sales");
-                            httpClient.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", "Mozilla/5.0 (Windows NT 6.2; WOW64; rv:19.0) Gecko/20100101 Firefox/19.0");
-                            httpClient.DefaultRequestHeaders.TryAddWithoutValidation("AppProtocolVersion", "1.0.0.0");
-
-                            req = new HttpRequestMessage(HttpMethod.Get, _url);
-                            if (Constants.ConnectedToInternet())
-                            {
-                                response = await httpClient.SendAsync(req);
-                            }
-
-                            if (response.StatusCode == HttpStatusCode.Unauthorized)
-                            {
-                                req = Clone(req);
-                                await _oAuthService.Authorize();
-                                response = await httpClient.SendAsync(req);
-                            }
-                            return response;
+                            _url += _requestUrl + entity + "/" + queryEntity;
                         }
-
+                        else if (entity != null && queryEntity == null)
+                        {
+                            _url += _requestUrl + entity;
+                        }
                         else
                         {
-                            return null;
+                            _url += _requestUrl + queryEntity;
                         }
-                    }
-                    else
-                    {
-                        return null;
-                    }
-                   
-                }
+                        if (parameters != null)
+                        {
+                            for (int parameter = 0; parameter < parameters.Count; parameter++)
+                            {
+                                if (parameter == parameters.Count - 1)
+                                {
+                                    if (parameters.ElementAt(parameter).Value != null)
+                                        _parameters += parameters.ElementAt(parameter).Key + "=" +
+                                                       parameters.ElementAt(parameter).Value;
+                                }
+                                else
+                                {
+                                    if (parameters.ElementAt(parameter).Value != null)
+                                        _parameters += parameters.ElementAt(parameter).Key + "=" +
+                                                       parameters.ElementAt(parameter).Value + "&";
+                                }
+                            }
+                            _url += "?" + _parameters;
+                        }
+                        if (associatedItems != null)
+                        {
+                            _url += "," + associatedItems;
+                        }
+                        var httpClient = new HttpClient();
+                        HttpResponseMessage response = null;
+                        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer",
+                            accessToken);
 
-                catch (Exception ex)
-                {
-                    _log = AppEventSource.Log.WriteLine(ex);
-                    AppEventSource.Log.Error(_log);
+                        httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Accept", "application/json");
+                        httpClient.DefaultRequestHeaders.TryAddWithoutValidation("AppProtocol", "Mobile Sales");
+                        httpClient.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent",
+                            "Mozilla/5.0 (Windows NT 6.2; WOW64; rv:19.0) Gecko/20100101 Firefox/19.0");
+                        httpClient.DefaultRequestHeaders.TryAddWithoutValidation("AppProtocolVersion", "1.0.0.0");
+
+                        req = new HttpRequestMessage(HttpMethod.Get, _url);
+                        if (Constants.ConnectedToInternet())
+                        {
+                            response = await httpClient.SendAsync(req);
+                        }
+
+                        if (response.StatusCode == HttpStatusCode.Unauthorized)
+                        {
+                            req = Clone(req);
+                            await _oAuthService.Authorize();
+                            response = await httpClient.SendAsync(req);
+                        }
+                        return response;
+                    }
+
+                    return null;
                 }
                 return null;
+            }
+
+            catch (Exception ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+            return null;
         }
 
         /// <summary>
-        /// Builds Posts (http post method) based on the parameters passed and make a call to service.        
+        ///     Builds Posts (http post method) based on the parameters passed and make a call to service.
         /// </summary>
         /// <param name="entity"></param>
         /// <param name="queryEntity"></param>
         /// <param name="accessToken"></param>
         /// <param name="parameters"></param>
         /// <returns>HttpResponse which in turn service returns</returns>
-        public async Task<bool> BuildAndPostRequest(string entity, string queryEntity, string accessToken, Dictionary<string, string> parameters)
+        public async Task<bool> BuildAndPostRequest(string entity, string queryEntity, string accessToken,
+            Dictionary<string, string> parameters)
         {
             _requestUrl = Constants.Url;
             try
@@ -165,34 +158,33 @@ namespace SageMobileSales.ServiceAgents.Common
                         _url += _requestUrl + entity;
                     }
 
-                    HttpClient httpClient = new HttpClient();
+                    var httpClient = new HttpClient();
                     HttpResponseMessage response = null;
                     httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
                     httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Accept", "application/json");
                     httpClient.DefaultRequestHeaders.TryAddWithoutValidation("AppProtocol", "Mobile Sales");
-                    httpClient.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", "Mozilla/5.0 (Windows NT 6.2; WOW64; rv:19.0) Gecko/20100101 Firefox/19.0");
+                    httpClient.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent",
+                        "Mozilla/5.0 (Windows NT 6.2; WOW64; rv:19.0) Gecko/20100101 Firefox/19.0");
                     httpClient.DefaultRequestHeaders.TryAddWithoutValidation("AppProtocolVersion", "1.0.0.0");
 
-                    var serialized = JsonConvert.SerializeObject(parameters);
+                    string serialized = JsonConvert.SerializeObject(parameters);
                     if (Constants.ConnectedToInternet())
                     {
-                        response = await httpClient.PostAsync(_url, new StringContent(serialized, Encoding.UTF8, "application/json"));
+                        response =
+                            await
+                                httpClient.PostAsync(_url,
+                                    new StringContent(serialized, Encoding.UTF8, "application/json"));
                     }
                     return response.IsSuccessStatusCode;
                 }
-                else
-                {
-                    return false;
-                }
-
-              
+                return false;
             }
             catch (HttpRequestException ex)
             {
                 _log = AppEventSource.Log.WriteLine(ex);
                 AppEventSource.Log.Error(_log);
-            }     
+            }
             catch (TaskCanceledException ex)
             {
                 _log = AppEventSource.Log.WriteLine(ex);
@@ -208,12 +200,12 @@ namespace SageMobileSales.ServiceAgents.Common
                 _log = AppEventSource.Log.WriteLine(ex);
                 AppEventSource.Log.Error(_log);
             }
-        
+
             return false;
         }
 
         /// <summary>
-        /// Builds serialized object and Posts (http post method) based on the parameters passed and make a call to service.        
+        ///     Builds serialized object and Posts (http post method) based on the parameters passed and make a call to service.
         /// </summary>
         /// <param name="entity"></param>
         /// <param name="queryEntity"></param>
@@ -221,7 +213,8 @@ namespace SageMobileSales.ServiceAgents.Common
         /// <param name="parameters"></param>
         /// <param name="obj"></param>
         /// <returns>HttpResponse which in turn service returns</returns>
-        public async Task<HttpResponseMessage> BuildAndPostObjectRequest(string entity, string queryEntity, string accessToken, Dictionary<string, string> parameters, object obj)
+        public async Task<HttpResponseMessage> BuildAndPostObjectRequest(string entity, string queryEntity,
+            string accessToken, Dictionary<string, string> parameters, object obj)
         {
             _requestUrl = Constants.Url;
             HttpResponseMessage response = null;
@@ -245,32 +238,36 @@ namespace SageMobileSales.ServiceAgents.Common
                         if (parameter == parameters.Count - 1)
                         {
                             if (parameters.ElementAt(parameter).Value != null)
-                                _parameters += parameters.ElementAt(parameter).Key + "=" + parameters.ElementAt(parameter).Value;
+                                _parameters += parameters.ElementAt(parameter).Key + "=" +
+                                               parameters.ElementAt(parameter).Value;
                         }
                         else
                         {
                             if (parameters.ElementAt(parameter).Value != null)
-                                _parameters += parameters.ElementAt(parameter).Key + "=" + parameters.ElementAt(parameter).Value + "&";
-
+                                _parameters += parameters.ElementAt(parameter).Key + "=" +
+                                               parameters.ElementAt(parameter).Value + "&";
                         }
                     }
                     _url += "?" + _parameters;
                 }
 
-                HttpClient httpClient = new HttpClient();
-            
+                var httpClient = new HttpClient();
+
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
                 httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Accept", "application/json");
                 httpClient.DefaultRequestHeaders.TryAddWithoutValidation("AppProtocol", "Mobile Sales");
-                httpClient.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", "Mozilla/5.0 (Windows NT 6.2; WOW64; rv:19.0) Gecko/20100101 Firefox/19.0");
+                httpClient.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent",
+                    "Mozilla/5.0 (Windows NT 6.2; WOW64; rv:19.0) Gecko/20100101 Firefox/19.0");
                 httpClient.DefaultRequestHeaders.TryAddWithoutValidation("AppProtocolVersion", "1.0.0.0");
 
-                var serialized = GetSerializedObject(obj);
+                string serialized = GetSerializedObject(obj);
 
                 if (Constants.ConnectedToInternet())
                 {
-                    response = await httpClient.PostAsync(_url, new StringContent(serialized, Encoding.UTF8, "application/json"));
+                    response =
+                        await
+                            httpClient.PostAsync(_url, new StringContent(serialized, Encoding.UTF8, "application/json"));
                 }
                 return response;
             }
@@ -295,11 +292,10 @@ namespace SageMobileSales.ServiceAgents.Common
                 AppEventSource.Log.Error(_log);
             }
             return response;
-        
         }
 
         /// <summary>
-        /// Builds serialized object and uses put(http put method) to update
+        ///     Builds serialized object and uses put(http put method) to update
         /// </summary>
         /// <param name="entity"></param>
         /// <param name="queryEntity"></param>
@@ -307,7 +303,8 @@ namespace SageMobileSales.ServiceAgents.Common
         /// <param name="parameters"></param>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public async Task<HttpResponseMessage> BuildAndPutObjectRequest(string entity, string queryEntity, string accessToken, Dictionary<string, string> parameters, object obj)
+        public async Task<HttpResponseMessage> BuildAndPutObjectRequest(string entity, string queryEntity,
+            string accessToken, Dictionary<string, string> parameters, object obj)
         {
             _requestUrl = Constants.Url;
             HttpResponseMessage response = null;
@@ -331,40 +328,43 @@ namespace SageMobileSales.ServiceAgents.Common
                         if (parameter == parameters.Count - 1)
                         {
                             if (parameters.ElementAt(parameter).Value != null)
-                                _parameters += parameters.ElementAt(parameter).Key + "=" + parameters.ElementAt(parameter).Value;
+                                _parameters += parameters.ElementAt(parameter).Key + "=" +
+                                               parameters.ElementAt(parameter).Value;
                         }
                         else
                         {
                             if (parameters.ElementAt(parameter).Value != null)
-                                _parameters += parameters.ElementAt(parameter).Key + "=" + parameters.ElementAt(parameter).Value + "&";
-
+                                _parameters += parameters.ElementAt(parameter).Key + "=" +
+                                               parameters.ElementAt(parameter).Value + "&";
                         }
                     }
                     _url += "?" + _parameters;
                 }
 
-                HttpClient httpClient = new HttpClient();
-              
+                var httpClient = new HttpClient();
+
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
                 httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Accept", "application/json");
                 httpClient.DefaultRequestHeaders.TryAddWithoutValidation("AppProtocol", "Mobile Sales");
-                httpClient.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", "Mozilla/5.0 (Windows NT 6.2; WOW64; rv:19.0) Gecko/20100101 Firefox/19.0");
+                httpClient.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent",
+                    "Mozilla/5.0 (Windows NT 6.2; WOW64; rv:19.0) Gecko/20100101 Firefox/19.0");
                 httpClient.DefaultRequestHeaders.TryAddWithoutValidation("AppProtocolVersion", "1.0.0.0");
 
-                var serialized = GetSerializedObject(obj);
+                string serialized = GetSerializedObject(obj);
 
                 if (Constants.ConnectedToInternet())
                 {
-                    response = await httpClient.PutAsync(_url, new StringContent(serialized, Encoding.UTF8, "application/json"));
+                    response =
+                        await
+                            httpClient.PutAsync(_url, new StringContent(serialized, Encoding.UTF8, "application/json"));
                 }
-             
             }
             catch (HttpRequestException ex)
             {
                 _log = AppEventSource.Log.WriteLine(ex);
                 AppEventSource.Log.Error(_log);
-            }          
+            }
             catch (TaskCanceledException ex)
             {
                 _log = AppEventSource.Log.WriteLine(ex);
@@ -384,14 +384,15 @@ namespace SageMobileSales.ServiceAgents.Common
         }
 
         /// <summary>
-        /// Builds and uses delete(http method) to delete
+        ///     Builds and uses delete(http method) to delete
         /// </summary>
         /// <param name="entity"></param>
         /// <param name="queryEntity"></param>
         /// <param name="accessToken"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public async Task<HttpResponseMessage> BuildAndDeleteRequest(string entity, string queryEntity, string accessToken, Dictionary<string, string> parameters)
+        public async Task<HttpResponseMessage> BuildAndDeleteRequest(string entity, string queryEntity,
+            string accessToken, Dictionary<string, string> parameters)
         {
             _requestUrl = Constants.Url;
             HttpResponseMessage response = null;
@@ -408,13 +409,14 @@ namespace SageMobileSales.ServiceAgents.Common
                     _url += _requestUrl + entity;
                 }
 
-                HttpClient httpClient = new HttpClient();
-              
+                var httpClient = new HttpClient();
+
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
                 httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Accept", "application/json");
                 httpClient.DefaultRequestHeaders.TryAddWithoutValidation("AppProtocol", "Mobile Sales");
-                httpClient.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", "Mozilla/5.0 (Windows NT 6.2; WOW64; rv:19.0) Gecko/20100101 Firefox/19.0");
+                httpClient.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent",
+                    "Mozilla/5.0 (Windows NT 6.2; WOW64; rv:19.0) Gecko/20100101 Firefox/19.0");
                 httpClient.DefaultRequestHeaders.TryAddWithoutValidation("AppProtocolVersion", "1.0.0.0");
 
                 //var serialized = GetSerializedObject(obj);
@@ -423,13 +425,12 @@ namespace SageMobileSales.ServiceAgents.Common
                 {
                     response = await httpClient.DeleteAsync(_url);
                 }
-               
             }
             catch (HttpRequestException ex)
             {
                 _log = AppEventSource.Log.WriteLine(ex);
                 AppEventSource.Log.Error(_log);
-            }      
+            }
             catch (TaskCanceledException ex)
             {
                 _log = AppEventSource.Log.WriteLine(ex);
@@ -450,7 +451,7 @@ namespace SageMobileSales.ServiceAgents.Common
 
 
         /// <summary>
-        /// Convert's HttpResponse into JsonObject
+        ///     Convert's HttpResponse into JsonObject
         /// </summary>
         /// <param name="sDataResponse"></param>
         /// <returns>JsonObject</returns>
@@ -458,11 +459,11 @@ namespace SageMobileSales.ServiceAgents.Common
         {
             try
             {
-                var responseBodyAsText = await sDataResponse.Content.ReadAsStringAsync();
-                JsonObject responsesDataObject = Windows.Data.Json.JsonValue.Parse(responseBodyAsText).GetObject();
+                string responseBodyAsText = await sDataResponse.Content.ReadAsStringAsync();
+                JsonObject responsesDataObject = JsonValue.Parse(responseBodyAsText).GetObject();
                 return responsesDataObject;
             }
-          
+
             catch (Exception ex)
             {
                 _log = AppEventSource.Log.WriteLine(ex);
@@ -474,14 +475,15 @@ namespace SageMobileSales.ServiceAgents.Common
         #endregion
 
         #region private methods
+
         /// <summary>
-        /// Returns Serialized Object
+        ///     Returns Serialized Object
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
         private string GetSerializedObject(Object obj)
         {
-            var serialized = JsonConvert.SerializeObject(obj);
+            string serialized = JsonConvert.SerializeObject(obj);
             serialized = serialized.Replace("\"key\"", "\"$key\"");
             serialized = serialized.Replace("\"resources", "\"$resources");
 
@@ -489,23 +491,23 @@ namespace SageMobileSales.ServiceAgents.Common
         }
 
         /// <summary>
-        /// Clone
+        ///     Clone
         /// </summary>
         /// <param name="req"></param>
         /// <returns></returns>
         private HttpRequestMessage Clone(HttpRequestMessage req)
         {
-            HttpRequestMessage clone = new HttpRequestMessage(req.Method, req.RequestUri);
+            var clone = new HttpRequestMessage(req.Method, req.RequestUri);
 
             clone.Content = req.Content;
             clone.Version = req.Version;
 
-            foreach (KeyValuePair<string, object> prop in req.Properties)
+            foreach (var prop in req.Properties)
             {
                 clone.Properties.Add(prop);
             }
 
-            foreach (KeyValuePair<string, IEnumerable<string>> header in req.Headers)
+            foreach (var header in req.Headers)
             {
                 clone.Headers.TryAddWithoutValidation(header.Key, header.Value);
             }

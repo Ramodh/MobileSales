@@ -8,6 +8,7 @@ namespace SageMobileSales.DataAccess.Entities
     {
         [PrimaryKey, Unique, AutoIncrement]
         public int Id { get; set; }
+
         public Decimal CreditAvailable { get; set; }
         public Decimal CreditLimit { get; set; }
         public string CustomerId { get; set; }

@@ -1,43 +1,50 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Windows.ApplicationModel.Resources;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
+using Microsoft.Practices.Prism.PubSubEvents;
 using Microsoft.Practices.Prism.StoreApps;
 using Microsoft.Practices.Prism.StoreApps.Interfaces;
-using SageMobileSales.DataAccess.Events;
-using SageMobileSales.DataAccess.Repositories;
-using SageMobileSales.DataAccess.Entities;
-using SageMobileSales.UILogic.Helpers;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml;
-using SageMobileSales.DataAccess.Model;
-using System.Diagnostics;
-using Windows.ApplicationModel.Resources;
-using Windows.UI.Xaml.Navigation;
 using SageMobileSales.DataAccess.Common;
+using SageMobileSales.DataAccess.Events;
+using SageMobileSales.DataAccess.Model;
+using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
-using Microsoft.Practices.Prism.PubSubEvents;
+using SageMobileSales.UILogic.Helpers;
 
 namespace SageMobileSales.UILogic.ViewModels
 {
-    class ItemsPageViewModel : ViewModel
+    internal class ItemsPageViewModel : ViewModel
     {
-
-        private INavigationService _navigationService;
-        private IProductRepository _productRepository;
         private readonly IEventAggregator _eventAggregator;
-        private ProductCollection _productCollection;
+        private readonly INavigationService _navigationService;
+        private readonly IProductRepository _productRepository;
+        private bool _emptyFilteredProductList;
         private string _emptyProducts;
-        private bool _inProgress;
         private bool _emptyText;
         private ProductCollection _filteredProductList;
-        private ProductCollection _productsList;
-        private bool _emptyFilteredProductList;
+        private bool _inProgress;
         private string _log = string.Empty;
+        private ProductCollection _productCollection;
+        private ProductCollection _productsList;
+        private bool _syncProgress;
+
+        public ItemsPageViewModel(INavigationService navigationService, IProductRepository productRepository,
+            IEventAggregator eventAggregator)
+        {
+            _navigationService = navigationService;
+            _productRepository = productRepository;
+            _eventAggregator = eventAggregator;
+            TextChangedCommand = new DelegateCommand<object>(TextBoxTextChanged);
+            _eventAggregator.GetEvent<ProductSyncChangedEvent>()
+                .Subscribe(ProductsSyncIndicator, ThreadOption.UIThread);
+        }
 
         /// <summary>
-        /// Display empty results text
+        ///     Display empty results text
         /// </summary>
         public string EmptyProducts
         {
@@ -46,7 +53,7 @@ namespace SageMobileSales.UILogic.ViewModels
         }
 
         /// <summary>
-        /// Display empty results text
+        ///     Display empty results text
         /// </summary>
         public bool EmptyText
         {
@@ -55,7 +62,7 @@ namespace SageMobileSales.UILogic.ViewModels
         }
 
         /// <summary>
-        /// Data loading indicator
+        ///     Data loading indicator
         /// </summary>
         public bool InProgress
         {
@@ -63,7 +70,6 @@ namespace SageMobileSales.UILogic.ViewModels
             private set { SetProperty(ref _inProgress, value); }
         }
 
-        private bool _syncProgress;
         /// <summary>
         ///     Data  syncing indicator
         /// </summary>
@@ -84,20 +90,10 @@ namespace SageMobileSales.UILogic.ViewModels
             private set { SetProperty(ref _emptyFilteredProductList, value); }
         }
 
-        public ItemsPageViewModel(INavigationService navigationService, IProductRepository productRepository, IEventAggregator eventAggregator)
-        {
-            _navigationService = navigationService;
-            _productRepository = productRepository;
-            _eventAggregator = eventAggregator;
-            TextChangedCommand = new DelegateCommand<object>(TextBoxTextChanged);
-            _eventAggregator.GetEvent<ProductSyncChangedEvent>()
-                .Subscribe(ProductsSyncIndicator, ThreadOption.UIThread);
-        }
-
         public DelegateCommand<object> TextChangedCommand { get; set; }
 
         /// <summary>
-        /// Collection to support incremental scrolling
+        ///     Collection to support incremental scrolling
         /// </summary>
         public ProductCollection ProductCollection
         {
@@ -108,43 +104,40 @@ namespace SageMobileSales.UILogic.ViewModels
                 InProgress = false;
             }
         }
+
         /// <summary>
-        /// Collection to Filter items based on search text
+        ///     Collection to Filter items based on search text
         /// </summary>
         public ProductCollection FilteredProductList
         {
             get { return _filteredProductList; }
-            private set
-            {
-                SetProperty(ref _filteredProductList, value);
-            }
+            private set { SetProperty(ref _filteredProductList, value); }
         }
+
         /// <summary>
-        /// Collection to hold products
+        ///     Collection to hold products
         /// </summary>
         public ProductCollection ProductsList
         {
             get { return _productsList; }
-            private set
-            {
-                SetProperty(ref _productsList, value);
-            }
+            private set { SetProperty(ref _productsList, value); }
         }
 
         /// <summary>
-        /// Loading products
+        ///     Loading products
         /// </summary>
         /// <param name="navigationParameter"></param>
         /// <param name="navigationMode"></param>
         /// <param name="viewModelState"></param>
-        public override async void OnNavigatedTo(object navigationParameter, Windows.UI.Xaml.Navigation.NavigationMode navigationMode, Dictionary<string, object> viewModelState)
+        public override async void OnNavigatedTo(object navigationParameter, NavigationMode navigationMode,
+            Dictionary<string, object> viewModelState)
         {
             EmptyFilteredProductList = false;
             EmptyText = true;
             var categoryId = navigationParameter as string;
             InProgress = true;
             SyncProgress = Constants.ProductsSyncProgress;
-            ProductCollection = new ProductCollection()
+            ProductCollection = new ProductCollection
             {
                 ProductList = await _productRepository.GetCategoryProductsAsync(categoryId)
             };
@@ -159,9 +152,8 @@ namespace SageMobileSales.UILogic.ViewModels
         }
 
 
-
         /// <summary>
-        /// Grid View Item Click 
+        ///     Grid View Item Click
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="parameter"></param>
@@ -188,7 +180,7 @@ namespace SageMobileSales.UILogic.ViewModels
         }
 
         /// <summary>
-        /// Filter items in within the List
+        ///     Filter items in within the List
         /// </summary>
         /// <param name="searchText"></param>
         public ProductCollection FilterSearchItems(string searchText)
@@ -201,7 +193,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 {
                     if (ProductsList.ProductList != null)
                     {
-                        foreach (var item in ProductsList.ProductList)
+                        foreach (ProductDetails item in ProductsList.ProductList)
                         {
                             if (item.ProductName != null)
                             {
@@ -222,7 +214,7 @@ namespace SageMobileSales.UILogic.ViewModels
         }
 
         /// <summary>
-        /// TextChanged event to filter items
+        ///     TextChanged event to filter items
         /// </summary>
         /// <param name="searchText"></param>
         private void TextBoxTextChanged(object args)
@@ -231,10 +223,10 @@ namespace SageMobileSales.UILogic.ViewModels
 
             if (!InProgress)
             {
-                if (((TextBox)args).Text != null)
+                if (((TextBox) args).Text != null)
                 {
-                    var searchTerm = ((TextBox)args).Text.Trim();
-                    this.EmptyText = !searchTerm.Any();
+                    string searchTerm = ((TextBox) args).Text.Trim();
+                    EmptyText = !searchTerm.Any();
                     if (!string.IsNullOrEmpty(searchTerm))
                     {
                         ProductCollection = FilterSearchItems(searchTerm);
@@ -245,7 +237,7 @@ namespace SageMobileSales.UILogic.ViewModels
                     }
                     if (ProductsList.ProductList.Count > 0)
 
-                        this.EmptyFilteredProductList = !ProductCollection.ProductList.Any();
+                        EmptyFilteredProductList = !ProductCollection.ProductList.Any();
                 }
             }
         }

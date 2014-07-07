@@ -8,9 +8,9 @@
     mc:Ignorable="d"
     d:DesignHeight="50"
     d:DesignWidth="200">
-    
+
     <Grid>
-        <TextBlock Foreground="#FF355B4E" x:Name="SyncingTextBlock" Text="Syncing" FontSize="18"/>
+        <TextBlock Foreground="#FF355B4E" x:Name="SyncingTextBlock" Text="Syncing" FontSize="18" />
         <ProgressBar IsIndeterminate="True" Margin="0,20,0,0" Width="250" />
     </Grid>
 </UserControl>

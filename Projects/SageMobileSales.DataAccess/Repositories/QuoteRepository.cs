@@ -58,7 +58,7 @@ namespace SageMobileSales.DataAccess.Repositories
             for (int quote = 0; quote < sDataQuotesArray.Count; quote++)
             {
                 JsonObject sDataQuote = sDataQuotesArray[quote].GetObject();
-                
+
                 Quote savedQuote = await SaveQuoteDetailsAsync(sDataQuote);
                 if (savedQuote != null)
                     await _quoteLineItemRepository.SaveQuoteLineItemsAsync(sDataQuote, savedQuote.QuoteId);

@@ -1,21 +1,20 @@
-﻿using SageMobileSales.DataAccess.Common;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Windows.Data.Json;
+using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Entities;
 using SageMobileSales.DataAccess.Model;
 using SQLite;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.Data.Json;
 
 namespace SageMobileSales.DataAccess.Repositories
 {
     public class QuoteLineItemRepository : IQuoteLineItemRepository
     {
-        private SQLiteAsyncConnection _sageSalesDB;
-        private IProductRepository _productRepository;
         private readonly IDatabase _database;
+        private readonly IProductRepository _productRepository;
+        private readonly SQLiteAsyncConnection _sageSalesDB;
         private string _log = string.Empty;
 
         public QuoteLineItemRepository(IDatabase database, IProductRepository productRepository)
@@ -25,11 +24,10 @@ namespace SageMobileSales.DataAccess.Repositories
             _productRepository = productRepository;
         }
 
-
         #region public methods
 
         /// <summary>
-        /// Extracts QuoteLineItem from json response for that quote
+        ///     Extracts QuoteLineItem from json response for that quote
         /// </summary>
         /// <param name="sDataProduct"></param>
         /// <returns>Product</returns>
@@ -62,7 +60,8 @@ namespace SageMobileSales.DataAccess.Repositories
             }
         }
 
-        public async Task SavePostedQuoteLineItemsAsync(JsonObject sDataQuote, string quoteId, QuoteLineItem pendingQuoteLineItem)
+        public async Task SavePostedQuoteLineItemsAsync(JsonObject sDataQuote, string quoteId,
+            QuoteLineItem pendingQuoteLineItem)
         {
             try
             {
@@ -77,7 +76,7 @@ namespace SageMobileSales.DataAccess.Repositories
 
                         for (int quoteLineItem = 0; quoteLineItem < sDataQuoteLineItemsArray.Count; quoteLineItem++)
                         {
-                            var sDataQuoteLineItem = sDataQuoteLineItemsArray[quoteLineItem].GetObject();
+                            JsonObject sDataQuoteLineItem = sDataQuoteLineItemsArray[quoteLineItem].GetObject();
 
                             IJsonValue value;
                             if (sDataQuoteLineItem.TryGetValue("$key", out value))
@@ -85,36 +84,59 @@ namespace SageMobileSales.DataAccess.Repositories
                                 if (value.ValueType.ToString() != DataAccessUtils.Null)
                                 {
                                     List<QuoteLineItem> quoteLineItemList;
-                                    quoteLineItemList = await _sageSalesDB.QueryAsync<QuoteLineItem>("SELECT * FROM QuoteLineItem where QuoteLineItemId=?", sDataQuoteLineItem.GetNamedString("$key"));
+                                    quoteLineItemList =
+                                        await
+                                            _sageSalesDB.QueryAsync<QuoteLineItem>(
+                                                "SELECT * FROM QuoteLineItem where QuoteLineItemId=?",
+                                                sDataQuoteLineItem.GetNamedString("$key"));
 
                                     if (quoteLineItemList.FirstOrDefault() != null)
                                     {
-                                        await UpdateQuoteLineItemJsonToDbAsync(sDataQuoteLineItem, quoteLineItemList.FirstOrDefault());
+                                        await
+                                            UpdateQuoteLineItemJsonToDbAsync(sDataQuoteLineItem,
+                                                quoteLineItemList.FirstOrDefault());
                                     }
                                     else if (pendingQuoteLineItem != null)
                                     {
-                                        await _sageSalesDB.QueryAsync<QuoteLineItem>("Update QuoteLineItem Set QuoteLineItemId=? where QuoteLineItemId=?", sDataQuoteLineItem.GetNamedString("$key"), pendingQuoteLineItem.QuoteLineItemId);
+                                        await
+                                            _sageSalesDB.QueryAsync<QuoteLineItem>(
+                                                "Update QuoteLineItem Set QuoteLineItemId=? where QuoteLineItemId=?",
+                                                sDataQuoteLineItem.GetNamedString("$key"),
+                                                pendingQuoteLineItem.QuoteLineItemId);
                                         pendingQuoteLineItem.QuoteLineItemId = sDataQuoteLineItem.GetNamedString("$key");
                                         await UpdateQuoteLineItemJsonToDbAsync(sDataQuoteLineItem, pendingQuoteLineItem);
                                     }
-                                    else if (sDataQuoteLineItemsArray.Count <= QuoteLineItemList.Count && QuoteLineItemList[quoteLineItem] != null)
+                                    else if (sDataQuoteLineItemsArray.Count <= QuoteLineItemList.Count &&
+                                             QuoteLineItemList[quoteLineItem] != null)
                                     {
-                                        if (QuoteLineItemList[quoteLineItem].QuoteLineItemId.Contains(DataAccessUtils.Pending))
+                                        if (
+                                            QuoteLineItemList[quoteLineItem].QuoteLineItemId.Contains(
+                                                DataAccessUtils.Pending))
                                         {
                                             if (sDataQuoteLineItem.TryGetValue("InventoryItem", out value))
                                             {
                                                 if (value.ValueType.ToString() != DataAccessUtils.Null)
                                                 {
-                                                    JsonObject sDataProduct = sDataQuoteLineItem.GetNamedObject("InventoryItem");
-                                                    if (sDataProduct.GetNamedValue("$key").ValueType.ToString() != DataAccessUtils.Null)
+                                                    JsonObject sDataProduct =
+                                                        sDataQuoteLineItem.GetNamedObject("InventoryItem");
+                                                    if (sDataProduct.GetNamedValue("$key").ValueType.ToString() !=
+                                                        DataAccessUtils.Null)
                                                     {
                                                         for (int i = 0; i < QuoteLineItemList.Count; i++)
                                                         {
-                                                            if (sDataProduct.GetNamedString("$key") == QuoteLineItemList[i].ProductId)
+                                                            if (sDataProduct.GetNamedString("$key") ==
+                                                                QuoteLineItemList[i].ProductId)
                                                             {
-                                                                await _sageSalesDB.QueryAsync<QuoteLineItem>("Update QuoteLineItem Set QuoteLineItemId=? where QuoteLineItemId=?", sDataQuoteLineItem.GetNamedString("$key"), QuoteLineItemList[i].QuoteLineItemId);
-                                                                QuoteLineItemList[i].QuoteLineItemId = sDataQuoteLineItem.GetNamedString("$key");
-                                                                await UpdateQuoteLineItemJsonToDbAsync(sDataQuoteLineItem, QuoteLineItemList[i]);
+                                                                await
+                                                                    _sageSalesDB.QueryAsync<QuoteLineItem>(
+                                                                        "Update QuoteLineItem Set QuoteLineItemId=? where QuoteLineItemId=?",
+                                                                        sDataQuoteLineItem.GetNamedString("$key"),
+                                                                        QuoteLineItemList[i].QuoteLineItemId);
+                                                                QuoteLineItemList[i].QuoteLineItemId =
+                                                                    sDataQuoteLineItem.GetNamedString("$key");
+                                                                await
+                                                                    UpdateQuoteLineItemJsonToDbAsync(
+                                                                        sDataQuoteLineItem, QuoteLineItemList[i]);
                                                                 break;
                                                             }
                                                         }
@@ -150,7 +172,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Gets QuoteLineItems List along with Product(Product Details), ProductAssociatedBlob(Url)
+        ///     Gets QuoteLineItems List along with Product(Product Details), ProductAssociatedBlob(Url)
         /// </summary>
         /// <param name="quoteId"></param>
         /// <returns></returns>
@@ -159,10 +181,11 @@ namespace SageMobileSales.DataAccess.Repositories
             List<LineItemDetails> quoteLineItemList = null;
             try
             {
-
-                quoteLineItemList = await _sageSalesDB.QueryAsync<LineItemDetails>("SELECT distinct Product.ProductId, QuoteLT.QuoteLineItemId as LineItemId, QuoteLT.QuoteId as LineId, QuoteLT.Price as LineItemPrice,QuoteLT.Quantity as LineItemQuantity, Product.ProductName, Product.Quantity as ProductQuantity, Product.Sku as ProductSku, (select PAB.url from  ProductAssociatedBlob as PAB where Product.ProductId=PAB.ProductId And PAB.IsPrimary=1) as Url  from QuoteLineItem as QuoteLT Join Product  on QuoteLT.ProductId=Product.ProductId where QuoteLT.QuoteId=? and QuoteLT.IsDeleted='0'", quoteId);
-
-
+                quoteLineItemList =
+                    await
+                        _sageSalesDB.QueryAsync<LineItemDetails>(
+                            "SELECT distinct Product.ProductId, QuoteLT.QuoteLineItemId as LineItemId, QuoteLT.QuoteId as LineId, QuoteLT.Price as LineItemPrice,QuoteLT.Quantity as LineItemQuantity, Product.ProductName, Product.Quantity as ProductQuantity, Product.Sku as ProductSku, (select PAB.url from  ProductAssociatedBlob as PAB where Product.ProductId=PAB.ProductId And PAB.IsPrimary=1) as Url  from QuoteLineItem as QuoteLT Join Product  on QuoteLT.ProductId=Product.ProductId where QuoteLT.QuoteId=? and QuoteLT.IsDeleted='0'",
+                            quoteId);
             }
             catch (SQLiteException ex)
             {
@@ -178,7 +201,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Gets QuoteLineItem details for specific Lineitem
+        ///     Gets QuoteLineItem details for specific Lineitem
         /// </summary>
         /// <param name="quoteLineItemId"></param>
         /// <returns></returns>
@@ -187,9 +210,10 @@ namespace SageMobileSales.DataAccess.Repositories
             List<QuoteLineItem> quoteLineItemList = null;
             try
             {
-
-                quoteLineItemList = await _sageSalesDB.QueryAsync<QuoteLineItem>("Select * from QuoteLineItem where QuoteLineItem.QuoteLineItemId=?", quoteLineItemId);
-
+                quoteLineItemList =
+                    await
+                        _sageSalesDB.QueryAsync<QuoteLineItem>(
+                            "Select * from QuoteLineItem where QuoteLineItem.QuoteLineItemId=?", quoteLineItemId);
             }
             catch (SQLiteException ex)
             {
@@ -205,7 +229,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Returns quoteLineItems for the quote
+        ///     Returns quoteLineItems for the quote
         /// </summary>
         /// <param name="quoteId"></param>
         /// <returns></returns>
@@ -214,9 +238,8 @@ namespace SageMobileSales.DataAccess.Repositories
             List<QuoteLineItem> quoteLineItemList = null;
             try
             {
-
-                quoteLineItemList = await _sageSalesDB.QueryAsync<QuoteLineItem>("Select * from QuoteLineItem where QuoteId=?", quoteId);
-
+                quoteLineItemList =
+                    await _sageSalesDB.QueryAsync<QuoteLineItem>("Select * from QuoteLineItem where QuoteId=?", quoteId);
             }
             catch (SQLiteException ex)
             {
@@ -232,7 +255,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Add quoteLineItem to local dB
+        ///     Add quoteLineItem to local dB
         /// </summary>
         /// <param name="quoteLineItem"></param>
         /// <returns></returns>
@@ -255,7 +278,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Updates quoteLineItem in local dB
+        ///     Updates quoteLineItem in local dB
         /// </summary>
         /// <param name="quoteLineItem"></param>
         /// <returns></returns>
@@ -278,7 +301,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Returns quoteLineItem if already exists for the quote
+        ///     Returns quoteLineItem if already exists for the quote
         /// </summary>
         /// <param name="quoteId"></param>
         /// <param name="productId"></param>
@@ -288,15 +311,16 @@ namespace SageMobileSales.DataAccess.Repositories
             try
             {
                 List<QuoteLineItem> quoteLineItemList;
-                quoteLineItemList = await _sageSalesDB.QueryAsync<QuoteLineItem>("Select * from QuoteLineItem where QuoteId=? and IsDeleted='0'", quoteId);
+                quoteLineItemList =
+                    await
+                        _sageSalesDB.QueryAsync<QuoteLineItem>(
+                            "Select * from QuoteLineItem where QuoteId=? and IsDeleted='0'", quoteId);
 
-                foreach (var quoteLineItem in quoteLineItemList)
+                foreach (QuoteLineItem quoteLineItem in quoteLineItemList)
                 {
                     if (quoteLineItem.ProductId.Equals(productId))
                         return quoteLineItem;
                 }
-
-
             }
             catch (SQLiteException ex)
             {
@@ -312,7 +336,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Returns pending quoteLineItems which are not synced
+        ///     Returns pending quoteLineItems which are not synced
         /// </summary>
         /// <returns></returns>
         public async Task<List<QuoteLineItem>> GetPendingQuoteLineItems()
@@ -320,7 +344,10 @@ namespace SageMobileSales.DataAccess.Repositories
             List<QuoteLineItem> quoteLineItemPendingList = null;
             try
             {
-                quoteLineItemPendingList = await _sageSalesDB.QueryAsync<QuoteLineItem>("Select * From QuoteLineItem Where QuoteLineItemId like ('Pending%' or IsPending='1') and IsDeleted='0' and Quantity>0");                
+                quoteLineItemPendingList =
+                    await
+                        _sageSalesDB.QueryAsync<QuoteLineItem>(
+                            "Select * From QuoteLineItem Where QuoteLineItemId like ('Pending%' or IsPending='1') and IsDeleted='0' and Quantity>0");
             }
             catch (SQLiteException ex)
             {
@@ -336,7 +363,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Returns deleted quoteLineItems which are not synced
+        ///     Returns deleted quoteLineItems which are not synced
         /// </summary>
         /// <returns></returns>
         public async Task<List<QuoteLineItem>> GetDeletedQuoteLineItems()
@@ -344,8 +371,8 @@ namespace SageMobileSales.DataAccess.Repositories
             List<QuoteLineItem> quoteLineItemDeleteList = null;
             try
             {
-                quoteLineItemDeleteList = await _sageSalesDB.QueryAsync<QuoteLineItem>("Select * from QuoteLineItem where IsDeleted='1'");
-
+                quoteLineItemDeleteList =
+                    await _sageSalesDB.QueryAsync<QuoteLineItem>("Select * from QuoteLineItem where IsDeleted='1'");
             }
             catch (SQLiteException ex)
             {
@@ -361,7 +388,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Mark quoteLineItems for the as deleted to support offline capability
+        ///     Mark quoteLineItems for the as deleted to support offline capability
         /// </summary>
         /// <param name="quoteId"></param>
         /// <returns></returns>
@@ -369,7 +396,9 @@ namespace SageMobileSales.DataAccess.Repositories
         {
             try
             {
-                await _sageSalesDB.QueryAsync<QuoteLineItem>("Update QuoteLineItem Set isDeleted='1' where QuoteId=?", quoteId);
+                await
+                    _sageSalesDB.QueryAsync<QuoteLineItem>("Update QuoteLineItem Set isDeleted='1' where QuoteId=?",
+                        quoteId);
             }
             catch (SQLiteException ex)
             {
@@ -384,7 +413,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Mark quoteLineItem as deleted to support offline capability
+        ///     Mark quoteLineItem as deleted to support offline capability
         /// </summary>
         /// <param name="quoteLineItemId"></param>
         /// <returns></returns>
@@ -392,7 +421,9 @@ namespace SageMobileSales.DataAccess.Repositories
         {
             try
             {
-                await _sageSalesDB.QueryAsync<QuoteLineItem>("Update QuoteLineItem Set isDeleted='1' where QuoteLineItemId=?", quoteLineItemId);
+                await
+                    _sageSalesDB.QueryAsync<QuoteLineItem>(
+                        "Update QuoteLineItem Set isDeleted='1' where QuoteLineItemId=?", quoteLineItemId);
             }
             catch (SQLiteException ex)
             {
@@ -407,7 +438,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Deletes quoteLineItems for the quote from local dB
+        ///     Deletes quoteLineItems for the quote from local dB
         /// </summary>
         /// <param name="quoteId"></param>
         /// <returns></returns>
@@ -430,7 +461,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Deletes quoteLineItem from local dB
+        ///     Deletes quoteLineItem from local dB
         /// </summary>
         /// <param name="quoteLineItemId"></param>
         /// <returns></returns>
@@ -438,7 +469,9 @@ namespace SageMobileSales.DataAccess.Repositories
         {
             try
             {
-                await _sageSalesDB.QueryAsync<QuoteLineItem>("Delete From QuoteLineItem Where QuoteLineItemId=?", quoteLineItemId);
+                await
+                    _sageSalesDB.QueryAsync<QuoteLineItem>("Delete From QuoteLineItem Where QuoteLineItemId=?",
+                        quoteLineItemId);
             }
             catch (SQLiteException ex)
             {
@@ -458,13 +491,12 @@ namespace SageMobileSales.DataAccess.Repositories
             }
         }
 
-
         #endregion
 
         #region private methods
 
         /// <summary>
-        /// Compares list of quoteLineItems with the Json response and local Db to delete, add or update
+        ///     Compares list of quoteLineItems with the Json response and local Db to delete, add or update
         /// </summary>
         /// <param name="sDataAddressArray"></param>
         /// <param name="customerId"></param>
@@ -472,20 +504,21 @@ namespace SageMobileSales.DataAccess.Repositories
         {
             await DeleteQuoteLineItemsJsonFromDbAsync(sDataQuoteLineItemsArray, quoteId);
 
-            foreach (var quoteLineItem in sDataQuoteLineItemsArray)
+            foreach (IJsonValue quoteLineItem in sDataQuoteLineItemsArray)
             {
-                var sDataQuoteLineItem = quoteLineItem.GetObject();
+                JsonObject sDataQuoteLineItem = quoteLineItem.GetObject();
                 await AddOrUpdateQuoteLineItemJsonToDbAsync(sDataQuoteLineItem, quoteId);
             }
         }
 
         /// <summary>
-        /// Adds or updates quoteLineItem json response to dB
+        ///     Adds or updates quoteLineItem json response to dB
         /// </summary>
         /// <param name="sDataQuoteLineItem"></param>
         /// <param name="quoteId"></param>
         /// <returns></returns>
-        private async Task<QuoteLineItem> AddOrUpdateQuoteLineItemJsonToDbAsync(JsonObject sDataQuoteLineItem, string quoteId)
+        private async Task<QuoteLineItem> AddOrUpdateQuoteLineItemJsonToDbAsync(JsonObject sDataQuoteLineItem,
+            string quoteId)
         {
             try
             {
@@ -495,16 +528,20 @@ namespace SageMobileSales.DataAccess.Repositories
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
                         List<QuoteLineItem> quoteLineItemList;
-                        quoteLineItemList = await _sageSalesDB.QueryAsync<QuoteLineItem>("SELECT * FROM QuoteLineItem where QuoteLineItemId=?", sDataQuoteLineItem.GetNamedString("$key"));
+                        quoteLineItemList =
+                            await
+                                _sageSalesDB.QueryAsync<QuoteLineItem>(
+                                    "SELECT * FROM QuoteLineItem where QuoteLineItemId=?",
+                                    sDataQuoteLineItem.GetNamedString("$key"));
 
                         if (quoteLineItemList.FirstOrDefault() != null)
                         {
-                            return await UpdateQuoteLineItemJsonToDbAsync(sDataQuoteLineItem, quoteLineItemList.FirstOrDefault());
+                            return
+                                await
+                                    UpdateQuoteLineItemJsonToDbAsync(sDataQuoteLineItem,
+                                        quoteLineItemList.FirstOrDefault());
                         }
-                        else
-                        {
-                            return await AddQuoteLineItemJsonToDbAsync(sDataQuoteLineItem, quoteId);
-                        }
+                        return await AddQuoteLineItemJsonToDbAsync(sDataQuoteLineItem, quoteId);
                     }
                 }
                 return null;
@@ -519,24 +556,21 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Adds quoteLineItem json response to dB
+        ///     Adds quoteLineItem json response to dB
         /// </summary>
         /// <param name="sDataQuoteLineItem"></param>
         /// <param name="quoteId"></param>
         /// <returns></returns>
         private async Task<QuoteLineItem> AddQuoteLineItemJsonToDbAsync(JsonObject sDataQuoteLineItem, string quoteId)
         {
-            QuoteLineItem quoteLineItemObj = new QuoteLineItem();
+            var quoteLineItemObj = new QuoteLineItem();
             try
             {
-
                 quoteLineItemObj.QuoteId = quoteId;
                 quoteLineItemObj.QuoteLineItemId = sDataQuoteLineItem.GetNamedString("$key");
 
                 quoteLineItemObj = await ExtractQuoteLineItemFromJsonAsync(sDataQuoteLineItem, quoteLineItemObj);
                 await _sageSalesDB.InsertAsync(quoteLineItemObj);
-
-
             }
 
             catch (Exception ex)
@@ -545,23 +579,21 @@ namespace SageMobileSales.DataAccess.Repositories
                 AppEventSource.Log.Error(_log);
             }
             return quoteLineItemObj;
-
         }
 
         /// <summary>
-        /// Updates quoteLineItem json response to dB
+        ///     Updates quoteLineItem json response to dB
         /// </summary>
         /// <param name="sDataQuoteLineItem"></param>
         /// <param name="quoteLineItemDbObj"></param>
         /// <returns></returns>
-        private async Task<QuoteLineItem> UpdateQuoteLineItemJsonToDbAsync(JsonObject sDataQuoteLineItem, QuoteLineItem quoteLineItemDbObj)
+        private async Task<QuoteLineItem> UpdateQuoteLineItemJsonToDbAsync(JsonObject sDataQuoteLineItem,
+            QuoteLineItem quoteLineItemDbObj)
         {
             try
             {
                 quoteLineItemDbObj = await ExtractQuoteLineItemFromJsonAsync(sDataQuoteLineItem, quoteLineItemDbObj);
                 await _sageSalesDB.UpdateAsync(quoteLineItemDbObj);
-
-
             }
             catch (Exception ex)
             {
@@ -572,12 +604,13 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Extracts quoteLineItem json response
+        ///     Extracts quoteLineItem json response
         /// </summary>
         /// <param name="sDataQuoteLineItem"></param>
         /// <param name="quoteLineItem"></param>
         /// <returns></returns>
-        private async Task<QuoteLineItem> ExtractQuoteLineItemFromJsonAsync(JsonObject sDataQuoteLineItem, QuoteLineItem quoteLineItem)
+        private async Task<QuoteLineItem> ExtractQuoteLineItemFromJsonAsync(JsonObject sDataQuoteLineItem,
+            QuoteLineItem quoteLineItem)
         {
             try
             {
@@ -613,8 +646,6 @@ namespace SageMobileSales.DataAccess.Repositories
                 }
 
                 quoteLineItem.IsPending = false;
-
-
             }
 
 
@@ -624,12 +655,11 @@ namespace SageMobileSales.DataAccess.Repositories
                 AppEventSource.Log.Error(_log);
             }
             return quoteLineItem;
-
         }
 
 
         /// <summary>
-        /// Deletes quoteLineItems from dB which exists in dB but not in updated json response
+        ///     Deletes quoteLineItems from dB which exists in dB but not in updated json response
         /// </summary>
         /// <param name="sDataQuoteLineItemArray"></param>
         /// <param name="quoteId"></param>
@@ -647,10 +677,10 @@ namespace SageMobileSales.DataAccess.Repositories
             {
                 // Retrieve list of addressId from Json
                 quoteLineItemIdJsonList = new List<QuoteLineItem>();
-                foreach (var quoteLineItem in sDataQuoteLineItemArray)
+                foreach (IJsonValue quoteLineItem in sDataQuoteLineItemArray)
                 {
-                    var sDataQuoteLineItem = quoteLineItem.GetObject();
-                    QuoteLineItem quoteLineItemJsonObj = new QuoteLineItem();
+                    JsonObject sDataQuoteLineItem = quoteLineItem.GetObject();
+                    var quoteLineItemJsonObj = new QuoteLineItem();
                     if (sDataQuoteLineItem.TryGetValue("$key", out value))
                     {
                         if (value.ValueType.ToString() != DataAccessUtils.Null)
@@ -664,7 +694,8 @@ namespace SageMobileSales.DataAccess.Repositories
                 //Retrieve list of addressId from dB
                 quoteLineItemIdDbList = new List<QuoteLineItem>();
                 quoteLineItemRemoveList = new List<QuoteLineItem>();
-                quoteLineItemIdDbList = await _sageSalesDB.QueryAsync<QuoteLineItem>("SELECT * FROM QuoteLineItem where quoteId=?", quoteId);
+                quoteLineItemIdDbList =
+                    await _sageSalesDB.QueryAsync<QuoteLineItem>("SELECT * FROM QuoteLineItem where quoteId=?", quoteId);
 
                 // Requires enhancement
                 for (int i = 0; i < quoteLineItemIdDbList.Count; i++)
@@ -677,7 +708,7 @@ namespace SageMobileSales.DataAccess.Repositories
                             idExists = true;
                             break;
                         }
-                        else if (quoteLineItemIdDbList[i].QuoteLineItemId == quoteLineItemIdJsonList[j].QuoteLineItemId)
+                        if (quoteLineItemIdDbList[i].QuoteLineItemId == quoteLineItemIdJsonList[j].QuoteLineItemId)
                         {
                             idExists = true;
                             break;
@@ -692,7 +723,7 @@ namespace SageMobileSales.DataAccess.Repositories
                 //    var quoteLineItemRemoveList = quoteLineItemIdDbList.Except(quoteLineItemIdJsonList, new QuoteLineItemIdComparer()).ToList();
                 if (quoteLineItemRemoveList.Count() > 0)
                 {
-                    foreach (var quoteLineItemRemove in quoteLineItemRemoveList)
+                    foreach (QuoteLineItem quoteLineItemRemove in quoteLineItemRemoveList)
                     {
                         await _sageSalesDB.DeleteAsync(quoteLineItemRemove);
                     }

@@ -5,14 +5,13 @@
 namespace SageMobileSales.Views
 {
     /// <summary>
-    /// A basic page that provides characteristics common to most applications.
+    ///     A basic page that provides characteristics common to most applications.
     /// </summary>
     public sealed partial class CategoryLevelOnePage : VisualStateAwarePage
     {
-        
         public CategoryLevelOnePage()
         {
-            this.InitializeComponent();            
+            InitializeComponent();
         }
     }
 }

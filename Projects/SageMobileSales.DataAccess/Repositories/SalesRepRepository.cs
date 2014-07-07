@@ -261,7 +261,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Get Sales Rep data from json
+        ///     Get Sales Rep data from json
         /// </summary>
         /// <param name="sDataSalesRep"></param>
         /// <param name="salesRepDBObj"></param>

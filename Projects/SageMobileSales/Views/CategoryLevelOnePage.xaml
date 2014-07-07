@@ -20,14 +20,14 @@
     <prism:VisualStateAwarePage.Resources>
 
         <CollectionViewSource
-        x:Name="itemsViewSource"
-        Source="{Binding ProductCategoryList}"/>
+            x:Name="itemsViewSource"
+            Source="{Binding ProductCategoryList}" />
 
     </prism:VisualStateAwarePage.Resources>
 
     <prism:VisualStateAwarePage.TopAppBar>
         <AppBar x:Name="TopAppBar1" Style="{StaticResource TopAppBarUserControlStyle}" x:Uid="TopAppBar1">
-            <views:TopAppBarUserControl/>
+            <views:TopAppBarUserControl />
         </AppBar>
     </prism:VisualStateAwarePage.TopAppBar>
 
@@ -39,22 +39,22 @@
     <Grid x:Name="LayoutRoot" Style="{StaticResource LayoutRootStyle}">
         <Grid.ChildrenTransitions>
             <TransitionCollection>
-                <EntranceThemeTransition/>
+                <EntranceThemeTransition />
             </TransitionCollection>
         </Grid.ChildrenTransitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="140"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="140" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        
-        
-        <ProgressRing Grid.Row="1" Height="70" Width="70" 
-                      IsActive="{Binding InProgress, Mode=TwoWay}" 
-                      Visibility="{Binding InProgress, Mode=TwoWay,Converter={StaticResource InProgessVisibilityConverter}}" 
-                      Style="{StaticResource GridViewProgressRingStyle}"/>
-        
-        <TextBlock x:Name="emptyProductsTb" Grid.Row="1" Style="{StaticResource EmptyTitleTextStyle}" Text="{Binding EmptyCategories}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+        <ProgressRing Grid.Row="1" Height="70" Width="70"
+                      IsActive="{Binding InProgress, Mode=TwoWay}"
+                      Visibility="{Binding InProgress, Mode=TwoWay,Converter={StaticResource InProgessVisibilityConverter}}"
+                      Style="{StaticResource GridViewProgressRingStyle}" />
+
+        <TextBlock x:Name="emptyProductsTb" Grid.Row="1" Style="{StaticResource EmptyTitleTextStyle}"
+                   Text="{Binding EmptyCategories}" HorizontalAlignment="Center" VerticalAlignment="Center" />
 
         <!-- Horizontal scrolling grid -->
         <GridView
@@ -69,13 +69,13 @@
             IsSwipeEnabled="false"
             IsItemClickEnabled="True"
             ItemTemplate="{StaticResource CatalogItemTemplate}"
-            DataFetchSize="1"            
+            DataFetchSize="1"
             ScrollViewer.IsDeferredScrollingEnabled="False"
-            VirtualizingStackPanel.VirtualizationMode="Standard" >
+            VirtualizingStackPanel.VirtualizationMode="Standard">
             <interactivity:Interaction.Behaviors>
                 <core:EventTriggerBehavior EventName="ItemClick">
                     <core:CallMethodAction MethodName="GridViewItemClick"
-                TargetObject="{Binding Mode=OneWay}" />
+                                           TargetObject="{Binding Mode=OneWay}" />
                 </core:EventTriggerBehavior>
             </interactivity:Interaction.Behaviors>
         </GridView>
@@ -97,24 +97,25 @@
         -->
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="120"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="120" />
+                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <Button x:Name="backButton" Command="{Binding GoBackCommand, ElementName=pageRoot}"
-                        Style="{StaticResource NavigationCustomBackButtonNormalStyle}"
-                        VerticalAlignment="Top"
-                        AutomationProperties.Name="Back"
-                        AutomationProperties.AutomationId="BackButton"
-                        AutomationProperties.ItemType="Navigation Button"/>
-            <TextBlock x:Name="catalogPageTitle" Text="" x:Uid="catalogPageTitle" Grid.Column="1" Style="{StaticResource PageTitleTextStyle}"
-                        IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom"/>            
+                    Style="{StaticResource NavigationCustomBackButtonNormalStyle}"
+                    VerticalAlignment="Top"
+                    AutomationProperties.Name="Back"
+                    AutomationProperties.AutomationId="BackButton"
+                    AutomationProperties.ItemType="Navigation Button" />
+            <TextBlock x:Name="catalogPageTitle" Text="" x:Uid="catalogPageTitle" Grid.Column="1"
+                       Style="{StaticResource PageTitleTextStyle}"
+                       IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" />
             <views:SearchUserControl x:Name="searchUserControl"
-                                     Grid.Column="1"                                    
+                                     Grid.Column="1"
                                      HorizontalAlignment="Right"
-                                     Style="{StaticResource SearchBoxUserControlStyle}"/>
-            <views:BackgroundSyncIndicatorUserControl Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Top"
-                      Visibility="{Binding SyncProgress, Mode=TwoWay,Converter={StaticResource InProgessVisibilityConverter}}"/>
+                                     Style="{StaticResource SearchBoxUserControlStyle}" />
+            <views:BackgroundSyncIndicatorUserControl Grid.Column="1" HorizontalAlignment="Right"
+                                                      VerticalAlignment="Top"
+                                                      Visibility="{Binding SyncProgress, Mode=TwoWay,Converter={StaticResource InProgessVisibilityConverter}}" />
         </Grid>
     </Grid>
 </prism:VisualStateAwarePage>
-

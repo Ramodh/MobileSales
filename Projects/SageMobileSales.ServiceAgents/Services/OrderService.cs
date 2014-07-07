@@ -1,34 +1,35 @@
-﻿using Microsoft.Practices.Prism.PubSubEvents;
+﻿using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Windows.Data.Json;
+using Microsoft.Practices.Prism.PubSubEvents;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Entities;
 using SageMobileSales.DataAccess.Events;
 using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
 using SageMobileSales.ServiceAgents.JsonHelpers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.Data.Json;
+using SQLite;
 
 namespace SageMobileSales.ServiceAgents.Services
 {
     public class OrderService : IOrderService
     {
-
-        private IServiceAgent _serviceAgent;
+        private readonly IEventAggregator _eventAggregator;
         private ILocalSyncDigestRepository _localSyncDigestRepository;
         private ILocalSyncDigestService _localSyncDigestService;
-        private IOrderRepository _orderRepository;
-        private ISalesRepRepository _salesRepRepository;
-        private IQuoteRepository _quoteRepository;
-        private readonly IEventAggregator _eventAggregator;
-        private Dictionary<string, string> parameters = null;
         private string _log = string.Empty;
-        public OrderService(ILocalSyncDigestService localSyncDigestService, IServiceAgent serviceAgent, IQuoteRepository quoteRepository,
-            ILocalSyncDigestRepository localSyncDigestRepository, IOrderRepository orderRepository, ISalesRepRepository salesRepRepository, IEventAggregator eventAggregator)
+        private IOrderRepository _orderRepository;
+        private IQuoteRepository _quoteRepository;
+        private ISalesRepRepository _salesRepRepository;
+        private IServiceAgent _serviceAgent;
+        private Dictionary<string, string> parameters = null;
+
+        public OrderService(ILocalSyncDigestService localSyncDigestService, IServiceAgent serviceAgent,
+            IQuoteRepository quoteRepository,
+            ILocalSyncDigestRepository localSyncDigestRepository, IOrderRepository orderRepository,
+            ISalesRepRepository salesRepRepository, IEventAggregator eventAggregator)
         {
             _serviceAgent = serviceAgent;
             _localSyncDigestService = localSyncDigestService;
@@ -42,12 +43,13 @@ namespace SageMobileSales.ServiceAgents.Services
         #region public methods
 
         /// <summary>
-        /// Start syncing orders data
+        ///     Start syncing orders data
         /// </summary>
         /// <returns></returns>
         public async Task StartOrdersSyncProcess()
         {
-            Constants.IsSyncAvailable = await _localSyncDigestService.SyncLocalDigest(Constants.OrderEntity, Constants.syncDigestQueryEntity);
+            Constants.IsSyncAvailable =
+                await _localSyncDigestService.SyncLocalDigest(Constants.OrderEntity, Constants.syncDigestQueryEntity);
             if (Constants.IsSyncAvailable)
             {
                 await _localSyncDigestService.SyncLocalSource(Constants.OrderEntity, Constants.syncSourceQueryEntity);
@@ -71,8 +73,11 @@ namespace SageMobileSales.ServiceAgents.Services
                 obj = ConvertQuoteOrderToJsonFormattedObject(quote);
 
                 HttpResponseMessage quoteResponse = null;
-             
-                quoteResponse = await _serviceAgent.BuildAndPostObjectRequest(Constants.QuoteEntity, queryEntity, Constants.AccessToken, null, obj);
+
+                quoteResponse =
+                    await
+                        _serviceAgent.BuildAndPostObjectRequest(Constants.QuoteEntity, queryEntity,
+                            Constants.AccessToken, null, obj);
                 if (quoteResponse != null && quoteResponse.IsSuccessStatusCode)
                 {
                     var sDataQuote = await _serviceAgent.ConvertTosDataObject(quoteResponse);
@@ -80,11 +85,10 @@ namespace SageMobileSales.ServiceAgents.Services
                     // Need to confirm as what needs to be done here after posting order(with the response).
                     quote.QuoteStatus = "IsOrder";
                     await _quoteRepository.UpdateQuoteToDbAsync(quote);
-                   order= await _orderRepository.SaveOrderAsync(sDataQuote);
+                    order = await _orderRepository.SaveOrderAsync(sDataQuote);
                 }
-              
             }
-            catch (SQLite.SQLiteException ex)
+            catch (SQLiteException ex)
             {
                 _log = AppEventSource.Log.WriteLine(ex);
                 AppEventSource.Log.Error(_log);
@@ -108,25 +112,24 @@ namespace SageMobileSales.ServiceAgents.Services
             return order;
         }
 
-
         #endregion
-
 
         #region private methods
 
         /// <summary>
-        /// Makes call to BuildAndSendRequest method to make service call to get orders data.
-        /// Once we get the response converts it into JsonObject.
-        /// This call is looped internally to get the subsequent orders batch's data
-        /// by updating LastRecordId parameter everytime when we make request to get next batch data.
-        /// This loop will run till the completion of orders data Sync.
+        ///     Makes call to BuildAndSendRequest method to make service call to get orders data.
+        ///     Once we get the response converts it into JsonObject.
+        ///     This call is looped internally to get the subsequent orders batch's data
+        ///     by updating LastRecordId parameter everytime when we make request to get next batch data.
+        ///     This loop will run till the completion of orders data Sync.
         /// </summary>
         /// <returns></returns>
         private async Task SyncOrders()
         {
             try
             {
-                LocalSyncDigest digest = await _localSyncDigestRepository.GetLocalSyncDigestDtlsAsync(Constants.OrderEntity);
+                LocalSyncDigest digest =
+                    await _localSyncDigestRepository.GetLocalSyncDigestDtlsAsync(Constants.OrderEntity);
                 parameters = new Dictionary<string, string>();
                 if (digest != null)
                 {
@@ -148,17 +151,23 @@ namespace SageMobileSales.ServiceAgents.Services
                     salesRepId = "SalesRep.id eq " + "'" + salesRepId + "'";
                     parameters.Add("Count", "100");
                     parameters.Add("where", salesRepId);
-                    parameters.Add("include", "Details,Details/InventoryItem&select=*,Details/Price,Details/Quantity,Details/InventoryItem/Name,Details/InventoryItem/Sku");
+                    parameters.Add("include",
+                        "Details,Details/InventoryItem&select=*,Details/Price,Details/Quantity,Details/InventoryItem/Name,Details/InventoryItem/Sku");
                     HttpResponseMessage ordersResponse = null;
 
                     Constants.syncQueryEntity = Constants.syncSourceQueryEntity + "('" + Constants.TrackingId + "')";
 
-                    ordersResponse = await _serviceAgent.BuildAndSendRequest(Constants.OrderEntity, Constants.syncQueryEntity, null, Constants.AccessToken, parameters);
+                    ordersResponse =
+                        await
+                            _serviceAgent.BuildAndSendRequest(Constants.OrderEntity, Constants.syncQueryEntity, null,
+                                Constants.AccessToken, parameters);
                     if (ordersResponse != null && ordersResponse.IsSuccessStatusCode)
                     {
-                        var sDataOrders = await _serviceAgent.ConvertTosDataObject(ordersResponse);
-                        if (Convert.ToInt32(sDataOrders.GetNamedNumber("$totalResults")) > DataAccessUtils.OrdersTotalCount)
-                            DataAccessUtils.OrdersTotalCount = Convert.ToInt32(sDataOrders.GetNamedNumber("$totalResults"));
+                        JsonObject sDataOrders = await _serviceAgent.ConvertTosDataObject(ordersResponse);
+                        if (Convert.ToInt32(sDataOrders.GetNamedNumber("$totalResults")) >
+                            DataAccessUtils.OrdersTotalCount)
+                            DataAccessUtils.OrdersTotalCount =
+                                Convert.ToInt32(sDataOrders.GetNamedNumber("$totalResults"));
                         if (DataAccessUtils.OrdersTotalCount == 0)
                         {
                             _eventAggregator.GetEvent<OrderDataChangedEvent>().Publish(true);
@@ -166,9 +175,10 @@ namespace SageMobileSales.ServiceAgents.Services
                         int _totalCount = Convert.ToInt32(sDataOrders.GetNamedNumber("$totalResults"));
                         JsonArray ordersObject = sDataOrders.GetNamedArray("$resources");
                         int _returnedCount = ordersObject.Count;
-                        if (_returnedCount > 0 && _totalCount - _returnedCount >= 0 && !(DataAccessUtils.IsOrdersSyncCompleted))
+                        if (_returnedCount > 0 && _totalCount - _returnedCount >= 0 &&
+                            !(DataAccessUtils.IsOrdersSyncCompleted))
                         {
-                            var lastOrderObject = ordersObject.GetObjectAt(Convert.ToUInt32(_returnedCount - 1));
+                            JsonObject lastOrderObject = ordersObject.GetObjectAt(Convert.ToUInt32(_returnedCount - 1));
                             digest.LastRecordId = lastOrderObject.GetNamedString("$key");
                             int _syncEndpointTick = Convert.ToInt32(lastOrderObject.GetNamedNumber("SyncEndpointTick"));
                             if (_syncEndpointTick > digest.localTick)
@@ -186,14 +196,11 @@ namespace SageMobileSales.ServiceAgents.Services
                             DataAccessUtils.OrdersTotalCount = 0;
                             DataAccessUtils.OrdersReturnedCount = 0;
                             DataAccessUtils.IsOrdersSyncCompleted = false;
-                            return;
                         }
                     }
-
                 }
-
             }
-            catch (SQLite.SQLiteException ex)
+            catch (SQLiteException ex)
             {
                 _log = AppEventSource.Log.WriteLine(ex);
                 AppEventSource.Log.Error(_log);
@@ -213,12 +220,11 @@ namespace SageMobileSales.ServiceAgents.Services
                 _log = AppEventSource.Log.WriteLine(ex);
                 AppEventSource.Log.Error(_log);
             }
-
         }
 
         private OrderJson ConvertQuoteOrderToJsonFormattedObject(Quote quote)
         {
-            OrderJson orderjson = new OrderJson();
+            var orderjson = new OrderJson();
 
             orderjson.QuoteId = quote.QuoteId;
             orderjson.AmountPaid = quote.ToOrderAmountPaid == null ? "0" : quote.ToOrderAmountPaid;
@@ -236,7 +242,7 @@ namespace SageMobileSales.ServiceAgents.Services
             // Need confirmation here too
             orderjson.TaxAmount = "0";
 
-            long milliseconds = DateTime.UtcNow.Ticks / TimeSpan.TicksPerMillisecond;
+            long milliseconds = DateTime.UtcNow.Ticks/TimeSpan.TicksPerMillisecond;
             orderjson.TransactionDate = "/Date(" + milliseconds + ")/";
             //order.TransactionDate ="/Date(1392833833000-0600)/";
 
@@ -244,6 +250,5 @@ namespace SageMobileSales.ServiceAgents.Services
         }
 
         #endregion
-
     }
 }

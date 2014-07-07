@@ -1,49 +1,57 @@
-﻿using Microsoft.Practices.Prism.PubSubEvents;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Windows.ApplicationModel.Resources;
+using Windows.Foundation;
+using Windows.System.Threading;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
+using Microsoft.Practices.Prism.PubSubEvents;
 using Microsoft.Practices.Prism.StoreApps;
 using Microsoft.Practices.Prism.StoreApps.Interfaces;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Entities;
-using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.DataAccess.Events;
+using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
 using SageMobileSales.ServiceAgents.Services;
 using SageMobileSales.UILogic.Common;
-using SageMobileSales.UILogic.Helpers;
-using SageMobileSales.UILogic.Model;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.ApplicationModel.Background;
-using Windows.ApplicationModel.Core;
-using Windows.ApplicationModel.Resources;
-using Windows.Foundation;
-using Windows.Storage;
-using Windows.System.Threading;
-using Windows.UI.Core;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
 using SQLite;
 
 namespace SageMobileSales.UILogic.ViewModels
 {
-    class CategoryLevelOnePageViewModel : ViewModel
+    internal class CategoryLevelOnePageViewModel : ViewModel
     {
-
-        private INavigationService _navigationService;
-        private IProductCategoryRepository _productCategoryRepository;
-        //private ProductCategoryCollection _productCategoryCollection;
-        private ISalesRepService _salesRepService;
-        private ISyncCoordinatorService _syncCoordinatorService;
         private readonly IEventAggregator _eventAggregator;
-        private bool _inProgress;
+        private readonly INavigationService _navigationService;
+        private readonly IProductCategoryRepository _productCategoryRepository;
+        //private ProductCategoryCollection _productCategoryCollection;
+        private readonly ISyncCoordinatorService _syncCoordinatorService;
         private string _emptyCategories;
+        private bool _inProgress;
         private string _log = string.Empty;
+        private List<ProductCategory> _productCategoryList;
+        private ISalesRepService _salesRepService;
+        private bool _syncProgress;
+
+        public CategoryLevelOnePageViewModel(INavigationService navigationService, ISalesRepService salesRepService,
+            ISyncCoordinatorService syncCoordinatorService, IProductCategoryRepository productCategoryRepository,
+            IEventAggregator eventAggregator)
+        {
+            _navigationService = navigationService;
+            _salesRepService = salesRepService;
+            _syncCoordinatorService = syncCoordinatorService;
+            _productCategoryRepository = productCategoryRepository;
+            _eventAggregator = eventAggregator;
+            ProductCategoryList = new List<ProductCategory>();
+            _eventAggregator.GetEvent<ProductDataChangedEvent>()
+                .Subscribe(UpdateProductCategoryList, ThreadOption.UIThread);
+            _eventAggregator.GetEvent<ProductSyncChangedEvent>()
+                .Subscribe(ProductsSyncIndicator, ThreadOption.UIThread);
+        }
 
         /// <summary>
-        /// Display empty results text
+        ///     Display empty results text
         /// </summary>
         public string EmptyCategories
         {
@@ -52,7 +60,7 @@ namespace SageMobileSales.UILogic.ViewModels
         }
 
         /// <summary>
-        /// Data loading indicator
+        ///     Data loading indicator
         /// </summary>
         public bool InProgress
         {
@@ -60,7 +68,6 @@ namespace SageMobileSales.UILogic.ViewModels
             private set { SetProperty(ref _inProgress, value); }
         }
 
-        private bool _syncProgress;
         /// <summary>
         ///     Data  syncing indicator
         /// </summary>
@@ -86,7 +93,6 @@ namespace SageMobileSales.UILogic.ViewModels
         //    }
         //}
 
-        private List<ProductCategory> _productCategoryList;
         public List<ProductCategory> ProductCategoryList
         {
             get { return _productCategoryList; }
@@ -100,35 +106,22 @@ namespace SageMobileSales.UILogic.ViewModels
             }
         }
 
-        public CategoryLevelOnePageViewModel(INavigationService navigationService, ISalesRepService salesRepService,
-            ISyncCoordinatorService syncCoordinatorService, IProductCategoryRepository productCategoryRepository, IEventAggregator eventAggregator)
-        {
-            _navigationService = navigationService;
-            _salesRepService = salesRepService;
-            _syncCoordinatorService = syncCoordinatorService;
-            _productCategoryRepository = productCategoryRepository;
-            _eventAggregator = eventAggregator;
-            ProductCategoryList = new List<ProductCategory>();
-            _eventAggregator.GetEvent<ProductDataChangedEvent>().Subscribe(UpdateProductCategoryList, ThreadOption.UIThread);
-            _eventAggregator.GetEvent<ProductSyncChangedEvent>()
-                .Subscribe(ProductsSyncIndicator, ThreadOption.UIThread);
-        }
-
         /// <summary>
-        /// Loading product categories level one
+        ///     Loading product categories level one
         /// </summary>
         /// <param name="navigationParameter"></param>
         /// <param name="navigationMode"></param>
         /// <param name="viewModelState"></param>
-        public override async void OnNavigatedTo(object navigationParameter, Windows.UI.Xaml.Navigation.NavigationMode navigationMode, Dictionary<string, object> viewModelState)
+        public override async void OnNavigatedTo(object navigationParameter, NavigationMode navigationMode,
+            Dictionary<string, object> viewModelState)
         {
             InProgress = true;
             try
             {
                 if (!Constants.ProductsSyncProgress)
                 {
-                    IAsyncAction asyncAction = Windows.System.Threading.ThreadPool.RunAsync(
-                        (IAsyncAction) =>
+                    IAsyncAction asyncAction = ThreadPool.RunAsync(
+                        IAsyncAction =>
                         {
                             // Data Sync will Start.
                             _syncCoordinatorService.StartProductsSync();
@@ -170,7 +163,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 AppEventSource.Log.Error(_log);
                 _navigationService.Navigate("Signin", null);
             }
-           
+
             catch (NullReferenceException ex)
             {
                 _log = AppEventSource.Log.WriteLine(ex);
@@ -181,7 +174,6 @@ namespace SageMobileSales.UILogic.ViewModels
                 _log = AppEventSource.Log.WriteLine(ex);
                 AppEventSource.Log.Error(_log);
             }
-
         }
 
 
@@ -191,13 +183,13 @@ namespace SageMobileSales.UILogic.ViewModels
         }
 
         /// <summary>
-        /// Grid View Item Click 
+        ///     Grid View Item Click
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="parameter"></param>
         public async void GridViewItemClick(object sender, object parameter)
         {
-            var arg = ((parameter as ItemClickEventArgs).ClickedItem as ProductCategory).CategoryId;
+            string arg = ((parameter as ItemClickEventArgs).ClickedItem as ProductCategory).CategoryId;
             bool moreLevels = await _productCategoryRepository.GetProductCategoryLevel(arg);
 
             if (moreLevels)
@@ -208,7 +200,6 @@ namespace SageMobileSales.UILogic.ViewModels
 
         public void CatalogButton_Click(object sender, object parameter)
         {
-
         }
 
         public void QuotesButton_Click(object sender, object parameter)

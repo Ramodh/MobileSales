@@ -1,35 +1,33 @@
-﻿using Microsoft.Practices.Prism.PubSubEvents;
-using SageMobileSales.DataAccess;
+﻿using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Windows.Data.Json;
+using Windows.Storage;
+using Microsoft.Practices.Prism.PubSubEvents;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Entities;
 using SageMobileSales.DataAccess.Events;
 using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.Data.Json;
-using Windows.Storage;
+using SQLite;
 
 namespace SageMobileSales.ServiceAgents.Services
 {
     public class ProductCategoryService : IProductCategoryService
     {
-
-
-        private readonly IServiceAgent _serviceAgent;
-        private readonly IProductCategoryRepository _productCategoryRepository;
+        private readonly IEventAggregator _eventAggregator;
         private readonly ILocalSyncDigestRepository _localSyncDigestRepository;
         private readonly ILocalSyncDigestService _localSyncDigestService;
-        private readonly IEventAggregator _eventAggregator;
-        private Dictionary<string, string> parameters = null;
+        private readonly IProductCategoryRepository _productCategoryRepository;
+        private readonly IServiceAgent _serviceAgent;
         private string _log = string.Empty;
-        public ProductCategoryService(ILocalSyncDigestService localSyncDigestService, IServiceAgent serviceAgent, ILocalSyncDigestRepository localSyncDigestRepository, IProductCategoryRepository productCategoryRepository, IEventAggregator eventAggregator)
-        {
+        private Dictionary<string, string> parameters = null;
 
+        public ProductCategoryService(ILocalSyncDigestService localSyncDigestService, IServiceAgent serviceAgent,
+            ILocalSyncDigestRepository localSyncDigestRepository, IProductCategoryRepository productCategoryRepository,
+            IEventAggregator eventAggregator)
+        {
             _serviceAgent = serviceAgent;
             _localSyncDigestService = localSyncDigestService;
             _localSyncDigestRepository = localSyncDigestRepository;
@@ -40,7 +38,8 @@ namespace SageMobileSales.ServiceAgents.Services
 
         public async Task StartCategorySyncProcess()
         {
-            Constants.IsSyncAvailable = await _localSyncDigestService.SyncLocalDigest(Constants.CategoryEntity, Constants.syncDigestQueryEntity);
+            Constants.IsSyncAvailable =
+                await _localSyncDigestService.SyncLocalDigest(Constants.CategoryEntity, Constants.syncDigestQueryEntity);
             if (Constants.IsSyncAvailable)
             {
                 await _localSyncDigestService.SyncLocalSource(Constants.CategoryEntity, Constants.syncSourceQueryEntity);
@@ -54,18 +53,19 @@ namespace SageMobileSales.ServiceAgents.Services
 
 
         /// <summary>
-        /// makes call to BuildAndSendRequest method to make service call to get ProductCategory(Catalog's,Categories) data.
-        /// Once we get the response converts it into JsonObject.
-        /// This call is looped internally to get the subsequent ProductCategory batch's data
-        /// by updating LastRecordId parameter everytime when we make request to get next batch data.
-        /// This loop will run till the completion of Productcategory data Sync.
+        ///     makes call to BuildAndSendRequest method to make service call to get ProductCategory(Catalog's,Categories) data.
+        ///     Once we get the response converts it into JsonObject.
+        ///     This call is looped internally to get the subsequent ProductCategory batch's data
+        ///     by updating LastRecordId parameter everytime when we make request to get next batch data.
+        ///     This loop will run till the completion of Productcategory data Sync.
         /// </summary>
         /// <returns></returns>
         private async Task SyncProductCategory()
         {
             try
             {
-                LocalSyncDigest digest = await _localSyncDigestRepository.GetLocalSyncDigestDtlsAsync(Constants.CategoryEntity);
+                LocalSyncDigest digest =
+                    await _localSyncDigestRepository.GetLocalSyncDigestDtlsAsync(Constants.CategoryEntity);
                 parameters = new Dictionary<string, string>();
                 if (digest != null)
                 {
@@ -88,16 +88,21 @@ namespace SageMobileSales.ServiceAgents.Services
                 Constants.syncQueryEntity = Constants.syncSourceQueryEntity + "('" + Constants.TrackingId + "')";
                 // Adding syncQueryEntity to Applicationdata Container as we are using this in every Servicerequest.
                 // And this will be usefull when we are doing partial sync for particular Service.
-                var settingsLocal = ApplicationData.Current.LocalSettings;
+                ApplicationDataContainer settingsLocal = ApplicationData.Current.LocalSettings;
                 settingsLocal.Containers["SageSalesContainer"].Values["syncQueryEntity"] = Constants.syncQueryEntity;
-               
 
-                productCategoryResponse = await _serviceAgent.BuildAndSendRequest(Constants.CategoryEntity, Constants.syncQueryEntity, Constants.AssociatedItems, Constants.AccessToken, parameters);
-                if (productCategoryResponse!=null && productCategoryResponse.IsSuccessStatusCode)
+
+                productCategoryResponse =
+                    await
+                        _serviceAgent.BuildAndSendRequest(Constants.CategoryEntity, Constants.syncQueryEntity,
+                            Constants.AssociatedItems, Constants.AccessToken, parameters);
+                if (productCategoryResponse != null && productCategoryResponse.IsSuccessStatusCode)
                 {
-                    var sDataProductCategory = await _serviceAgent.ConvertTosDataObject(productCategoryResponse);
-                    if (Convert.ToInt32(sDataProductCategory.GetNamedNumber("$totalResults")) > DataAccessUtils.ProductCategoryTotalCount)
-                        DataAccessUtils.ProductCategoryTotalCount = Convert.ToInt32(sDataProductCategory.GetNamedNumber("$totalResults"));
+                    JsonObject sDataProductCategory = await _serviceAgent.ConvertTosDataObject(productCategoryResponse);
+                    if (Convert.ToInt32(sDataProductCategory.GetNamedNumber("$totalResults")) >
+                        DataAccessUtils.ProductCategoryTotalCount)
+                        DataAccessUtils.ProductCategoryTotalCount =
+                            Convert.ToInt32(sDataProductCategory.GetNamedNumber("$totalResults"));
                     if (DataAccessUtils.ProductCategoryTotalCount == 0)
                     {
                         _eventAggregator.GetEvent<ProductDataChangedEvent>().Publish(true);
@@ -105,9 +110,11 @@ namespace SageMobileSales.ServiceAgents.Services
                     int _totalCount = Convert.ToInt32(sDataProductCategory.GetNamedNumber("$totalResults"));
                     JsonArray categoriesObject = sDataProductCategory.GetNamedArray("$resources");
                     int _returnedCount = categoriesObject.Count;
-                    if (_returnedCount > 0 && _totalCount - _returnedCount >= 0 && !(DataAccessUtils.IsProductCategorySyncCompleted))
+                    if (_returnedCount > 0 && _totalCount - _returnedCount >= 0 &&
+                        !(DataAccessUtils.IsProductCategorySyncCompleted))
                     {
-                        var lastCategoryObject = categoriesObject.GetObjectAt(Convert.ToUInt32(_returnedCount - 1));
+                        JsonObject lastCategoryObject =
+                            categoriesObject.GetObjectAt(Convert.ToUInt32(_returnedCount - 1));
                         digest.LastRecordId = lastCategoryObject.GetNamedString("$key");
                         int _syncEndpointTick = Convert.ToInt32(lastCategoryObject.GetNamedNumber("SyncEndpointTick"));
                         if (_syncEndpointTick > digest.localTick)
@@ -125,11 +132,9 @@ namespace SageMobileSales.ServiceAgents.Services
                     DataAccessUtils.ProductCategoryTotalCount = 0;
                     DataAccessUtils.ProductCategoryReturnedCount = 0;
                     DataAccessUtils.IsProductCategorySyncCompleted = false;
-                    return;
                 }
-
             }
-            catch (SQLite.SQLiteException ex)
+            catch (SQLiteException ex)
             {
                 _log = AppEventSource.Log.WriteLine(ex);
                 AppEventSource.Log.Error(_log);
@@ -149,7 +154,6 @@ namespace SageMobileSales.ServiceAgents.Services
                 _log = AppEventSource.Log.WriteLine(ex);
                 AppEventSource.Log.Error(_log);
             }
-
         }
 
         /*
@@ -198,6 +202,5 @@ namespace SageMobileSales.ServiceAgents.Services
             }
         }
         */
-       
     }
 }

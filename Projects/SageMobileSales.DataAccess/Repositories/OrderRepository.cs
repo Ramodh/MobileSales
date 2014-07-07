@@ -1,33 +1,34 @@
-﻿using Microsoft.Practices.Prism.PubSubEvents;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Windows.Data.Json;
+using Microsoft.Practices.Prism.PubSubEvents;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Entities;
 using SageMobileSales.DataAccess.Events;
 using SageMobileSales.DataAccess.Model;
 using SQLite;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.Data.Json;
 
 namespace SageMobileSales.DataAccess.Repositories
 {
     public class OrderRepository : IOrderRepository
     {
-        private SQLiteAsyncConnection _sageSalesDB;
-        private  IDatabase _database;
-        private  ILocalSyncDigestRepository _localSyncDigestRepository;
-        private  ICustomerRepository _customerRepository;
-        private  IAddressRepository _addressRepository;
-        private  IOrderLineItemRepository _orderLineItemRepository;
-        private  IQuoteRepository _quoteRepository;
-        private  IEventAggregator _eventAggregator;
-        private ISalesRepRepository _salesRepRepository;
+        private readonly IAddressRepository _addressRepository;
+        private readonly ICustomerRepository _customerRepository;
+        private readonly IEventAggregator _eventAggregator;
+        private readonly ILocalSyncDigestRepository _localSyncDigestRepository;
+        private readonly IOrderLineItemRepository _orderLineItemRepository;
+        private readonly IQuoteRepository _quoteRepository;
+        private readonly SQLiteAsyncConnection _sageSalesDB;
+        private readonly ISalesRepRepository _salesRepRepository;
+        private IDatabase _database;
         private string _log = string.Empty;
 
-        public OrderRepository(IDatabase database, ILocalSyncDigestRepository localSyncDigestRepository, ICustomerRepository customerRepository, ISalesRepRepository salesRepRepository,
-            IAddressRepository addressRepository, IOrderLineItemRepository orderLineItemRepository, IQuoteRepository quoteRepository, IEventAggregator eventAggregator)
+        public OrderRepository(IDatabase database, ILocalSyncDigestRepository localSyncDigestRepository,
+            ICustomerRepository customerRepository, ISalesRepRepository salesRepRepository,
+            IAddressRepository addressRepository, IOrderLineItemRepository orderLineItemRepository,
+            IQuoteRepository quoteRepository, IEventAggregator eventAggregator)
         {
             _database = database;
             _sageSalesDB = _database.GetAsyncConnection();
@@ -43,7 +44,7 @@ namespace SageMobileSales.DataAccess.Repositories
         #region public methods
 
         /// <summary>
-        /// Extract json response(Order) and saves into local dB
+        ///     Extract json response(Order) and saves into local dB
         /// </summary>
         /// <param name="sDataOrders"></param>
         /// <param name="localSyncDigest"></param>
@@ -55,9 +56,11 @@ namespace SageMobileSales.DataAccess.Repositories
 
             for (int order = 0; order < sDataOrdersArray.Count; order++)
             {
-                var sDataOrder = sDataOrdersArray[order].GetObject();
+                JsonObject sDataOrder = sDataOrdersArray[order].GetObject();
 
-                await _orderLineItemRepository.SaveOrderLineItemsAsync(sDataOrder, (await SaveOrderDetailsAsync(sDataOrder)).OrderId);
+                await
+                    _orderLineItemRepository.SaveOrderLineItemsAsync(sDataOrder,
+                        (await SaveOrderDetailsAsync(sDataOrder)).OrderId);
                 if (localSyncDigest != null)
                 {
                     if ((Convert.ToInt32(sDataOrder.GetNamedNumber("SyncEndpointTick")) > localSyncDigest.localTick))
@@ -84,49 +87,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Adds or updates order json response to dB
-        /// </summary>
-        /// <param name="sDataOrder"></param>
-        /// <returns></returns>
-        public async Task<Orders> AddOrUpdateOrderJsonToDbAsync(JsonObject sDataOrder)
-        {
-            try
-            {
-                IJsonValue value;
-                if (sDataOrder.TryGetValue("$key", out value))
-                {
-                    if (value.ValueType.ToString() != DataAccessUtils.Null)
-                    {
-                        List<Orders> orderList;
-                        orderList = await _sageSalesDB.QueryAsync<Orders>("SELECT * FROM Orders where OrderId=?", sDataOrder.GetNamedString("$key"));
-
-                        if (orderList.FirstOrDefault() != null)
-                        {
-                            return await UpdateOrderJsonToDbAsync(sDataOrder, orderList.FirstOrDefault());
-                        }
-                        else
-                        {
-                            return await AddOrderJsonToDbAsync(sDataOrder);
-                        }
-                    }
-                }
-                
-            }
-            catch (SQLiteException ex)
-            {
-                _log = AppEventSource.Log.WriteLine(ex);
-                AppEventSource.Log.Error(_log);
-            }
-            catch (Exception ex)
-            {
-                _log = AppEventSource.Log.WriteLine(ex);
-                AppEventSource.Log.Error(_log);
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// Extracts data from response and updates orders, addresses and orderLineItems
+        ///     Extracts data from response and updates orders, addresses and orderLineItems
         /// </summary>
         /// <param name="sDataOrder"></param>
         /// <returns></returns>
@@ -143,7 +104,9 @@ namespace SageMobileSales.DataAccess.Repositories
                     JsonObject sDataShippingAdress = sDataOrder.GetNamedObject("ShippingAddress");
                     if (!string.IsNullOrEmpty(order.CustomerId))
                     {
-                        Address address = await _addressRepository.AddOrUpdateAddressJsonToDbAsync(sDataShippingAdress, order.CustomerId);
+                        Address address =
+                            await
+                                _addressRepository.AddOrUpdateAddressJsonToDbAsync(sDataShippingAdress, order.CustomerId);
                         if (address != null)
                         {
                             order.AddressId = address.AddressId;
@@ -157,19 +120,20 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Get order details along with salesRepName
+        ///     Get order details along with salesRepName
         /// </summary>
         /// <param name="orderId"></param>
         /// <returns></returns>
         public async Task<OrderDetails> GetOrderDetailsAsync(string orderId)
         {
-            List<OrderDetails> order=null;
+            List<OrderDetails> order = null;
             try
             {
-
-                order = await _sageSalesDB.QueryAsync<OrderDetails>("SELECT distinct Orders.OrderId, Orders.CreatedOn, Orders.OrderNumber, Orders.ExternalReferenceNumber, Orders.CustomerId, Orders.AddressId, Orders.TenantId, Orders.Amount, Orders.Tax, Orders.ShippingAndHandling, Orders.DiscountPercent, Orders.OrderStatus,Orders.OrderDescription, SalesRep.RepName FROM Orders  INNER JOIN SalesRep ON salesRep.RepId = Orders.RepId and Orders.OrderId=?", orderId);
-
-               
+                order =
+                    await
+                        _sageSalesDB.QueryAsync<OrderDetails>(
+                            "SELECT distinct Orders.OrderId, Orders.CreatedOn, Orders.OrderNumber, Orders.ExternalReferenceNumber, Orders.CustomerId, Orders.AddressId, Orders.TenantId, Orders.Amount, Orders.Tax, Orders.ShippingAndHandling, Orders.DiscountPercent, Orders.OrderStatus,Orders.OrderDescription, SalesRep.RepName FROM Orders  INNER JOIN SalesRep ON salesRep.RepId = Orders.RepId and Orders.OrderId=?",
+                            orderId);
             }
             catch (Exception ex)
             {
@@ -180,20 +144,21 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Get order details based on CustomerId
+        ///     Get order details based on CustomerId
         /// </summary>
         /// <param name="orderId"></param>
         /// <returns></returns>
         public async Task<List<OrderDetails>> GetOrdersForCustomerAsync(string customerId)
         {
-            List<OrderDetails> orderList=null;
+            List<OrderDetails> orderList = null;
             try
             {
-
-                orderList = await _sageSalesDB.QueryAsync<OrderDetails>("SELECT distinct customer.customerName,orders.ExternalReferenceNumber, orders.CustomerId, orders.AddressId, orders.TenantId, orders.OrderId, orders.CreatedOn, orders.amount, orders.DiscountPercent, orders.ShippingAndHandling, orders.Tax, orders.OrderStatus,orders.OrderDescription, SalesRep.RepName FROM customer, orders left Join SalesRep On SalesRep.RepId=Orders.RepId where Orders.OrderStatus!='IsOrder'  And Orders.OrderStatus!='Temporary' and customer.customerId=orders.customerId and orders.customerId=? order by orders.createdOn desc", customerId);
+                orderList =
+                    await
+                        _sageSalesDB.QueryAsync<OrderDetails>(
+                            "SELECT distinct customer.customerName,orders.ExternalReferenceNumber, orders.CustomerId, orders.AddressId, orders.TenantId, orders.OrderId, orders.CreatedOn, orders.amount, orders.DiscountPercent, orders.ShippingAndHandling, orders.Tax, orders.OrderStatus,orders.OrderDescription, SalesRep.RepName FROM customer, orders left Join SalesRep On SalesRep.RepId=Orders.RepId where Orders.OrderStatus!='IsOrder'  And Orders.OrderStatus!='Temporary' and customer.customerId=orders.customerId and orders.customerId=? order by orders.createdOn desc",
+                            customerId);
                 //"SELECT distinct customer.customerName, quote.CustomerId, quote.QuoteId, quote.CreatedOn, quote.amount, quote.quoteStatus,quote.QuoteDescription, SalesRep.RepName FROM customer, quote left Join SalesRep On SalesRep.RepId=Quote.RepId where Quote.QuoteStatus!='IsOrder'  And Quote.QuoteStatus!='Temporary' and customer.customerId=quote.customerId and quote.customerId=? order by quote.createdOn desc", customerId);
-
-              
             }
             catch (Exception ex)
             {
@@ -204,19 +169,20 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Get quotes list along with customerName, salesRepName
+        ///     Get quotes list along with customerName, salesRepName
         /// </summary>
         /// <param name="salesRepId"></param>
         /// <returns></returns>
         public async Task<List<OrderDetails>> GetOrdersListAsync(string salesRepId)
         {
-            List<OrderDetails> ordersList=null;
+            List<OrderDetails> ordersList = null;
             try
             {
-
-
-                ordersList = await _sageSalesDB.QueryAsync<OrderDetails>("SELECT distinct customer.customerName, customer.CustomerId, orders.OrderId, orders.OrderStatus, orders.CreatedOn,orders.UpdatedOn,orders.AddressId, orders.Amount, orders.DiscountPercent, orders.Tax, orders.ShippingAndHandling, orders.ExternalReferenceNumber,orders.TenantId,orders.OrderDescription, SalesRep.RepName FROM orders INNER JOIN customer ON customer.customerID = orders.customerId Inner Join SalesRep On orders.RepId=?", salesRepId);
-             
+                ordersList =
+                    await
+                        _sageSalesDB.QueryAsync<OrderDetails>(
+                            "SELECT distinct customer.customerName, customer.CustomerId, orders.OrderId, orders.OrderStatus, orders.CreatedOn,orders.UpdatedOn,orders.AddressId, orders.Amount, orders.DiscountPercent, orders.Tax, orders.ShippingAndHandling, orders.ExternalReferenceNumber,orders.TenantId,orders.OrderDescription, SalesRep.RepName FROM orders INNER JOIN customer ON customer.customerID = orders.customerId Inner Join SalesRep On orders.RepId=?",
+                            salesRepId);
             }
             catch (Exception ex)
             {
@@ -226,38 +192,75 @@ namespace SageMobileSales.DataAccess.Repositories
             return ordersList;
         }
 
+        /// <summary>
+        ///     Adds or updates order json response to dB
+        /// </summary>
+        /// <param name="sDataOrder"></param>
+        /// <returns></returns>
+        public async Task<Orders> AddOrUpdateOrderJsonToDbAsync(JsonObject sDataOrder)
+        {
+            try
+            {
+                IJsonValue value;
+                if (sDataOrder.TryGetValue("$key", out value))
+                {
+                    if (value.ValueType.ToString() != DataAccessUtils.Null)
+                    {
+                        List<Orders> orderList;
+                        orderList =
+                            await
+                                _sageSalesDB.QueryAsync<Orders>("SELECT * FROM Orders where OrderId=?",
+                                    sDataOrder.GetNamedString("$key"));
+
+                        if (orderList.FirstOrDefault() != null)
+                        {
+                            return await UpdateOrderJsonToDbAsync(sDataOrder, orderList.FirstOrDefault());
+                        }
+                        return await AddOrderJsonToDbAsync(sDataOrder);
+                    }
+                }
+            }
+            catch (SQLiteException ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+            catch (Exception ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+            return null;
+        }
+
         #endregion
 
         #region private methods
 
         /// <summary>
-        /// Extracts order from Json and updates the same
+        ///     Extracts order from Json and updates the same
         /// </summary>
         /// <param name="sDataOrder"></param>
         /// <returns></returns>
         private async Task<Orders> SaveOrderDetailsAsync(JsonObject sDataOrder)
-        {          
-                return await AddOrUpdateOrderJsonToDbAsync(sDataOrder);            
+        {
+            return await AddOrUpdateOrderJsonToDbAsync(sDataOrder);
         }
 
         /// <summary>
-        /// Add order json response to dB
+        ///     Add order json response to dB
         /// </summary>
         /// <param name="sDataOrder"></param>
         /// <returns></returns>
         private async Task<Orders> AddOrderJsonToDbAsync(JsonObject sDataOrder)
         {
-            Orders orderObj = new Orders();
+            var orderObj = new Orders();
             try
             {
-              
-
                 orderObj.OrderId = sDataOrder.GetNamedString("$key");
                 orderObj = await ExtractOrderFromJsonAsync(sDataOrder, orderObj);
 
                 await _sageSalesDB.InsertAsync(orderObj);
-
-               
             }
             catch (Exception ex)
             {
@@ -268,7 +271,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Updates order json response to dB
+        ///     Updates order json response to dB
         /// </summary>
         /// <param name="sDataOrder"></param>
         /// <param name="orderDbObj"></param>
@@ -279,8 +282,6 @@ namespace SageMobileSales.DataAccess.Repositories
             {
                 orderDbObj = await ExtractOrderFromJsonAsync(sDataOrder, orderDbObj);
                 await _sageSalesDB.UpdateAsync(orderDbObj);
-
-              
             }
             catch (Exception ex)
             {
@@ -291,7 +292,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Extracts order json response
+        ///     Extracts order json response
         /// </summary>
         /// <param name="sDataOrder"></param>
         /// <param name="order"></param>
@@ -412,7 +413,10 @@ namespace SageMobileSales.DataAccess.Repositories
                         JsonObject sDataShippingAdress = sDataOrder.GetNamedObject("ShippingAddress");
                         if (!string.IsNullOrEmpty(order.CustomerId))
                         {
-                            Address address = await _addressRepository.AddOrUpdateAddressJsonToDbAsync(sDataShippingAdress, order.CustomerId);
+                            Address address =
+                                await
+                                    _addressRepository.AddOrUpdateAddressJsonToDbAsync(sDataShippingAdress,
+                                        order.CustomerId);
                             if (address != null)
                             {
                                 order.AddressId = address.AddressId;
@@ -429,13 +433,12 @@ namespace SageMobileSales.DataAccess.Repositories
                         JsonObject sDataSalesRep = sDataOrder.GetNamedObject("SalesRep");
                         if (sDataSalesRep.GetNamedValue("$key").ValueType.ToString() != DataAccessUtils.Null)
                         {
-                            SalesRep salesRep = await _salesRepRepository.AddOrUpdateSalesRepJsonToDbAsync(sDataSalesRep);                            
+                            SalesRep salesRep =
+                                await _salesRepRepository.AddOrUpdateSalesRepJsonToDbAsync(sDataSalesRep);
                             order.RepId = sDataSalesRep.GetNamedString("$key");
                         }
                     }
                 }
-
-              
             }
             catch (Exception ex)
             {
@@ -446,7 +449,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Converts Json date string to respective Date and Time format
+        ///     Converts Json date string to respective Date and Time format
         /// </summary>
         /// <param name="jsonTime"></param>
         /// <returns></returns>
@@ -463,20 +466,20 @@ namespace SageMobileSales.DataAccess.Repositories
                     hours = milis.Substring(milis.IndexOf(sign));
                     milis = milis.Substring(0, milis.IndexOf(sign));
                     hours = hours.Substring(0, hours.IndexOf(")"));
-                    return new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(Convert.ToInt64(milis)).AddHours(Convert.ToInt64(hours) / 100);
+                    return
+                        new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(Convert.ToInt64(milis))
+                            .AddHours(Convert.ToInt64(hours)/100);
                 }
-                else
-                {
-                    hours = "0";
-                    milis = milis.Substring(0, milis.IndexOf(")"));
-                    return new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(Convert.ToInt64(milis)).AddHours(Convert.ToInt64(hours) / 100);
-                }
+                hours = "0";
+                milis = milis.Substring(0, milis.IndexOf(")"));
+                return
+                    new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(Convert.ToInt64(milis))
+                        .AddHours(Convert.ToInt64(hours)/100);
             }
 
             return DateTime.Now;
         }
 
         #endregion
-
     }
 }

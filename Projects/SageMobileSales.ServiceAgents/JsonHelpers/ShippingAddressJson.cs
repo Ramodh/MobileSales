@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SageMobileSales.ServiceAgents.JsonHelpers
+﻿namespace SageMobileSales.ServiceAgents.JsonHelpers
 {
     public class ShippingAddressJson
-    {        
+    {
         public string Name { get; set; }
         public string PostalCode { get; set; }
         public string Street2 { get; set; }

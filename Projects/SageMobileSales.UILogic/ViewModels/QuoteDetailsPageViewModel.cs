@@ -1,4 +1,17 @@
-﻿using Microsoft.Practices.Prism.PubSubEvents;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using Windows.ApplicationModel.DataTransfer;
+using Windows.ApplicationModel.Resources;
+using Windows.UI.Popups;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
+using Microsoft.Practices.Prism.PubSubEvents;
 using Microsoft.Practices.Prism.StoreApps;
 using Microsoft.Practices.Prism.StoreApps.Interfaces;
 using SageMobileSales.DataAccess.Common;
@@ -9,296 +22,55 @@ using SageMobileSales.ServiceAgents.Common;
 using SageMobileSales.ServiceAgents.Services;
 using SageMobileSales.UILogic.Common;
 using SageMobileSales.UILogic.Model;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using Windows.ApplicationModel.DataTransfer;
-using Windows.ApplicationModel.Resources;
-using Windows.Foundation;
-using Windows.UI.Popups;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
 
 namespace SageMobileSales.UILogic.ViewModels
 {
     public class QuoteDetailsPageViewModel : ViewModel
     {
-        private INavigationService _navigationService;
-        private IQuoteLineItemService _quoteLineItemService;
-        private IQuoteLineItemRepository _quoteLineItemRepository;
-        private IQuoteRepository _quoteRepository;
-        private ICustomerRepository _customerRepository;
-        private ITenantService _tenantService;
-        private ITenantRepository _tenantRepository;
-        private IQuoteService _quoteService;
-        private ISalesRepRepository _salesRepRepository;
-        private Tenant _tenant;
-        private IAddressRepository _addressRepository;
+        private readonly IAddressRepository _addressRepository;
+        private readonly ICustomerRepository _customerRepository;
+        private readonly INavigationService _navigationService;
+        private readonly IQuoteLineItemRepository _quoteLineItemRepository;
+        private readonly IQuoteLineItemService _quoteLineItemService;
+        private readonly IQuoteRepository _quoteRepository;
+        private readonly IQuoteService _quoteService;
+        private readonly ISalesRepRepository _salesRepRepository;
+        private readonly ITenantRepository _tenantRepository;
+        private readonly ITenantService _tenantService;
         private Address _address;
-        private ShippingAddressDetails _shippingAddressDetails;
-
-        private string _quoteId;
-        private List<LineItemDetails> _quoteLineItemsList;
         private CustomerDetails _customerDetails;
-        private QuoteDetails _quoteDetails;
-        private Quote _quote;        
+        private decimal _discountPercent;
         private bool _inProgress;
-        private bool _isCancelled;
-
-        private QuoteLineItemViewModel _selectedItem;
-        private bool _isBottomAppBarOpened;
-        private bool _itemNotSelected;
 
         private Visibility _isAddItemVisible;
-        private Visibility _isSubmitQuoteVisible;
-        private Visibility _isPlaceOrderVisible;
+        private bool _isBottomAppBarOpened;
+        private bool _isCancelled;
         private Visibility _isChangeAddressVisible;
-        private Visibility _isSendmailVisible;
-        private Visibility _isEditQuoteVisible;
+        private Visibility _isDeleteQuoteVisible;
         private Visibility _isEditQuoteLineItemVisible;
-        private Visibility _isDeleteQuoteVisible;        
-        private decimal _shippingAndHandling;        
-        private decimal _discountPercent;
+        private Visibility _isEditQuoteVisible;
+        private Visibility _isPlaceOrderVisible;
+        private Visibility _isSendmailVisible;
+        private Visibility _isSubmitQuoteVisible;
+        private bool _itemNotSelected;
         private string _log = string.Empty;
-        
+        private Quote _quote;
+        private QuoteDetails _quoteDetails;
+        private string _quoteId;
+
         private ObservableCollection<QuoteLineItemViewModel> _quoteLineItemViewModels;
+        private List<LineItemDetails> _quoteLineItemsList;
+        private QuoteLineItemViewModel _selectedItem;
+        private ShippingAddressDetails _shippingAddressDetails;
+        private decimal _shippingAndHandling;
+        private Tenant _tenant;
         private DataTransferManager dataTransferManager;
 
-
-        public List<LineItemDetails> QuoteLineItemsList
-        {
-
-            get { return _quoteLineItemsList; }
-            private set
-            {
-                SetProperty(ref _quoteLineItemsList, value);
-            }
-        }
-
-        public CustomerDetails CustomerDetails
-        {
-
-            get { return _customerDetails; }
-            private set
-            {
-                SetProperty(ref _customerDetails, value);
-            }
-        }
-
-        public QuoteDetails QuoteDetails
-        {
-
-            get { return _quoteDetails; }
-            private set
-            {
-                SetProperty(ref _quoteDetails, value);
-            }
-        }
-        
-        public ShippingAddressDetails ShippingAddressDetails
-        {
-            get { return _shippingAddressDetails; }
-            private set
-            {
-                SetProperty(ref _shippingAddressDetails, value);
-            }
-        }    
-
-        public Address Address
-        {
-            get { return _address; }
-            private set
-            {
-                SetProperty(ref _address, value);
-            }
-        }
-        public decimal ShippingAndHandling
-        {
-            get { return _shippingAndHandling; }
-            set
-            {
-                SetProperty(ref _shippingAndHandling, value);
-            }
-        }
-
-        public decimal DiscountPercent
-        {
-            get { return _discountPercent; }
-            set
-            {
-                SetProperty(ref _discountPercent, value);
-            }
-            
-
-        }
-
-        public decimal DiscountPercentageValue
-        {
-            get { return CalculateDiscountPercent(); }
-        }
-
-        public decimal Total
-        {
-            get { return Math.Round(CalculateTotal(), 2); }
-        }
-
-        public decimal SubTotal
-        {
-            get { return Math.Round(CalculateSubTotal(), 2); }
-        }
-
-        public bool IsBottomAppBarOpened
-        {
-            get { return _isBottomAppBarOpened; }
-            set
-            {
-                // We always fire the PropertyChanged event because the 
-                // AppBar.IsOpen property doesn't notify when the property is set.
-                // See http://go.microsoft.com/fwlink/?LinkID=288840
-
-                if (this._isBottomAppBarOpened == value) { return; }
-                _isBottomAppBarOpened = value;
-                OnPropertyChanged("IsBottomAppBarOpened");
-
-            }
-        }
-
-        /// Data loading indicator
-        /// </summary>
-        public bool InProgress
-        {
-            get { return _inProgress; }
-            private set { SetProperty(ref _inProgress, value); }
-        }
-
-        /// <summary>
-        /// AddItem bottom app bar button visibility property
-        /// </summary>
-        public Visibility IsAddItemVisible
-        {
-            get
-            {
-                return _isAddItemVisible;
-            }
-            private set
-            {
-                SetProperty(ref _isAddItemVisible, value);
-            }
-        }
-
-        /// <summary>
-        /// SubmitQuote bottom app bar button visibility property
-        /// </summary>
-        public Visibility IsSubmitQuoteVisible
-        {
-            get
-            {
-                return _isSubmitQuoteVisible;
-            }
-            private set
-            {
-                SetProperty(ref _isSubmitQuoteVisible, value);
-            }
-
-        }
-
-        /// <summary>
-        /// PlaceOrder bottom appbar visibility property
-        /// </summary>
-        public Visibility IsPlaceOrderVisible
-        {
-            get
-            {
-                return _isPlaceOrderVisible;
-            }
-            private set
-            {
-                SetProperty(ref _isPlaceOrderVisible, value);
-            }
-
-        }
-
-        public Visibility IsChangeAddressVisible
-        {
-            get
-            {
-                return _isChangeAddressVisible;
-            }
-            private set
-            {
-                SetProperty(ref _isChangeAddressVisible, value);
-            }
-
-        }
-
-        public Visibility IsSendmailVisible
-        {
-            get
-            {
-                return _isSendmailVisible;
-            }
-            private set
-            {
-                SetProperty(ref _isSendmailVisible, value);
-            }
-
-        }
-
-        public Visibility IsEditQuoteVisible
-        {
-            get
-            {
-                return _isEditQuoteVisible;
-            }
-            private set
-            {
-                SetProperty(ref _isEditQuoteVisible, value);
-            }
-
-        }
-
-        public Visibility IsEditQuoteLineItemVisible
-        {
-            get
-            {
-                return _isEditQuoteLineItemVisible;
-            }
-            private set
-            {
-                SetProperty(ref _isEditQuoteLineItemVisible, value);
-            }
-
-        }
-
-        public Visibility IsDeleteQuoteVisible
-        {
-            get
-            {
-                return _isDeleteQuoteVisible;
-            }
-            private set
-            {
-                SetProperty(ref _isDeleteQuoteVisible, value);
-            }
-
-        }
-
-        public ObservableCollection<QuoteLineItemViewModel> QuoteLineItemViewModels
-        {
-            get { return _quoteLineItemViewModels; }
-            private set
-            {
-                SetProperty(ref _quoteLineItemViewModels, value);
-                InProgress = false;
-            }
-        }
-
-        public QuoteDetailsPageViewModel(INavigationService navigationService, IEventAggregator eventAggregator, IQuoteLineItemService quoteLineItemService, IQuoteLineItemRepository quoteLineItemRepository, IQuoteRepository quoteRepository,
-                                         ICustomerRepository customerRepository, ITenantService tenantService, ITenantRepository tenantRepository, IQuoteService quoteService, ISalesRepRepository salesRepRepository, IAddressRepository addressRepository)
+        public QuoteDetailsPageViewModel(INavigationService navigationService, IEventAggregator eventAggregator,
+            IQuoteLineItemService quoteLineItemService, IQuoteLineItemRepository quoteLineItemRepository,
+            IQuoteRepository quoteRepository,
+            ICustomerRepository customerRepository, ITenantService tenantService, ITenantRepository tenantRepository,
+            IQuoteService quoteService, ISalesRepRepository salesRepRepository, IAddressRepository addressRepository)
         {
             _navigationService = navigationService;
             _quoteLineItemService = quoteLineItemService;
@@ -330,225 +102,157 @@ namespace SageMobileSales.UILogic.ViewModels
             {
                 eventAggregator.GetEvent<QuoteDetailsUpdatedEvent>().Subscribe(UpdateQuoteDetailsAsync);
             }
-
         }
 
-        public async override void OnNavigatedTo(object navigationParameter, Windows.UI.Xaml.Navigation.NavigationMode navigationMode, Dictionary<string, object> viewModelState)
+
+        public List<LineItemDetails> QuoteLineItemsList
         {
+            get { return _quoteLineItemsList; }
+            private set { SetProperty(ref _quoteLineItemsList, value); }
+        }
 
-            _quoteId = navigationParameter as string;
-            //  await _addressRepository.GetShippingAddressForCustomer(QuoteDetails.CustomerId);
+        public CustomerDetails CustomerDetails
+        {
+            get { return _customerDetails; }
+            private set { SetProperty(ref _customerDetails, value); }
+        }
 
-            Frame Frame = Window.Current.Content as Frame;
+        public QuoteDetails QuoteDetails
+        {
+            get { return _quoteDetails; }
+            private set { SetProperty(ref _quoteDetails, value); }
+        }
 
-            if (Frame != null)
+        public ShippingAddressDetails ShippingAddressDetails
+        {
+            get { return _shippingAddressDetails; }
+            private set { SetProperty(ref _shippingAddressDetails, value); }
+        }
+
+        public Address Address
+        {
+            get { return _address; }
+            private set { SetProperty(ref _address, value); }
+        }
+
+        public decimal ShippingAndHandling
+        {
+            get { return _shippingAndHandling; }
+            set { SetProperty(ref _shippingAndHandling, value); }
+        }
+
+        public decimal DiscountPercent
+        {
+            get { return _discountPercent; }
+            set { SetProperty(ref _discountPercent, value); }
+        }
+
+        public decimal DiscountPercentageValue
+        {
+            get { return CalculateDiscountPercent(); }
+        }
+
+        public decimal Total
+        {
+            get { return Math.Round(CalculateTotal(), 2); }
+        }
+
+        public decimal SubTotal
+        {
+            get { return Math.Round(CalculateSubTotal(), 2); }
+        }
+
+        public bool IsBottomAppBarOpened
+        {
+            get { return _isBottomAppBarOpened; }
+            set
             {
-                if (Frame.BackStack.Count >= 2)
+                // We always fire the PropertyChanged event because the 
+                // AppBar.IsOpen property doesn't notify when the property is set.
+                // See http://go.microsoft.com/fwlink/?LinkID=288840
+
+                if (_isBottomAppBarOpened == value)
                 {
-                    Frame.BackStack.RemoveAt(Frame.BackStack.Count - 1);
+                    return;
                 }
+                _isBottomAppBarOpened = value;
+                OnPropertyChanged("IsBottomAppBarOpened");
             }
-
-            // Register the current page as a share source.
-            this.dataTransferManager = DataTransferManager.GetForCurrentView();
-            this.dataTransferManager.DataRequested += new TypedEventHandler<DataTransferManager, DataRequestedEventArgs>(this.OnDataRequested);
-
-            QuoteDetails = await _quoteRepository.GetQuoteDetailsAsync(_quoteId);
-
-
-            ShippingAddressDetails = await _addressRepository.GetShippingAddress(QuoteDetails.AddressId);
-            InProgress = true;
-            await DisplayQuotedetails();
-
-            //Process all pending tasks
-            if (Constants.ConnectedToInternet())
-                await ProcessPendingRequestsForQuote();
-
-            base.OnNavigatedTo(navigationParameter, navigationMode, viewModelState);
-
         }
 
-        public override void OnNavigatedFrom(Dictionary<string, object> viewModelState, bool suspending)
+        /// Data loading indicator
+        /// </summary>
+        public bool InProgress
         {
-            if (this.dataTransferManager != null)
-            {
-                // Unregister the current page as a share source.
-                this.dataTransferManager.DataRequested -= new TypedEventHandler<DataTransferManager, DataRequestedEventArgs>(this.OnDataRequested);
-            }
-            base.OnNavigatedFrom(viewModelState, suspending);
+            get { return _inProgress; }
+            private set { SetProperty(ref _inProgress, value); }
         }
 
         /// <summary>
-        ///Navigate to other Addresses screen on click of changeAddress app bar button
+        ///     AddItem bottom app bar button visibility property
         /// </summary>
-
-        public async void ChangeAddressButton_Click(object sender, object parameter)
+        public Visibility IsAddItemVisible
         {
-            try
-            {
-                //_quote = await _quoteRepository.GetQuoteAsync(QuoteDetails.QuoteId);
-
-                //if (_quote.QuoteStatus == DataAccessUtils.SubmitQuote || _quote.QuoteStatus == "Quote")
-                //{
-
-                //    await ShowMessageDialog(ResourceLoader.GetForCurrentView("Resources").GetString("ChangeQuoteMesDialogText"), ResourceLoader.GetForCurrentView("Resources").GetString("ChangeQuoteMesDialogTitle"), false, true);
-                //}
-                if (QuoteDetails != null)
-                {
-                    _navigationService.Navigate("OtherAddresses", QuoteDetails);
-                }
-
-
-            }
-            catch (Exception ex)
-            {
-                _log = AppEventSource.Log.WriteLine(ex);
-                AppEventSource.Log.Error(_log);
-            }
+            get { return _isAddItemVisible; }
+            private set { SetProperty(ref _isAddItemVisible, value); }
         }
 
         /// <summary>
-        /// Gets Quotedetails data from localDB and binds to appropriate properties.
+        ///     SubmitQuote bottom app bar button visibility property
         /// </summary>
-        private async Task DisplayQuotedetails()
+        public Visibility IsSubmitQuoteVisible
         {
-            try
-            {
-                if (Constants.ConnectedToInternet())
-                {
-                    await _quoteLineItemService.SyncQuoteLineItems(_quoteId);
-                }
-
-                QuoteLineItemsList = await _quoteLineItemRepository.GetQuoteLineItemDetailsAsync(_quoteId);
-
-                if (QuoteLineItemsList != null && QuoteLineItemsList.Count > 0)
-                {
-                    QuoteLineItemViewModels = new ObservableCollection<QuoteLineItemViewModel>();
-                    foreach (LineItemDetails lineitem in QuoteLineItemsList)
-                    {
-
-                        var quoteLineItemViewModel = new QuoteLineItemViewModel(lineitem);
-                        quoteLineItemViewModel.PropertyChanged += quoteLineItemViewModel_PropertyChanged;
-                        QuoteLineItemViewModels.Add(quoteLineItemViewModel);
-                    }
-                }
-
-                else
-                {
-                    InProgress = false;
-                    QuoteLineItemViewModels = null;
-                }
-                QuoteDetails = await _quoteRepository.GetQuoteDetailsAsync(_quoteId);
-
-                ShippingAndHandling = QuoteDetails.ShippingAndHandling;
-                DiscountPercent = QuoteDetails.DiscountPercent;
-                //if (QuoteDetails.QuoteStatus == DataAccessUtils.DraftQuote)
-                //{
-                //    IsSubmitQuote = Visibility.Visible;
-                //    IsPlaceOrder = Visibility.Collapsed;
-                //}
-                //else if (QuoteDetails.QuoteStatus == DataAccessUtils.SubmitQuote || QuoteDetails.QuoteStatus == "Quote")
-                //{
-                //    IsSubmitQuote = Visibility.Collapsed;
-                //    IsPlaceOrder = Visibility.Visible;
-                //}
-                CustomerDetails = await _customerRepository.GetCustomerDtlsForQuote(_quoteDetails.CustomerId, _quoteDetails.AddressId);
-
-                _itemNotSelected = true;
-                // changes app bar buttons visibility based on quote quote status
-                ChangeVisibility();
-
-                OnPropertyChanged("SubTotal");
-                OnPropertyChanged("Total");
-                OnPropertyChanged("ShippingAndHandling");
-                OnPropertyChanged("DiscountPercent");
-                OnPropertyChanged("DiscountPercentageValue");
-               
-
-
-                if (QuoteDetails.Amount > Total || QuoteDetails.Amount < Total)
-                {
-                    _quote = await UpdateQuote(string.Empty);
-                }
-                //MailViewModel objMail = new MailViewModel();
-                //await objMail.ReadTextFile();               
-            }
-            catch (Exception ex)
-            {
-                _log = AppEventSource.Log.WriteLine(ex);
-                AppEventSource.Log.Error(_log);
-            }
+            get { return _isSubmitQuoteVisible; }
+            private set { SetProperty(ref _isSubmitQuoteVisible, value); }
         }
 
-        private void quoteLineItemViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        /// <summary>
+        ///     PlaceOrder bottom appbar visibility property
+        /// </summary>
+        public Visibility IsPlaceOrderVisible
         {
-            if (e.PropertyName == "LineItemQuantity")
-            {
-                OnPropertyChanged("Amount");
-                OnPropertyChanged("SubTotal");
-                OnPropertyChanged("Total");
-            }
+            get { return _isPlaceOrderVisible; }
+            private set { SetProperty(ref _isPlaceOrderVisible, value); }
         }
 
-        public async void UpdateQuoteDetailsAsync(object notUsed)
+        public Visibility IsChangeAddressVisible
         {
-            await UpdateQuoteDetailsAsync();
+            get { return _isChangeAddressVisible; }
+            private set { SetProperty(ref _isChangeAddressVisible, value); }
         }
 
-        private async Task UpdateQuoteDetailsAsync()
+        public Visibility IsSendmailVisible
         {
-           
-
-            try
-            {
-
-                CheckoutCommand.RaiseCanExecuteChanged();
-                OnPropertyChanged("SubTotal");
-                //OnPropertyChanged("TotalDiscount");
-                OnPropertyChanged("Total");
-
-            }
-            catch (Exception ex)
-            {
-                _log = AppEventSource.Log.WriteLine(ex);
-                AppEventSource.Log.Error(_log);
-            }
-
+            get { return _isSendmailVisible; }
+            private set { SetProperty(ref _isSendmailVisible, value); }
         }
 
-        private decimal CalculateSubTotal()
+        public Visibility IsEditQuoteVisible
         {
-            decimal SubTotal = 0;
-            if (_quoteLineItemViewModels != null)
-            {
-                foreach (var quoteLineItemViewModel in _quoteLineItemViewModels)
-                {
-                    SubTotal += quoteLineItemViewModel.Amount;
-                }
-            }
-            return SubTotal;
+            get { return _isEditQuoteVisible; }
+            private set { SetProperty(ref _isEditQuoteVisible, value); }
         }
 
-        private decimal CalculateTotal()
+        public Visibility IsEditQuoteLineItemVisible
         {
-            decimal Total = 0;
-            if (_quoteDetails != null)
-            {
-                Total += SubTotal - DiscountPercentageValue + _shippingAndHandling + _quoteDetails.Tax;
-            }
-            return Total;
+            get { return _isEditQuoteLineItemVisible; }
+            private set { SetProperty(ref _isEditQuoteLineItemVisible, value); }
         }
 
-        private decimal CalculateDiscountPercent()
+        public Visibility IsDeleteQuoteVisible
         {
-            decimal discountPercentage = 0;
-            if (DiscountPercent!=0)
+            get { return _isDeleteQuoteVisible; }
+            private set { SetProperty(ref _isDeleteQuoteVisible, value); }
+        }
+
+        public ObservableCollection<QuoteLineItemViewModel> QuoteLineItemViewModels
+        {
+            get { return _quoteLineItemViewModels; }
+            private set
             {
-               // discountPercentage = Math.Round(((1 - ((SubTotal - DiscountPercentageValue) / SubTotal)) * 100), 2);
-                discountPercentage = Math.Round(((DiscountPercent / 100) * SubTotal), 2);                
+                SetProperty(ref _quoteLineItemViewModels, value);
+                InProgress = false;
             }
-            return discountPercentage;
-            
         }
 
 
@@ -584,7 +288,6 @@ namespace SageMobileSales.UILogic.ViewModels
             {
                 if (SetProperty(ref _selectedItem, value))
                 {
-
                     if (_selectedItem != null)
                     {
                         // Display the AppBar 
@@ -602,7 +305,6 @@ namespace SageMobileSales.UILogic.ViewModels
 
                     // changes app bar buttons visibility based on quote quote status
                     ChangeVisibility();
-
                 }
             }
         }
@@ -619,7 +321,7 @@ namespace SageMobileSales.UILogic.ViewModels
         }
 
         private async Task DecrementCount()
-        {          
+        {
             try
             {
                 //if (QuoteDetails.QuoteStatus == DataAccessUtils.SubmitQuote || QuoteDetails.QuoteStatus == "Quote")
@@ -631,7 +333,8 @@ namespace SageMobileSales.UILogic.ViewModels
                 // await _shoppingCartRepository.RemoveProductFromShoppingCartAsync(SelectedItem.ProductId);
                 SelectedItem.LineItemQuantity -= 1;
                 await UpdateQuote(string.Empty);
-                QuoteLineItem SelectedQuoteLineItem = await _quoteLineItemRepository.GetQuoteLineAsync(SelectedItem.LineItemId);
+                QuoteLineItem SelectedQuoteLineItem =
+                    await _quoteLineItemRepository.GetQuoteLineAsync(SelectedItem.LineItemId);
                 SelectedQuoteLineItem.Quantity = SelectedItem.LineItemQuantity;
                 await _quoteLineItemRepository.UpdateQuoteLineItemToDbAsync(SelectedQuoteLineItem);
                 if (_quote != null && Constants.ConnectedToInternet())
@@ -644,11 +347,11 @@ namespace SageMobileSales.UILogic.ViewModels
             {
                 _log = AppEventSource.Log.WriteLine(ex);
                 AppEventSource.Log.Error(_log);
-            }      
+            }
         }
 
         private async Task IncrementCount()
-        {           
+        {
             try
             {
                 //if (QuoteDetails.QuoteStatus == DataAccessUtils.SubmitQuote || QuoteDetails.QuoteStatus == "Quote")
@@ -660,7 +363,8 @@ namespace SageMobileSales.UILogic.ViewModels
                 // await _shoppingCartRepository.AddProductToShoppingCartAsync(SelectedItem.ProductId);
                 SelectedItem.LineItemQuantity += 1;
                 await UpdateQuote(string.Empty);
-                QuoteLineItem SelectedQuoteLineItem = await _quoteLineItemRepository.GetQuoteLineAsync(SelectedItem.LineItemId);
+                QuoteLineItem SelectedQuoteLineItem =
+                    await _quoteLineItemRepository.GetQuoteLineAsync(SelectedItem.LineItemId);
                 SelectedQuoteLineItem.Quantity = SelectedItem.LineItemQuantity;
                 await _quoteLineItemRepository.UpdateQuoteLineItemToDbAsync(SelectedQuoteLineItem);
                 if (_quote != null && Constants.ConnectedToInternet())
@@ -694,7 +398,6 @@ namespace SageMobileSales.UILogic.ViewModels
                 await _tenantService.SyncTenant();
                 _tenant = await _tenantRepository.GetTenantDtlsAsync(QuoteDetails.TenantId);
                 DataTransferManager.ShowShareUI();
-
             }
             catch (Exception ex)
             {
@@ -704,7 +407,7 @@ namespace SageMobileSales.UILogic.ViewModels
         }
 
         /// <summary>
-        /// Method to Update Quotestatus to Submit and sending the updated status to service.
+        ///     Method to Update Quotestatus to Submit and sending the updated status to service.
         /// </summary>
         /// <returns></returns>
         private async Task SubmitQuote()
@@ -731,14 +434,20 @@ namespace SageMobileSales.UILogic.ViewModels
 
                     _itemNotSelected = true;
                     ChangeVisibility();
-                    msgDialog = new MessageDialog(ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogSubmittedQuoteText"), ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogSubmittedQuoteTitle"));
+                    msgDialog =
+                        new MessageDialog(
+                            ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogSubmittedQuoteText"),
+                            ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogSubmittedQuoteTitle"));
                     msgDialog.Commands.Add(new UICommand("Ok"));
 
                     // _navigationService.GoBack();
                 }
                 else
                 {
-                    msgDialog = new MessageDialog(ResourceLoader.GetForCurrentView("Resources").GetString("SubmitQuoteErrorMessage"), ResourceLoader.GetForCurrentView("Resources").GetString("SubmitQuoteErrorTitle"));
+                    msgDialog =
+                        new MessageDialog(
+                            ResourceLoader.GetForCurrentView("Resources").GetString("SubmitQuoteErrorMessage"),
+                            ResourceLoader.GetForCurrentView("Resources").GetString("SubmitQuoteErrorTitle"));
                     msgDialog.Commands.Add(new UICommand("Ok"));
                 }
                 await msgDialog.ShowAsync();
@@ -751,7 +460,6 @@ namespace SageMobileSales.UILogic.ViewModels
         }
 
         /// <summary>
-        /// 
         /// </summary>
         /// <returns></returns>
         private async Task PlaceOrder()
@@ -765,26 +473,30 @@ namespace SageMobileSales.UILogic.ViewModels
         }
 
         /// <summary>
-        /// Deletes QuoteLineItem 
+        ///     Deletes QuoteLineItem
         /// </summary>
         /// <returns></returns>
         private async Task DeleteQuoteLineItem()
         {
-            await ShowMessageDialog(ResourceLoader.GetForCurrentView("Resources").GetString("DeleteQuoteLineItemMessageDialog"), string.Empty, false, false);
+            await
+                ShowMessageDialog(
+                    ResourceLoader.GetForCurrentView("Resources").GetString("DeleteQuoteLineItemMessageDialog"),
+                    string.Empty, false, false);
         }
 
         /// <summary>
-        /// Deletes Quote
+        ///     Deletes Quote
         /// </summary>
         /// <returns></returns>
         private async Task DeleteQuote()
         {
-            await ShowMessageDialog(ResourceLoader.GetForCurrentView("Resources").GetString("DeleteQuoteMessageDialog"), string.Empty, true, false);
-
+            await
+                ShowMessageDialog(ResourceLoader.GetForCurrentView("Resources").GetString("DeleteQuoteMessageDialog"),
+                    string.Empty, true, false);
         }
 
         /// <summary>
-        /// Changes Quote status from Submit/Quote to draft.
+        ///     Changes Quote status from Submit/Quote to draft.
         /// </summary>
         /// <returns></returns>
         private async Task ChangeQuoteStatus()
@@ -797,7 +509,11 @@ namespace SageMobileSales.UILogic.ViewModels
                 }
                 if (_quote.QuoteStatus == DataAccessUtils.SubmitQuote || _quote.QuoteStatus == "Quote")
                 {
-                    await ShowMessageDialog(ResourceLoader.GetForCurrentView("Resources").GetString("ChangeQuoteMesDialogText"), ResourceLoader.GetForCurrentView("Resources").GetString("ChangeQuoteMesDialogTitle"), false, true);
+                    await
+                        ShowMessageDialog(
+                            ResourceLoader.GetForCurrentView("Resources").GetString("ChangeQuoteMesDialogText"),
+                            ResourceLoader.GetForCurrentView("Resources").GetString("ChangeQuoteMesDialogTitle"), false,
+                            true);
                 }
                 _itemNotSelected = true;
                 ChangeVisibility();
@@ -808,8 +524,9 @@ namespace SageMobileSales.UILogic.ViewModels
                 AppEventSource.Log.Error(_log);
             }
         }
+
         /// <summary>
-        /// Textchanged event to get entered ShippingAndHandling
+        ///     Textchanged event to get entered ShippingAndHandling
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
@@ -817,9 +534,9 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             try
             {
-                if (((TextBox)args).Text != null && ((TextBox)args).Text != string.Empty)
+                if (((TextBox) args).Text != null && ((TextBox) args).Text != string.Empty)
                 {
-                    _shippingAndHandling = Convert.ToDecimal(((TextBox)args).Text);
+                    _shippingAndHandling = Convert.ToDecimal(((TextBox) args).Text);
                 }
                 else
                 {
@@ -836,7 +553,7 @@ namespace SageMobileSales.UILogic.ViewModels
         }
 
         /// <summary>
-        /// Textchanged event to get entered DiscountPercentage
+        ///     Textchanged event to get entered DiscountPercentage
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
@@ -844,34 +561,33 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             try
             {
-                if (((TextBox)args).Text != null && ((TextBox)args).Text != string.Empty)
+                if (((TextBox) args).Text != null && ((TextBox) args).Text != string.Empty)
                 {
                     SalesRep salesRep = (await _salesRepRepository.GetSalesRepDtlsAsync()).FirstOrDefault();
 
-                    DiscountPercent = Convert.ToDecimal(((TextBox)args).Text);
+                    DiscountPercent = Convert.ToDecimal(((TextBox) args).Text);
                     if (DiscountPercent < 100)
                     {
                         if (DiscountPercent > Convert.ToDecimal(salesRep.MaximumDiscountPercent))
                         {
-
-                            MessageDialog maxDiscountMesDialog = new MessageDialog(ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogDiscountPercentageText"), ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogDiscountPercentageTitle"));
+                            var maxDiscountMesDialog =
+                                new MessageDialog(
+                                    ResourceLoader.GetForCurrentView("Resources")
+                                        .GetString("MesDialogDiscountPercentageText"),
+                                    ResourceLoader.GetForCurrentView("Resources")
+                                        .GetString("MesDialogDiscountPercentageTitle"));
                             await maxDiscountMesDialog.ShowAsync();
                             DiscountPercent = Convert.ToDecimal(salesRep.MaximumDiscountPercent);
                         }
 
-                       // DiscountPercentageValue = Math.Round(((_discountPercent / 100) * SubTotal), 2);
+                        // DiscountPercentageValue = Math.Round(((_discountPercent / 100) * SubTotal), 2);
                     }
-                    else
-                    {
-                      //  DiscountPercentageValue = 0;
-                    }
-
                 }
 
                 OnPropertyChanged("DiscountPercent");
                 OnPropertyChanged("DiscountPercentageValue");
                 OnPropertyChanged("Total");
-                
+
                 await UpdateQuote(string.Empty);
             }
             catch (Exception ex)
@@ -883,15 +599,11 @@ namespace SageMobileSales.UILogic.ViewModels
 
         public string RemoveSpecialCharacters(string str)
         {
-
             if (Regex.IsMatch(str, "[^0-9]+"))
-            {                
+            {
                 return Regex.Replace(str, "[^0-9]+", "", RegexOptions.None);
             }
-            else
-            {               
-                return Regex.Replace(str, "[^0-9]+", "", RegexOptions.None);
-            }
+            return Regex.Replace(str, "[^0-9]+", "", RegexOptions.None);
         }
 
 
@@ -909,10 +621,11 @@ namespace SageMobileSales.UILogic.ViewModels
         private bool GetShareContent(DataRequest request)
         {
             bool succeeded = false;
-            MailViewModel objMail = new MailViewModel();
+            var objMail = new MailViewModel();
             QuoteDetails.ShippingAndHandling = ShippingAndHandling;
-            QuoteDetails.DiscountPercent = DiscountPercent;            
-            string HtmlContentString = objMail.BuildQuoteEmailContent(_tenant, CustomerDetails, QuoteDetails, QuoteLineItemsList, SubTotal.ToString(), Total.ToString());
+            QuoteDetails.DiscountPercent = DiscountPercent;
+            string HtmlContentString = objMail.BuildQuoteEmailContent(_tenant, CustomerDetails, QuoteDetails,
+                QuoteLineItemsList, SubTotal.ToString(), Total.ToString());
             if (!String.IsNullOrEmpty(HtmlContentString))
             {
                 DataPackage requestData = request.Data;
@@ -929,33 +642,38 @@ namespace SageMobileSales.UILogic.ViewModels
 
 
             return succeeded;
-
         }
 
         /// <summary>
-        ///Displays Messgae Dialog
+        ///     Displays Messgae Dialog
         /// </summary>
-        private async Task ShowMessageDialog(string messageText, string messageTitle, bool deleteQuote, bool isChangeStatus)
+        private async Task ShowMessageDialog(string messageText, string messageTitle, bool deleteQuote,
+            bool isChangeStatus)
         {
             var messageDialog = new MessageDialog(messageText, messageTitle);
 
             // Add commands and set their command ids
-            messageDialog.Commands.Add(new UICommand(ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogCancelbuttonText"), (command) =>
-            {
-                _isCancelled = true;
-                return;
-            }, 0));
+            messageDialog.Commands.Add(
+                new UICommand(ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogCancelbuttonText"),
+                    command => { _isCancelled = true; }, 0));
             if (deleteQuote)
             {
-                messageDialog.Commands.Add(new UICommand(ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogDeletebuttonText"), new UICommandInvokedHandler(this.DeleteQuoteCommandInvokedHandler), 1));
+                messageDialog.Commands.Add(
+                    new UICommand(ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogDeletebuttonText"),
+                        DeleteQuoteCommandInvokedHandler, 1));
             }
             else if (isChangeStatus)
             {
-                messageDialog.Commands.Add(new UICommand(ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogChangeStatusbuttonText"), new UICommandInvokedHandler(this.RevertQuoteStatusCommandInvokedHandler), 1));
+                messageDialog.Commands.Add(
+                    new UICommand(
+                        ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogChangeStatusbuttonText"),
+                        RevertQuoteStatusCommandInvokedHandler, 1));
             }
             else
             {
-                messageDialog.Commands.Add(new UICommand(ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogDeletebuttonText"), new UICommandInvokedHandler(this.DeleteQuoteLineItemCommandInvokedHandler), 1));
+                messageDialog.Commands.Add(
+                    new UICommand(ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogDeletebuttonText"),
+                        DeleteQuoteLineItemCommandInvokedHandler, 1));
             }
 
             // Set the command that will be invoked by default
@@ -966,7 +684,7 @@ namespace SageMobileSales.UILogic.ViewModels
         }
 
         /// <summary>
-        /// Callback function for the invocation of the dialog commands.
+        ///     Callback function for the invocation of the dialog commands.
         /// </summary>
         /// <param name="command">The command that was invoked.</param>
         private async void DeleteQuoteCommandInvokedHandler(IUICommand command)
@@ -994,7 +712,7 @@ namespace SageMobileSales.UILogic.ViewModels
 
 
         /// <summary>
-        /// Callback function for the invocation of the dialog commands.
+        ///     Callback function for the invocation of the dialog commands.
         /// </summary>
         /// <param name="command">The command that was invoked.</param>
         private async void DeleteQuoteLineItemCommandInvokedHandler(IUICommand command)
@@ -1025,7 +743,7 @@ namespace SageMobileSales.UILogic.ViewModels
         }
 
         /// <summary>
-        /// Callback function for the invocation of the dialog commands.
+        ///     Callback function for the invocation of the dialog commands.
         /// </summary>
         /// <param name="command">The command that was invoked.</param>
         private async void RevertQuoteStatusCommandInvokedHandler(IUICommand command)
@@ -1043,6 +761,213 @@ namespace SageMobileSales.UILogic.ViewModels
         }
 
         # endregion
+
+        public override async void OnNavigatedTo(object navigationParameter, NavigationMode navigationMode,
+            Dictionary<string, object> viewModelState)
+        {
+            _quoteId = navigationParameter as string;
+            //  await _addressRepository.GetShippingAddressForCustomer(QuoteDetails.CustomerId);
+
+            var Frame = Window.Current.Content as Frame;
+
+            if (Frame != null)
+            {
+                if (Frame.BackStack.Count >= 2)
+                {
+                    Frame.BackStack.RemoveAt(Frame.BackStack.Count - 1);
+                }
+            }
+
+            // Register the current page as a share source.
+            dataTransferManager = DataTransferManager.GetForCurrentView();
+            dataTransferManager.DataRequested += OnDataRequested;
+
+            QuoteDetails = await _quoteRepository.GetQuoteDetailsAsync(_quoteId);
+
+
+            ShippingAddressDetails = await _addressRepository.GetShippingAddress(QuoteDetails.AddressId);
+            InProgress = true;
+            await DisplayQuotedetails();
+
+            //Process all pending tasks
+            if (Constants.ConnectedToInternet())
+                await ProcessPendingRequestsForQuote();
+
+            base.OnNavigatedTo(navigationParameter, navigationMode, viewModelState);
+        }
+
+        public override void OnNavigatedFrom(Dictionary<string, object> viewModelState, bool suspending)
+        {
+            if (dataTransferManager != null)
+            {
+                // Unregister the current page as a share source.
+                dataTransferManager.DataRequested -= OnDataRequested;
+            }
+            base.OnNavigatedFrom(viewModelState, suspending);
+        }
+
+        /// <summary>
+        ///     Navigate to other Addresses screen on click of changeAddress app bar button
+        /// </summary>
+        public async void ChangeAddressButton_Click(object sender, object parameter)
+        {
+            try
+            {
+                //_quote = await _quoteRepository.GetQuoteAsync(QuoteDetails.QuoteId);
+
+                //if (_quote.QuoteStatus == DataAccessUtils.SubmitQuote || _quote.QuoteStatus == "Quote")
+                //{
+
+                //    await ShowMessageDialog(ResourceLoader.GetForCurrentView("Resources").GetString("ChangeQuoteMesDialogText"), ResourceLoader.GetForCurrentView("Resources").GetString("ChangeQuoteMesDialogTitle"), false, true);
+                //}
+                if (QuoteDetails != null)
+                {
+                    _navigationService.Navigate("OtherAddresses", QuoteDetails);
+                }
+            }
+            catch (Exception ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+        }
+
+        /// <summary>
+        ///     Gets Quotedetails data from localDB and binds to appropriate properties.
+        /// </summary>
+        private async Task DisplayQuotedetails()
+        {
+            try
+            {
+                if (Constants.ConnectedToInternet())
+                {
+                    await _quoteLineItemService.SyncQuoteLineItems(_quoteId);
+                }
+
+                QuoteLineItemsList = await _quoteLineItemRepository.GetQuoteLineItemDetailsAsync(_quoteId);
+
+                if (QuoteLineItemsList != null && QuoteLineItemsList.Count > 0)
+                {
+                    QuoteLineItemViewModels = new ObservableCollection<QuoteLineItemViewModel>();
+                    foreach (LineItemDetails lineitem in QuoteLineItemsList)
+                    {
+                        var quoteLineItemViewModel = new QuoteLineItemViewModel(lineitem);
+                        quoteLineItemViewModel.PropertyChanged += quoteLineItemViewModel_PropertyChanged;
+                        QuoteLineItemViewModels.Add(quoteLineItemViewModel);
+                    }
+                }
+
+                else
+                {
+                    InProgress = false;
+                    QuoteLineItemViewModels = null;
+                }
+                QuoteDetails = await _quoteRepository.GetQuoteDetailsAsync(_quoteId);
+
+                ShippingAndHandling = QuoteDetails.ShippingAndHandling;
+                DiscountPercent = QuoteDetails.DiscountPercent;
+                //if (QuoteDetails.QuoteStatus == DataAccessUtils.DraftQuote)
+                //{
+                //    IsSubmitQuote = Visibility.Visible;
+                //    IsPlaceOrder = Visibility.Collapsed;
+                //}
+                //else if (QuoteDetails.QuoteStatus == DataAccessUtils.SubmitQuote || QuoteDetails.QuoteStatus == "Quote")
+                //{
+                //    IsSubmitQuote = Visibility.Collapsed;
+                //    IsPlaceOrder = Visibility.Visible;
+                //}
+                CustomerDetails =
+                    await _customerRepository.GetCustomerDtlsForQuote(_quoteDetails.CustomerId, _quoteDetails.AddressId);
+
+                _itemNotSelected = true;
+                // changes app bar buttons visibility based on quote quote status
+                ChangeVisibility();
+
+                OnPropertyChanged("SubTotal");
+                OnPropertyChanged("Total");
+                OnPropertyChanged("ShippingAndHandling");
+                OnPropertyChanged("DiscountPercent");
+                OnPropertyChanged("DiscountPercentageValue");
+
+
+                if (QuoteDetails.Amount > Total || QuoteDetails.Amount < Total)
+                {
+                    _quote = await UpdateQuote(string.Empty);
+                }
+                //MailViewModel objMail = new MailViewModel();
+                //await objMail.ReadTextFile();               
+            }
+            catch (Exception ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+        }
+
+        private void quoteLineItemViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "LineItemQuantity")
+            {
+                OnPropertyChanged("Amount");
+                OnPropertyChanged("SubTotal");
+                OnPropertyChanged("Total");
+            }
+        }
+
+        public async void UpdateQuoteDetailsAsync(object notUsed)
+        {
+            await UpdateQuoteDetailsAsync();
+        }
+
+        private async Task UpdateQuoteDetailsAsync()
+        {
+            try
+            {
+                CheckoutCommand.RaiseCanExecuteChanged();
+                OnPropertyChanged("SubTotal");
+                //OnPropertyChanged("TotalDiscount");
+                OnPropertyChanged("Total");
+            }
+            catch (Exception ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+        }
+
+        private decimal CalculateSubTotal()
+        {
+            decimal SubTotal = 0;
+            if (_quoteLineItemViewModels != null)
+            {
+                foreach (QuoteLineItemViewModel quoteLineItemViewModel in _quoteLineItemViewModels)
+                {
+                    SubTotal += quoteLineItemViewModel.Amount;
+                }
+            }
+            return SubTotal;
+        }
+
+        private decimal CalculateTotal()
+        {
+            decimal Total = 0;
+            if (_quoteDetails != null)
+            {
+                Total += SubTotal - DiscountPercentageValue + _shippingAndHandling + _quoteDetails.Tax;
+            }
+            return Total;
+        }
+
+        private decimal CalculateDiscountPercent()
+        {
+            decimal discountPercentage = 0;
+            if (DiscountPercent != 0)
+            {
+                // discountPercentage = Math.Round(((1 - ((SubTotal - DiscountPercentageValue) / SubTotal)) * 100), 2);
+                discountPercentage = Math.Round(((DiscountPercent/100)*SubTotal), 2);
+            }
+            return discountPercentage;
+        }
 
         private async Task<Quote> UpdateQuote(string quoteStatus)
         {
@@ -1065,7 +990,6 @@ namespace SageMobileSales.UILogic.ViewModels
                 {
                     await _quoteService.UpdateDiscountOrShippingAndHandling(_quote);
                 }
-              
             }
             catch (Exception ex)
             {
@@ -1076,7 +1000,7 @@ namespace SageMobileSales.UILogic.ViewModels
         }
 
         /// <summary>
-        /// Changes appbar buttons visibility based on quote status & selected items.
+        ///     Changes appbar buttons visibility based on quote status & selected items.
         /// </summary>
         private async void ChangeVisibility()
         {
@@ -1130,7 +1054,8 @@ namespace SageMobileSales.UILogic.ViewModels
                     IsEditQuoteVisible = Visibility.Collapsed;
                     IsPlaceOrderVisible = Visibility.Collapsed;
                 }
-                else if ((_quote.QuoteStatus == DataAccessUtils.SubmitQuote || _quote.QuoteStatus == DataAccessUtils.Quote) && !(_itemNotSelected))
+                else if ((_quote.QuoteStatus == DataAccessUtils.SubmitQuote ||
+                          _quote.QuoteStatus == DataAccessUtils.Quote) && !(_itemNotSelected))
                 {
                     IsAddItemVisible = Visibility.Collapsed;
                     IsChangeAddressVisible = Visibility.Collapsed;
@@ -1140,7 +1065,7 @@ namespace SageMobileSales.UILogic.ViewModels
                     IsEditQuoteLineItemVisible = Visibility.Collapsed;
                     IsEditQuoteVisible = Visibility.Visible;
                     IsPlaceOrderVisible = Visibility.Collapsed;
-                }              
+                }
                 else
                 {
                     IsAddItemVisible = Visibility.Collapsed;
@@ -1194,7 +1119,7 @@ namespace SageMobileSales.UILogic.ViewModels
         }
 
         /// <summary>
-        /// Process all pending tasks for quotes
+        ///     Process all pending tasks for quotes
         /// </summary>
         /// <returns></returns>
         public async Task ProcessPendingRequestsForQuote()
@@ -1210,13 +1135,15 @@ namespace SageMobileSales.UILogic.ViewModels
                     quote = await _quoteService.PostQuote(quote);
 
                     if (quote != null)
-                        await _quoteService.UpdateQuoteShippingAddress(quote, await _addressRepository.GetQuoteShippingAddress(quote.AddressId));
+                        await
+                            _quoteService.UpdateQuoteShippingAddress(quote,
+                                await _addressRepository.GetQuoteShippingAddress(quote.AddressId));
                 }
                 else
                 {
                     quote = await _quoteService.PostQuote(quote);
                 }
-                
+
                 if (quote != null)
                 {
                     _quoteId = quote.QuoteId;

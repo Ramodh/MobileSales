@@ -27,13 +27,13 @@
             x:Name="groupedItemsViewSource"
             Source="{Binding GroupedCustomerList}"
             IsSourceGrouped="true"
-            ItemsPath="CustomerAddressList"/>
+            ItemsPath="CustomerAddressList" />
 
     </prism:VisualStateAwarePage.Resources>
 
     <prism:VisualStateAwarePage.TopAppBar>
         <AppBar x:Name="TopAppBar1" Style="{StaticResource TopAppBarUserControlStyle}" x:Uid="TopAppBar1">
-            <views:TopAppBarUserControl/>
+            <views:TopAppBarUserControl />
         </AppBar>
     </prism:VisualStateAwarePage.TopAppBar>
 
@@ -45,24 +45,26 @@
     <Grid x:Name="LayoutRoot" Style="{StaticResource LayoutRootStyle}">
         <Grid.ChildrenTransitions>
             <TransitionCollection>
-                <EntranceThemeTransition/>
+                <EntranceThemeTransition />
             </TransitionCollection>
         </Grid.ChildrenTransitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="140"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="140" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        
-        <ProgressRing Grid.Row="1" Height="70" Width="70" 
-                      IsActive="{Binding InProgress, Mode=TwoWay}" 
-                      Visibility="{Binding InProgress, Mode=TwoWay,Converter={StaticResource InProgessVisibilityConverter}}"
-                      Style="{StaticResource GridViewProgressRingStyle}"/>
 
-        <TextBlock x:Name="emptyCustomersTb" Grid.Row="1" Style="{StaticResource EmptyTitleTextStyle}" Text="{Binding EmptyCustomers}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        
+        <ProgressRing Grid.Row="1" Height="70" Width="70"
+                      IsActive="{Binding InProgress, Mode=TwoWay}"
+                      Visibility="{Binding InProgress, Mode=TwoWay,Converter={StaticResource InProgessVisibilityConverter}}"
+                      Style="{StaticResource GridViewProgressRingStyle}" />
+
+        <TextBlock x:Name="emptyCustomersTb" Grid.Row="1" Style="{StaticResource EmptyTitleTextStyle}"
+                   Text="{Binding EmptyCustomers}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+
         <SemanticZoom x:Name="semanticZoom" Grid.RowSpan="2">
             <SemanticZoom.ZoomedOutView>
-                <GridView Style="{StaticResource GridViewStyle}" ItemTemplate="{StaticResource CustomerSemanticZoomedOutItemTemplate}" 
+                <GridView Style="{StaticResource GridViewStyle}"
+                          ItemTemplate="{StaticResource CustomerSemanticZoomedOutItemTemplate}"
                           ItemContainerStyle="{StaticResource CustomerZoomedOutGridViewItemContainerStyle}">
                     <GridView.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -74,25 +76,25 @@
 
             <SemanticZoom.ZoomedInView>
                 <GridView
-            x:Name="itemGridView"
-            AutomationProperties.AutomationId="ItemGridView"
-            AutomationProperties.Name="Grouped Items"
-            Grid.RowSpan="2"
-            Style="{StaticResource GridViewStyle}"
-            ItemsSource="{Binding Source={StaticResource groupedItemsViewSource}}"
-            SelectionMode="None"
-            IsSwipeEnabled="false"
-            IsItemClickEnabled="True"
-            ItemTemplate="{StaticResource CustomerSemanticZoomedInItemTemplate}">
+                    x:Name="itemGridView"
+                    AutomationProperties.AutomationId="ItemGridView"
+                    AutomationProperties.Name="Grouped Items"
+                    Grid.RowSpan="2"
+                    Style="{StaticResource GridViewStyle}"
+                    ItemsSource="{Binding Source={StaticResource groupedItemsViewSource}}"
+                    SelectionMode="None"
+                    IsSwipeEnabled="false"
+                    IsItemClickEnabled="True"
+                    ItemTemplate="{StaticResource CustomerSemanticZoomedInItemTemplate}">
                     <interactivity:Interaction.Behaviors>
                         <core:EventTriggerBehavior EventName="ItemClick">
                             <core:CallMethodAction MethodName="GridViewItemClick"
-                TargetObject="{Binding Mode=OneWay}" />
+                                                   TargetObject="{Binding Mode=OneWay}" />
                         </core:EventTriggerBehavior>
                     </interactivity:Interaction.Behaviors>
                     <GridView.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <ItemsWrapGrid GroupPadding="0,0,70,0"/>
+                            <ItemsWrapGrid GroupPadding="0,0,70,0" />
                         </ItemsPanelTemplate>
                     </GridView.ItemsPanel>
                     <GridView.GroupStyle>
@@ -101,11 +103,13 @@
                                 <DataTemplate>
                                     <Grid Margin="0,0,0,2">
                                         <Button Foreground="{ThemeResource ApplicationHeaderForegroundThemeBrush}"
-                                    AutomationProperties.Name="Group Title"
-                                    Style="{StaticResource TextBlockButtonStyle}" >
+                                                AutomationProperties.Name="Group Title"
+                                                Style="{StaticResource TextBlockButtonStyle}">
                                             <StackPanel Orientation="Horizontal">
-                                                <TextBlock Text="{Binding GroupName}" Style="{StaticResource SubHeaderStyle}"/>
-                                                <TextBlock Text="{StaticResource ChevronGlyph}" Style="{StaticResource SubHeaderGlyphStyle}"/>
+                                                <TextBlock Text="{Binding GroupName}"
+                                                           Style="{StaticResource SubHeaderStyle}" />
+                                                <TextBlock Text="{StaticResource ChevronGlyph}"
+                                                           Style="{StaticResource SubHeaderGlyphStyle}" />
                                             </StackPanel>
                                         </Button>
                                     </Grid>
@@ -120,20 +124,22 @@
         <!-- Back button and page title -->
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="120"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="120" />
+                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <Button x:Name="backButton" Command="{Binding GoBackCommand, ElementName=pageRoot}"
-                        Style="{StaticResource NavigationCustomBackButtonNormalStyle}"
-                        VerticalAlignment="Top"
-                        AutomationProperties.Name="Back"
-                        AutomationProperties.AutomationId="BackButton"
-                        AutomationProperties.ItemType="Navigation Button"/>
-            <TextBlock x:Name="customersPageTitle" Text="" x:Uid="customersPageTitle" Grid.Column="1" Style="{StaticResource PageTitleTextStyle}"
-                        IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom"/>
+                    Style="{StaticResource NavigationCustomBackButtonNormalStyle}"
+                    VerticalAlignment="Top"
+                    AutomationProperties.Name="Back"
+                    AutomationProperties.AutomationId="BackButton"
+                    AutomationProperties.ItemType="Navigation Button" />
+            <TextBlock x:Name="customersPageTitle" Text="" x:Uid="customersPageTitle" Grid.Column="1"
+                       Style="{StaticResource PageTitleTextStyle}"
+                       IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" />
 
-            <views:BackgroundSyncIndicatorUserControl Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Top"
-                      Visibility="{Binding SyncProgress, Mode=TwoWay,Converter={StaticResource InProgessVisibilityConverter}}"/>
+            <views:BackgroundSyncIndicatorUserControl Grid.Column="1" HorizontalAlignment="Right"
+                                                      VerticalAlignment="Top"
+                                                      Visibility="{Binding SyncProgress, Mode=TwoWay,Converter={StaticResource InProgessVisibilityConverter}}" />
         </Grid>
     </Grid>
 </prism:VisualStateAwarePage>

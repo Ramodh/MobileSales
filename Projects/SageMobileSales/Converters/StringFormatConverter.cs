@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.UI.Xaml.Data;
 
 namespace SageMobileSales.Converters
@@ -17,7 +13,7 @@ namespace SageMobileSales.Converters
             if (parameter == null)
                 return value;
 
-            return string.Format((string)parameter, value);
+            return string.Format((string) parameter, value);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter,

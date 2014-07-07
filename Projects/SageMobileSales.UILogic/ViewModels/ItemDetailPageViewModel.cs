@@ -1,40 +1,59 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
 using Microsoft.Practices.Prism.StoreApps;
 using Microsoft.Practices.Prism.StoreApps.Interfaces;
-using SageMobileSales.DataAccess.Repositories;
-using SageMobileSales.DataAccess.Entities;
-using SageMobileSales.DataAccess.Model;
-using SageMobileSales.ServiceAgents.Services;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml;
-using SageMobileSales.UILogic.Common;
-using SageMobileSales.ServiceAgents.Common;
 using SageMobileSales.DataAccess.Common;
+using SageMobileSales.DataAccess.Entities;
+using SageMobileSales.DataAccess.Repositories;
+using SageMobileSales.ServiceAgents.Common;
+using SageMobileSales.ServiceAgents.Services;
+using SageMobileSales.UILogic.Common;
 
 namespace SageMobileSales.UILogic.ViewModels
 {
-    class ItemDetailPageViewModel : ViewModel
+    internal class ItemDetailPageViewModel : ViewModel
     {
-
-        private INavigationService _navigationService;
-        private IProductRepository _productRepository;
-        private IProductAssociatedBlobsRepository _productAssociatedBlobsRepository;
-        private IProductDetailsService _productDetailsService;
+        private readonly ICustomerRepository _customerRepository;
+        private readonly INavigationService _navigationService;
+        private readonly IProductAssociatedBlobsRepository _productAssociatedBlobsRepository;
+        private readonly IProductDetailsService _productDetailsService;
+        private readonly IProductRepository _productRepository;
+        private readonly IQuoteLineItemRepository _quoteLineItemRepository;
+        private readonly IQuoteLineItemService _quoteLineItemService;
+        private readonly IQuoteRepository _quoteRepository;
+        private readonly IQuoteService _quoteService;
         private IContactRepository _contactRepository;
-        private ICustomerRepository _customerRepository;
-        private IQuoteService _quoteService;
-        private IQuoteLineItemService _quoteLineItemService;
-        private IQuoteLineItemRepository _quoteLineItemRepository;
-        private IQuoteRepository _quoteRepository;
 
-        private List<ProductAssociatedBlob> _productImage;
-        private List<ProductAssociatedBlob> _otherProduct;
         private List<Customer> _customerList;
         private bool _emptyText;
+        private List<ProductAssociatedBlob> _otherProduct;
+        private List<ProductAssociatedBlob> _productImage;
+
+        public ItemDetailPageViewModel(INavigationService navigationService, IProductRepository productRepository,
+            IProductAssociatedBlobsRepository productAssociatedBlobsRepository,
+            IProductDetailsService productDetailsService,
+            IContactRepository contactRepository, ICustomerRepository customerRepository, IQuoteService quoteService,
+            IQuoteLineItemRepository quoteLineItemRepository, IQuoteRepository quoteRepository,
+            IQuoteLineItemService quoteLineItemService)
+        {
+            _navigationService = navigationService;
+            _productRepository = productRepository;
+            _productAssociatedBlobsRepository = productAssociatedBlobsRepository;
+            _productDetailsService = productDetailsService;
+            _contactRepository = contactRepository;
+            _customerRepository = customerRepository;
+            _quoteService = quoteService;
+            _quoteLineItemService = quoteLineItemService;
+            _quoteLineItemRepository = quoteLineItemRepository;
+            _quoteRepository = quoteRepository;
+            TextChangedCommand = new DelegateCommand<object>(TextBoxTextChanged);
+            IncrementCountCommand = DelegateCommand.FromAsyncHandler(IncrementCount);
+            DecrementCountCommand = DelegateCommand.FromAsyncHandler(DecrementCount);
+        }
 
         public DelegateCommand<object> TextChangedCommand { get; set; }
         public DelegateCommand IncrementCountCommand { get; private set; }
@@ -42,21 +61,22 @@ namespace SageMobileSales.UILogic.ViewModels
         public DelegateCommand DecrementCountCommand { get; private set; }
 
         #region Properties
+
+        private Visibility _camefromCatalog;
+        private Visibility _camefromCreateQuote;
+        private int _enteredQuantity;
         private bool _inProgress;
+        private string _log = string.Empty;
+        private Product _productDetail;
         private string _productId;
         private string _productName;
         private string _productPrice;
         private string _productSKU;
         private string _productStock;
         private string _unitOfMeasure;
-        private int _enteredQuantity;
-        private Product _productDetail;
-        private Visibility _camefromCreateQuote;
-        private Visibility _camefromCatalog;
-        private string _log = string.Empty;
 
         /// <summary>
-        /// Data loading indicator
+        ///     Data loading indicator
         /// </summary>
         public bool InProgress
         {
@@ -87,11 +107,13 @@ namespace SageMobileSales.UILogic.ViewModels
             get { return _productStock; }
             private set { SetProperty(ref _productStock, value); }
         }
+
         public string UnitOfMeasure
         {
             get { return _unitOfMeasure; }
             private set { SetProperty(ref _unitOfMeasure, value); }
         }
+
         public Product ProductDetails
         {
             get { return _productDetail; }
@@ -115,8 +137,9 @@ namespace SageMobileSales.UILogic.ViewModels
             get { return _customerList; }
             private set { SetProperty(ref _customerList, value); }
         }
+
         /// <summary>
-        /// Display empty results text
+        ///     Display empty results text
         /// </summary>
         public bool EmptyText
         {
@@ -126,62 +149,26 @@ namespace SageMobileSales.UILogic.ViewModels
 
         public Visibility CamefromCreateQuote
         {
-            get
-            {
-                return _camefromCreateQuote;
-            }
-            private set
-            {
-                SetProperty(ref _camefromCreateQuote, value);
-            }
+            get { return _camefromCreateQuote; }
+            private set { SetProperty(ref _camefromCreateQuote, value); }
         }
 
         public Visibility CamefromCatalog
         {
-            get
-            {
-                return _camefromCatalog;
-            }
-            private set
-            {
-                SetProperty(ref _camefromCatalog, value);
-            }
+            get { return _camefromCatalog; }
+            private set { SetProperty(ref _camefromCatalog, value); }
         }
 
         public int EnteredQuantity
         {
-            get
-            {
-                return _enteredQuantity;
-            }
-            private set
-            {
-                SetProperty(ref _enteredQuantity, value);
-            }
+            get { return _enteredQuantity; }
+            private set { SetProperty(ref _enteredQuantity, value); }
         }
+
         #endregion
 
-        public ItemDetailPageViewModel(INavigationService navigationService, IProductRepository productRepository,
-            IProductAssociatedBlobsRepository productAssociatedBlobsRepository, IProductDetailsService productDetailsService,
-            IContactRepository contactRepository, ICustomerRepository customerRepository, IQuoteService quoteService,
-            IQuoteLineItemRepository quoteLineItemRepository, IQuoteRepository quoteRepository, IQuoteLineItemService quoteLineItemService)
-        {
-            _navigationService = navigationService;
-            _productRepository = productRepository;
-            _productAssociatedBlobsRepository = productAssociatedBlobsRepository;
-            _productDetailsService = productDetailsService;
-            _contactRepository = contactRepository;
-            _customerRepository = customerRepository;
-            _quoteService = quoteService;
-            _quoteLineItemService = quoteLineItemService;
-            _quoteLineItemRepository = quoteLineItemRepository;
-            _quoteRepository = quoteRepository;
-            TextChangedCommand = new DelegateCommand<object>(TextBoxTextChanged);
-            IncrementCountCommand = DelegateCommand.FromAsyncHandler(IncrementCount);
-            DecrementCountCommand = DelegateCommand.FromAsyncHandler(DecrementCount);
-        }
-
-        public async override void OnNavigatedTo(object navigationParameter, Windows.UI.Xaml.Navigation.NavigationMode navigationMode, Dictionary<string, object> viewModelState)
+        public override async void OnNavigatedTo(object navigationParameter, NavigationMode navigationMode,
+            Dictionary<string, object> viewModelState)
         {
             _productId = navigationParameter as string;
             if (PageUtils.CamefromQuoteDetails)
@@ -215,13 +202,13 @@ namespace SageMobileSales.UILogic.ViewModels
         }
 
         /// <summary>
-        /// Grid View Item Click 
+        ///     Grid View Item Click
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="parameter"></param>
         public async void GridViewItemClick(object sender, object parameter)
         {
-            var productId = (((parameter as ItemClickEventArgs).ClickedItem as ProductAssociatedBlob).ProductId);
+            string productId = (((parameter as ItemClickEventArgs).ClickedItem as ProductAssociatedBlob).ProductId);
 
             //Display data from LocalDB
             DisplayProductDetails(productId);
@@ -231,7 +218,6 @@ namespace SageMobileSales.UILogic.ViewModels
             //Need to implement caching for images
             //Display Updated from Web Service
             DisplayProductDetails(productId);
-
         }
 
         private async void DisplayProductDetails(string productId)
@@ -256,7 +242,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 {
                     ProductName = ProductDetails.ProductName != null ? ProductDetails.ProductName : string.Empty;
                     //Need to implement currency formatter
-                    ProductPrice = "$ " + ProductDetails.PriceStd.ToString();
+                    ProductPrice = "$ " + ProductDetails.PriceStd;
                     ProductSKU = ProductDetails.Sku;
                     ProductStock = ProductDetails.Quantity.ToString();
                     UnitOfMeasure = ProductDetails.UnitOfMeasure;
@@ -270,12 +256,10 @@ namespace SageMobileSales.UILogic.ViewModels
                 _log = AppEventSource.Log.WriteLine(ex);
                 AppEventSource.Log.Error(_log);
             }
-
-
         }
 
         /// <summary>
-        /// Navigate to Quotes
+        ///     Navigate to Quotes
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="parameter"></param>
@@ -299,14 +283,16 @@ namespace SageMobileSales.UILogic.ViewModels
             {
                 //InProgress = true;
                 Quote quote = await _quoteRepository.GetQuoteAsync(PageUtils.SelectedQuoteId);
-                QuoteLineItem quoteLineItemExists = await _quoteLineItemRepository.GetQuoteLineItemIfExistsForQuote(quote.QuoteId, _productId);
+                QuoteLineItem quoteLineItemExists =
+                    await _quoteLineItemRepository.GetQuoteLineItemIfExistsForQuote(quote.QuoteId, _productId);
 
                 if (quoteLineItemExists != null)
                 {
                     quoteLineItemExists.Quantity = quoteLineItemExists.Quantity + EnteredQuantity;
                     await _quoteLineItemRepository.UpdateQuoteLineItemToDbAsync(quoteLineItemExists);
 
-                    quote.Amount = quote.Amount + Math.Round((quoteLineItemExists.Price * quoteLineItemExists.Quantity), 2);
+                    quote.Amount = quote.Amount +
+                                   Math.Round((quoteLineItemExists.Price*quoteLineItemExists.Quantity), 2);
                     await _quoteRepository.UpdateQuoteToDbAsync(quote);
 
                     if (quote.QuoteId.Contains(PageUtils.Pending))
@@ -331,9 +317,9 @@ namespace SageMobileSales.UILogic.ViewModels
                 }
                 else
                 {
-                    QuoteLineItem quoteLineItem = new QuoteLineItem();
+                    var quoteLineItem = new QuoteLineItem();
                     quoteLineItem.QuoteId = PageUtils.SelectedQuoteId;
-                    quoteLineItem.QuoteLineItemId = PageUtils.Pending + System.Guid.NewGuid().ToString();
+                    quoteLineItem.QuoteLineItemId = PageUtils.Pending + Guid.NewGuid();
                     quoteLineItem.ProductId = _productId;
                     quoteLineItem.tenantId = ProductDetails.TenantId;
                     quoteLineItem.Price = ProductDetails.PriceStd;
@@ -342,7 +328,7 @@ namespace SageMobileSales.UILogic.ViewModels
 
                     await _quoteLineItemRepository.AddQuoteLineItemToDbAsync(quoteLineItem);
 
-                    quote.Amount = quote.Amount + Math.Round((quoteLineItem.Price * quoteLineItem.Quantity), 2);
+                    quote.Amount = quote.Amount + Math.Round((quoteLineItem.Price*quoteLineItem.Quantity), 2);
                     await _quoteRepository.UpdateQuoteToDbAsync(quote);
 
                     if (quote.QuoteId.Contains(PageUtils.Pending))
@@ -359,7 +345,6 @@ namespace SageMobileSales.UILogic.ViewModels
                 }
 
 
-
                 // Need to Make Post Service call to send quote lineitems to server.
                 //quote = await _quoteService.PostQuote(quote);
                 //_navigationService.Navigate("QuoteDetails", quoteLineItem.QuoteId);
@@ -367,7 +352,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 PageUtils.SelectedQuoteId = string.Empty;
                 PageUtils.CamefromQuoteDetails = false;
 
-                Frame Frame = Window.Current.Content as Frame;
+                var Frame = Window.Current.Content as Frame;
                 //InProgress = false;
                 if (Frame != null)
                 {
@@ -375,8 +360,7 @@ namespace SageMobileSales.UILogic.ViewModels
                     {
                         if (Frame.CurrentSourcePageType.Name == "QuoteDetailsPage")
                             break;
-                        else
-                            Frame.GoBack();
+                        Frame.GoBack();
                     }
                 }
             }
@@ -400,18 +384,17 @@ namespace SageMobileSales.UILogic.ViewModels
         //}
 
         /// <summary>
-        /// TextChanged event to get entered quantity
+        ///     TextChanged event to get entered quantity
         /// </summary>
         /// <param name="args"></param>
         private void TextBoxTextChanged(object args)
         {
             EmptyText = false;
-            if (((TextBox)args).Text != null && ((TextBox)args).Text != string.Empty)
+            if (((TextBox) args).Text != null && ((TextBox) args).Text != string.Empty)
             {
-                EnteredQuantity = Convert.ToInt32(((TextBox)args).Text.Trim());
+                EnteredQuantity = Convert.ToInt32(((TextBox) args).Text.Trim());
                 ProductDetails.Quantity = EnteredQuantity;
             }
-
         }
 
         private async Task DecrementCount()
@@ -429,7 +412,6 @@ namespace SageMobileSales.UILogic.ViewModels
                 _log = AppEventSource.Log.WriteLine(ex);
                 AppEventSource.Log.Error(_log);
             }
-
         }
 
         private async Task IncrementCount()

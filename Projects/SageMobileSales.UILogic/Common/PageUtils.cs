@@ -1,14 +1,9 @@
-﻿using SageMobileSales.DataAccess.Entities;
-using SageMobileSales.DataAccess.Model;
-using SageMobileSales.ServiceAgents.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.ApplicationModel.Background;
+﻿using System;
 using Windows.Foundation;
 using Windows.Storage;
+using SageMobileSales.DataAccess.Entities;
+using SageMobileSales.DataAccess.Model;
+using SageMobileSales.ServiceAgents.Common;
 
 namespace SageMobileSales.UILogic.Common
 {
@@ -30,7 +25,10 @@ namespace SageMobileSales.UILogic.Common
         public static string PreviousPurchasedItems = "Previously purchased items";
         public static string ScratchText = "Create the quote from scratch";
         public static string PreviousOrderText = "Use an existing order as a template";
-        public static string PreviousPurchasedItemsText = "Select from a list of items previously purchased by the customer";
+
+        public static string PreviousPurchasedItemsText =
+            "Select from a list of items previously purchased by the customer";
+
         public static string Pending = "Pending";
         public static string OrderNumber = "Order Number";
 
@@ -50,27 +48,29 @@ namespace SageMobileSales.UILogic.Common
         public static IAsyncAction asyncActionOrders;
         public static IAsyncAction asyncActionSalesRep;
         public static IAsyncAction asyncActionProducts;
+
         # endregion
 
         # region Static Methods
 
         public static void GetApplicationData()
         {
-            var settingsLocal = ApplicationData.Current.LocalSettings;
+            ApplicationDataContainer settingsLocal = ApplicationData.Current.LocalSettings;
             if (settingsLocal.Containers.ContainsKey("SageSalesContainer"))
             {
                 Constants.AccessToken = settingsLocal.Containers["SageSalesContainer"].Values["AccessToken"].ToString();
                 Constants.TrackingId = settingsLocal.Containers["SageSalesContainer"].Values["TrackingId"].ToString();
                 if (settingsLocal.Containers["SageSalesContainer"].Values["syncQueryEntity"] != null)
                 {
-                    Constants.syncQueryEntity = settingsLocal.Containers["SageSalesContainer"].Values["syncQueryEntity"].ToString();
+                    Constants.syncQueryEntity =
+                        settingsLocal.Containers["SageSalesContainer"].Values["syncQueryEntity"].ToString();
                 }
             }
         }
 
         public static void GetConfigurationSettings()
         {
-     #if(PRODUCTION)  
+#if(PRODUCTION)  
              
             Constants.ClientId = @"7XtkBANAnzQ9a1aRqspNlHR5UtSRUP0J";
             Constants.Url = "https://mobilesales.na.sage.com/sdata/api/dynamic/-/";
@@ -89,40 +89,52 @@ namespace SageMobileSales.UILogic.Common
 
 #endif
 
-            var configSettings = ApplicationData.Current.LocalSettings;
+            ApplicationDataContainer configSettings = ApplicationData.Current.LocalSettings;
             if (configSettings.Containers != null)
             {
                 if (configSettings.Containers.ContainsKey("ConfigurationSettingsContainer"))
                 {
-                    Constants.ClientId = configSettings.Containers["ConfigurationSettingsContainer"].Values["ClientId"].ToString();
-                    Constants.Scope = configSettings.Containers["ConfigurationSettingsContainer"].Values["Scope"].ToString();
+                    Constants.ClientId =
+                        configSettings.Containers["ConfigurationSettingsContainer"].Values["ClientId"].ToString();
+                    Constants.Scope =
+                        configSettings.Containers["ConfigurationSettingsContainer"].Values["Scope"].ToString();
                     Constants.Url = configSettings.Containers["ConfigurationSettingsContainer"].Values["Url"].ToString();
-                    Constants.RedirectUrl = configSettings.Containers["ConfigurationSettingsContainer"].Values["RedirectUrl"].ToString();
-                    Constants.IsSageIdProduction = Convert.ToBoolean(configSettings.Containers["ConfigurationSettingsContainer"].Values["IsSageProduction"]);
-                    Constants.SelectedType = configSettings.Containers["ConfigurationSettingsContainer"].Values["SelectedType"].ToString();
+                    Constants.RedirectUrl =
+                        configSettings.Containers["ConfigurationSettingsContainer"].Values["RedirectUrl"].ToString();
+                    Constants.IsSageIdProduction =
+                        Convert.ToBoolean(
+                            configSettings.Containers["ConfigurationSettingsContainer"].Values["IsSageProduction"]);
+                    Constants.SelectedType =
+                        configSettings.Containers["ConfigurationSettingsContainer"].Values["SelectedType"].ToString();
                 }
             }
         }
+
         public static void GetProductionConfigurationSettings()
         {
-
             Constants.ClientId = @"7XtkBANAnzQ9a1aRqspNlHR5UtSRUP0J";
             Constants.Url = "https://mobilesales.na.sage.com/sdata/api/dynamic/-/";
             Constants.Scope = @"hrixtfgl();";
             Constants.RedirectUrl = "https://signon.sso.services.sage.com/oauth/native";
             Constants.IsSageIdProduction = true;
             Constants.SelectedType = "Production";
-            var configSettings = ApplicationData.Current.LocalSettings;
+            ApplicationDataContainer configSettings = ApplicationData.Current.LocalSettings;
             if (configSettings.Containers != null)
             {
                 if (configSettings.Containers.ContainsKey("ConfigurationSettingsContainer"))
                 {
-                    Constants.ClientId = configSettings.Containers["ConfigurationSettingsContainer"].Values["ClientId"].ToString();
-                    Constants.Scope = configSettings.Containers["ConfigurationSettingsContainer"].Values["Scope"].ToString();
+                    Constants.ClientId =
+                        configSettings.Containers["ConfigurationSettingsContainer"].Values["ClientId"].ToString();
+                    Constants.Scope =
+                        configSettings.Containers["ConfigurationSettingsContainer"].Values["Scope"].ToString();
                     Constants.Url = configSettings.Containers["ConfigurationSettingsContainer"].Values["Url"].ToString();
-                    Constants.RedirectUrl = configSettings.Containers["ConfigurationSettingsContainer"].Values["RedirectUrl"].ToString();
-                    Constants.IsSageIdProduction = Convert.ToBoolean(configSettings.Containers["ConfigurationSettingsContainer"].Values["IsSageProduction"]);
-                    Constants.SelectedType = configSettings.Containers["ConfigurationSettingsContainer"].Values["SelectedType"].ToString();
+                    Constants.RedirectUrl =
+                        configSettings.Containers["ConfigurationSettingsContainer"].Values["RedirectUrl"].ToString();
+                    Constants.IsSageIdProduction =
+                        Convert.ToBoolean(
+                            configSettings.Containers["ConfigurationSettingsContainer"].Values["IsSageProduction"]);
+                    Constants.SelectedType =
+                        configSettings.Containers["ConfigurationSettingsContainer"].Values["SelectedType"].ToString();
                 }
             }
         }
@@ -131,9 +143,9 @@ namespace SageMobileSales.UILogic.Common
         {
             try
             {
-               // PageUtils.SelectedProduct = null;
-                PageUtils.SelectedCustomer = null;
-                PageUtils.SelectedCustomerDetails = null;
+                // PageUtils.SelectedProduct = null;
+                SelectedCustomer = null;
+                SelectedCustomerDetails = null;
             }
 
             catch (Exception ex)
@@ -141,7 +153,7 @@ namespace SageMobileSales.UILogic.Common
                 throw (ex);
             }
         }
+
         # endregion
     }
-
 }

@@ -1,30 +1,27 @@
-﻿using Microsoft.Practices.Prism.PubSubEvents;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Windows.Data.Json;
+using Microsoft.Practices.Prism.PubSubEvents;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Entities;
 using SageMobileSales.DataAccess.Events;
 using SQLite;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.Data.Json;
 
 namespace SageMobileSales.DataAccess.Repositories
 {
     public class ProductCategoryRepository : IProductCategoryRepository
     {
-
-        private SQLiteAsyncConnection _sageSalesDB;
-
         private readonly IDatabase _database;
-        private readonly ILocalSyncDigestRepository _localSyncDigestRepository;
         private readonly IEventAggregator _eventAggregator;
+        private readonly ILocalSyncDigestRepository _localSyncDigestRepository;
+        private readonly SQLiteAsyncConnection _sageSalesDB;
         private string _log = string.Empty;
 
 
-        public ProductCategoryRepository(IDatabase database, ILocalSyncDigestRepository localSyncDigestRepository, IEventAggregator eventAggregator)
+        public ProductCategoryRepository(IDatabase database, ILocalSyncDigestRepository localSyncDigestRepository,
+            IEventAggregator eventAggregator)
         {
             _database = database;
             _sageSalesDB = _database.GetAsyncConnection();
@@ -33,7 +30,8 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Extracts data from sData(jsonObject) and then saves data into ProductCategory, ProductCategoryLinks & LocalSyncDigest tables in LocalDB
+        ///     Extracts data from sData(jsonObject) and then saves data into ProductCategory, ProductCategoryLinks &
+        ///     LocalSyncDigest tables in LocalDB
         /// </summary>
         /// <param name="sDataProductCategory"></param>
         /// <param name="localSyncDigest"></param>
@@ -44,15 +42,16 @@ namespace SageMobileSales.DataAccess.Repositories
             {
                 JsonArray sDataCategoriesArray = sDataProductCategory.GetNamedArray("$resources");
                 DataAccessUtils.ProductCategoryReturnedCount += sDataCategoriesArray.Count;
-                
+
                 for (int category = 0; category < sDataCategoriesArray.Count; category++)
                 {
-                    var sDataCategory = sDataCategoriesArray[category].GetObject();
+                    JsonObject sDataCategory = sDataCategoriesArray[category].GetObject();
                     await AddOrUpdateProductCategoryJsonToDbAsync(sDataCategory);
 
                     if (localSyncDigest != null)
                     {
-                        if ((Convert.ToInt32(sDataCategory.GetNamedNumber("SyncEndpointTick")) > localSyncDigest.localTick))
+                        if ((Convert.ToInt32(sDataCategory.GetNamedNumber("SyncEndpointTick")) >
+                             localSyncDigest.localTick))
                             localSyncDigest.localTick = Convert.ToInt32(sDataCategory.GetNamedNumber("SyncEndpointTick"));
                     }
 
@@ -72,7 +71,7 @@ namespace SageMobileSales.DataAccess.Repositories
                         }
                         await _localSyncDigestRepository.UpdateLocalSyncDigestDtlsAsync(localSyncDigest);
                     }
-                }                
+                }
             }
             catch (Exception ex)
             {
@@ -83,46 +82,18 @@ namespace SageMobileSales.DataAccess.Repositories
 
 
         /// <summary>
-        /// Add productCategory json response to dB
+        ///     Updates ProdcutCategory data into LocalDb
         /// </summary>
         /// <param name="sDataProductCategory"></param>
         /// <returns></returns>
-        private async Task<ProductCategory> AddProductCategoryJsonToDbAsync(JsonObject sDataProductCategory)
+        public async Task<ProductCategory> UpdateProductCategoryJsonToDbAsync(JsonObject sDataProductCategory,
+            ProductCategory productCategoryDbObj)
         {
-            ProductCategory productCategoryObj = new ProductCategory();
             try
             {
-              
-
-                // productCategoryObj.CategoryId = sDataProductCategory.GetNamedString("$key");
-                productCategoryObj = await GetProductCategorydataFromJsonAsync(sDataProductCategory, productCategoryObj);
-
-                await _sageSalesDB.InsertAsync(productCategoryObj);
-
-              
-            }
-            catch (Exception ex)
-            {
-                _log = AppEventSource.Log.WriteLine(ex);
-                AppEventSource.Log.Error(_log);
-            }
-            return productCategoryObj;
-        }
-
-        /// <summary>
-        /// Updates ProdcutCategory data into LocalDb
-        /// </summary>
-        /// <param name="sDataProductCategory"></param>
-        /// <returns></returns>
-        public async Task<ProductCategory> UpdateProductCategoryJsonToDbAsync(JsonObject sDataProductCategory, ProductCategory productCategoryDbObj)
-        {
-
-            try
-            {
-                productCategoryDbObj = await GetProductCategorydataFromJsonAsync(sDataProductCategory, productCategoryDbObj);
+                productCategoryDbObj =
+                    await GetProductCategorydataFromJsonAsync(sDataProductCategory, productCategoryDbObj);
                 await _sageSalesDB.UpdateAsync(productCategoryDbObj);
-
-           
             }
             catch (Exception ex)
             {
@@ -130,11 +101,10 @@ namespace SageMobileSales.DataAccess.Repositories
                 AppEventSource.Log.Error(_log);
             }
             return productCategoryDbObj;
-
         }
 
         /// <summary>
-        /// Deletes ProductCategory data from LocalDB
+        ///     Deletes ProductCategory data from LocalDB
         /// </summary>
         /// <param name="productCategory"></param>
         /// <returns></returns>
@@ -145,7 +115,7 @@ namespace SageMobileSales.DataAccess.Repositories
 
 
         /// <summary>
-        /// Gets ProductCategory data from LocalDB
+        ///     Gets ProductCategory data from LocalDB
         /// </summary>
         /// <returns></returns>
         public async Task<List<ProductCategory>> GetProductCategoryListDtlsAsync(string parentId)
@@ -153,18 +123,22 @@ namespace SageMobileSales.DataAccess.Repositories
             List<ProductCategory> productCategoriesList = null;
             try
             {
-             
                 if (parentId != null)
                 {
-                    productCategoriesList = await _sageSalesDB.QueryAsync<ProductCategory>("select * from ProductCategory where ParentId=?", parentId);
+                    productCategoriesList =
+                        await
+                            _sageSalesDB.QueryAsync<ProductCategory>("select * from ProductCategory where ParentId=?",
+                                parentId);
                 }
                 else
                 {
-                    productCategoriesList = await _sageSalesDB.QueryAsync<ProductCategory>("select * from ProductCategory where ParentId is null");
+                    productCategoriesList =
+                        await
+                            _sageSalesDB.QueryAsync<ProductCategory>(
+                                "select * from ProductCategory where ParentId is null");
                 }
-            
             }
-         
+
             catch (Exception ex)
             {
                 _log = AppEventSource.Log.WriteLine(ex);
@@ -174,26 +148,25 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Check to navigate to other levels of "Categories" or "Products"
+        ///     Check to navigate to other levels of "Categories" or "Products"
         /// </summary>
         /// <returns></returns>
         public async Task<bool> GetProductCategoryLevel(string parentId)
         {
-            List<ProductCategory> productCategoryCount=null;
+            List<ProductCategory> productCategoryCount = null;
             try
             {
-               
-                productCategoryCount = await _sageSalesDB.QueryAsync<ProductCategory>("select * from ProductCategory where ParentId=?", parentId);
+                productCategoryCount =
+                    await
+                        _sageSalesDB.QueryAsync<ProductCategory>("select * from ProductCategory where ParentId=?",
+                            parentId);
                 if (productCategoryCount.Count > 0)
                 {
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+                return false;
             }
-          catch(NullReferenceException ex)
+            catch (NullReferenceException ex)
             {
                 _log = AppEventSource.Log.WriteLine(ex);
                 AppEventSource.Log.Error(_log);
@@ -208,7 +181,7 @@ namespace SageMobileSales.DataAccess.Repositories
 
         //TODO Need to remove this method, Wrote just for temporary fix(Bug: hidding Spinner & displaying no categories text)
         /// <summary>
-        /// Gets ProductCategory data from LocalDB
+        ///     Gets ProductCategory data from LocalDB
         /// </summary>
         /// <returns></returns>
         public async Task<List<ProductCategory>> GetProductCategoryListAsync()
@@ -216,9 +189,7 @@ namespace SageMobileSales.DataAccess.Repositories
             List<ProductCategory> productCategoriesList = null;
             try
             {
-
                 productCategoriesList = await _sageSalesDB.QueryAsync<ProductCategory>("select * from ProductCategory");
-
             }
 
             catch (Exception ex)
@@ -230,7 +201,30 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Adds or updates product json response to dB
+        ///     Add productCategory json response to dB
+        /// </summary>
+        /// <param name="sDataProductCategory"></param>
+        /// <returns></returns>
+        private async Task<ProductCategory> AddProductCategoryJsonToDbAsync(JsonObject sDataProductCategory)
+        {
+            var productCategoryObj = new ProductCategory();
+            try
+            {
+                // productCategoryObj.CategoryId = sDataProductCategory.GetNamedString("$key");
+                productCategoryObj = await GetProductCategorydataFromJsonAsync(sDataProductCategory, productCategoryObj);
+
+                await _sageSalesDB.InsertAsync(productCategoryObj);
+            }
+            catch (Exception ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+            return productCategoryObj;
+        }
+
+        /// <summary>
+        ///     Adds or updates product json response to dB
         /// </summary>
         /// <param name="sDataQuote"></param>
         /// <returns></returns>
@@ -245,7 +239,11 @@ namespace SageMobileSales.DataAccess.Repositories
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
                         List<ProductCategory> productCategoryList;
-                        productCategoryList = await _sageSalesDB.QueryAsync<ProductCategory>("SELECT * FROM ProductCategory where CategoryId=?", sDataProductCategory.GetNamedString("$key"));
+                        productCategoryList =
+                            await
+                                _sageSalesDB.QueryAsync<ProductCategory>(
+                                    "SELECT * FROM ProductCategory where CategoryId=?",
+                                    sDataProductCategory.GetNamedString("$key"));
 
                         if (sDataProductCategory.TryGetValue("EntityStatus", out value))
                         {
@@ -259,9 +257,15 @@ namespace SageMobileSales.DataAccess.Repositories
                         if (productCategoryList.FirstOrDefault() != null)
                         {
                             if (entityStatusDeleted)
-                                await _sageSalesDB.QueryAsync<ProductCategory>("DELETE FROM ProductCategory where CategoryId=?", sDataProductCategory.GetNamedString("$key"));
+                                await
+                                    _sageSalesDB.QueryAsync<ProductCategory>(
+                                        "DELETE FROM ProductCategory where CategoryId=?",
+                                        sDataProductCategory.GetNamedString("$key"));
                             else
-                                return await UpdateProductCategoryJsonToDbAsync(sDataProductCategory, productCategoryList.FirstOrDefault());
+                                return
+                                    await
+                                        UpdateProductCategoryJsonToDbAsync(sDataProductCategory,
+                                            productCategoryList.FirstOrDefault());
                         }
                         else
                         {
@@ -270,7 +274,6 @@ namespace SageMobileSales.DataAccess.Repositories
                         }
                     }
                 }
-              
             }
             catch (Exception ex)
             {
@@ -280,7 +283,8 @@ namespace SageMobileSales.DataAccess.Repositories
             return null;
         }
 
-        private async Task<ProductCategory> GetProductCategorydataFromJsonAsync(JsonObject sDataProductCategory, ProductCategory productCategory)
+        private async Task<ProductCategory> GetProductCategorydataFromJsonAsync(JsonObject sDataProductCategory,
+            ProductCategory productCategory)
         {
             try
             {
@@ -306,12 +310,12 @@ namespace SageMobileSales.DataAccess.Repositories
                     JsonArray sDataAssociatedItemsArray = sDataAssociatedItems.GetNamedArray("$resources");
                     if (sDataAssociatedItemsArray.Count > 0)
                     {
-                        List<ProductCategoryLink> lstProductCategoryLink = new List<ProductCategoryLink>();
+                        var lstProductCategoryLink = new List<ProductCategoryLink>();
 
-                        foreach (var associatedItem in sDataAssociatedItemsArray)
+                        foreach (IJsonValue associatedItem in sDataAssociatedItemsArray)
                         {
-                            var sDataAssociatedItem = associatedItem.GetObject();
-                            ProductCategoryLink productCategoryLink = new ProductCategoryLink();
+                            JsonObject sDataAssociatedItem = associatedItem.GetObject();
+                            var productCategoryLink = new ProductCategoryLink();
                             productCategoryLink.CategoryId = productCategory.CategoryId;
                             productCategoryLink.ProductId = sDataAssociatedItem.GetNamedString("$key");
                             lstProductCategoryLink.Add(productCategoryLink);
@@ -319,8 +323,6 @@ namespace SageMobileSales.DataAccess.Repositories
                         await _sageSalesDB.InsertAllAsync(lstProductCategoryLink);
                     }
                 }
-
-             
             }
             catch (Exception ex)
             {

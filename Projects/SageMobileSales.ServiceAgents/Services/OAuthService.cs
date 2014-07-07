@@ -1,22 +1,10 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using System;
+using System.Threading.Tasks;
+using Windows.Storage;
 using Sage.Authorisation.WinRT;
 using SageMobileSales.DataAccess;
 using SageMobileSales.DataAccess.Common;
-using SageMobileSales.DataAccess.Entities;
 using SageMobileSales.ServiceAgents.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.Data.Json;
-using Windows.Storage;
-
-
 
 namespace SageMobileSales.ServiceAgents.Services
 {
@@ -24,31 +12,29 @@ namespace SageMobileSales.ServiceAgents.Services
     {
         # region Local Variables
 
+        private OAuthClient _client;
         private string _clientId = String.Empty;
         private string _deviceName = String.Empty;
         private string _log = String.Empty;
-        private bool _resetDuration = false;
         private string _scope = String.Empty;
         private string _state = String.Empty;
-        private bool _suppressInteractive = false;
         private string _token = String.Empty;
-        private OAuthClient _client = null;
-      
-      
-        # endregion        
+
+        # endregion
 
         private readonly IDatabase _database;
 
         // Constructor
         public OAuthService(IDatabase database)
         {
+            SuppressInteractive = false;
+            ResetDuration = false;
             _database = database;
             // Authorisation Info 
-          
+
             _state = "Example state";
             _deviceName = "Example";
             _token = String.Empty;
-                       
         }
 
         #region Properties
@@ -71,11 +57,7 @@ namespace SageMobileSales.ServiceAgents.Services
             set { _log = value; }
         }
 
-        public bool ResetDuration
-        {
-            get { return _resetDuration; }
-            set { _resetDuration = value; }
-        }
+        public bool ResetDuration { get; set; }
 
         public string Scope
         {
@@ -89,11 +71,7 @@ namespace SageMobileSales.ServiceAgents.Services
             set { _state = value; }
         }
 
-        public bool SuppressInteractive
-        {
-            get { return _suppressInteractive; }
-            set { _suppressInteractive = value; }
-        }
+        public bool SuppressInteractive { get; set; }
 
         public string Token
         {
@@ -104,73 +82,32 @@ namespace SageMobileSales.ServiceAgents.Services
         #endregion
 
         /// <summary>
-        /// Makes call to OAuthClient(Authorisation Library) where it will validate the AuthorisationInfo which we are passing and inturn returns AccessToken.
+        ///     Makes call to OAuthClient(Authorisation Library) where it will validate the AuthorisationInfo which we are passing
+        ///     and inturn returns AccessToken.
         /// </summary>
         /// <returns></returns>
         public async Task<String> Authorize()
         {
-
             try
             {
                 _clientId = Constants.ClientId;
 
                 _scope = Constants.Scope;
-                var settingsLocal = ApplicationData.Current.LocalSettings;
-                AuthorisationInfo authinfo = new AuthorisationInfo();
+                ApplicationDataContainer settingsLocal = ApplicationData.Current.LocalSettings;
+                var authinfo = new AuthorisationInfo();
                 authinfo.Scope = Scope;
                 authinfo.State = State;
                 authinfo.DeviceName = DeviceName;
 
                 _client = new OAuthClient(ClientId);
                 _client.LogEvent += onLogEvent;
-                var result = await _client.AuthoriseAsync(authinfo);
+                AuthorisationResult result = await _client.AuthoriseAsync(authinfo);
                 Token = result.AccessToken;
                 // Adding AccessToken to Application Data.
                 // So that we can use this in the enitre application when ever we need.
                 settingsLocal.Containers["SageSalesContainer"].Values["AccessToken"] = Token;
-               Constants.AccessToken = Token;
+                Constants.AccessToken = Token;
                 //Token = Constants.AccessToken;
-            }
-            catch(NullReferenceException ex)
-            {
-                _log = AppEventSource.Log.WriteLine(ex);
-                AppEventSource.Log.Error(_log);
-            }
-            catch (Exception ex)
-            {
-                _log = AppEventSource.Log.WriteLine(ex);
-                AppEventSource.Log.Error(_log);
-                Log = ex.Message + Environment.NewLine + Log;
-
-            }
-            //finally
-            //{
-            //    _client.LogEvent -= onLogEvent;
-            //}
-            return Token;
-        }
-
-        /// <summary>
-        /// Makes call to OAuthClient to remove the AccessToken which is internally saved by Authorisation library.
-        /// </summary>
-        /// <returns></returns>
-        public async Task Cleanup()
-        {
-
-            try
-            {
-                Constants.IsDbDeleted = true;
-                if (_client == null)
-                {
-                    _client = new OAuthClient(ClientId);
-                }
-                    await _client.CleanupAsync();                   
-                    _client.LogEvent += onLogEvent;                
-                Token = String.Empty;
-                var settingsLocal = ApplicationData.Current.LocalSettings;
-                settingsLocal.DeleteContainer("SageSalesContainer");
-             //  await _database.Delete();
-              
             }
             catch (NullReferenceException ex)
             {
@@ -182,9 +119,46 @@ namespace SageMobileSales.ServiceAgents.Services
                 _log = AppEventSource.Log.WriteLine(ex);
                 AppEventSource.Log.Error(_log);
                 Log = ex.Message + Environment.NewLine + Log;
-
             }
-          
+            //finally
+            //{
+            //    _client.LogEvent -= onLogEvent;
+            //}
+            return Token;
+        }
+
+        /// <summary>
+        ///     Makes call to OAuthClient to remove the AccessToken which is internally saved by Authorisation library.
+        /// </summary>
+        /// <returns></returns>
+        public async Task Cleanup()
+        {
+            try
+            {
+                Constants.IsDbDeleted = true;
+                if (_client == null)
+                {
+                    _client = new OAuthClient(ClientId);
+                }
+                await _client.CleanupAsync();
+                _client.LogEvent += onLogEvent;
+                Token = String.Empty;
+                ApplicationDataContainer settingsLocal = ApplicationData.Current.LocalSettings;
+                settingsLocal.DeleteContainer("SageSalesContainer");
+                //  await _database.Delete();
+            }
+            catch (NullReferenceException ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+            catch (Exception ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+                Log = ex.Message + Environment.NewLine + Log;
+            }
+
             finally
             {
                 _client.LogEvent -= onLogEvent;

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SageMobileSales.ServiceAgents.JsonHelpers
+﻿namespace SageMobileSales.ServiceAgents.JsonHelpers
 {
     public class CustomerKeyJson
     {

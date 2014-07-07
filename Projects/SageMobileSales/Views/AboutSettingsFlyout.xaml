@@ -7,7 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     IconSource="Assets/SmallLogo.png"
-      xmlns:prism="using:Microsoft.Practices.Prism.StoreApps"
+    xmlns:prism="using:Microsoft.Practices.Prism.StoreApps"
     xmlns:behaviors="using:SageMobileSales.Behaviors"
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
@@ -16,7 +16,7 @@
     d:DesignWidth="346">
 
     <!-- This StackPanel acts as a root panel for vertical layout of the content sections -->
-    <StackPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch" >
+    <StackPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
 
         <!-- The StackPanel(s) below define individual content sections -->
 
@@ -27,9 +27,8 @@
             <TextBlock x:Uid="AppTitle" Style="{StaticResource FormTitleStyle}" Text="" />
 
             <!-- Section 1 body -->
-            <TextBlock Style="{StaticResource BodyTextBlockStyle}" TextWrapping="Wrap" Text="{Binding AppVersion}" HorizontalAlignment="Left" >
-              
-            </TextBlock>
+            <TextBlock Style="{StaticResource BodyTextBlockStyle}" TextWrapping="Wrap" Text="{Binding AppVersion}"
+                       HorizontalAlignment="Left" />
 
         </StackPanel>
 

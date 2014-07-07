@@ -1,58 +1,48 @@
-﻿using SageMobileSales.DataAccess.Entities;
-using SageMobileSales.DataAccess.Model;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI.Xaml.Data;
-
+using SageMobileSales.DataAccess.Model;
+ 
 namespace SageMobileSales.UILogic.Helpers
 {
-    class ProductCollection : ObservableCollection<ProductDetails>, ISupportIncrementalLoading
+    internal class ProductCollection : ObservableCollection<ProductDetails>, ISupportIncrementalLoading
     {
-        private int previousItemIndex = 0;
-        private List<ProductDetails> _productList;
-        public List<ProductDetails> ProductList
-        {
-            get { return _productList; }
-            set { _productList = value; }
-        }
+        private int previousItemIndex;
+        public List<ProductDetails> ProductList { get; set; }
 
         public bool HasMoreItems
         {
-            get
-            {
-                return (this.Count < ProductList.Count);
-            }
+            get { return (Count < ProductList.Count); }
         }
 
         public IAsyncOperation<LoadMoreItemsResult> LoadMoreItemsAsync(uint count)
         {
             int nextItemIndex = 0;
             // Simulate a delay
-            var delay = Task.Delay(50);
+            Task delay = Task.Delay(50);
 
-            var load = delay.ContinueWith(
-              t =>
-              {
-                  var startSize = this.Count;
-                  count = (uint)Math.Min(count, (this.ProductList.Count - startSize));
+            Task<LoadMoreItemsResult> load = delay.ContinueWith(
+                t =>
+                {
+                    int startSize = Count;
+                    count = (uint) Math.Min(count, (ProductList.Count - startSize));
 
-                  while (nextItemIndex < count)
-                  {
-                      this.Add(ProductList.ElementAt(previousItemIndex));
-                      nextItemIndex++;
-                      previousItemIndex++;
-                  }
+                    while (nextItemIndex < count)
+                    {
+                        Add(ProductList.ElementAt(previousItemIndex));
+                        nextItemIndex++;
+                        previousItemIndex++;
+                    }
 
-                  return (new LoadMoreItemsResult() { Count = count });
-              },
-              TaskScheduler.FromCurrentSynchronizationContext()
-            );
-            return (load.AsAsyncOperation<LoadMoreItemsResult>());
+                    return (new LoadMoreItemsResult {Count = count});
+                },
+                TaskScheduler.FromCurrentSynchronizationContext()
+                );
+            return (load.AsAsyncOperation());
         }
     }
 }

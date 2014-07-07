@@ -6,18 +6,18 @@
     <Style x:Key="TopAppBarUserControlStyle"
            TargetType="AppBar">
         <Setter Property="Background"
-                Value="#FF355B4E"/>
+                Value="#FF355B4E" />
         <Setter Property="BorderBrush"
-                Value="#FF355B4E"/>
+                Value="#FF355B4E" />
     </Style>
 
     <!--Bottom App Bar Style-->
     <Style x:Key="BottomAppBarStyle"
            TargetType="AppBar">
         <Setter Property="Background"
-                Value="#FF355B4E"/>
+                Value="#FF355B4E" />
         <Setter Property="BorderBrush"
-                Value="#FF355B4E"/>
+                Value="#FF355B4E" />
     </Style>
 
     <!-- TextBlock styles -->
@@ -62,13 +62,11 @@
            TargetType="TextBlock"
            BasedOn="{StaticResource BaselineTextStyle}">
         <Setter Property="Margin"
-                Value="0,0,0,40"/>
+                Value="0,0,0,40" />
         <Setter Property="Foreground"
-                Value="#FF2D3636">
-        </Setter>
+                Value="#FF2D3636" />
         <Setter Property="FontSize"
-                Value="40">
-        </Setter>
+                Value="40" />
     </Style>
 
     <!--Subheader textbox style-->
@@ -76,13 +74,11 @@
            TargetType="TextBlock"
            BasedOn="{StaticResource BaselineTextStyle}">
         <Setter Property="Margin"
-                Value="120,50,0,0"/>
+                Value="120,50,0,0" />
         <Setter Property="Foreground"
-                Value="#FF2D3636">
-        </Setter>
+                Value="#FF2D3636" />
         <Setter Property="FontSize"
-                Value="40">
-        </Setter>
+                Value="40" />
     </Style>
 
     <!--TextBlockStyle-->
@@ -101,10 +97,9 @@
             </Setter.Value>
         </Setter>
         <Setter Property="Foreground"
-                Value="#FF2D3636">
-        </Setter>
+                Value="#FF2D3636" />
         <Setter Property="FontSize"
-                Value="23"/>
+                Value="23" />
     </Style>
 
     <!--TextBlockStyle-->
@@ -112,7 +107,7 @@
            TargetType="TextBlock"
            BasedOn="{StaticResource BasicTextStyle}">
         <Setter Property="LineHeight"
-                Value="25" />       
+                Value="25" />
         <Setter Property="LineStackingStrategy"
                 Value="BlockLineHeight" />
         <!-- Properly align text along its baseline -->
@@ -123,12 +118,11 @@
             </Setter.Value>
         </Setter>
         <Setter Property="Foreground"
-                Value="#FF2D3636">
-        </Setter>
+                Value="#FF2D3636" />
         <!--<Setter Property="FontSize"
                 Value="23"/>-->
         <Setter Property="Width"
-                Value="80"/>
+                Value="80" />
     </Style>
 
     <!--TextBlockStyle-->
@@ -147,21 +141,20 @@
             </Setter.Value>
         </Setter>
         <Setter Property="Foreground"
-                Value="#FF2D3636">
-        </Setter>
+                Value="#FF2D3636" />
         <Setter Property="FontSize"
-                Value="23"/>
+                Value="23" />
         <Setter Property="Margin"
-                Value="10,0,0,0"/>
+                Value="10,0,0,0" />
     </Style>
-    
+
 
     <!--PageTitle TextBlock Style-->
     <Style x:Key="PageTitleTextStyle"
            TargetType="TextBlock"
            BasedOn="{StaticResource BaselineTextStyle}">
         <Setter Property="Margin"
-                Value="0,0,30,40"/>
+                Value="0,0,30,40" />
         <Setter Property="FontSize"
                 Value="56" />
         <Setter Property="FontWeight"
@@ -175,8 +168,7 @@
             </Setter.Value>
         </Setter>
         <Setter Property="Foreground"
-                Value="#FF2D3636">
-        </Setter>
+                Value="#FF2D3636" />
     </Style>
 
     <!--PageTitle TextBlock Style-->
@@ -196,19 +188,18 @@
             </Setter.Value>
         </Setter>
         <Setter Property="Foreground"
-                Value="#FF2D3636">
-        </Setter>
+                Value="#FF2D3636" />
     </Style>
 
     <!--Round Button Style-->
     <Style x:Key="RoundButtonStyle"
            TargetType="Button">
         <Setter Property="Background"
-                Value="#FF355B4E"/>
+                Value="#FF355B4E" />
         <Setter Property="Height"
-                Value="40"/>
+                Value="40" />
         <Setter Property="Width"
-                Value="60"/>
+                Value="60" />
         <!-- Properly align text along its baseline -->
         <Setter Property="RenderTransform">
             <Setter.Value>
@@ -222,11 +213,11 @@
     <Style x:Key="QuantityTextBoxStyle"
            TargetType="TextBox">
         <Setter Property="BorderBrush"
-                Value="Black"/>
+                Value="Black" />
         <Setter Property="Height"
-                Value="26"/>
+                Value="26" />
         <Setter Property="Width"
-                Value="60"/>
+                Value="60" />
         <!-- Properly align text along its baseline -->
         <Setter Property="RenderTransform">
             <Setter.Value>
@@ -239,9 +230,7 @@
     <!--Grid Style (LayoutRoot)-->
     <Style x:Key="LayoutRootStyle"
            TargetType="Grid">
-        <Setter Property="Background" Value="White">
-            
-        </Setter>
+        <Setter Property="Background" Value="White" />
     </Style>
 
     <Style x:Key="AddressTextStyle"
@@ -249,55 +238,63 @@
         <!--<Setter Property="FontSize"
                 Value="18"/>-->
         <Setter Property="Margin"
-                Value="10,0,0,0"/>
+                Value="10,0,0,0" />
         <Setter Property="LineHeight"
-                Value="22"/>
+                Value="22" />
     </Style>
 
     <!--NavigationBackButtonNormalStyle-->
     <Style x:Key="NavigationBackButtonNormalStyle" TargetType="Button">
-        <Setter Property="Foreground" Value="{ThemeResource AppBarItemForegroundThemeBrush}"/>
-        <Setter Property="VerticalAlignment" Value="Top"/>
-        <Setter Property="HorizontalAlignment" Value="Left"/>
-        <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}"/>
-        <Setter Property="FontWeight" Value="Normal"/>
+        <Setter Property="Foreground" Value="{ThemeResource AppBarItemForegroundThemeBrush}" />
+        <Setter Property="VerticalAlignment" Value="Top" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}" />
+        <Setter Property="FontWeight" Value="Normal" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
                     <Grid Background="Transparent" x:Name="RootGrid">
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="CommonStates">
-                                <VisualState x:Name="Normal"/>
+                                <VisualState x:Name="Normal" />
                                 <VisualState x:Name="PointerOver">
                                     <Storyboard>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Fill" Storyboard.TargetName="Ellipse">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource AppBarItemPointerOverBackgroundThemeBrush}"/>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Fill"
+                                                                       Storyboard.TargetName="Ellipse">
+                                            <DiscreteObjectKeyFrame KeyTime="0"
+                                                                    Value="{ThemeResource AppBarItemPointerOverBackgroundThemeBrush}" />
                                         </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground" Storyboard.TargetName="Content">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="#FF355B4E"/>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground"
+                                                                       Storyboard.TargetName="Content">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="#FF355B4E" />
                                         </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Stroke" Storyboard.TargetName="Ellipse">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="#FF355B4E"/>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Stroke"
+                                                                       Storyboard.TargetName="Ellipse">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="#FF355B4E" />
                                         </ObjectAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
                                 <VisualState x:Name="Pressed">
                                     <Storyboard>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Stroke" Storyboard.TargetName="Ellipse">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="#FF355B4E"/>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Stroke"
+                                                                       Storyboard.TargetName="Ellipse">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="#FF355B4E" />
                                         </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Fill" Storyboard.TargetName="Ellipse">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="#FF355B4E"/>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Fill"
+                                                                       Storyboard.TargetName="Ellipse">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="#FF355B4E" />
                                         </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground" Storyboard.TargetName="Content">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="White"/>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground"
+                                                                       Storyboard.TargetName="Content">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="White" />
                                         </ObjectAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
                                 <VisualState x:Name="Disabled">
                                     <Storyboard>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid" Storyboard.TargetProperty="Visibility">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed"/>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid"
+                                                                       Storyboard.TargetProperty="Visibility">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed" />
                                         </ObjectAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
@@ -305,16 +302,18 @@
                             <VisualStateGroup x:Name="FocusStates">
                                 <VisualState x:Name="Focused">
                                     <Storyboard>
-                                        <DoubleAnimation Duration="0" To="1" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="FocusVisualWhite"/>
-                                        <DoubleAnimation Duration="0" To="1" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="FocusVisualBlack"/>
+                                        <DoubleAnimation Duration="0" To="1" Storyboard.TargetProperty="Opacity"
+                                                         Storyboard.TargetName="FocusVisualWhite" />
+                                        <DoubleAnimation Duration="0" To="1" Storyboard.TargetProperty="Opacity"
+                                                         Storyboard.TargetName="FocusVisualBlack" />
                                     </Storyboard>
                                 </VisualState>
-                                <VisualState x:Name="Unfocused"/>
-                                <VisualState x:Name="PointerFocused"/>
+                                <VisualState x:Name="Unfocused" />
+                                <VisualState x:Name="PointerFocused" />
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
-                        <Grid 
-                            Height="41" 
+                        <Grid
+                            Height="41"
                             Width="41">
                             <Ellipse
                                 x:Name="Ellipse"
@@ -322,16 +321,21 @@
                                 Stroke="#FF2D3636"
                                 StrokeThickness="2"
                                 UseLayoutRounding="False" />
-                            <ContentPresenter 
-                                x:Name="Content" 
-                                Foreground="#FF2D3636" 
-                                HorizontalAlignment="Stretch" 
+                            <ContentPresenter
+                                x:Name="Content"
+                                Foreground="#FF2D3636"
+                                HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch">
-                                <PathIcon Data="F1 M 17.4126,18L 24.0752,11L 17.6558,11L 8.77931,20.4678L 8.77931,20.5322L 17.6558,30L 24.0752,30L 17.4126,23L 32,23L 32,18L 17.4126,18 Z " />
+                                <PathIcon
+                                    Data="F1 M 17.4126,18L 24.0752,11L 17.6558,11L 8.77931,20.4678L 8.77931,20.5322L 17.6558,30L 24.0752,30L 17.4126,23L 32,23L 32,18L 17.4126,18 Z " />
                             </ContentPresenter>
                         </Grid>
-                        <Rectangle x:Name="FocusVisualWhite" IsHitTestVisible="False" Opacity="0" StrokeDashOffset="1.5" StrokeEndLineCap="Square" Stroke="{ThemeResource FocusVisualWhiteStrokeThemeBrush}" StrokeDashArray="1,1"/>
-                        <Rectangle x:Name="FocusVisualBlack" IsHitTestVisible="False" Opacity="0" StrokeDashOffset="0.5" StrokeEndLineCap="Square" Stroke="{ThemeResource FocusVisualBlackStrokeThemeBrush}" StrokeDashArray="1,1"/>
+                        <Rectangle x:Name="FocusVisualWhite" IsHitTestVisible="False" Opacity="0"
+                                   StrokeDashOffset="1.5" StrokeEndLineCap="Square"
+                                   Stroke="{ThemeResource FocusVisualWhiteStrokeThemeBrush}" StrokeDashArray="1,1" />
+                        <Rectangle x:Name="FocusVisualBlack" IsHitTestVisible="False" Opacity="0"
+                                   StrokeDashOffset="0.5" StrokeEndLineCap="Square"
+                                   Stroke="{ThemeResource FocusVisualBlackStrokeThemeBrush}" StrokeDashArray="1,1" />
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
@@ -343,21 +347,21 @@
            TargetType="Button"
            BasedOn="{StaticResource NavigationBackButtonNormalStyle}">
         <Setter Property="Margin"
-                Value="39,59,39,0"/>
+                Value="39,59,39,0" />
     </Style>
 
     <!--Progress Ring Style-->
     <Style x:Key="GridViewProgressRingStyle"
            TargetType="ProgressRing">
         <Setter Property="Foreground"
-                Value="#FF355B4E"/>
+                Value="#FF355B4E" />
     </Style>
 
     <!--Grid View Style-->
     <Style x:Key="GridViewStyle"
            TargetType="GridView">
         <Setter Property="Padding"
-                Value="116,136,116,46"/>
+                Value="116,136,116,46" />
     </Style>
 
     <Style x:Name="CustomerZoomedOutGridViewItemContainerStyle" TargetType="GridViewItem">
@@ -375,29 +379,29 @@
     <Style x:Key="SearchBoxUserControlStyle"
            TargetType="UserControl">
         <Setter Property="Padding"
-                Value="10,10,0,0"/>
+                Value="10,10,0,0" />
         <Setter Property="Margin"
-                Value="0,44,29,16"/>
+                Value="0,44,29,16" />
         <Setter Property="Height"
-                Value="80"/>
+                Value="80" />
     </Style>
     <Style x:Key="UserControlGridStyle"
            TargetType="Grid">
         <Setter Property="Margin"
-                Value="0,15"/>
+                Value="0,15" />
         <Setter Property="Height"
-                Value="40"/>
+                Value="40" />
         <Setter Property="Width"
-                Value="350"/>
+                Value="350" />
     </Style>
     <Style x:Key="SearchBoxStyle"
            TargetType="SearchBox">
         <Setter Property="Padding"
-                Value="10,10,0,0"/>
+                Value="10,10,0,0" />
         <Setter Property="Height"
-                Value="40"/>
+                Value="40" />
         <Setter Property="Width"
-                Value="350"/>
+                Value="350" />
 
     </Style>
 
@@ -405,26 +409,26 @@
     <Style x:Key="FilterTextBoxStyle"
            TargetType="TextBox">
         <Setter Property="Margin"
-                Value="0,64,29,41"/>
+                Value="0,64,29,41" />
         <Setter Property="Height"
-                Value="40"/>
+                Value="40" />
         <Setter Property="Width"
-                Value="350"/>
+                Value="350" />
         <Setter Property="BorderBrush"
-                Value="#FF2D3636"/>
+                Value="#FF2D3636" />
     </Style>
 
     <!--SymbolIconStyle-->
     <Style x:Key="SymbolIconStyle"
            TargetType="SymbolIcon">
         <Setter Property="Margin"
-                Value="0,62,34,46"/>
+                Value="0,62,34,46" />
         <Setter Property="Foreground"
-                Value="#FF2D3636"/>
+                Value="#FF2D3636" />
         <Setter Property="Symbol"
-                Value="Filter"/>
+                Value="Filter" />
         <Setter Property="Height"
-                Value="32"/>
+                Value="32" />
 
     </Style>
 
@@ -432,79 +436,76 @@
     <Style x:Key="SubHeaderCustomerDashBoardTextStyle"
            TargetType="TextBlock">
         <Setter Property="Foreground"
-                Value="#FF2D3636">
-        </Setter>
+                Value="#FF2D3636" />
         <Setter Property="FontSize"
-                Value="40">
-        </Setter>
+                Value="40" />
         <Setter Property="FontWeight"
-                Value="Normal"
-                />
+                Value="Normal" />
     </Style>
-    
+
     <Style x:Key="SubHeaderStyle"
-           TargetType="TextBlock" 
+           TargetType="TextBlock"
            BasedOn="{StaticResource SubheaderTextBlockStyle}">
-        <Setter Property="Margin" 
-                Value="0,-11,10,10"/>
+        <Setter Property="Margin"
+                Value="0,-11,10,10" />
         <Setter Property="TextWrapping"
-                Value="NoWrap"/>
+                Value="NoWrap" />
         <Setter Property="Foreground"
-                Value="#FF2D3636"/>
+                Value="#FF2D3636" />
 
     </Style>
 
     <Style x:Key="SubHeaderGlyphStyle"
-           TargetType="TextBlock" 
+           TargetType="TextBlock"
            BasedOn="{StaticResource SubheaderTextBlockStyle}">
-        <Setter Property="Margin" 
-                Value="0,-11,10,10"/>
+        <Setter Property="Margin"
+                Value="0,-11,10,10" />
         <Setter Property="TextWrapping"
-                Value="NoWrap"/>
+                Value="NoWrap" />
         <Setter Property="Foreground"
-                Value="#FF2D3636"/>
+                Value="#FF2D3636" />
         <Setter Property="FontFamily"
-                Value="Segoe UI Symbol"/>
+                Value="Segoe UI Symbol" />
 
-    </Style>   
+    </Style>
     <!-- Form custom styles -->
     <Style x:Key="FormTitleStyle"
            TargetType="TextBlock">
         <Setter Property="Foreground"
-                Value="#FF2D3636"/>
+                Value="#FF2D3636" />
         <Setter Property="FontSize"
                 Value="20" />
         <Setter Property="FontFamily"
                 Value="{StaticResource ContentControlThemeFontFamily}" />
         <Setter Property="Margin"
-                Value="0,20,0,5"></Setter>
+                Value="0,20,0,5" />
     </Style>
     <!-- button style-->
     <Style x:Key="ButtonStyle"
            TargetType="Button">
         <Setter Property="BorderBrush"
-                Value="#FF2D3636"/>
+                Value="#FF2D3636" />
         <Setter Property="Foreground"
-                Value="White"/>
+                Value="White" />
         <Setter Property="Height"
-                Value="42"/>
+                Value="42" />
         <Setter Property="Background"
-                Value="#FF355B4E"/>
+                Value="#FF355B4E" />
         <Setter Property="BorderBrush"
-                Value="#FF355B4E"/>
+                Value="#FF355B4E" />
         <Setter Property="Width"
-                Value="119"/>
-      
+                Value="119" />
+
     </Style>
 
     <Style x:Key="ComboBoxStyle"
            TargetType="ComboBox">
         <Setter Property="BorderBrush"
-                Value="#FF2D3636"/>
+                Value="#FF2D3636" />
         <Setter Property="Height"
-                Value="38"/>
+                Value="38" />
         <Setter Property="Width"
-                Value="556"/>
+                Value="556" />
     </Style>
 
     <Style x:Key="ErrorMessageStyle"
@@ -514,7 +515,7 @@
         <Setter Property="Margin"
                 Value="5,0" />
         <Setter Property="Width"
-                Value="600"/>
+                Value="600" />
         <Setter Property="HorizontalAlignment"
                 Value="Left" />
         <Setter Property="FontSize"
@@ -528,7 +529,7 @@
         <Setter Property="BorderBrush"
                 Value="#FF2D3636" />
         <Setter Property="Width"
-                Value="300"/>
+                Value="300" />
         <Setter Property="HorizontalAlignment"
                 Value="Left" />
         <Setter Property="HeaderTemplate">
@@ -537,8 +538,8 @@
                     <TextBlock Margin="0"
                                Padding="0"
                                Foreground="#FF2D3636"
-                               Text="{Binding}" 
-                               Visibility="{Binding Converter={StaticResource TextHeaderVisibilityConverter}}"/>
+                               Text="{Binding}"
+                               Visibility="{Binding Converter={StaticResource TextHeaderVisibilityConverter}}" />
                 </DataTemplate>
             </Setter.Value>
         </Setter>
@@ -551,31 +552,31 @@
                     <TextBlock Margin="0"
                                Padding="0"
                                Foreground="#FF2D3636"
-                               Text="{Binding}" 
-                               
-                               Visibility="{Binding Converter={StaticResource TextHeaderVisibilityConverter}}"/>
+                               Text="{Binding}"
+
+                               Visibility="{Binding Converter={StaticResource TextHeaderVisibilityConverter}}" />
                 </DataTemplate>
             </Setter.Value>
         </Setter>
-        <Setter Property="VerticalAlignment" Value="Bottom"/>
+        <Setter Property="VerticalAlignment" Value="Bottom" />
         <Setter Property="Width"
-                Value="300"/>
+                Value="300" />
         <Setter Property="HorizontalAlignment"
                 Value="Left" />
-        <Setter Property="BorderBrush" Value="#FF2D3636"/>
+        <Setter Property="BorderBrush" Value="#FF2D3636" />
     </Style>
 
     <Style TargetType="Grid" x:Key="BottomAppbarStyle">
-        <Setter Property="Background" Value="#FF355B4E"/>
+        <Setter Property="Background" Value="#FF355B4E" />
     </Style>
 
     <!--QuoteItem Brushes -->
     <SolidColorBrush x:Name="ItemDarkerBackgroundBrush"
                      Color="#FF262C2F" />
     <SolidColorBrush x:Key="ItemBorderBrush" Color="Transparent" />
-    <SolidColorBrush x:Key="ItemSelectionColor" 
-                             Color="Black" /> 
-    
+    <SolidColorBrush x:Key="ItemSelectionColor"
+                     Color="Black" />
+
     <Style x:Key="QuoteItemFlyoutStyle"
            TargetType="FlyoutPresenter">
         <Setter Property="Padding"
@@ -589,20 +590,20 @@
                     <TextBlock Margin="0"
                                Padding="0"
                                Foreground="#FF2D3636"
-                               Text="{Binding}" 
-                               
-                               Visibility="{Binding Converter={StaticResource TextHeaderVisibilityConverter}}"/>
+                               Text="{Binding}"
+
+                               Visibility="{Binding Converter={StaticResource TextHeaderVisibilityConverter}}" />
                 </DataTemplate>
             </Setter.Value>
         </Setter>
-        <Setter Property="VerticalAlignment" Value="Bottom"/>
+        <Setter Property="VerticalAlignment" Value="Bottom" />
         <Setter Property="Width"
-                Value="610"/>
+                Value="610" />
         <Setter Property="HorizontalAlignment"
                 Value="Left" />
-        <Setter Property="BorderBrush" Value="#FF2D3636"/>
+        <Setter Property="BorderBrush" Value="#FF2D3636" />
     </Style>
- 
+
     <Style x:Key="CustomerSelectionFlyoutStyle"
            TargetType="FlyoutPresenter">
         <Setter Property="Padding"
@@ -617,83 +618,90 @@
                 Value="NoWrap" />
         <Setter Property="VerticalAlignment"
                 Value="Bottom" />
-       
+
         <Setter Property="Margin"
                 Value="0,0,0,40" />
     </Style>
-    
+
     <Style x:Key="CreateQuoteButtonStyle"
            TargetType="Button">
         <Setter Property="Width"
                 Value="400" />
         <Setter Property="Height"
-                Value="70"/>
+                Value="70" />
         <Setter Property="Background"
-                Value="#FF355B4E"/>
-            
-       
+                Value="#FF355B4E" />
+
+
     </Style>
 
     <Style x:Key="QuoteDetailsStatusTextStyle"
            TargetType="TextBlock">
         <Setter Property="FontSize"
-                Value="45"/>
+                Value="45" />
         <Setter Property="LineHeight"
-                Value="40"/>
+                Value="40" />
         <Setter Property="Margin"
-                Value="0,46,29,16"/>
+                Value="0,46,29,16" />
         <Setter Property="VerticalAlignment"
-                Value="Center"/>
+                Value="Center" />
         <Setter Property="Foreground"
-                Value="#FF2D3636"/>
+                Value="#FF2D3636" />
     </Style>
 
     <!--Save button style-->
     <Style x:Key="ButtonNormalStyle" TargetType="Button">
-        <Setter Property="Foreground" Value="{ThemeResource AppBarItemForegroundThemeBrush}"/>
-        <Setter Property="VerticalAlignment" Value="Top"/>
-        <Setter Property="HorizontalAlignment" Value="Left"/>
-        <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}"/>
-        <Setter Property="FontWeight" Value="Normal"/>
-        <Setter Property="Margin" Value="0,0,0,5"/>
-      
+        <Setter Property="Foreground" Value="{ThemeResource AppBarItemForegroundThemeBrush}" />
+        <Setter Property="VerticalAlignment" Value="Top" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}" />
+        <Setter Property="FontWeight" Value="Normal" />
+        <Setter Property="Margin" Value="0,0,0,5" />
+
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
                     <Grid Background="Transparent" x:Name="RootGrid">
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="CommonStates">
-                                <VisualState x:Name="Normal"/>
+                                <VisualState x:Name="Normal" />
                                 <VisualState x:Name="PointerOver">
                                     <Storyboard>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Fill" Storyboard.TargetName="Rectangle">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="#FF355B4E"/>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Fill"
+                                                                       Storyboard.TargetName="Rectangle">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="#FF355B4E" />
                                         </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground" Storyboard.TargetName="Content">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="White"/>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground"
+                                                                       Storyboard.TargetName="Content">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="White" />
                                         </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Stroke" Storyboard.TargetName="Rectangle">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="#FF355B4E"/>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Stroke"
+                                                                       Storyboard.TargetName="Rectangle">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="#FF355B4E" />
                                         </ObjectAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
                                 <VisualState x:Name="Pressed">
                                     <Storyboard>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Stroke" Storyboard.TargetName="Rectangle">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="#FF355B4E"/>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Stroke"
+                                                                       Storyboard.TargetName="Rectangle">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="#FF355B4E" />
                                         </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Fill" Storyboard.TargetName="Rectangle">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="#FF355B4E"/>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Fill"
+                                                                       Storyboard.TargetName="Rectangle">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="#FF355B4E" />
                                         </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground" Storyboard.TargetName="Content">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="White"/>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground"
+                                                                       Storyboard.TargetName="Content">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="White" />
                                         </ObjectAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
                                 <VisualState x:Name="Disabled">
                                     <Storyboard>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid" Storyboard.TargetProperty="Visibility">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed"/>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid"
+                                                                       Storyboard.TargetProperty="Visibility">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed" />
                                         </ObjectAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
@@ -701,16 +709,18 @@
                             <VisualStateGroup x:Name="FocusStates">
                                 <VisualState x:Name="Focused">
                                     <Storyboard>
-                                        <DoubleAnimation Duration="0" To="1" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="FocusVisualWhite"/>
-                                        <DoubleAnimation Duration="0" To="1" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="FocusVisualBlack"/>
+                                        <DoubleAnimation Duration="0" To="1" Storyboard.TargetProperty="Opacity"
+                                                         Storyboard.TargetName="FocusVisualWhite" />
+                                        <DoubleAnimation Duration="0" To="1" Storyboard.TargetProperty="Opacity"
+                                                         Storyboard.TargetName="FocusVisualBlack" />
                                     </Storyboard>
                                 </VisualState>
-                                <VisualState x:Name="Unfocused"/>
-                                <VisualState x:Name="PointerFocused"/>
+                                <VisualState x:Name="Unfocused" />
+                                <VisualState x:Name="PointerFocused" />
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
-                        <Grid 
-                            Height="41" 
+                        <Grid
+                            Height="41"
                             Width="110">
                             <Rectangle
                                 x:Name="Rectangle"
@@ -718,16 +728,18 @@
                                 Stroke="#FF2D3636"
                                 StrokeThickness="2"
                                 UseLayoutRounding="False" />
-                            <ContentPresenter 
-                                x:Name="Content" 
-                                Foreground="White" 
-                                HorizontalAlignment="Center" 
-                                VerticalAlignment="Center">
-
-                            </ContentPresenter>
+                            <ContentPresenter
+                                x:Name="Content"
+                                Foreground="White"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center" />
                         </Grid>
-                        <Rectangle x:Name="FocusVisualWhite" IsHitTestVisible="False" Opacity="0" StrokeDashOffset="1.5" StrokeEndLineCap="Square" Stroke="{ThemeResource FocusVisualWhiteStrokeThemeBrush}" StrokeDashArray="1,1"/>
-                        <Rectangle x:Name="FocusVisualBlack" IsHitTestVisible="False" Opacity="0" StrokeDashOffset="0.5" StrokeEndLineCap="Square" Stroke="{ThemeResource FocusVisualBlackStrokeThemeBrush}" StrokeDashArray="1,1"/>
+                        <Rectangle x:Name="FocusVisualWhite" IsHitTestVisible="False" Opacity="0"
+                                   StrokeDashOffset="1.5" StrokeEndLineCap="Square"
+                                   Stroke="{ThemeResource FocusVisualWhiteStrokeThemeBrush}" StrokeDashArray="1,1" />
+                        <Rectangle x:Name="FocusVisualBlack" IsHitTestVisible="False" Opacity="0"
+                                   StrokeDashOffset="0.5" StrokeEndLineCap="Square"
+                                   Stroke="{ThemeResource FocusVisualBlackStrokeThemeBrush}" StrokeDashArray="1,1" />
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
@@ -735,48 +747,48 @@
     </Style>
     <!--ListView Item Style-->
     <Style x:Key="ListViewStackpnlStyle"
-           TargetType="StackPanel">      
-       
+           TargetType="StackPanel">
+
         <Setter Property="Height"
-                Value="90"/>
-    
+                Value="90" />
+
         <Setter Property="Width"
-                Value="450"/>
-            <Setter Property="Background"
-                Value="#FF355B4E"/>
+                Value="450" />
+        <Setter Property="Background"
+                Value="#FF355B4E" />
     </Style>
     <!--Listview Textblock Style-->
     <Style x:Key="ListviewTextblkStyle"
            TargetType="TextBlock">
         <Setter Property="FontSize"
-                Value="25"/>
+                Value="25" />
         <Setter Property="Height"
-                Value="38"/>
+                Value="38" />
         <Setter Property="Padding"
-                Value="10"/>
+                Value="10" />
 
     </Style>
-    
+
     <!--create Quote TextBlock Style-->
     <Style x:Key="createQuoteEditBlockStyle"
            TargetType="TextBox">
         <Setter Property="BorderBrush"
-                Value="#FF2D3636"/>
-            <Setter Property="Height"
-                Value="295"/>
+                Value="#FF2D3636" />
+        <Setter Property="Height"
+                Value="295" />
         <Setter Property="Width"
-                Value="400"/>
+                Value="400" />
     </Style>
-    
+
     <!--ShippingDiscount TextBoxStyle-->
     <Style x:Key="ShippingDiscountTextBoxStyle"
            TargetType="TextBox">
         <Setter Property="BorderBrush"
-                Value="Black"/>
+                Value="Black" />
         <Setter Property="Height"
-                Value="20"/>
+                Value="20" />
         <Setter Property="Width"
-                Value="60"/>
+                Value="60" />
         <!-- Properly align text along its baseline -->
         <Setter Property="RenderTransform">
             <Setter.Value>

@@ -1,53 +1,49 @@
-﻿using Microsoft.Practices.Prism.PubSubEvents;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Windows.ApplicationModel.Resources;
+using Windows.ApplicationModel.Search;
+using Windows.Storage.Streams;
+using Windows.UI.Xaml.Controls;
+using Microsoft.Practices.Prism.PubSubEvents;
 using Microsoft.Practices.Prism.StoreApps;
 using Microsoft.Practices.Prism.StoreApps.Interfaces;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Entities;
 using SageMobileSales.DataAccess.Model;
 using SageMobileSales.DataAccess.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.ApplicationModel.Resources;
-using Windows.ApplicationModel.Search;
-using Windows.Foundation;
-using Windows.Storage.Streams;
-using Windows.System;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Input;
 
 namespace SageMobileSales.UILogic.ViewModels
 {
-    class SearchUserControlViewModel : ViewModel
-    {       
+    internal class SearchUserControlViewModel : ViewModel
+    {
+        private readonly IEventAggregator _eventAggregator;
         private readonly INavigationService _navigationService;
         private readonly IProductRepository _productRepository;
-        private readonly IEventAggregator _eventAggregator;      
-       private string _imageUrl = string.Empty;
-      private bool _noSuggestions = false;
-      private string _log = string.Empty;
-        public SearchUserControlViewModel(INavigationService navigationService, IProductRepository productRepository, IEventAggregator eventAggregator)
+        private string _imageUrl = string.Empty;
+        private string _log = string.Empty;
+        private bool _noSuggestions;
+
+        public SearchUserControlViewModel(INavigationService navigationService, IProductRepository productRepository,
+            IEventAggregator eventAggregator)
         {
             _navigationService = navigationService;
             _productRepository = productRepository;
-            _eventAggregator = eventAggregator;            
-            this.SearchCommand = new DelegateCommand<SearchBoxQuerySubmittedEventArgs>(SearchBoxQuerySubmitted);
-            this.SearchSuggestionsCommand = new DelegateCommand<SearchBoxSuggestionsRequestedEventArgs>(async (eventArgs) =>
-            {
-                await SearchBoxSuggestionsRequested(eventArgs);
-            });
-           this.ResultSuggestionChosenCommand = new DelegateCommand<SearchBoxResultSuggestionChosenEventArgs>(OnResultSuggestionChosen);      
+            _eventAggregator = eventAggregator;
+            SearchCommand = new DelegateCommand<SearchBoxQuerySubmittedEventArgs>(SearchBoxQuerySubmitted);
+            SearchSuggestionsCommand =
+                new DelegateCommand<SearchBoxSuggestionsRequestedEventArgs>(
+                    async eventArgs => { await SearchBoxSuggestionsRequested(eventArgs); });
+            ResultSuggestionChosenCommand =
+                new DelegateCommand<SearchBoxResultSuggestionChosenEventArgs>(OnResultSuggestionChosen);
         }
 
         public DelegateCommand<SearchBoxQuerySubmittedEventArgs> SearchCommand { get; set; }
-        public DelegateCommand<SearchBoxSuggestionsRequestedEventArgs> SearchSuggestionsCommand { get; set; }    
+        public DelegateCommand<SearchBoxSuggestionsRequestedEventArgs> SearchSuggestionsCommand { get; set; }
         public DelegateCommand<SearchBoxResultSuggestionChosenEventArgs> ResultSuggestionChosenCommand { get; set; }
 
         /// <summary>
-        /// Image Url
+        ///     Image Url
         /// </summary>
         public string ImageUrl
         {
@@ -56,21 +52,23 @@ namespace SageMobileSales.UILogic.ViewModels
         }
 
         /// <summary>
-        /// No Suggestions
+        ///     No Suggestions
         /// </summary>
         public bool NoSuggestions
         {
             get { return _noSuggestions; }
             private set { SetProperty(ref _noSuggestions, value); }
         }
+
         /// <summary>
-        ///Navigate to search results page on searchquery submitted
+        ///     Navigate to search results page on searchquery submitted
         /// </summary>
-        /// <param name="eventArgs"></param>       
+        /// <param name="eventArgs"></param>
         private void SearchBoxQuerySubmitted(SearchBoxQuerySubmittedEventArgs eventArgs)
-         {
-             var searchTerm = eventArgs.QueryText != null ? eventArgs.QueryText.Trim() : null;           
-            if (!string.IsNullOrEmpty(searchTerm) && searchTerm != ResourceLoader.GetForCurrentView("Resources").GetString("NoSuggestions"))
+        {
+            string searchTerm = eventArgs.QueryText != null ? eventArgs.QueryText.Trim() : null;
+            if (!string.IsNullOrEmpty(searchTerm) &&
+                searchTerm != ResourceLoader.GetForCurrentView("Resources").GetString("NoSuggestions"))
                 NoSuggestions = false;
             if (!string.IsNullOrEmpty(searchTerm) && !NoSuggestions)
             {
@@ -79,23 +77,23 @@ namespace SageMobileSales.UILogic.ViewModels
         }
 
         /// <summary>
-        ///Navigate to ItemDetail page on item click
+        ///     Navigate to ItemDetail page on item click
         /// </summary>
-        /// <param name="sender"></param> 
-        /// <param name="parameter"></param> 
+        /// <param name="sender"></param>
+        /// <param name="parameter"></param>
         public void GridViewItemClick(object sender, object parameter)
-        {          
+        {
             var arg = ((parameter as ItemClickEventArgs).ClickedItem as Product);
             _navigationService.Navigate("ItemDetail", arg);
         }
 
         /// <summary>
-        ///Navigate to ItemDetail page on choosing result suggestion
+        ///     Navigate to ItemDetail page on choosing result suggestion
         /// </summary>
-        /// <param name="args"></param> 
+        /// <param name="args"></param>
         private void OnResultSuggestionChosen(SearchBoxResultSuggestionChosenEventArgs eventArgs)
         {
-            var productId = eventArgs.Tag != null ? eventArgs.Tag.Trim(): null;
+            string productId = eventArgs.Tag != null ? eventArgs.Tag.Trim() : null;
             if (!string.IsNullOrEmpty(productId))
             {
                 _navigationService.Navigate("ItemDetail", productId);
@@ -103,18 +101,18 @@ namespace SageMobileSales.UILogic.ViewModels
         }
 
         /// <summary>
-        ///Display result suggestions in searchbox
+        ///     Display result suggestions in searchbox
         /// </summary>
-        /// <param name="args"></param> 
+        /// <param name="args"></param>
         private async Task SearchBoxSuggestionsRequested(SearchBoxSuggestionsRequestedEventArgs eventArgs)
         {
-            var queryText = eventArgs.QueryText != null ? eventArgs.QueryText.Trim() : null;
+            string queryText = eventArgs.QueryText != null ? eventArgs.QueryText.Trim() : null;
             if (string.IsNullOrEmpty(queryText)) return;
-            var deferral = eventArgs.Request.GetDeferral();
+            SearchSuggestionsRequestDeferral deferral = eventArgs.Request.GetDeferral();
 
             try
             {
-                var suggestionCollection = eventArgs.Request.SearchSuggestionCollection;
+                SearchSuggestionCollection suggestionCollection = eventArgs.Request.SearchSuggestionCollection;
                 if (queryText == "'")
                 {
                     queryText = queryText.Trim().Replace("'", "''");
@@ -123,7 +121,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 {
                     queryText = queryText.Trim().Replace("'", string.Empty);
                 }
-                var querySuggestions = await _productRepository.GetSearchSuggestionsAsync(queryText);
+                List<ProductDetails> querySuggestions = await _productRepository.GetSearchSuggestionsAsync(queryText);
                 if (querySuggestions != null && querySuggestions.Count > 0)
                 {
                     foreach (ProductDetails suggestion in querySuggestions)
@@ -134,25 +132,27 @@ namespace SageMobileSales.UILogic.ViewModels
                             // No proper suggestion item exists
                             return;
                         }
-                        else if (string.IsNullOrWhiteSpace(ImageUrl))
+                        if (string.IsNullOrWhiteSpace(ImageUrl))
                         {
                             suggestionCollection.AppendQuerySuggestion(suggestion.ProductName);
                         }
                         else
                         {
-                            Uri uri = string.IsNullOrWhiteSpace(ImageUrl) ? new Uri(ResourceLoader.GetForCurrentView("Resources").GetString("NoImageUrl")) : new Uri(ImageUrl);
+                            Uri uri = string.IsNullOrWhiteSpace(ImageUrl)
+                                ? new Uri(ResourceLoader.GetForCurrentView("Resources").GetString("NoImageUrl"))
+                                : new Uri(ImageUrl);
                             RandomAccessStreamReference imageSource = RandomAccessStreamReference.CreateFromUri(uri);
-                            suggestionCollection.AppendResultSuggestion(suggestion.ProductName, suggestion.Sku, suggestion.ProductId, imageSource, ResourceLoader.GetForCurrentView("Resources").GetString("NoImage"));
+                            suggestionCollection.AppendResultSuggestion(suggestion.ProductName, suggestion.Sku,
+                                suggestion.ProductId, imageSource,
+                                ResourceLoader.GetForCurrentView("Resources").GetString("NoImage"));
                         }
                     }
                 }
                 else
                 {
-                    suggestionCollection.AppendQuerySuggestion(ResourceLoader.GetForCurrentView("Resources").GetString("NoSuggestions"));
+                    suggestionCollection.AppendQuerySuggestion(
+                        ResourceLoader.GetForCurrentView("Resources").GetString("NoSuggestions"));
                     NoSuggestions = true;
-
-                  
-
                 }
             }
             catch (Exception ex)
@@ -162,7 +162,6 @@ namespace SageMobileSales.UILogic.ViewModels
             }
 
             deferral.Complete();
-        }   
-        
+        }
     }
 }

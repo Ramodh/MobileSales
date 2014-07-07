@@ -8,7 +8,7 @@
     xmlns:common="using:SageMobileSales.Common"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-   xmlns:prism="using:Microsoft.Practices.Prism.StoreApps"
+    xmlns:prism="using:Microsoft.Practices.Prism.StoreApps"
     xmlns:behaviors="using:SageMobileSales.Behaviors"
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
@@ -20,7 +20,7 @@
 
 
     </prism:VisualStateAwarePage.Resources>
- 
+
     <!--
         This grid acts as a root panel for the page that defines two rows:
         * Row 0 contains the back button and page title
@@ -29,62 +29,63 @@
     <Grid Style="{StaticResource LayoutRootStyle}">
         <Grid.ChildrenTransitions>
             <TransitionCollection>
-                <EntranceThemeTransition/>
+                <EntranceThemeTransition />
             </TransitionCollection>
         </Grid.ChildrenTransitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="140"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="140" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
         <!-- Back button and page title -->
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="120"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="120" />
+                <ColumnDefinition Width="*" />
 
             </Grid.ColumnDefinitions>
             <Button x:Name="backButton" Command="{Binding GoBackCommand, ElementName=pageRoot}"
-                        Style="{StaticResource NavigationCustomBackButtonNormalStyle}"
-                        VerticalAlignment="Top"
-                        AutomationProperties.Name="Back"
-                        AutomationProperties.AutomationId="BackButton"
-                        AutomationProperties.ItemType="Navigation Button"/>
-            <TextBlock x:Name="createShippingAddressPageTitle" x:Uid="createShippingAddressPageTitle" Text="" Style="{StaticResource PageTitleTextStyle}" Grid.Column="1" 
-                        IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom"/>
+                    Style="{StaticResource NavigationCustomBackButtonNormalStyle}"
+                    VerticalAlignment="Top"
+                    AutomationProperties.Name="Back"
+                    AutomationProperties.AutomationId="BackButton"
+                    AutomationProperties.ItemType="Navigation Button" />
+            <TextBlock x:Name="createShippingAddressPageTitle" x:Uid="createShippingAddressPageTitle" Text=""
+                       Style="{StaticResource PageTitleTextStyle}" Grid.Column="1"
+                       IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" />
         </Grid>
 
-        <Grid x:Name="ContentGrid"  Grid.Row="1" RenderTransformOrigin="0.5,0.5">
+        <Grid x:Name="ContentGrid" Grid.Row="1" RenderTransformOrigin="0.5,0.5">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="120"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="120" />
+                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <!-- Name -->
 
-            <StackPanel Grid.Row="0"  Grid.Column="1" >
+            <StackPanel Grid.Row="0" Grid.Column="1">
                 <!-- First Name -->
-                <TextBox x:Name="addressTitle" 
-                                       x:Uid="addressTitle"
-                                       Header=""
-                                       AutomationProperties.AutomationId="addressTitleTextBox"
-                                       AutomationProperties.IsRequiredForForm="True"
-                                    Style="{StaticResource CreateShippingAddressTextBoxStyle}"
-                                       Text="{Binding Address.AddressName, Mode=TwoWay}"
-                          IsEnabled="{Binding IsEnabled}" Width="610">
+                <TextBox x:Name="addressTitle"
+                         x:Uid="addressTitle"
+                         Header=""
+                         AutomationProperties.AutomationId="addressTitleTextBox"
+                         AutomationProperties.IsRequiredForForm="True"
+                         Style="{StaticResource CreateShippingAddressTextBoxStyle}"
+                         Text="{Binding Address.AddressName, Mode=TwoWay}"
+                         IsEnabled="{Binding IsEnabled}" Width="610">
                     <interactivity:Interaction.Behaviors>
                         <behaviors:HighlightFormFieldOnErrors PropertyErrors="{Binding Address.Errors[AddressName]}" />
                     </interactivity:Interaction.Behaviors>
                 </TextBox>
                 <TextBlock x:Name="errorsAddressTitle"
-                       Style="{StaticResource ErrorMessageStyle}"                                           
-                         HorizontalAlignment="Left" 
-                       Text="{Binding Address.Errors[AddressName], Converter={StaticResource ErrorConverter}}"
-                           
-                       TextWrapping="NoWrap" VerticalAlignment="Bottom" />
+                           Style="{StaticResource ErrorMessageStyle}"
+                           HorizontalAlignment="Left"
+                           Text="{Binding Address.Errors[AddressName], Converter={StaticResource ErrorConverter}}"
+
+                           TextWrapping="NoWrap" VerticalAlignment="Bottom" />
 
                 <!-- Last Name -->
 
@@ -107,34 +108,32 @@
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
 
-                    <ColumnDefinition Width="300"/>
-                    <ColumnDefinition Width="10"/>
-                    <ColumnDefinition Width="300"/>
-                    <ColumnDefinition Width="300"/>
-
-
+                    <ColumnDefinition Width="300" />
+                    <ColumnDefinition Width="10" />
+                    <ColumnDefinition Width="300" />
+                    <ColumnDefinition Width="300" />
 
 
                 </Grid.ColumnDefinitions>
-                <StackPanel Grid.Row="2"  Grid.Column="0" >
+                <StackPanel Grid.Row="2" Grid.Column="0">
                     <!-- First Name -->
-                    <TextBox x:Name="address1" 
-                                       x:Uid="address1"
-                                       Header=""
-                                       AutomationProperties.AutomationId="address1TextBox"
-                                       AutomationProperties.IsRequiredForForm="True"
-                                    Style="{StaticResource AddContactTextBoxStyle}"
-                                       Text="{Binding Address.Street1, Mode=TwoWay}"
-                          IsEnabled="{Binding IsEnabled}">
+                    <TextBox x:Name="address1"
+                             x:Uid="address1"
+                             Header=""
+                             AutomationProperties.AutomationId="address1TextBox"
+                             AutomationProperties.IsRequiredForForm="True"
+                             Style="{StaticResource AddContactTextBoxStyle}"
+                             Text="{Binding Address.Street1, Mode=TwoWay}"
+                             IsEnabled="{Binding IsEnabled}">
                         <interactivity:Interaction.Behaviors>
-                            <behaviors:HighlightFormFieldOnErrors PropertyErrors="{Binding Address.Errors[Street1]}"/>
+                            <behaviors:HighlightFormFieldOnErrors PropertyErrors="{Binding Address.Errors[Street1]}" />
                         </interactivity:Interaction.Behaviors>
                     </TextBox>
                     <TextBlock x:Name="errorsAddress1"
-                       Style="{StaticResource ErrorMessageStyle}"                                           
-                         HorizontalAlignment="Left" 
-                       Text="{Binding Address.Errors[Street1], Converter={StaticResource ErrorConverter}}"
-                       TextWrapping="NoWrap" Height="19" VerticalAlignment="Bottom" />
+                               Style="{StaticResource ErrorMessageStyle}"
+                               HorizontalAlignment="Left"
+                               Text="{Binding Address.Errors[Street1], Converter={StaticResource ErrorConverter}}"
+                               TextWrapping="NoWrap" Height="19" VerticalAlignment="Bottom" />
 
                     <!-- Last Name -->
 
@@ -142,123 +141,125 @@
                 </StackPanel>
 
 
-
                 <StackPanel Grid.Row="2" Grid.Column="2">
                     <TextBox x:Name="address2"
-                                       x:Uid="address2"
-                                       Header=""
-                                       AutomationProperties.AutomationId="address2TextBox"                         
-                                       Style="{StaticResource AddContactTextBoxStyle}"                                      
-                                       Text="{Binding Address.Street2, Mode=TwoWay}"  IsEnabled="{Binding IsEnabled}">
+                             x:Uid="address2"
+                             Header=""
+                             AutomationProperties.AutomationId="address2TextBox"
+                             Style="{StaticResource AddContactTextBoxStyle}"
+                             Text="{Binding Address.Street2, Mode=TwoWay}" IsEnabled="{Binding IsEnabled}">
                         <interactivity:Interaction.Behaviors>
 
                             <behaviors:HighlightFormFieldOnErrors PropertyErrors="{Binding Address.Errors[Street2]}" />
                         </interactivity:Interaction.Behaviors>
                     </TextBox>
-                    <TextBlock x:Name="errorAddress2"                        
-                       Style="{StaticResource ErrorMessageStyle}"  
-                        Text="{Binding Address.Errors[Street2], Converter={StaticResource ErrorConverter}}"
-                       TextWrapping="NoWrap" 
-                       HorizontalAlignment="Left"/>
+                    <TextBlock x:Name="errorAddress2"
+                               Style="{StaticResource ErrorMessageStyle}"
+                               Text="{Binding Address.Errors[Street2], Converter={StaticResource ErrorConverter}}"
+                               TextWrapping="NoWrap"
+                               HorizontalAlignment="Left" />
                 </StackPanel>
                 <!-- Phone -->
                 <StackPanel Grid.Row="6" Grid.Column="0">
                     <TextBox x:Name="address3"
-                                       x:Uid="address3"
-                                       Header=""
-                                       AutomationProperties.AutomationId="address3TextBox"
-                                       AutomationProperties.IsRequiredForForm="True"
-                                       Style="{StaticResource AddContactTextBoxStyle}"
-                                       Text="{Binding Address.Street3, Mode=TwoWay}"
-                              IsEnabled="{Binding IsEnabled}">
+                             x:Uid="address3"
+                             Header=""
+                             AutomationProperties.AutomationId="address3TextBox"
+                             AutomationProperties.IsRequiredForForm="True"
+                             Style="{StaticResource AddContactTextBoxStyle}"
+                             Text="{Binding Address.Street3, Mode=TwoWay}"
+                             IsEnabled="{Binding IsEnabled}">
                         <interactivity:Interaction.Behaviors>
                             <behaviors:HighlightFormFieldOnErrors PropertyErrors="{Binding Address.Errors[Street3]}" />
                         </interactivity:Interaction.Behaviors>
                     </TextBox>
 
                     <TextBlock x:Name="errorAddress3"
-                       Style="{StaticResource ErrorMessageStyle}"                      
-                       Text="{Binding Address.Errors[Street3], Converter={StaticResource ErrorConverter}}"
-                       TextWrapping="Wrap"/>
+                               Style="{StaticResource ErrorMessageStyle}"
+                               Text="{Binding Address.Errors[Street3], Converter={StaticResource ErrorConverter}}"
+                               TextWrapping="Wrap" />
                 </StackPanel>
                 <StackPanel Grid.Row="6" Grid.Column="2">
-                    <TextBox x:Name="address4" 
-                                       x:Uid="address4"
-                                       Header=""
-                                       AutomationProperties.AutomationId="address4TextBox"
-                                       AutomationProperties.IsRequiredForForm="True"                                                                           
-                     HorizontalAlignment="Left"
-                                       Style="{StaticResource AddContactTextBoxStyle}"
-                                       Text="{Binding Address.Street4, Mode=TwoWay}" 
-                               IsEnabled="{Binding IsEnabled}">
+                    <TextBox x:Name="address4"
+                             x:Uid="address4"
+                             Header=""
+                             AutomationProperties.AutomationId="address4TextBox"
+                             AutomationProperties.IsRequiredForForm="True"
+                             HorizontalAlignment="Left"
+                             Style="{StaticResource AddContactTextBoxStyle}"
+                             Text="{Binding Address.Street4, Mode=TwoWay}"
+                             IsEnabled="{Binding IsEnabled}">
                         <interactivity:Interaction.Behaviors>
                             <behaviors:HighlightFormFieldOnErrors PropertyErrors="{Binding Address.Errors[Street4]}" />
                         </interactivity:Interaction.Behaviors>
                     </TextBox>
                     <TextBlock x:Name="erroraddress4"
-                       Style="{StaticResource ErrorMessageStyle}"
-                       Text="{Binding Address.Errors[Street4], Converter={StaticResource ErrorConverter}}"
-                       TextWrapping="NoWrap"/>
+                               Style="{StaticResource ErrorMessageStyle}"
+                               Text="{Binding Address.Errors[Street4], Converter={StaticResource ErrorConverter}}"
+                               TextWrapping="NoWrap" />
                 </StackPanel>
 
 
-
-                <StackPanel  Grid.Row="8" Grid.Column="0">
+                <StackPanel Grid.Row="8" Grid.Column="0">
                     <TextBox x:Name="city"
-                                       x:Uid="city"
-                                       Header=""
-                                       AutomationProperties.AutomationId="CityTextBox"
-                                       Style="{StaticResource AddContactTextBoxStyle}"                                    
-                                       Text="{Binding Address.City, Mode=TwoWay}"
-                              IsEnabled="{Binding IsEnabled}">
+                             x:Uid="city"
+                             Header=""
+                             AutomationProperties.AutomationId="CityTextBox"
+                             Style="{StaticResource AddContactTextBoxStyle}"
+                             Text="{Binding Address.City, Mode=TwoWay}"
+                             IsEnabled="{Binding IsEnabled}">
                         <interactivity:Interaction.Behaviors>
                             <behaviors:HighlightFormFieldOnErrors PropertyErrors="{Binding Address.Errors[City]}" />
                         </interactivity:Interaction.Behaviors>
                     </TextBox>
                     <TextBlock x:Name="errorCity"
-                       Style="{StaticResource ErrorMessageStyle}"                      
-                       Text="{Binding Address.Errors[City], Converter={StaticResource ErrorConverter}}"
-                       TextWrapping="NoWrap" />
+                               Style="{StaticResource ErrorMessageStyle}"
+                               Text="{Binding Address.Errors[City], Converter={StaticResource ErrorConverter}}"
+                               TextWrapping="NoWrap" />
                 </StackPanel>
                 <StackPanel Grid.Column="2" Grid.Row="8">
                     <TextBox x:Name="state"
-                                       x:Uid="state"
-                                       Header=""
-                                       AutomationProperties.AutomationId="stateTextBox"
-                                       Style="{StaticResource AddContactTextBoxStyle}"                                    
-                                       Text="{Binding Address.StateProvince, Mode=TwoWay}">
+                             x:Uid="state"
+                             Header=""
+                             AutomationProperties.AutomationId="stateTextBox"
+                             Style="{StaticResource AddContactTextBoxStyle}"
+                             Text="{Binding Address.StateProvince, Mode=TwoWay}">
                         <interactivity:Interaction.Behaviors>
-                            <behaviors:HighlightFormFieldOnErrors PropertyErrors="{Binding Address.Errors[StateProvince]}" />
+                            <behaviors:HighlightFormFieldOnErrors
+                                PropertyErrors="{Binding Address.Errors[StateProvince]}" />
                         </interactivity:Interaction.Behaviors>
                     </TextBox>
                     <TextBlock x:Name="errorState"
-                       Style="{StaticResource ErrorMessageStyle}"                      
-                       Text="{Binding Address.Errors[StateProvince], Converter={StaticResource ErrorConverter}}"
-                       TextWrapping="NoWrap"/>
+                               Style="{StaticResource ErrorMessageStyle}"
+                               Text="{Binding Address.Errors[StateProvince], Converter={StaticResource ErrorConverter}}"
+                               TextWrapping="NoWrap" />
                 </StackPanel>
                 <StackPanel Grid.Row="10" Grid.Column="0">
                     <TextBox x:Name="zipcode"
-                                       x:Uid="zipcode"
-                                       Header=""
-                                       AutomationProperties.AutomationId="zipcodeTextBox"
-                                       Style="{StaticResource AddContactTextBoxStyle}"                                    
-                                       Text="{Binding Address.PostalCode, Mode=TwoWay}"
-                              IsEnabled="{Binding IsEnabled}">
+                             x:Uid="zipcode"
+                             Header=""
+                             AutomationProperties.AutomationId="zipcodeTextBox"
+                             Style="{StaticResource AddContactTextBoxStyle}"
+                             Text="{Binding Address.PostalCode, Mode=TwoWay}"
+                             IsEnabled="{Binding IsEnabled}">
                         <interactivity:Interaction.Behaviors>
                             <behaviors:HighlightFormFieldOnErrors PropertyErrors="{Binding Address.Errors[PostalCode]}" />
                         </interactivity:Interaction.Behaviors>
                     </TextBox>
                     <TextBlock x:Name="errorZipcode"
-                       Style="{StaticResource ErrorMessageStyle}"                      
-                       Text="{Binding Address.Errors[PostalCode], Converter={StaticResource ErrorConverter}}"
-                       TextWrapping="NoWrap"/>
+                               Style="{StaticResource ErrorMessageStyle}"
+                               Text="{Binding Address.Errors[PostalCode], Converter={StaticResource ErrorConverter}}"
+                               TextWrapping="NoWrap" />
                 </StackPanel>
-                <TextBox x:Name="country" x:Uid="country" Grid.Row="10" BorderBrush="Black" Grid.Column="2" Text="USA" IsEnabled="False" Style="{StaticResource AddContactTextBoxStyle}" Height="41" Margin="0,0,0,21"/>
-                <Button x:Uid="saveAddress" Content="" Grid.Row="11" Style="{StaticResource ButtonNormalStyle}" Grid.Column="2" HorizontalAlignment="Right">
+                <TextBox x:Name="country" x:Uid="country" Grid.Row="10" BorderBrush="Black" Grid.Column="2" Text="USA"
+                         IsEnabled="False" Style="{StaticResource AddContactTextBoxStyle}" Height="41"
+                         Margin="0,0,0,21" />
+                <Button x:Uid="saveAddress" Content="" Grid.Row="11" Style="{StaticResource ButtonNormalStyle}"
+                        Grid.Column="2" HorizontalAlignment="Right">
                     <interactivity:Interaction.Behaviors>
                         <core:EventTriggerBehavior EventName="Click">
                             <core:CallMethodAction MethodName="SaveAddressButton_Click"
-                TargetObject="{Binding Mode=OneWay}" />
+                                                   TargetObject="{Binding Mode=OneWay}" />
                         </core:EventTriggerBehavior>
                     </interactivity:Interaction.Behaviors>
                 </Button>

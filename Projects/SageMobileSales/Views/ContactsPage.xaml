@@ -17,29 +17,29 @@
 
     <prism:VisualStateAwarePage.Resources>
         <CollectionViewSource x:Name="customerContactsViewSource"
-                              Source="{Binding CustomerContactList}"/>
+                              Source="{Binding CustomerContactList}" />
     </prism:VisualStateAwarePage.Resources>
     <Page.BottomAppBar>
-      
-            <CommandBar Style="{StaticResource BottomAppBarStyle}"
+
+        <CommandBar Style="{StaticResource BottomAppBarStyle}"
                     IsOpen="{Binding IsBottomAppBarOpened, Mode=TwoWay}"
-                    IsSticky="True"                    
+                    IsSticky="True"
                     AutomationProperties.AutomationId="BottomAppBar"
                     x:Uid="BottomAppBar">
             <CommandBar.PrimaryCommands>
                 <AppBarButton x:Name="addContact"
-                              x:Uid="addContact" Label="" Icon="Add" >
-                        <interactivity:Interaction.Behaviors>
-                            <core:EventTriggerBehavior EventName="Click">
-                            <core:CallMethodAction MethodName="AddContactsButton_Click" 
-                TargetObject="{Binding Mode=OneWay}" />
-                            </core:EventTriggerBehavior>
-                        </interactivity:Interaction.Behaviors>
-                    </AppBarButton>
-                    <!--<AppBarSeparator/>
+                              x:Uid="addContact" Label="" Icon="Add">
+                    <interactivity:Interaction.Behaviors>
+                        <core:EventTriggerBehavior EventName="Click">
+                            <core:CallMethodAction MethodName="AddContactsButton_Click"
+                                                   TargetObject="{Binding Mode=OneWay}" />
+                        </core:EventTriggerBehavior>
+                    </interactivity:Interaction.Behaviors>
+                </AppBarButton>
+                <!--<AppBarSeparator/>
                 <AppBarButton x:Name="MailAppBarButton" Label="Mail" Icon="MailForward"/>-->
-                </CommandBar.PrimaryCommands>
-            </CommandBar>
+            </CommandBar.PrimaryCommands>
+        </CommandBar>
     </Page.BottomAppBar>
     <!--
         This grid acts as a root panel for the page that defines two rows:
@@ -49,14 +49,14 @@
     <Grid Style="{StaticResource LayoutRootStyle}">
         <Grid.ChildrenTransitions>
             <TransitionCollection>
-                <EntranceThemeTransition/>
+                <EntranceThemeTransition />
             </TransitionCollection>
         </Grid.ChildrenTransitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="140"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="140" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        
+
         <GridView
             x:Name="ContactsGridView"
             AutomationProperties.AutomationId="ContactsGridView"
@@ -82,17 +82,19 @@
         <!-- Back button and page title -->
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="120"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="120" />
+                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <Button x:Name="backButton" Margin="39,59,39,0" Command="{Binding NavigationHelper.GoBackCommand, ElementName=pageRoot}"
-                        Style="{StaticResource NavigationBackButtonNormalStyle}"
-                        VerticalAlignment="Top"
-                        AutomationProperties.Name="Back"
-                        AutomationProperties.AutomationId="BackButton"
-                        AutomationProperties.ItemType="Navigation Button"/>
-            <TextBlock x:Name="pageTitle" x:Uid="ContactsPageTitle" Style="{StaticResource PageTitleTextStyle}" Grid.Column="1" 
-                        IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="0,0,30,40"/>
+            <Button x:Name="backButton" Margin="39,59,39,0"
+                    Command="{Binding NavigationHelper.GoBackCommand, ElementName=pageRoot}"
+                    Style="{StaticResource NavigationBackButtonNormalStyle}"
+                    VerticalAlignment="Top"
+                    AutomationProperties.Name="Back"
+                    AutomationProperties.AutomationId="BackButton"
+                    AutomationProperties.ItemType="Navigation Button" />
+            <TextBlock x:Name="pageTitle" x:Uid="ContactsPageTitle" Style="{StaticResource PageTitleTextStyle}"
+                       Grid.Column="1"
+                       IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="0,0,30,40" />
         </Grid>
     </Grid>
 </prism:VisualStateAwarePage>

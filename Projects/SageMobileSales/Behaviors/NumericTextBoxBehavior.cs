@@ -1,59 +1,40 @@
-﻿using Microsoft.Xaml.Interactivity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
+using Microsoft.Xaml.Interactivity;
 
 namespace SageMobileSales.Behaviors
 {
-    /// 
     /// Simple NumericTextBox behavior for Windows 8.1
-    /// 
     public sealed class NumericTextBoxBehavior
-         : DependencyObject, IBehavior
+        : DependencyObject, IBehavior
     {
-        /// 
-        /// Track the last valid text value.
-        /// 
-        private string _lastText;
-
-        /// 
         /// Backing storage for the AllowDecimal property
-        /// 
         public static readonly DependencyProperty AllowDecimalProperty = DependencyProperty.Register(
             "AllowDecimal",
-            typeof(bool),
-            typeof(NumericTextBoxBehavior),
+            typeof (bool),
+            typeof (NumericTextBoxBehavior),
             new PropertyMetadata(false));
 
-        /// 
+        /// Track the last valid text value.
+        private string _lastText;
+
         /// True to allow a decimal point.
-        /// 
         public bool AllowDecimal
         {
-            get
-            {
-                return (bool)base.GetValue(AllowDecimalProperty);
-            }
+            get { return (bool) base.GetValue(AllowDecimalProperty); }
 
-            set
-            {
-                base.SetValue(AllowDecimalProperty, value);
-            }
+            set { base.SetValue(AllowDecimalProperty, value); }
         }
 
-        /// 
         /// Used to attach this behavior to an element.
         /// Must be a TextBox.
-        /// 
-        ///TextBox to assocate this behavior with.
+        ///  
+        /// TextBox to assocate this behavior with.
         public void Attach(DependencyObject associatedObject)
         {
-            TextBox tb = associatedObject as TextBox;
+            var tb = associatedObject as TextBox;
             if (tb == null)
             {
                 throw new ArgumentException("NumericTextBoxBehavior can only be used with a TextBox.");
@@ -71,15 +52,24 @@ namespace SageMobileSales.Behaviors
             }
         }
 
-        /// 
+        /// Detaches the behavior from the TextBox.
+        public void Detach()
+        {
+            var tb = AssociatedObject as TextBox;
+            if (tb != null)
+            {
+                tb.TextChanged -= TbOnTextChanged;
+            }
+        }
+
+        /// The associated object (TextBox).
+        public DependencyObject AssociatedObject { get; private set; }
+
         /// Handles the TextChanged event on the TextBox and watches for
         /// numeric entries.
-        /// 
-        ///
-        ///
         private void TbOnTextChanged(object sender, TextChangedEventArgs e)
         {
-            TextBox tb = AssociatedObject as TextBox;
+            var tb = AssociatedObject as TextBox;
             if (tb != null)
             {
                 if (AllowDecimal)
@@ -107,23 +97,5 @@ namespace SageMobileSales.Behaviors
                 tb.SelectionStart = tb.Text.Length;
             }
         }
-
-        /// 
-        /// Detaches the behavior from the TextBox.
-        /// 
-        public void Detach()
-        {
-            TextBox tb = AssociatedObject as TextBox;
-            if (tb != null)
-            {
-                tb.TextChanged -= this.TbOnTextChanged;
-            }
-        }
-
-        /// 
-        /// The associated object (TextBox).
-        /// 
-        public DependencyObject AssociatedObject { get; private set; }
     }
-
 }

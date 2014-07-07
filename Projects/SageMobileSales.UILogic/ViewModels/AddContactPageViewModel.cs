@@ -1,4 +1,9 @@
-﻿using Microsoft.Practices.Prism.StoreApps;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
+using Microsoft.Practices.Prism.StoreApps;
 using Microsoft.Practices.Prism.StoreApps.Interfaces;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Entities;
@@ -7,55 +12,51 @@ using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
 using SageMobileSales.ServiceAgents.Services;
 using SageMobileSales.UILogic.Common;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.UI.Xaml.Controls;
 
 namespace SageMobileSales.UILogic.ViewModels
 {
-    class AddContactPageViewModel:ViewModel
+    internal class AddContactPageViewModel : ViewModel
     {
-        private INavigationService _navigationService;
-     
-        private IContactRepository _contactRepository;
-        private bool _isEnabled;
+        private readonly IContactRepository _contactRepository;
+        private readonly IContactService _contactService;
+        private readonly INavigationService _navigationService;
+        private Contact _contact;
         private CustomerDetails _customerAddress;
         private string _customerId;
-        private IContactService _contactService;
-        private Contact _contact;
         private bool _inProgress;
+        private bool _isEnabled;
         private bool _isSaveEnabled;
-        public DelegateCommand<object> TextChangedCommand { get; set; }
         private string _log = string.Empty;
 
-        public AddContactPageViewModel(INavigationService navigationService, IContactRepository contactRepository,IContactService contactService)
+        public AddContactPageViewModel(INavigationService navigationService, IContactRepository contactRepository,
+            IContactService contactService)
         {
-
-            _navigationService = navigationService;          
+            _navigationService = navigationService;
             _contact = new Contact();
             _isEnabled = true;
-            _contactRepository=contactRepository;
+            _contactRepository = contactRepository;
             _contactService = contactService;
             TextChangedCommand = new DelegateCommand<object>(TextBoxTextChanged);
         }
+
+        public DelegateCommand<object> TextChangedCommand { get; set; }
+
         /// <summary>
-        /// Holds Contact details
+        ///     Holds Contact details
         /// </summary>
         [RestorableState]
         public Contact Contact
         {
             get { return _contact; }
-            set { SetProperty(ref _contact, value);
-            OnPropertyChanged("Contact");
+            set
+            {
+                SetProperty(ref _contact, value);
+                OnPropertyChanged("Contact");
             }
         }
 
         /// <summary>
-        /// Data loading indicator
+        ///     Data loading indicator
         /// </summary>
         public bool InProgress
         {
@@ -64,7 +65,7 @@ namespace SageMobileSales.UILogic.ViewModels
         }
 
         /// <summary>
-        /// evaluate validation 
+        ///     evaluate validation
         /// </summary>
         public bool IsEnabled
         {
@@ -79,8 +80,8 @@ namespace SageMobileSales.UILogic.ViewModels
             }
         }
 
-          /// <summary>
-        /// evaluate validation 
+        /// <summary>
+        ///     evaluate validation
         /// </summary>
         public bool IsSaveEnabled
         {
@@ -91,9 +92,9 @@ namespace SageMobileSales.UILogic.ViewModels
                 OnPropertyChanged("IsSaveEnabled");
             }
         }
-        
+
         /// <summary>
-        /// Holds Customer Details
+        ///     Holds Customer Details
         /// </summary>
         public CustomerDetails CustomerAddress
         {
@@ -103,27 +104,30 @@ namespace SageMobileSales.UILogic.ViewModels
 
 
         /// <summary>
-        /// Load add contact page
+        ///     Load add contact page
         /// </summary>
         /// <param name="navigationParameter"></param>
         /// <param name="navigationMode"></param>
         /// <param name="viewModelState"></param>
-        public override  void OnNavigatedTo(object navigationParameter, Windows.UI.Xaml.Navigation.NavigationMode navigationMode, Dictionary<string, object> viewModelState)
-        {         
+        public override void OnNavigatedTo(object navigationParameter, NavigationMode navigationMode,
+            Dictionary<string, object> viewModelState)
+        {
             try
             {
                 IsSaveEnabled = true;
                 _customerId = navigationParameter as string;
                 _contact.CustomerId = _customerId;
-              //  _customerAddress = navigationParameter as CustomerDetails;
-              //  _contact.CustomerId = _customerAddress.CustomerId;
-                _contact.ContactId = PageUtils.Pending + System.Guid.NewGuid().ToString();
-                var errorsCollection = RetrieveEntityStateValue<IDictionary<string, ReadOnlyCollection<string>>>("errorsCollection", viewModelState);
+                //  _customerAddress = navigationParameter as CustomerDetails;
+                //  _contact.CustomerId = _customerAddress.CustomerId;
+                _contact.ContactId = PageUtils.Pending + Guid.NewGuid();
+                var errorsCollection =
+                    RetrieveEntityStateValue<IDictionary<string, ReadOnlyCollection<string>>>("errorsCollection",
+                        viewModelState);
 
                 if (errorsCollection != null)
                 {
                     _contact.SetAllErrors(errorsCollection);
-                }               
+                }
                 base.OnNavigatedTo(navigationParameter, navigationMode, viewModelState);
             }
             catch (Exception ex)
@@ -132,26 +136,26 @@ namespace SageMobileSales.UILogic.ViewModels
                 AppEventSource.Log.Error(_log);
             }
         }
+
         /// <summary>
-        /// check user input is valid or not
+        ///     check user input is valid or not
         /// </summary>
-       
         public bool ValidateForm()
         {
             return _contact.ValidateProperties();
         }
-      
+
         public override void OnNavigatedFrom(Dictionary<string, object> viewModelState, bool suspending)
         {
-            
             base.OnNavigatedFrom(viewModelState, suspending);
             if (viewModelState != null)
             {
                 AddEntityStateValue("errorsCollection", _contact.GetAllErrors(), viewModelState);
             }
         }
+
         /// <summary>
-        ///  //Navigate to create quote page on appbar button click
+        ///     //Navigate to create quote page on appbar button click
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="parameter"></param>
@@ -159,7 +163,8 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             try
             {
-                if (!(string.IsNullOrEmpty(Contact.FirstName) && string.IsNullOrEmpty(Contact.LastName)) && IsSaveEnabled)
+                if (!(string.IsNullOrEmpty(Contact.FirstName) && string.IsNullOrEmpty(Contact.LastName)) &&
+                    IsSaveEnabled)
                 {
                     if (ValidateForm())
                     {
@@ -187,11 +192,10 @@ namespace SageMobileSales.UILogic.ViewModels
                 _log = AppEventSource.Log.WriteLine(ex);
                 AppEventSource.Log.Error(_log);
             }
-
         }
 
         /// <summary>
-        /// Display validation errors if any
+        ///     Display validation errors if any
         /// </summary>
         /// <param name="modelValidationResults"></param>
         private void DisplayValidationErrors(EntityValidationResult modelValidationResults)
@@ -199,9 +203,9 @@ namespace SageMobileSales.UILogic.ViewModels
             var errors = new Dictionary<string, ReadOnlyCollection<string>>();
 
             // Property keys format: address.{Propertyname}
-            foreach (var propkey in modelValidationResults.ModelState.Keys)
+            foreach (string propkey in modelValidationResults.ModelState.Keys)
             {
-                string propertyName = propkey.Substring(propkey.IndexOf('.') + 1); 
+                string propertyName = propkey.Substring(propkey.IndexOf('.') + 1);
 
                 errors.Add(propertyName, new ReadOnlyCollection<string>(modelValidationResults.ModelState[propkey]));
             }
@@ -210,24 +214,19 @@ namespace SageMobileSales.UILogic.ViewModels
         }
 
         /// <summary>
-        /// TextChanged event to filter items
+        ///     TextChanged event to filter items
         /// </summary>
         /// <param name="searchText"></param>
         private void TextBoxTextChanged(object args)
         {
-            
-
-           
-                if (!string.IsNullOrEmpty(((TextBox)args).Text))
-                {
-                    string searchTerm = ((TextBox)args).Text.Trim();     
-                string formated=  string.Format("{0:(###) ###-####}", 
+            if (!string.IsNullOrEmpty(((TextBox) args).Text))
+            {
+                string searchTerm = ((TextBox) args).Text.Trim();
+                string formated = string.Format("{0:(###) ###-####}",
                     Convert.ToDouble(searchTerm));
                 Contact.PhoneWork = formated;
                 OnPropertyChanged("PhoneWork");
-                }
-            
+            }
         }
-    
     }
 }

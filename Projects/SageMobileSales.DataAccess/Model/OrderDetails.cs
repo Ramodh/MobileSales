@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SageMobileSales.DataAccess.Model
 {
     public class OrderDetails
     {
-        private string _orderdescription;
         private static readonly char[] NewLineChars = Environment.NewLine.ToCharArray();
+        private string _orderdescription;
 
         public string OrderId { get; set; }
         public string CustomerName { get; set; }
@@ -20,11 +16,13 @@ namespace SageMobileSales.DataAccess.Model
         public decimal DiscountPercent { get; set; }
         public string OrderStatus { get; set; }
         public string RepName { get; set; }
+
         public string OrderDescription
         {
             get { return _orderdescription.TrimEnd(NewLineChars); }
             set { _orderdescription = value; }
         }
+
         public string ExternalReferenceNumber { get; set; }
         public int OrderNumber { get; set; }
         public string CustomerId { get; set; }

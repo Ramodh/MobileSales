@@ -1,4 +1,8 @@
-﻿using Microsoft.Practices.Prism.PubSubEvents;
+﻿using System;
+using System.Collections.Generic;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
+using Microsoft.Practices.Prism.PubSubEvents;
 using Microsoft.Practices.Prism.StoreApps;
 using Microsoft.Practices.Prism.StoreApps.Interfaces;
 using SageMobileSales.DataAccess.Common;
@@ -6,26 +10,34 @@ using SageMobileSales.DataAccess.Entities;
 using SageMobileSales.DataAccess.Events;
 using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
-using SageMobileSales.UILogic.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.UI.Xaml.Controls;
 
 namespace SageMobileSales.UILogic.ViewModels
 {
-    class CategoryLevelThreePageViewModel : ViewModel
+    internal class CategoryLevelThreePageViewModel : ViewModel
     {
-        private INavigationService _navigationService;
-        private IProductCategoryRepository _productCategoryRepository;
         private readonly IEventAggregator _eventAggregator;
+        private readonly INavigationService _navigationService;
+        private readonly IProductCategoryRepository _productCategoryRepository;
+        private string _catalogLevelThreePageTitle;
         private bool _inProgress;
         private string _log;
+        private List<ProductCategory> _productCategoryList;
+
+        private bool _syncProgress;
+
+        public CategoryLevelThreePageViewModel(INavigationService navigationService,
+            IProductCategoryRepository productCategoryRepository, IEventAggregator eventAggregator)
+        {
+            _navigationService = navigationService;
+            _productCategoryRepository = productCategoryRepository;
+            _eventAggregator = eventAggregator;
+            ProductCategoryList = new List<ProductCategory>();
+            _eventAggregator.GetEvent<ProductSyncChangedEvent>()
+                .Subscribe(ProductsSyncIndicator, ThreadOption.UIThread);
+        }
 
         /// <summary>
-        /// Data loading indicator
+        ///     Data loading indicator
         /// </summary>
         public bool InProgress
         {
@@ -33,7 +45,6 @@ namespace SageMobileSales.UILogic.ViewModels
             private set { SetProperty(ref _inProgress, value); }
         }
 
-        private bool _syncProgress;
         /// <summary>
         ///     Data  syncing indicator
         /// </summary>
@@ -61,7 +72,6 @@ namespace SageMobileSales.UILogic.ViewModels
         //    }
         //}
 
-        private List<ProductCategory> _productCategoryList;
         public List<ProductCategory> ProductCategoryList
         {
             get { return _productCategoryList; }
@@ -75,34 +85,24 @@ namespace SageMobileSales.UILogic.ViewModels
             }
         }
 
-        private string _catalogLevelThreePageTitle;
         public string CatalogLevelThreePageTitle
         {
             get { return _catalogLevelThreePageTitle; }
             private set { SetProperty(ref _catalogLevelThreePageTitle, value); }
         }
 
-        public CategoryLevelThreePageViewModel(INavigationService navigationService, IProductCategoryRepository productCategoryRepository, IEventAggregator eventAggregator)
-        {
-            _navigationService = navigationService;
-            _productCategoryRepository = productCategoryRepository;
-            _eventAggregator = eventAggregator;
-            ProductCategoryList = new List<ProductCategory>();
-            _eventAggregator.GetEvent<ProductSyncChangedEvent>()
-                .Subscribe(ProductsSyncIndicator, ThreadOption.UIThread);
-        }
-
         /// <summary>
-        /// Loading product categories level three
+        ///     Loading product categories level three
         /// </summary>
         /// <param name="navigationParameter"></param>
         /// <param name="navigationMode"></param>
         /// <param name="viewModelState"></param>
-        public override async void OnNavigatedTo(object navigationParameter, Windows.UI.Xaml.Navigation.NavigationMode navigationMode, Dictionary<string, object> viewModelState)
+        public override async void OnNavigatedTo(object navigationParameter, NavigationMode navigationMode,
+            Dictionary<string, object> viewModelState)
         {
             InProgress = true;
             SyncProgress = Constants.ProductsSyncProgress;
-            ProductCategory productCategory = navigationParameter as ProductCategory;
+            var productCategory = navigationParameter as ProductCategory;
             CatalogLevelThreePageTitle = productCategory.CategoryName;
 
             try
@@ -111,13 +111,14 @@ namespace SageMobileSales.UILogic.ViewModels
                 //{
                 //    ProductCategoryList = await _productCategoryRepository.GetProductCategoryListDtlsAsync(productCategory.CategoryId)
                 //};
-                ProductCategoryList = await _productCategoryRepository.GetProductCategoryListDtlsAsync(productCategory.CategoryId);
+                ProductCategoryList =
+                    await _productCategoryRepository.GetProductCategoryListDtlsAsync(productCategory.CategoryId);
             }
             catch (NullReferenceException ex)
             {
                 _log = AppEventSource.Log.WriteLine(ex);
                 AppEventSource.Log.Error(_log);
-            }        
+            }
             catch (Exception ex)
             {
                 _log = AppEventSource.Log.WriteLine(ex);
@@ -133,13 +134,13 @@ namespace SageMobileSales.UILogic.ViewModels
         }
 
         /// <summary>
-        /// Grid View Item Click 
+        ///     Grid View Item Click
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="parameter"></param>
         public async void GridViewItemClick(object sender, object parameter)
         {
-            var arg = ((parameter as ItemClickEventArgs).ClickedItem as ProductCategory).CategoryId;
+            string arg = ((parameter as ItemClickEventArgs).ClickedItem as ProductCategory).CategoryId;
             bool moreLevels = await _productCategoryRepository.GetProductCategoryLevel(arg);
 
             if (moreLevels)

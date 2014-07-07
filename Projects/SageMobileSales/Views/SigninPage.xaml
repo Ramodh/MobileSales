@@ -10,14 +10,16 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        
+
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-            <TextBlock x:Uid="SageMobileSales" HorizontalAlignment="Center" TextWrapping="Wrap" FontSize="96" Foreground="Green"/>         
-            <Button x:Uid="SignIn" HorizontalAlignment="Center" Command="{Binding SignInCommand}" FontSize="29.333" Background="Green" FontWeight="Bold" BorderBrush="Green" IsEnabled="{Binding isSignInDisabled}"/>
-            <ProgressRing Grid.Row="1" Height="70" Width="70" 
-                      IsActive="{Binding InProgress, Mode=TwoWay}" 
-                      Visibility="{Binding InProgress, Mode=TwoWay,Converter={StaticResource InProgessVisibilityConverter}}"
-                      Style="{StaticResource GridViewProgressRingStyle}"/>
+            <TextBlock x:Uid="SageMobileSales" HorizontalAlignment="Center" TextWrapping="Wrap" FontSize="96"
+                       Foreground="Green" />
+            <Button x:Uid="SignIn" HorizontalAlignment="Center" Command="{Binding SignInCommand}" FontSize="29.333"
+                    Background="Green" FontWeight="Bold" BorderBrush="Green" IsEnabled="{Binding isSignInDisabled}" />
+            <ProgressRing Grid.Row="1" Height="70" Width="70"
+                          IsActive="{Binding InProgress, Mode=TwoWay}"
+                          Visibility="{Binding InProgress, Mode=TwoWay,Converter={StaticResource InProgessVisibilityConverter}}"
+                          Style="{StaticResource GridViewProgressRingStyle}" />
         </StackPanel>
 
     </Grid>

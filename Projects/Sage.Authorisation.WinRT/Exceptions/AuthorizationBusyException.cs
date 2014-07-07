@@ -5,7 +5,7 @@ namespace Sage.Authorisation.WinRT.Exceptions
     internal class AuthorisationBusyException : AuthorisationException
     {
         internal AuthorisationBusyException()
-            :base(loader.GetString("ExceptionAuthorisationBusyException"))
+            : base(loader.GetString("ExceptionAuthorisationBusyException"))
         {
             HResult = ExceptionHResults.AuthorisationInProgress;
         }

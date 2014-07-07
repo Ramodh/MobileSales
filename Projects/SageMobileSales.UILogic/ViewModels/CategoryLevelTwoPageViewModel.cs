@@ -2,22 +2,22 @@
 using System.Collections.Generic;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
+using Microsoft.Practices.Prism.PubSubEvents;
 using Microsoft.Practices.Prism.StoreApps;
 using Microsoft.Practices.Prism.StoreApps.Interfaces;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Entities;
+using SageMobileSales.DataAccess.Events;
 using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
-using Microsoft.Practices.Prism.PubSubEvents;
-using SageMobileSales.DataAccess.Events;
 
 namespace SageMobileSales.UILogic.ViewModels
 {
     internal class CategoryLevelTwoPageViewModel : ViewModel
     {
+        private readonly IEventAggregator _eventAggregator;
         private readonly INavigationService _navigationService;
         private readonly IProductCategoryRepository _productCategoryRepository;
-        private readonly IEventAggregator _eventAggregator;
         private string _catalogLevelTwoPageTitle;
         private bool _inProgress;
         private string _log = string.Empty;
@@ -37,6 +37,7 @@ namespace SageMobileSales.UILogic.ViewModels
         //}
 
         private List<ProductCategory> _productCategoryList;
+        private bool _syncProgress;
 
         public CategoryLevelTwoPageViewModel(INavigationService navigationService,
             IProductCategoryRepository productCategoryRepository, IEventAggregator eventAggregator)
@@ -58,7 +59,6 @@ namespace SageMobileSales.UILogic.ViewModels
             private set { SetProperty(ref _inProgress, value); }
         }
 
-        private bool _syncProgress;
         /// <summary>
         ///     Data  syncing indicator
         /// </summary>

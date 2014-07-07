@@ -8,13 +8,21 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" RenderTransformOrigin="0.524,0.496">
-        <TextBlock HorizontalAlignment="Left" Margin="393,69,0,0" TextWrapping="Wrap" x:Uid="Personalinformationseriously" VerticalAlignment="Top" FontSize="29.333" Foreground="Green"/>
-        <TextBlock HorizontalAlignment="Left" Margin="393,148,0,0" TextWrapping="Wrap" x:Uid="Pleasecreatepasscodeforthisapp" VerticalAlignment="Top" FontSize="29.333" Width="606" Foreground="Green"/>
-        <TextBlock HorizontalAlignment="Left" Margin="492,298,0,0" TextWrapping="Wrap" x:Uid="Enternewpasscode" VerticalAlignment="Top" FontSize="29.333" Foreground="Green"/>
-        <TextBox HorizontalAlignment="Left" Margin="508,355,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="48" Height="47"/>
-    	<TextBox HorizontalAlignment="Left" Margin="599,355,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="48" Height="47"/>
-    	<TextBox HorizontalAlignment="Left" Margin="688,355,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="48" Height="47"/>
-    	<TextBox HorizontalAlignment="Left" Margin="777,355,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="48" Height="47"/>
+        <TextBlock HorizontalAlignment="Left" Margin="393,69,0,0" TextWrapping="Wrap"
+                   x:Uid="Personalinformationseriously" VerticalAlignment="Top" FontSize="29.333" Foreground="Green" />
+        <TextBlock HorizontalAlignment="Left" Margin="393,148,0,0" TextWrapping="Wrap"
+                   x:Uid="Pleasecreatepasscodeforthisapp" VerticalAlignment="Top" FontSize="29.333" Width="606"
+                   Foreground="Green" />
+        <TextBlock HorizontalAlignment="Left" Margin="492,298,0,0" TextWrapping="Wrap" x:Uid="Enternewpasscode"
+                   VerticalAlignment="Top" FontSize="29.333" Foreground="Green" />
+        <TextBox HorizontalAlignment="Left" Margin="508,355,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="48"
+                 Height="47" />
+        <TextBox HorizontalAlignment="Left" Margin="599,355,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="48"
+                 Height="47" />
+        <TextBox HorizontalAlignment="Left" Margin="688,355,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="48"
+                 Height="47" />
+        <TextBox HorizontalAlignment="Left" Margin="777,355,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="48"
+                 Height="47" />
 
     </Grid>
 </Page>

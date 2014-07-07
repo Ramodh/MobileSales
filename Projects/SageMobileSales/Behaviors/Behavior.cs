@@ -1,13 +1,8 @@
-﻿using Microsoft.Xaml.Interactivity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.UI.Xaml;
-using Microsoft.Xaml.Interactivity;
+﻿using System;
 using System.Reflection;
 using Windows.ApplicationModel.Resources;
+using Windows.UI.Xaml;
+using Microsoft.Xaml.Interactivity;
 
 namespace SageMobileSales.Behaviors
 {
@@ -17,25 +12,28 @@ namespace SageMobileSales.Behaviors
 
         DependencyObject IBehavior.AssociatedObject
         {
-            get { return this.AssociatedObject; }
+            get { return AssociatedObject; }
         }
-
-        protected abstract void OnAttached();
-        protected abstract void OnDetached();
 
         public void Attach(DependencyObject associatedObject)
         {
-            if (associatedObject != null && !typeof(T).GetTypeInfo().IsAssignableFrom(associatedObject.GetType().GetTypeInfo()))
-                throw new Exception(string.Format(ResourceLoader.GetForCurrentView("Resources").GetString("associatedObjectException"), typeof(T)));
+            if (associatedObject != null &&
+                !typeof (T).GetTypeInfo().IsAssignableFrom(associatedObject.GetType().GetTypeInfo()))
+                throw new Exception(
+                    string.Format(ResourceLoader.GetForCurrentView("Resources").GetString("associatedObjectException"),
+                        typeof (T)));
 
-            this.AssociatedObject = associatedObject as T;
-            this.OnAttached();
+            AssociatedObject = associatedObject as T;
+            OnAttached();
         }
 
         public void Detach()
         {
-            this.OnDetached();
-            this.AssociatedObject = null;
+            OnDetached();
+            AssociatedObject = null;
         }
+
+        protected abstract void OnAttached();
+        protected abstract void OnDetached();
     }
 }

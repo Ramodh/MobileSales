@@ -1,9 +1,8 @@
-﻿
-using Microsoft.Practices.Prism.PubSubEvents;
+﻿using Microsoft.Practices.Prism.PubSubEvents;
 
 namespace SageMobileSales.DataAccess.Events
 {
-   public class CustomerSyncChangedEvent : PubSubEvent<bool>
+    public class CustomerSyncChangedEvent : PubSubEvent<bool>
     {
     }
 }

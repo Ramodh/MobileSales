@@ -1,23 +1,20 @@
-﻿using SageMobileSales.DataAccess;
+﻿using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Windows.Data.Json;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Entities;
 using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.Data.Json;
 
 namespace SageMobileSales.ServiceAgents.Services
 {
     public class LocalSyncDigestService : ILocalSyncDigestService
     {
-        private readonly IServiceAgent _serviceAgent;
         private readonly ILocalSyncDigestRepository _localSyncDigestRepository;
+        private readonly IServiceAgent _serviceAgent;
         private bool _isSyncAvailable = false;
         private LocalSyncDigest _localDigest;
         private string _log = string.Empty;
@@ -29,25 +26,25 @@ namespace SageMobileSales.ServiceAgents.Services
         }
 
         /// <summary>
-        /// makes call to BuildAndSendRequest method to make service call to get LocalSyncDigest data.
-        /// Once we get the response converts it into JsonObject.
-        /// Makes call to CheckSyncAvailable method to check whether sync is available or not.
+        ///     makes call to BuildAndSendRequest method to make service call to get LocalSyncDigest data.
+        ///     Once we get the response converts it into JsonObject.
+        ///     Makes call to CheckSyncAvailable method to check whether sync is available or not.
         /// </summary>
         /// <returns></returns>
         public async Task<bool> SyncLocalDigest(string entity, string queryEntity)
         {
             try
             {
-                HttpResponseMessage localDigestResponse = await _serviceAgent.BuildAndSendRequest(entity, queryEntity, null, Constants.AccessToken, null);
-                if (localDigestResponse!=null && localDigestResponse.StatusCode == HttpStatusCode.OK)
+                HttpResponseMessage localDigestResponse =
+                    await _serviceAgent.BuildAndSendRequest(entity, queryEntity, null, Constants.AccessToken, null);
+                if (localDigestResponse != null && localDigestResponse.StatusCode == HttpStatusCode.OK)
                 {
                     // Make's call to ConvertToJsonObject and inturn we will get JsonObject
                     var sDataLocalDigest = await _serviceAgent.ConvertTosDataObject(localDigestResponse);
 
                     // Check's whether Sync is available or not to go forward
-                    _isSyncAvailable = await CheckSyncAvailable(sDataLocalDigest);                   
-                }               
-            
+                    _isSyncAvailable = await CheckSyncAvailable(sDataLocalDigest);
+                }
             }
             catch (NullReferenceException ex)
             {
@@ -64,59 +61,24 @@ namespace SageMobileSales.ServiceAgents.Services
             {
                 _log = AppEventSource.Log.WriteLine(ex);
                 AppEventSource.Log.Error(_log);
-              
-
             }
             return _isSyncAvailable;
-
         }
 
         # region Private Methods
 
-       
         // Currently we are not using this function.
 
-        /// <summary>
-        /// Makes call to save LocalSyncDigest data into LocalDB
-        /// </summary>
-        /// <param name="sDataLocalDigest"></param>
-        /// <returns></returns>
-        private async Task<LocalSyncDigest> SaveLocalDigest(JsonObject sDataLocalDigest)
-        {
-            LocalSyncDigest digest = null;
-            try
-            {
-              
-                if (sDataLocalDigest.GetNamedString("ResourceKind") != null)
-                {
-                    digest = await _localSyncDigestRepository.GetLocalSyncDigestDtlsAsync(sDataLocalDigest.GetNamedString("ResourceKind"));
-                    if (digest == null)
-                    {
-                        digest = await _localSyncDigestRepository.SaveLocalSyncDigestDtlsAsync(sDataLocalDigest);
-                    }
-                }
-             
-            }
-            catch (Exception ex)
-            {
-                _log = AppEventSource.Log.WriteLine(ex);
-                AppEventSource.Log.Error(_log);
-            }
-            return digest;
-        }
 
-       
         /// <summary>
-        /// Makes call to BuildAndPostRequest method to make POST request to service.
+        ///     Makes call to BuildAndPostRequest method to make POST request to service.
         /// </summary>
         /// <returns></returns>
         public async Task<bool> SyncLocalSource(string entity, string queryEntity)
         {
-            Dictionary<string, string> parameters = new Dictionary<string, string>();
+            var parameters = new Dictionary<string, string>();
             try
             {
-              
-
                 // Adding parameters to Dictionary object which we use to make POST request.
                 parameters.Add("TrackingId", Constants.TrackingId);
                 if (_localDigest != null)
@@ -127,21 +89,49 @@ namespace SageMobileSales.ServiceAgents.Services
                 {
                     parameters.Add("LocalTick", "0");
                 }
-            ;
+                ;
             }
             catch (Exception ex)
             {
                 _log = AppEventSource.Log.WriteLine(ex);
                 AppEventSource.Log.Error(_log);
-              
-
             }
             return await _serviceAgent.BuildAndPostRequest(entity, queryEntity, Constants.AccessToken, parameters);
         }
 
         /// <summary>
-        /// Checks whether Sync is available or not by comparing with LocalTick & the Tick which service returned.
-        /// If Tick value is greater than LocalTick we will start our Sync process.
+        ///     Makes call to save LocalSyncDigest data into LocalDB
+        /// </summary>
+        /// <param name="sDataLocalDigest"></param>
+        /// <returns></returns>
+        private async Task<LocalSyncDigest> SaveLocalDigest(JsonObject sDataLocalDigest)
+        {
+            LocalSyncDigest digest = null;
+            try
+            {
+                if (sDataLocalDigest.GetNamedString("ResourceKind") != null)
+                {
+                    digest =
+                        await
+                            _localSyncDigestRepository.GetLocalSyncDigestDtlsAsync(
+                                sDataLocalDigest.GetNamedString("ResourceKind"));
+                    if (digest == null)
+                    {
+                        digest = await _localSyncDigestRepository.SaveLocalSyncDigestDtlsAsync(sDataLocalDigest);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+            return digest;
+        }
+
+        /// <summary>
+        ///     Checks whether Sync is available or not by comparing with LocalTick & the Tick which service returned.
+        ///     If Tick value is greater than LocalTick we will start our Sync process.
         /// </summary>
         /// <param name="sDataLocalDigest"></param>
         /// <returns>bool value(Whether sync is available or not)</returns>
@@ -149,7 +139,10 @@ namespace SageMobileSales.ServiceAgents.Services
         {
             try
             {
-                _localDigest = await _localSyncDigestRepository.GetLocalSyncDigestDtlsAsync(sDataLocalDigest.GetNamedString("ResourceKind"));
+                _localDigest =
+                    await
+                        _localSyncDigestRepository.GetLocalSyncDigestDtlsAsync(
+                            sDataLocalDigest.GetNamedString("ResourceKind"));
                 if (_localDigest != null)
                 {
                     if (Convert.ToInt32(sDataLocalDigest.GetNamedNumber("Tick")) >= _localDigest.localTick)
@@ -165,7 +158,6 @@ namespace SageMobileSales.ServiceAgents.Services
                 {
                     _isSyncAvailable = true;
                 }
-             
             }
             catch (Exception ex)
             {
@@ -174,6 +166,7 @@ namespace SageMobileSales.ServiceAgents.Services
             }
             return _isSyncAvailable;
         }
+
         # endregion
     }
 }

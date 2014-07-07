@@ -1,112 +1,41 @@
-﻿using Microsoft.Practices.Prism.PubSubEvents;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Windows.Storage;
+using Windows.UI.Xaml.Controls;
+using Microsoft.Practices.Prism.PubSubEvents;
 using Microsoft.Practices.Prism.StoreApps;
 using Microsoft.Practices.Prism.StoreApps.Interfaces;
 using Microsoft.Practices.Unity;
 using SageMobileSales.DataAccess.Common;
-using SageMobileSales.DataAccess.Entities;
-using SageMobileSales.DataAccess.Model;
-using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
 using SageMobileSales.ServiceAgents.Services;
 using SageMobileSales.UILogic.Common;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.Storage;
-using Windows.UI.Xaml.Controls;
+using BindableBase = Microsoft.Practices.Prism.StoreApps.BindableBase;
 
 namespace SageMobileSales.UILogic.ViewModels
 {
-    class ConfigurationSettingsFlyoutViewModel : Microsoft.Practices.Prism.StoreApps.BindableBase, IFlyoutViewModel
+    internal class ConfigurationSettingsFlyoutViewModel : BindableBase, IFlyoutViewModel
     {
+        private readonly IUnityContainer _container = new UnityContainer();
+        private readonly INavigationService _navigationService;
+        private readonly IOAuthService _oAuthService;
+        private string _clientId;
+        private Action _closeFlyout;
         private bool _isOpened;
 
-        private readonly IUnityContainer _container = new UnityContainer();
-        private string _selectedtype;
-        private Action _closeFlyout;
-        private INavigationService _navigationService;
-        private readonly IOAuthService _oAuthService;
-        public DelegateCommand<object> SelectionChangedCommand { get; set; }
-
-        public DelegateCommand LogOutInCommand { get; private set; }
-        private string _clientId;
-
-        private string _scope;
-        private string _url;
-        //private  string _Server;
-        private string _redirectUrl;
         private bool _isSageIdProduction;
-        private List<string> _servers;
         private string _log;
 
         private string _previousSelectedType;
+        private string _redirectUrl;
+        private string _scope;
+        private string _selectedtype;
+        private List<string> _servers;
+        private string _url;
 
-        public string ClientId
-        {
-            get { return _clientId; }
-            private set { SetProperty(ref _clientId, value); }
-        }
-
-        public string Scope
-        {
-            get { return _scope; }
-            private set { SetProperty(ref _scope, value); }
-        }
-
-        public string Url
-        {
-            get { return _url; }
-            private set { SetProperty(ref _url, value); }
-        }
-        public string RedirectUrl
-        {
-            get { return _redirectUrl; }
-            private set { SetProperty(ref _redirectUrl, value); }
-        }
-        public bool IsSageIdProduction
-        {
-            get { return _isSageIdProduction; }
-            private set { SetProperty(ref _isSageIdProduction, value); }
-        }
-
-
-        public List<string> Servers
-        {
-            get { return _servers; }
-            private set { SetProperty(ref _servers, value); }
-        }
-
-
-        public Action CloseFlyout
-        {
-            get { return _closeFlyout; }
-            set { SetProperty(ref _closeFlyout, value); }
-        }
-        /// <summary>
-        ///List for selecting method of creating a quote
-        /// </summary>
-        public string SelectedType
-        {
-            get { return _selectedtype; }
-            private set
-            {
-                SetProperty(ref _selectedtype, value);
-                OnPropertyChanged("SelectedType");
-
-            }
-        }
-        [RestorableState]
-        public bool IsOpened
-        {
-            get { return _isOpened; }
-            private set { SetProperty(ref _isOpened, value); }
-        }
-
-
-        public ConfigurationSettingsFlyoutViewModel(INavigationService navigationService, IEventAggregator eventAggregator, IOAuthService oAuthService)
+        public ConfigurationSettingsFlyoutViewModel(INavigationService navigationService,
+            IEventAggregator eventAggregator, IOAuthService oAuthService)
         {
             _oAuthService = oAuthService;
             _navigationService = navigationService;
@@ -128,6 +57,75 @@ namespace SageMobileSales.UILogic.ViewModels
             SelectedType = Constants.SelectedType;
         }
 
+        public DelegateCommand<object> SelectionChangedCommand { get; set; }
+
+        public DelegateCommand LogOutInCommand { get; private set; }
+
+        public string ClientId
+        {
+            get { return _clientId; }
+            private set { SetProperty(ref _clientId, value); }
+        }
+
+        public string Scope
+        {
+            get { return _scope; }
+            private set { SetProperty(ref _scope, value); }
+        }
+
+        public string Url
+        {
+            get { return _url; }
+            private set { SetProperty(ref _url, value); }
+        }
+
+        public string RedirectUrl
+        {
+            get { return _redirectUrl; }
+            private set { SetProperty(ref _redirectUrl, value); }
+        }
+
+        public bool IsSageIdProduction
+        {
+            get { return _isSageIdProduction; }
+            private set { SetProperty(ref _isSageIdProduction, value); }
+        }
+
+
+        public List<string> Servers
+        {
+            get { return _servers; }
+            private set { SetProperty(ref _servers, value); }
+        }
+
+
+        /// <summary>
+        ///     List for selecting method of creating a quote
+        /// </summary>
+        public string SelectedType
+        {
+            get { return _selectedtype; }
+            private set
+            {
+                SetProperty(ref _selectedtype, value);
+                OnPropertyChanged("SelectedType");
+            }
+        }
+
+        [RestorableState]
+        public bool IsOpened
+        {
+            get { return _isOpened; }
+            private set { SetProperty(ref _isOpened, value); }
+        }
+
+        public Action CloseFlyout
+        {
+            get { return _closeFlyout; }
+            set { SetProperty(ref _closeFlyout, value); }
+        }
+
+
         private void Close()
         {
             IsOpened = false;
@@ -135,10 +133,10 @@ namespace SageMobileSales.UILogic.ViewModels
 
         private void ServerSelectionchnaged(object args)
         {
-            var configSettings = ApplicationData.Current.LocalSettings;
+            ApplicationDataContainer configSettings = ApplicationData.Current.LocalSettings;
             configSettings.CreateContainer("ConfigurationSettingsContainer", ApplicationDataCreateDisposition.Always);
 
-            var selected = ((ComboBox)args);
+            var selected = ((ComboBox) args);
 
             if (selected.SelectedItem.ToString() == "Master")
             {
@@ -176,8 +174,6 @@ namespace SageMobileSales.UILogic.ViewModels
 
             if (selected.SelectedItem.ToString() == "Staging")
             {
-
-
                 ClientId = @"j2sak5nIN2YZ6szKaqx0hv66tLW0Mku0";
                 Url = "https://mobilesales-staging.na.sage.com/sdata/api/dynamic/-/";
                 Scope = @"kbyemk8m();";
@@ -186,8 +182,6 @@ namespace SageMobileSales.UILogic.ViewModels
                 SelectedType = "Staging";
                 SetConfigurationValues();
             }
-
-
 
 
             if (selected.SelectedItem.ToString() == "Production")
@@ -211,7 +205,6 @@ namespace SageMobileSales.UILogic.ViewModels
                 IsSageIdProduction = false;
                 SelectedType = "SharedComponents";
                 SetConfigurationValues();
-
             }
 
             if (selected.SelectedItem.ToString() == "CE Nephos QA")
@@ -223,7 +216,6 @@ namespace SageMobileSales.UILogic.ViewModels
                 IsSageIdProduction = false;
                 SelectedType = "CE Nephos QA";
                 SetConfigurationValues();
-
             }
 
 
@@ -241,7 +233,6 @@ namespace SageMobileSales.UILogic.ViewModels
 
             if (selected.SelectedItem.ToString() == "Performance2")
             {
-
                 ClientId = @"TO3afnij1xMZrsH8akholwxvcJFlFc1N";
                 Url = "https://mobilesales-perf-p2.sagenephos.com/sdata/api/dynamic/-/";
                 Scope = @"gvb7lu14();";
@@ -282,8 +273,8 @@ namespace SageMobileSales.UILogic.ViewModels
                 RedirectUrl = "https://signon.sso.staging.services.sage.com/oauth/native";
                 SetConfigurationValues();
             }
-
         }
+
         private async Task LogoutHandler()
         {
             try
@@ -312,9 +303,6 @@ namespace SageMobileSales.UILogic.ViewModels
 
                 // await _database.Delete();
                 _navigationService.Navigate("Signin", null);
-
-
-
             }
             catch (NullReferenceException ex)
             {
@@ -339,8 +327,9 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             _previousSelectedType = Constants.SelectedType;
 
-            var configSettings = ApplicationData.Current.LocalSettings;
-            configSettings.Containers["ConfigurationSettingsContainer"].Values["_previousSelectedType"] = _previousSelectedType;
+            ApplicationDataContainer configSettings = ApplicationData.Current.LocalSettings;
+            configSettings.Containers["ConfigurationSettingsContainer"].Values["_previousSelectedType"] =
+                _previousSelectedType;
             configSettings.Containers["ConfigurationSettingsContainer"].Values["ClientId"] = ClientId;
             configSettings.Containers["ConfigurationSettingsContainer"].Values["Scope"] = Scope;
             configSettings.Containers["ConfigurationSettingsContainer"].Values["Url"] = Url;
@@ -358,11 +347,5 @@ namespace SageMobileSales.UILogic.ViewModels
             OnPropertyChanged("SelectedType");
             await LogoutHandler();
         }
-
-
-
-
     }
-
 }
-

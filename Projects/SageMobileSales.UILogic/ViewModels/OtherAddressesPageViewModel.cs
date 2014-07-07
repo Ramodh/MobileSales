@@ -1,4 +1,11 @@
-﻿using Microsoft.Practices.Prism.StoreApps;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Windows.ApplicationModel.Resources;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
+using Microsoft.Practices.Prism.StoreApps;
 using Microsoft.Practices.Prism.StoreApps.Interfaces;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Entities;
@@ -6,58 +13,58 @@ using SageMobileSales.DataAccess.Model;
 using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
 using SageMobileSales.ServiceAgents.Services;
-using SageMobileSales.UILogic.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.ApplicationModel.Resources;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Navigation;
 
 namespace SageMobileSales.UILogic.ViewModels
 {
     public class OtherAddressesPageViewModel : ViewModel
     {
-        private INavigationService _navigationService;
-        private IAddressRepository _addressRepository;
-        private bool _gridViewItemClickable;
-        private List<CustomerDetails> _customerOtherAddress;
-        private Visibility _bottomAppbarVisible;
-        private string _emptyAddress;
-        private QuoteDetails _quoteDetails;
-        private string _customerId;
-        private bool _inProgress;
-        private Quote _quote;
+        private readonly IAddressRepository _addressRepository;
+        private readonly INavigationService _navigationService;
+        private readonly IQuoteRepository _quoteRepository;
+        private readonly IQuoteService _quoteService;
         private Address _address;
-        private IQuoteRepository _quoteRepository;
+        private Visibility _bottomAppbarVisible;
         private List<Address> _customerAddresses;
-        private IQuoteService _quoteService;
-        private List<Address> _otherAddresses;
+        private string _customerId;
+        private List<CustomerDetails> _customerOtherAddress;
+        private string _emptyAddress;
+        private bool _gridViewItemClickable;
+        private bool _inProgress;
         private string _log = string.Empty;
+        private List<Address> _otherAddresses;
+        private Quote _quote;
+        private QuoteDetails _quoteDetails;
+
+        public OtherAddressesPageViewModel(INavigationService navigationService, IAddressRepository addressRepository,
+            IQuoteRepository quoteRepository, IQuoteService quoteService)
+        {
+            _navigationService = navigationService;
+            _addressRepository = addressRepository;
+            _quoteRepository = quoteRepository;
+            _quoteService = quoteService;
+            _address = new Address();
+        }
 
         /// <summary>
-        /// Checks whether grid view item is clickable or not
+        ///     Checks whether grid view item is clickable or not
         /// </summary>
         public bool GridViewItemClickable
         {
             get { return _gridViewItemClickable; }
             private set { SetProperty(ref _gridViewItemClickable, value); }
         }
+
         /// <summary>
-        /// Checks whether Bottom Appbar is Visible 
+        ///     Checks whether Bottom Appbar is Visible
         /// </summary>
         public Visibility BottomAppbarVisible
         {
             get { return _bottomAppbarVisible; }
             private set { SetProperty(ref _bottomAppbarVisible, value); }
-
         }
 
         /// <summary>
-        /// Holds Customer Other Addresses 
+        ///     Holds Customer Other Addresses
         /// </summary>
         public List<CustomerDetails> CustomerOtherAddress
         {
@@ -67,17 +74,15 @@ namespace SageMobileSales.UILogic.ViewModels
                 SetProperty(ref _customerOtherAddress, value);
                 InProgress = false;
             }
-
         }
+
         public List<Address> OtherAddresses
         {
-
             get { return _otherAddresses; }
             private set
             {
-                SetProperty(ref  _otherAddresses, value);
+                SetProperty(ref _otherAddresses, value);
                 //  InProgress = false;
-
             }
         }
 
@@ -90,7 +95,7 @@ namespace SageMobileSales.UILogic.ViewModels
         }
 
         /// <summary>
-        /// Display empty results text
+        ///     Display empty results text
         /// </summary>
         public string EmptyAddresses
         {
@@ -108,30 +113,22 @@ namespace SageMobileSales.UILogic.ViewModels
             }
         }
 
-        public OtherAddressesPageViewModel(INavigationService navigationService, IAddressRepository addressRepository, IQuoteRepository quoteRepository, IQuoteService quoteService)
-        {
-            _navigationService = navigationService;
-            _addressRepository = addressRepository;
-            _quoteRepository = quoteRepository;
-            _quoteService = quoteService;
-            _address = new Address();
-        }
-
         /// <summary>
-        ///Loads other Addresses for customer if present
+        ///     Loads other Addresses for customer if present
         /// </summary>
         /// <param name="navigationParameter"></param>
         /// <param name="navigationMode"></param>
         /// <param name="viewModelState"></param>
-        public async override void OnNavigatedTo(object navigationParameter, Windows.UI.Xaml.Navigation.NavigationMode navigationMode, Dictionary<string, object> viewModelState)
+        public override async void OnNavigatedTo(object navigationParameter, NavigationMode navigationMode,
+            Dictionary<string, object> viewModelState)
         {
             try
             {
                 InProgress = true;
-                Frame rootFrame = Window.Current.Content as Frame;
+                var rootFrame = Window.Current.Content as Frame;
                 List<PageStackEntry> navigationHistory = rootFrame.BackStack.ToList();
                 PageStackEntry pageStack = navigationHistory.LastOrDefault();
-                if (pageStack.SourcePageType.Name.ToString() == "QuoteDetailsPage")
+                if (pageStack.SourcePageType.Name == "QuoteDetailsPage")
                 {
                     _quoteDetails = navigationParameter as QuoteDetails;
 
@@ -164,7 +161,7 @@ namespace SageMobileSales.UILogic.ViewModels
         }
 
         /// <summary>
-        /// Grid View Item Click 
+        ///     Grid View Item Click
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="parameter"></param>
@@ -197,7 +194,7 @@ namespace SageMobileSales.UILogic.ViewModels
         }
 
         /// <summary>
-        /// Navigates to create shipping address Page
+        ///     Navigates to create shipping address Page
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="parameter"></param>

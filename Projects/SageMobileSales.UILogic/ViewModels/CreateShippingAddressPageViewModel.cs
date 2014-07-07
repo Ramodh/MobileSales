@@ -1,34 +1,32 @@
-﻿using Microsoft.Practices.Prism.StoreApps;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using Windows.UI.Xaml.Navigation;
+using Microsoft.Practices.Prism.StoreApps;
 using Microsoft.Practices.Prism.StoreApps.Interfaces;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Entities;
-using SageMobileSales.DataAccess.Model;
 using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
 using SageMobileSales.ServiceAgents.Services;
 using SageMobileSales.UILogic.Common;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SageMobileSales.UILogic.ViewModels
 {
-    class CreateShippingAddressPageViewModel : ViewModel
+    internal class CreateShippingAddressPageViewModel : ViewModel
     {
-        private INavigationService _navigationService;
+        private readonly IAddressRepository _addressRepository;
+        private readonly INavigationService _navigationService;
+        private readonly IQuoteRepository _quoteRepository;
+        private readonly IQuoteService _quoteService;
         private Address _address;
-        private bool _isEnabled;        
-        private string _quoteId;
-        private IAddressRepository _addressRepository;
-        private IQuoteService _quoteService;
-        private IQuoteRepository _quoteRepository;
-        private Quote _quote;
+        private bool _isEnabled;
         private string _log = string.Empty;
+        private Quote _quote;
+        private string _quoteId;
 
-        public CreateShippingAddressPageViewModel(INavigationService navigationService, IAddressRepository addressRepository, IQuoteService quoteService, IQuoteRepository quoteRepository)
+        public CreateShippingAddressPageViewModel(INavigationService navigationService,
+            IAddressRepository addressRepository, IQuoteService quoteService, IQuoteRepository quoteRepository)
         {
             _address = new Address();
             _navigationService = navigationService;
@@ -39,7 +37,7 @@ namespace SageMobileSales.UILogic.ViewModels
         }
 
         /// <summary>
-        ///Holds Address
+        ///     Holds Address
         /// </summary>
         [RestorableState]
         public Address Address
@@ -49,7 +47,7 @@ namespace SageMobileSales.UILogic.ViewModels
         }
 
         /// <summary>
-        /// evaluate validation 
+        ///     evaluate validation
         /// </summary>
         public bool IsEnabled
         {
@@ -63,23 +61,27 @@ namespace SageMobileSales.UILogic.ViewModels
                 }
             }
         }
+
         /// <summary>
-        /// Load add contact page
+        ///     Load add contact page
         /// </summary>
         /// <param name="navigationParameter"></param>
         /// <param name="navigationMode"></param>
         /// <param name="viewModelState"></param>
-        public override void OnNavigatedTo(object navigationParameter, Windows.UI.Xaml.Navigation.NavigationMode navigationMode, Dictionary<string, object> viewModelState)
+        public override void OnNavigatedTo(object navigationParameter, NavigationMode navigationMode,
+            Dictionary<string, object> viewModelState)
         {
             try
             {
                 _quoteId = navigationParameter as string;
-                _address.AddressId = PageUtils.Pending + System.Guid.NewGuid().ToString();
+                _address.AddressId = PageUtils.Pending + Guid.NewGuid();
                 //   _address.AddressType = "Shipping";
                 _address.Country = PageUtils.Country;
                 // _address.CustomerId = _quote.CustomerId;
                 // _quoteDetails = navigationParameter as QuoteDetails;
-                var errorsCollection = RetrieveEntityStateValue<IDictionary<string, ReadOnlyCollection<string>>>("errorsCollection", viewModelState);
+                var errorsCollection =
+                    RetrieveEntityStateValue<IDictionary<string, ReadOnlyCollection<string>>>("errorsCollection",
+                        viewModelState);
 
                 if (errorsCollection != null)
                 {
@@ -93,10 +95,10 @@ namespace SageMobileSales.UILogic.ViewModels
                 AppEventSource.Log.Error(_log);
             }
         }
-        /// <summary>
-        /// check user input is valid or not
-        /// </summary>
 
+        /// <summary>
+        ///     check user input is valid or not
+        /// </summary>
         public bool ValidateForm()
         {
             return _address.ValidateProperties();
@@ -104,7 +106,6 @@ namespace SageMobileSales.UILogic.ViewModels
 
         public override void OnNavigatedFrom(Dictionary<string, object> viewModelState, bool suspending)
         {
-
             base.OnNavigatedFrom(viewModelState, suspending);
             if (viewModelState != null)
             {
@@ -113,7 +114,7 @@ namespace SageMobileSales.UILogic.ViewModels
         }
 
         /// <summary>
-        /// Saves Address and Navigates to QuoteDetails on save click
+        ///     Saves Address and Navigates to QuoteDetails on save click
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="parameter"></param>
@@ -140,8 +141,8 @@ namespace SageMobileSales.UILogic.ViewModels
                         {
                             // Confirm before posting quote
                             Quote quote = await _quoteService.PostQuote(_quote);
-                            if(quote!=null)
-                            await _quoteService.UpdateQuoteShippingAddress(quote, _address);
+                            if (quote != null)
+                                await _quoteService.UpdateQuoteShippingAddress(quote, _address);
                             //await _quoteService.PostQuoteShippingAddress(_quote, _address);
                         }
                         else
@@ -164,7 +165,7 @@ namespace SageMobileSales.UILogic.ViewModels
         }
 
         /// <summary>
-        /// Display validation errors if any
+        ///     Display validation errors if any
         /// </summary>
         /// <param name="modelValidationResults"></param>
         private void DisplayValidationErrors(EntityValidationResult modelValidationResults)
@@ -172,7 +173,7 @@ namespace SageMobileSales.UILogic.ViewModels
             var errors = new Dictionary<string, ReadOnlyCollection<string>>();
 
             // Property keys format: address.{Propertyname}
-            foreach (var propkey in modelValidationResults.ModelState.Keys)
+            foreach (string propkey in modelValidationResults.ModelState.Keys)
             {
                 string propertyName = propkey.Substring(propkey.IndexOf('.') + 1);
 
@@ -181,8 +182,5 @@ namespace SageMobileSales.UILogic.ViewModels
 
             if (errors.Count > 0) _address.Errors.SetAllErrors(errors);
         }
-
     }
 }
-
-

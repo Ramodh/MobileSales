@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Windows.Security.Cryptography;
 using Windows.Security.Cryptography.Core;
@@ -9,29 +10,32 @@ using Windows.Storage.Streams;
 namespace Sage.Authorisation.WinRT.Storage
 {
     /// <summary>
-    /// KeyManager handles creating, storing and retreiving of keys to be used by the symetric encryption algorithm
+    ///     KeyManager handles creating, storing and retreiving of keys to be used by the symetric encryption algorithm
     /// </summary>
     internal class EncryptionKeyStore
     {
         /// <summary>
-        /// The key length
+        ///     The key length
         /// </summary>
         private const int KeyLength = 256;
+
         /// <summary>
-        /// The encryption provider
-        /// </summary>
-        private SymmetricKeyAlgorithmProvider _provider;
-        /// <summary>
-        /// The DPAPI provider for encrypting the keys
-        /// </summary>
-        private DataProtectionProvider _dpProvider = new DataProtectionProvider("LOCAL=user");
-        /// <summary>
-        /// The "key" used for storing the encrytpion keys in application data
+        ///     The "key" used for storing the encrytpion keys in application data
         /// </summary>
         private const string EncryptionKeyKey = "sk.oa";
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EncryptionKeyStore" /> class.
+        ///     The DPAPI provider for encrypting the keys
+        /// </summary>
+        private readonly DataProtectionProvider _dpProvider = new DataProtectionProvider("LOCAL=user");
+
+        /// <summary>
+        ///     The encryption provider
+        /// </summary>
+        private readonly SymmetricKeyAlgorithmProvider _provider;
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="EncryptionKeyStore" /> class.
         /// </summary>
         /// <param name="provider">The provider.</param>
         internal EncryptionKeyStore(SymmetricKeyAlgorithmProvider provider)
@@ -40,7 +44,7 @@ namespace Sage.Authorisation.WinRT.Storage
         }
 
         /// <summary>
-        /// Asynchronously gets the cryptographic key.
+        ///     Asynchronously gets the cryptographic key.
         /// </summary>
         /// <returns></returns>
         internal async Task<CryptographicKey> GetCryptographicKeyAsync()
@@ -53,7 +57,7 @@ namespace Sage.Authorisation.WinRT.Storage
                 // checks the local storage to see if a key already exists
                 file = await ApplicationData.Current.LocalFolder.GetFileAsync(EncryptionKeyKey);
             }
-            catch (System.IO.FileNotFoundException)
+            catch (FileNotFoundException)
             {
                 key = CreateKey();
 
@@ -77,7 +81,7 @@ namespace Sage.Authorisation.WinRT.Storage
         }
 
         /// <summary>
-        /// Creates the key.
+        ///     Creates the key.
         /// </summary>
         /// <returns>A CryptographicKey object</returns>
         private CryptographicKey CreateKey()
@@ -93,7 +97,7 @@ namespace Sage.Authorisation.WinRT.Storage
         }
 
         /// <summary>
-        /// Asynchronously stores the key material in application data.
+        ///     Asynchronously stores the key material in application data.
         /// </summary>
         /// <param name="keyMaterial">The key material.</param>
         /// <returns></returns>
@@ -103,7 +107,10 @@ namespace Sage.Authorisation.WinRT.Storage
             IBuffer protectedKey = await _dpProvider.ProtectAsync(keyMaterial);
 
             // Create a file in application data area
-            StorageFile file = await ApplicationData.Current.LocalFolder.CreateFileAsync(EncryptionKeyKey, CreationCollisionOption.ReplaceExisting);
+            StorageFile file =
+                await
+                    ApplicationData.Current.LocalFolder.CreateFileAsync(EncryptionKeyKey,
+                        CreationCollisionOption.ReplaceExisting);
 
             // write the key material to the file
             await FileIO.WriteBufferAsync(file, protectedKey);

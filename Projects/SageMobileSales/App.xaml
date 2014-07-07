@@ -9,24 +9,24 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                
+
                 <!-- 
                     Styles that define common aspects of the platform look and feel
                     Required by Visual Studio project and item templates
                  -->
                 <ResourceDictionary Source="Themes/SageMobileSalesStyles.xaml" />
                 <ResourceDictionary Source="Themes/DataTemplates.xaml" />
-                
+
             </ResourceDictionary.MergedDictionaries>
-            
-            <!-- Converters -->            
-            <converters:InProgessVisibilityConverter x:Key="InProgessVisibilityConverter"/>
-            <converters:InProgressNegationVisibilityConverter x:Key="InProgressNegationVisibilityConverter"/>
-            <converters:TextVisibilityConverter x:Key="TextVisibilityConverter"/>
-            <converters:TextNegationVisibilityConverter x:Key="TextNegationVisibilityConverter"/>
-            <converters:ErrorConverter x:Key="ErrorConverter"/>
-            <converters:TextHeaderVisibilityConverter x:Key="TextHeaderVisibilityConverter"/>
-            <converters:StringFormatConverter x:Key="StringFormatConverter"/>
+
+            <!-- Converters -->
+            <converters:InProgessVisibilityConverter x:Key="InProgessVisibilityConverter" />
+            <converters:InProgressNegationVisibilityConverter x:Key="InProgressNegationVisibilityConverter" />
+            <converters:TextVisibilityConverter x:Key="TextVisibilityConverter" />
+            <converters:TextNegationVisibilityConverter x:Key="TextNegationVisibilityConverter" />
+            <converters:ErrorConverter x:Key="ErrorConverter" />
+            <converters:TextHeaderVisibilityConverter x:Key="TextHeaderVisibilityConverter" />
+            <converters:StringFormatConverter x:Key="StringFormatConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </prism:MvvmAppBase>

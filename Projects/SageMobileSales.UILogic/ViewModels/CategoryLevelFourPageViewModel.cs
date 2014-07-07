@@ -1,4 +1,8 @@
-﻿using Microsoft.Practices.Prism.PubSubEvents;
+﻿using System;
+using System.Collections.Generic;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
+using Microsoft.Practices.Prism.PubSubEvents;
 using Microsoft.Practices.Prism.StoreApps;
 using Microsoft.Practices.Prism.StoreApps.Interfaces;
 using SageMobileSales.DataAccess.Common;
@@ -6,27 +10,34 @@ using SageMobileSales.DataAccess.Entities;
 using SageMobileSales.DataAccess.Events;
 using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
-using SageMobileSales.UILogic.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.UI.Xaml.Controls;
-
 
 namespace SageMobileSales.UILogic.ViewModels
 {
-    class CategoryLevelFourPageViewModel : ViewModel
+    internal class CategoryLevelFourPageViewModel : ViewModel
     {
-        private INavigationService _navigationService;
-        private IProductCategoryRepository _productCategoryRepository;
         private readonly IEventAggregator _eventAggregator;
+        private readonly INavigationService _navigationService;
+        private readonly IProductCategoryRepository _productCategoryRepository;
+        private string _catalogLevelFourPageTitle;
         private bool _inProgress;
         private string _log;
+        private List<ProductCategory> _productCategoryList;
+
+        private bool _syncProgress;
+
+        public CategoryLevelFourPageViewModel(INavigationService navigationService,
+            IProductCategoryRepository productCategoryRepository, IEventAggregator eventAggregator)
+        {
+            _navigationService = navigationService;
+            _productCategoryRepository = productCategoryRepository;
+            _eventAggregator = eventAggregator;
+            ProductCategoryList = new List<ProductCategory>();
+            _eventAggregator.GetEvent<ProductSyncChangedEvent>()
+                .Subscribe(ProductsSyncIndicator, ThreadOption.UIThread);
+        }
 
         /// <summary>
-        /// Data loading indicator
+        ///     Data loading indicator
         /// </summary>
         public bool InProgress
         {
@@ -34,7 +45,6 @@ namespace SageMobileSales.UILogic.ViewModels
             private set { SetProperty(ref _inProgress, value); }
         }
 
-        private bool _syncProgress;
         /// <summary>
         ///     Data  syncing indicator
         /// </summary>
@@ -62,7 +72,6 @@ namespace SageMobileSales.UILogic.ViewModels
         //    }
         //}
 
-        private List<ProductCategory> _productCategoryList;
         public List<ProductCategory> ProductCategoryList
         {
             get { return _productCategoryList; }
@@ -76,34 +85,24 @@ namespace SageMobileSales.UILogic.ViewModels
             }
         }
 
-        private string _catalogLevelFourPageTitle;
         public string CatalogLevelFourPageTitle
         {
             get { return _catalogLevelFourPageTitle; }
             private set { SetProperty(ref _catalogLevelFourPageTitle, value); }
         }
 
-        public CategoryLevelFourPageViewModel(INavigationService navigationService, IProductCategoryRepository productCategoryRepository, IEventAggregator eventAggregator)
-        {
-            _navigationService = navigationService;
-            _productCategoryRepository = productCategoryRepository;
-            _eventAggregator = eventAggregator;
-            ProductCategoryList = new List<ProductCategory>();
-            _eventAggregator.GetEvent<ProductSyncChangedEvent>()
-                .Subscribe(ProductsSyncIndicator, ThreadOption.UIThread);
-        }
-
         /// <summary>
-        /// Loading product categories level four
+        ///     Loading product categories level four
         /// </summary>
         /// <param name="navigationParameter"></param>
         /// <param name="navigationMode"></param>
         /// <param name="viewModelState"></param>
-        public override async void OnNavigatedTo(object navigationParameter, Windows.UI.Xaml.Navigation.NavigationMode navigationMode, Dictionary<string, object> viewModelState)
+        public override async void OnNavigatedTo(object navigationParameter, NavigationMode navigationMode,
+            Dictionary<string, object> viewModelState)
         {
             InProgress = true;
             SyncProgress = Constants.ProductsSyncProgress;
-            ProductCategory productCategory = navigationParameter as ProductCategory;
+            var productCategory = navigationParameter as ProductCategory;
             CatalogLevelFourPageTitle = productCategory.CategoryName;
 
             try
@@ -112,7 +111,8 @@ namespace SageMobileSales.UILogic.ViewModels
                 //{
                 //    ProductCategoryList = await _productCategoryRepository.GetProductCategoryListDtlsAsync(productCategory.CategoryId)
                 //};
-                ProductCategoryList = await _productCategoryRepository.GetProductCategoryListDtlsAsync(productCategory.CategoryId);
+                ProductCategoryList =
+                    await _productCategoryRepository.GetProductCategoryListDtlsAsync(productCategory.CategoryId);
             }
 
             catch (Exception ex)
@@ -130,7 +130,7 @@ namespace SageMobileSales.UILogic.ViewModels
         }
 
         /// <summary>
-        /// Grid View Item Click 
+        ///     Grid View Item Click
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="parameter"></param>
@@ -138,7 +138,7 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             try
             {
-                var arg = ((parameter as ItemClickEventArgs).ClickedItem as ProductCategory).CategoryId;
+                string arg = ((parameter as ItemClickEventArgs).ClickedItem as ProductCategory).CategoryId;
                 //bool moreLevels = await _productCategoryRepository.GetProductCategoryLevel(arg);
 
                 //if (moreLevels)
@@ -157,6 +157,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 AppEventSource.Log.Error(_log);
             }
         }
+
         public void CatalogButton_Click(object sender, object parameter)
         {
             _navigationService.ClearHistory();

@@ -1,13 +1,9 @@
-﻿using SageMobileSales.DataAccess.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using SageMobileSales.DataAccess.Model;
 
 namespace SageMobileSales.UILogic.Model
 {
-    class CustomerGroupByAlphabet
+    internal class CustomerGroupByAlphabet
     {
         public char GroupName { get; set; }
         public List<CustomerDetails> CustomerAddressList { get; set; }

@@ -11,8 +11,9 @@ namespace SageMobileSales.DataAccess.Entities
 
         private const string NumbersRegexPattern = @"\A\p{N}+([\p{N}\-][\p{N}]+)*\z";
 
-        private const string EmailRegexPattern = @"^(?("")(""[^""]+?""@)|(([0-9a-zA-Z]((\.(?!\.))|[-!#\$%&'\*\+/=\?\^`\{\}\|~\w])*)(?<=[0-9a-zA-Z])@))" +
-                @"(?(\[)(\[(\d{1,3}\.){3}\d{1,3}\])|(([0-9a-zA-Z][-\w]*[0-9a-zA-Z]*\.)+[A-Za-z0-9]{2,24}))$";
+        private const string EmailRegexPattern =
+            @"^(?("")(""[^""]+?""@)|(([0-9a-zA-Z]((\.(?!\.))|[-!#\$%&'\*\+/=\?\^`\{\}\|~\w])*)(?<=[0-9a-zA-Z])@))" +
+            @"(?(\[)(\[(\d{1,3}\.){3}\d{1,3}\])|(([0-9a-zA-Z][-\w]*[0-9a-zA-Z]*\.)+[A-Za-z0-9]{2,24}))$";
 
         [PrimaryKey, Unique, AutoIncrement]
         public int Id { get; set; }
@@ -21,7 +22,7 @@ namespace SageMobileSales.DataAccess.Entities
         public string CustomerId { get; set; }
 
         // [Required(ErrorMessageResourceType = typeof(ErrorMessages), ErrorMessageResourceName = "RequiredErrorMessage")]
-       // [RegularExpression(NamesRegexPattern, ErrorMessageResourceType = typeof (ErrorMessages),ErrorMessageResourceName = "RegexErrorMessage")]
+        // [RegularExpression(NamesRegexPattern, ErrorMessageResourceType = typeof (ErrorMessages),ErrorMessageResourceName = "RegexErrorMessage")]
         public string FirstName { get; set; }
 
         //[Required(ErrorMessageResourceType = typeof(ErrorMessages), ErrorMessageResourceName = "RequiredErrorMessage")]

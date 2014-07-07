@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
 
 namespace Sage.Authorisation.WinRT.Storage
 {
     /// <summary>
-    /// Access token structure to store in memory for quick authorisations when token is in date.
+    ///     Access token structure to store in memory for quick authorisations when token is in date.
     /// </summary>
     internal class AccessToken : Token
     {

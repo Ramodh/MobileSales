@@ -1,79 +1,65 @@
-﻿using Windows.System;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.Tracing;
+using System.Globalization;
+using System.Threading.Tasks;
+using Windows.ApplicationModel.Activation;
+using Windows.ApplicationModel.Resources;
+using Windows.Storage;
+using Windows.System;
+using Windows.UI.ApplicationSettings;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Navigation;
 using Microsoft.Practices.Prism.PubSubEvents;
 using Microsoft.Practices.Prism.StoreApps;
 using Microsoft.Practices.Prism.StoreApps.Interfaces;
 using Microsoft.Practices.Unity;
 using SageMobileSales.DataAccess;
+using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
 using SageMobileSales.ServiceAgents.Services;
 using SageMobileSales.UILogic.Common;
-using SageMobileSales.UILogic.ViewModels;
 using SageMobileSales.Views;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Threading.Tasks;
-using Windows.ApplicationModel;
-using Windows.ApplicationModel.Activation;
-using Windows.ApplicationModel.Resources;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.Storage;
-using Windows.UI.ApplicationSettings;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
-using System.Diagnostics.Tracing;
-using SageMobileSales.DataAccess.Common;
+
 // The Blank Application template is documented at http://go.microsoft.com/fwlink/?LinkId=234227
 
 namespace SageMobileSales
 {
     /// <summary>
-    /// Provides application-specific behavior to supplement the default Application class.
+    ///     Provides application-specific behavior to supplement the default Application class.
     /// </summary>
     sealed partial class App : MvvmAppBase
     {
         // Create the singleton container that will be used for type resolution in the app
         private readonly IUnityContainer _container = new UnityContainer();
 
-        public IEventAggregator EventAggregator { get; set; }
-
         /// <summary>
-        /// Initializes the singleton application object.  This is the first line of authored code
-        /// executed, and as such is the logical equivalent of main() or WinMain().
+        ///     Initializes the singleton application object.  This is the first line of authored code
+        ///     executed, and as such is the logical equivalent of main() or WinMain().
         /// </summary>
         public App()
         {
-            this.InitializeComponent();
+            InitializeComponent();
             //this.Suspending += OnSuspending;
         }
 
+        public IEventAggregator EventAggregator { get; set; }
+
         protected override Task OnLaunchApplication(LaunchActivatedEventArgs args)
         {
-         
-
-            var settingsLocal = ApplicationData.Current.LocalSettings;
+            ApplicationDataContainer settingsLocal = ApplicationData.Current.LocalSettings;
             settingsLocal.CreateContainer("SageSalesContainer", ApplicationDataCreateDisposition.Always);
-            var _isAuthorised = settingsLocal.Containers["SageSalesContainer"].Values[PageUtils.IsAuthorised];
-            var _isLaunched = settingsLocal.Containers["SageSalesContainer"].Values[PageUtils.IsLaunched];
-        
-           // EventListener verboseListenerevent = new LogStorageFileEventListener("MyListenerVerbose");
+            object _isAuthorised = settingsLocal.Containers["SageSalesContainer"].Values[PageUtils.IsAuthorised];
+            object _isLaunched = settingsLocal.Containers["SageSalesContainer"].Values[PageUtils.IsLaunched];
+
+            // EventListener verboseListenerevent = new LogStorageFileEventListener("MyListenerVerbose");
             EventListener informationListener = new LogStorageFileEventListener("SageMobileSalesLog");
 
-         //   verboseListenerevent.EnableEvents(AppEventSource.Log, EventLevel.Verbose);
-        
-           informationListener.EnableEvents(AppEventSource.Log, EventLevel.Informational);
-           AppEventSource.Log.Info(ResourceLoader.GetForCurrentView().GetString("AppLaunchingInfo"));
+            //   verboseListenerevent.EnableEvents(AppEventSource.Log, EventLevel.Verbose);
+
+            informationListener.EnableEvents(AppEventSource.Log, EventLevel.Informational);
+            AppEventSource.Log.Info(ResourceLoader.GetForCurrentView().GetString("AppLaunchingInfo"));
             if (_isLaunched != null)
             {
                 settingsLocal.Containers["SageSalesContainer"].Values.Remove(PageUtils.IsLaunched);
@@ -87,7 +73,7 @@ namespace SageMobileSales
             {
                 NavigationService.Navigate("CustomersGroup", null);
             }
-       
+
             Window.Current.Activate();
 
             return Task.FromResult<object>(null);
@@ -103,95 +89,117 @@ namespace SageMobileSales
         {
             EventAggregator = new EventAggregator();
             //var container = Container.Instance;
-            _container.RegisterInstance<INavigationService>(NavigationService);
-            _container.RegisterInstance<ISessionStateService>(SessionStateService);
-            _container.RegisterInstance<IEventAggregator>(EventAggregator);
-            _container.RegisterInstance<IResourceLoader>(new ResourceLoaderAdapter(new ResourceLoader()));     
+            _container.RegisterInstance(NavigationService);
+            _container.RegisterInstance(SessionStateService);
+            _container.RegisterInstance(EventAggregator);
+            _container.RegisterInstance<IResourceLoader>(new ResourceLoaderAdapter(new ResourceLoader()));
 
             // Register Repositories
             _container.RegisterType<IDatabase, Database>(new ContainerControlledLifetimeManager());
             _container.RegisterType<IDataContext, DataContext>(new ContainerControlledLifetimeManager());
             _container.RegisterType<ISalesRepRepository, SalesRepRepository>(new ContainerControlledLifetimeManager());
-            _container.RegisterType<ILocalSyncDigestRepository, LocalSyncDigestRepository>(new ContainerControlledLifetimeManager());
-            _container.RegisterType<IProductCategoryRepository, ProductCategoryRepository>(new ContainerControlledLifetimeManager());
+            _container.RegisterType<ILocalSyncDigestRepository, LocalSyncDigestRepository>(
+                new ContainerControlledLifetimeManager());
+            _container.RegisterType<IProductCategoryRepository, ProductCategoryRepository>(
+                new ContainerControlledLifetimeManager());
             _container.RegisterType<IProductRepository, ProductRepository>(new ContainerControlledLifetimeManager());
-            _container.RegisterType<IProductAssociatedBlobsRepository, ProductAssociatedBlobsRepository>(new ContainerControlledLifetimeManager());
+            _container.RegisterType<IProductAssociatedBlobsRepository, ProductAssociatedBlobsRepository>(
+                new ContainerControlledLifetimeManager());
             _container.RegisterType<ICustomerRepository, CustomerRepository>(new ContainerControlledLifetimeManager());
             _container.RegisterType<IContactRepository, ContactRepository>(new ContainerControlledLifetimeManager());
             _container.RegisterType<IAddressRepository, AddressRepository>(new ContainerControlledLifetimeManager());
             _container.RegisterType<IQuoteRepository, QuoteRepository>(new ContainerControlledLifetimeManager());
-            _container.RegisterType<IQuoteLineItemRepository, QuoteLineItemRepository>(new ContainerControlledLifetimeManager());
+            _container.RegisterType<IQuoteLineItemRepository, QuoteLineItemRepository>(
+                new ContainerControlledLifetimeManager());
             _container.RegisterType<IOrderRepository, OrderRepository>(new ContainerControlledLifetimeManager());
-            _container.RegisterType<IOrderLineItemRepository, OrderLineItemRepository>(new ContainerControlledLifetimeManager());
+            _container.RegisterType<IOrderLineItemRepository, OrderLineItemRepository>(
+                new ContainerControlledLifetimeManager());
             _container.RegisterType<ITenantRepository, TenantRepository>(new ContainerControlledLifetimeManager());
-            
+
 
             // Register Services
             _container.RegisterType<IOAuthService, OAuthService>(new ContainerControlledLifetimeManager());
-            _container.RegisterType<ISyncCoordinatorService, SyncCoordinatorService>(new ContainerControlledLifetimeManager());
+            _container.RegisterType<ISyncCoordinatorService, SyncCoordinatorService>(
+                new ContainerControlledLifetimeManager());
             _container.RegisterType<IServiceAgent, ServiceAgent>(new ContainerControlledLifetimeManager());
             _container.RegisterType<ISalesRepService, SalesRepService>(new ContainerControlledLifetimeManager());
-            _container.RegisterType<ILocalSyncDigestService, LocalSyncDigestService>(new ContainerControlledLifetimeManager());
-            _container.RegisterType<IProductCategoryService, ProductCategoryService>(new ContainerControlledLifetimeManager());
+            _container.RegisterType<ILocalSyncDigestService, LocalSyncDigestService>(
+                new ContainerControlledLifetimeManager());
+            _container.RegisterType<IProductCategoryService, ProductCategoryService>(
+                new ContainerControlledLifetimeManager());
             _container.RegisterType<IProductService, ProductService>(new ContainerControlledLifetimeManager());
-            _container.RegisterType<IProductAssociatedBlobService, ProductAssociatedBlobService>(new ContainerControlledLifetimeManager());
-            _container.RegisterType<IProductDetailsService, ProductDetailsService>(new ContainerControlledLifetimeManager());
+            _container.RegisterType<IProductAssociatedBlobService, ProductAssociatedBlobService>(
+                new ContainerControlledLifetimeManager());
+            _container.RegisterType<IProductDetailsService, ProductDetailsService>(
+                new ContainerControlledLifetimeManager());
             _container.RegisterType<ICustomerService, CustomerService>(new ContainerControlledLifetimeManager());
             _container.RegisterType<IContactService, ContactService>(new ContainerControlledLifetimeManager());
             _container.RegisterType<IQuoteService, QuoteService>(new ContainerControlledLifetimeManager());
-            _container.RegisterType<IQuoteLineItemService, QuoteLineItemService>(new ContainerControlledLifetimeManager());
+            _container.RegisterType<IQuoteLineItemService, QuoteLineItemService>(
+                new ContainerControlledLifetimeManager());
             _container.RegisterType<IOrderService, OrderService>(new ContainerControlledLifetimeManager());
-            _container.RegisterType<IOrderLineItemService, OrderLineItemService>(new ContainerControlledLifetimeManager());
+            _container.RegisterType<IOrderLineItemService, OrderLineItemService>(
+                new ContainerControlledLifetimeManager());
             _container.RegisterType<ITenantService, TenantService>(new ContainerControlledLifetimeManager());
 
-         //_container.RegisterType<IAppEventSource, AppEventSource>(new ContainerControlledLifetimeManager());
-           
-            ViewModelLocator.SetDefaultViewTypeToViewModelTypeResolver((viewType) =>
-                {
+            //_container.RegisterType<IAppEventSource, AppEventSource>(new ContainerControlledLifetimeManager());
 
-                    var viewModelTypeName = string.Format(CultureInfo.InvariantCulture, "SageMobileSales.UILogic.ViewModels.{0}ViewModel, SageMobileSales.UILogic, Version=1.0.0.0, Culture=neutral", viewType.Name);
-                    var viewModelType = Type.GetType(viewModelTypeName);
-                    return viewModelType;
-                });
+            ViewModelLocator.SetDefaultViewTypeToViewModelTypeResolver(viewType =>
+            {
+                string viewModelTypeName = string.Format(CultureInfo.InvariantCulture,
+                    "SageMobileSales.UILogic.ViewModels.{0}ViewModel, SageMobileSales.UILogic, Version=1.0.0.0, Culture=neutral",
+                    viewType.Name);
+                Type viewModelType = Type.GetType(viewModelTypeName);
+                return viewModelType;
+            });
             //var resourceLoader = _container.Resolve<IResourceLoader>();                       
         }
-        
+
         protected override object Resolve(Type type)
         {
             return _container.Resolve(type);
         }
-       
+
         protected override IList<SettingsCommand> GetSettingsCommands()
         {
             var eventAggregator = _container.Resolve<IEventAggregator>();
             var settingsCommands = new List<SettingsCommand>();
             var resourceLoader = _container.Resolve<IResourceLoader>();
 
-            settingsCommands.Add(new SettingsCommand(Guid.NewGuid().ToString(), resourceLoader.GetString("Logout"), (c) => LogoutHandler()));
-            settingsCommands.Add(new SettingsCommand(Guid.NewGuid().ToString(), resourceLoader.GetString("HelpText"), async c => await Launcher.LaunchUriAsync(new Uri(resourceLoader.GetString("HelpURL")))));
-            settingsCommands.Add(new SettingsCommand(Guid.NewGuid().ToString(), resourceLoader.GetString("PrivacyPolicy"), async c => await Launcher.LaunchUriAsync(new Uri(resourceLoader.GetString("PrivacyPolicyURL")))));
-            settingsCommands.Add(new SettingsCommand(Guid.NewGuid().ToString(), resourceLoader.GetString("CopyrightInfo"), async c => await Launcher.LaunchUriAsync(new Uri(resourceLoader.GetString("CopyrightURL")))));
-            settingsCommands.Add(new SettingsCommand(Guid.NewGuid().ToString(), resourceLoader.GetString("FeedbackLinkText"), async c => await Launcher.LaunchUriAsync(new Uri(resourceLoader.GetString("FeedbackMailtoURL")))));
-            settingsCommands.Add(new SettingsCommand(Guid.NewGuid().ToString(), resourceLoader.GetString("About"), (c) => new AboutSettingsFlyout(eventAggregator).Show()));
+            settingsCommands.Add(new SettingsCommand(Guid.NewGuid().ToString(), resourceLoader.GetString("Logout"),
+                c => LogoutHandler()));
+            settingsCommands.Add(new SettingsCommand(Guid.NewGuid().ToString(), resourceLoader.GetString("HelpText"),
+                async c => await Launcher.LaunchUriAsync(new Uri(resourceLoader.GetString("HelpURL")))));
+            settingsCommands.Add(new SettingsCommand(Guid.NewGuid().ToString(),
+                resourceLoader.GetString("PrivacyPolicy"),
+                async c => await Launcher.LaunchUriAsync(new Uri(resourceLoader.GetString("PrivacyPolicyURL")))));
+            settingsCommands.Add(new SettingsCommand(Guid.NewGuid().ToString(),
+                resourceLoader.GetString("CopyrightInfo"),
+                async c => await Launcher.LaunchUriAsync(new Uri(resourceLoader.GetString("CopyrightURL")))));
+            settingsCommands.Add(new SettingsCommand(Guid.NewGuid().ToString(),
+                resourceLoader.GetString("FeedbackLinkText"),
+                async c => await Launcher.LaunchUriAsync(new Uri(resourceLoader.GetString("FeedbackMailtoURL")))));
+            settingsCommands.Add(new SettingsCommand(Guid.NewGuid().ToString(), resourceLoader.GetString("About"),
+                c => new AboutSettingsFlyout(eventAggregator).Show()));
 #if(!PRODUCTION)
 
-   settingsCommands.Add(new SettingsCommand(Guid.NewGuid().ToString(), resourceLoader.GetString("DeploymentSettings"), (c) => new ConfigurationSettingsFlyout(eventAggregator).Show()));
+            settingsCommands.Add(new SettingsCommand(Guid.NewGuid().ToString(),
+                resourceLoader.GetString("DeploymentSettings"),
+                c => new ConfigurationSettingsFlyout(eventAggregator).Show()));
 
 #endif
-               
-            
-        return settingsCommands;
+
+
+            return settingsCommands;
         }
 
         // Logout Settings Command Handler
         private async void LogoutHandler()
         {
             var oAuthService = _container.Resolve<IOAuthService>();
-             await oAuthService.Cleanup();
-             NavigationService.Navigate("Signin", null);
+            await oAuthService.Cleanup();
+            NavigationService.Navigate("Signin", null);
         }
-
-       
 
 
         //protected override Type GetPageType(string pageToken)
@@ -204,7 +212,7 @@ namespace SageMobileSales
         //}
 
 
-      /*
+        /*
         protected override IList<SettingsCommand> GetSettingsCommand()
         {
             var settingsCommands = new List<SettingsCommand>();
@@ -215,13 +223,11 @@ namespace SageMobileSales
         */
 
 
-
-        
         // <summary>
-         //Invoked when the application is launched normally by the end user.  Other entry points
-         //will be used such as when the application is launched to open a specific file.
-         //</summary>
-         //<param name="e">Details about the launch request and process.</param>
+        //Invoked when the application is launched normally by the end user.  Other entry points
+        //will be used such as when the application is launched to open a specific file.
+        //</summary>
+        //<param name="e">Details about the launch request and process.</param>
 //        protected override void OnLaunched(LaunchActivatedEventArgs e)
 //        {
 
@@ -277,18 +283,18 @@ namespace SageMobileSales
 //            }
 
 //            AppEventSource.Log.Info("Current Window is activating");
-            
+
 //         //    Ensure the current window is active
 //            Window.Current.Activate();
-      //  }
-        
+        //  }
+
 
         /// <summary>
-        /// Invoked when Navigation to a certain page fails
+        ///     Invoked when Navigation to a certain page fails
         /// </summary>
         /// <param name="sender">The Frame which failed navigation</param>
         /// <param name="e">Details about the navigation failure</param>
-        void OnNavigationFailed(object sender, NavigationFailedEventArgs e)
+        private void OnNavigationFailed(object sender, NavigationFailedEventArgs e)
         {
             throw new Exception("Failed to load Page " + e.SourcePageType.FullName);
         }

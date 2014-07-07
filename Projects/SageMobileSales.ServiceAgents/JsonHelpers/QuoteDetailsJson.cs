@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace SageMobileSales.ServiceAgents.JsonHelpers
-{   
+{
     public class QuoteDetailsJson
     {
         public List<Resource> resources { get; set; }
-    }    
+    }
 
     public class Resource
     {

@@ -19,7 +19,7 @@
     x:Uid="Page">
 
     <prism:VisualStateAwarePage.Resources>
-        <CollectionViewSource x:Name="resultsViewSource" Source="{Binding SearchResults}"/>         
+        <CollectionViewSource x:Name="resultsViewSource" Source="{Binding SearchResults}" />
         <!-- TODO: Update the following string to be the name of your app -->
     </prism:VisualStateAwarePage.Resources>
 
@@ -31,35 +31,37 @@
     <Grid x:Name="LayoutRoot" Style="{StaticResource LayoutRootStyle}">
         <Grid.ChildrenTransitions>
             <TransitionCollection>
-                <EntranceThemeTransition/>
+                <EntranceThemeTransition />
             </TransitionCollection>
         </Grid.ChildrenTransitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="140"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="140" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <ProgressRing Grid.Row="1" Height="70" Width="70" 
-                      IsActive="{Binding InProgress, Mode=TwoWay}" 
+        <ProgressRing Grid.Row="1" Height="70" Width="70"
+                      IsActive="{Binding InProgress, Mode=TwoWay}"
                       Visibility="{Binding InProgress, Mode=TwoWay,Converter={StaticResource InProgessVisibilityConverter}}"
-                      Style="{StaticResource GridViewProgressRingStyle}"/>
+                      Style="{StaticResource GridViewProgressRingStyle}" />
 
-        <Grid x:Name="resultsPanel" Visibility="{Binding NoSearchResults, Converter={StaticResource TextNegationVisibilityConverter}}" Grid.RowSpan="2">
+        <Grid x:Name="resultsPanel"
+              Visibility="{Binding NoSearchResults, Converter={StaticResource TextNegationVisibilityConverter}}"
+              Grid.RowSpan="2">
             <GridView
                 Grid.Row="0"
-                    x:Name="resultsGridView"
-                    AutomationProperties.AutomationId="ResultsGridView"
-                    AutomationProperties.Name="Search Results"
-                    TabIndex="1"                                      
-                    SelectionMode="None"
-                    IsSwipeEnabled="false"
-                    IsItemClickEnabled="True"                 
-                    ItemTemplate="{StaticResource ProductsItemTemplate}"
-                    ItemsSource="{Binding Source={StaticResource resultsViewSource}}"                
-                   Style ="{StaticResource GridViewStyle}">
+                x:Name="resultsGridView"
+                AutomationProperties.AutomationId="ResultsGridView"
+                AutomationProperties.Name="Search Results"
+                TabIndex="1"
+                SelectionMode="None"
+                IsSwipeEnabled="false"
+                IsItemClickEnabled="True"
+                ItemTemplate="{StaticResource ProductsItemTemplate}"
+                ItemsSource="{Binding Source={StaticResource resultsViewSource}}"
+                Style="{StaticResource GridViewStyle}">
                 <interactivity:Interaction.Behaviors>
                     <core:EventTriggerBehavior EventName="ItemClick">
                         <core:CallMethodAction MethodName="GridViewItemClick"
-                TargetObject="{Binding Mode=OneWay}"/>
+                                               TargetObject="{Binding Mode=OneWay}" />
                     </core:EventTriggerBehavior>
                 </interactivity:Interaction.Behaviors>
             </GridView>
@@ -68,29 +70,31 @@
         <!-- Back button and page title -->
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="120"/>
+                <ColumnDefinition Width="120" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <Button x:Name="backButton" Command="{Binding GoBackCommand, ElementName=pageRoot}"
-                        Style="{StaticResource NavigationCustomBackButtonNormalStyle}"
-                        VerticalAlignment="Top"
-                        AutomationProperties.Name="Back"
-                        AutomationProperties.AutomationId="BackButton"
-                        AutomationProperties.ItemType="Navigation Button"/>
+                    Style="{StaticResource NavigationCustomBackButtonNormalStyle}"
+                    VerticalAlignment="Top"
+                    AutomationProperties.Name="Back"
+                    AutomationProperties.AutomationId="BackButton"
+                    AutomationProperties.ItemType="Navigation Button" />
             <TextBlock x:Name="resultText" x:Uid="resultText" Grid.Column="1" Text="" IsHitTestVisible="false"
-                       TextWrapping="NoWrap" VerticalAlignment="Bottom" Style="{StaticResource PageTitleTextStyle}"/>
-            <TextBlock x:Name="queryText" Grid.Column="2" Text="{Binding QueryText}" IsHitTestVisible="false" Style="{StaticResource PageTitleTextStyle}"
-                       TextWrapping="NoWrap" VerticalAlignment="Bottom"/>
+                       TextWrapping="NoWrap" VerticalAlignment="Bottom" Style="{StaticResource PageTitleTextStyle}" />
+            <TextBlock x:Name="queryText" Grid.Column="2" Text="{Binding QueryText}" IsHitTestVisible="false"
+                       Style="{StaticResource PageTitleTextStyle}"
+                       TextWrapping="NoWrap" VerticalAlignment="Bottom" />
         </Grid>
 
         <TextBlock
             x:Name="noResultsTextBlock"
             x:Uid="noResultsTextBlock"
-            Grid.Row="1"         
+            Grid.Row="1"
             Visibility="{Binding NoSearchResults, Converter={StaticResource TextVisibilityConverter}}"
-            Text="" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource EmptyTitleTextStyle}"/>
+            Text="" HorizontalAlignment="Center" VerticalAlignment="Center"
+            Style="{StaticResource EmptyTitleTextStyle}" />
 
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="ResultStates">
@@ -98,11 +102,13 @@
                 <!-- When there are no results, the results panel is replaced with an informational TextBlock -->
                 <VisualState x:Name="NoResultsFound">
                     <Storyboard>
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="resultsGridView" Storyboard.TargetProperty="Visibility">
-                            <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed"/>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="resultsGridView"
+                                                       Storyboard.TargetProperty="Visibility">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed" />
                         </ObjectAnimationUsingKeyFrames>
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="noResultsTextBlock" Storyboard.TargetProperty="Visibility">
-                            <DiscreteObjectKeyFrame KeyTime="0" Value="Visible"/>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="noResultsTextBlock"
+                                                       Storyboard.TargetProperty="Visibility">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="Visible" />
                         </ObjectAnimationUsingKeyFrames>
                     </Storyboard>
                 </VisualState>

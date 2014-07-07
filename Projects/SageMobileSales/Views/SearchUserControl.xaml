@@ -16,18 +16,18 @@
         <Button x:Name="searchButton"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Right"
-                Padding="0" 
+                Padding="0"
                 Height="40"
                 Width="40"
                 BorderThickness="0">
             <!--<SymbolIcon Symbol="Zoom" Foreground="White-->
         </Button>
-        <SearchBox x:Name="SearchBoxUserControl"  
+        <SearchBox x:Name="SearchBoxUserControl"
                    x:Uid="SearchBoxUserControl"
                    PlaceholderText=""
                    VerticalAlignment="Center"
-                   SearchHistoryEnabled="False" 
-                  Style="{StaticResource SearchBoxStyle}" FocusOnKeyboardInput="True" ChooseSuggestionOnEnter="False">
+                   SearchHistoryEnabled="False"
+                   Style="{StaticResource SearchBoxStyle}" FocusOnKeyboardInput="True" ChooseSuggestionOnEnter="False">
             <Interactivity:Interaction.Behaviors>
                 <Core:EventTriggerBehavior EventName="QuerySubmitted">
                     <Core:InvokeCommandAction Command="{Binding SearchCommand}" />
@@ -36,10 +36,10 @@
                     <Core:InvokeCommandAction Command="{Binding SearchSuggestionsCommand}" />
                 </Core:EventTriggerBehavior>
                 <Core:EventTriggerBehavior EventName="ResultSuggestionChosen">
-                    <Core:InvokeCommandAction Command="{Binding ResultSuggestionChosenCommand}"/>
+                    <Core:InvokeCommandAction Command="{Binding ResultSuggestionChosenCommand}" />
                 </Core:EventTriggerBehavior>
             </Interactivity:Interaction.Behaviors>
         </SearchBox>
-        
+
     </Grid>
 </UserControl>

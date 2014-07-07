@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Resources;
 using Windows.Foundation;
 using Windows.Storage;
 using Windows.System.Threading;
@@ -18,7 +19,6 @@ using SageMobileSales.ServiceAgents.Common;
 using SageMobileSales.ServiceAgents.Services;
 using SageMobileSales.UILogic.Common;
 using SageMobileSales.UILogic.Model;
-using Windows.ApplicationModel.Resources;
 
 namespace SageMobileSales.UILogic.ViewModels
 {
@@ -269,7 +269,7 @@ namespace SageMobileSales.UILogic.ViewModels
 
         public void CustomersSyncIndicator(bool sync)
         {
-            SyncProgress = Constants.CustomersSyncProgress;            
-        }        
+            SyncProgress = Constants.CustomersSyncProgress;
+        }
     }
 }

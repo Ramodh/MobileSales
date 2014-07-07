@@ -1,26 +1,25 @@
-﻿using Microsoft.Practices.Prism.PubSubEvents;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Windows.Data.Json;
+using Microsoft.Practices.Prism.PubSubEvents;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Entities;
 using SageMobileSales.DataAccess.Events;
 using SageMobileSales.DataAccess.Model;
 using SQLite;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.Data.Json;
 
 namespace SageMobileSales.DataAccess.Repositories
 {
     public class CustomerRepository : ICustomerRepository
     {
-        private SQLiteAsyncConnection _sageSalesDB;
-        private readonly IDatabase _database;
-        private readonly ILocalSyncDigestRepository _localSyncDigestRepository;
         private readonly IAddressRepository _addressRepository;
         private readonly IContactRepository _contactRepository;
+        private readonly IDatabase _database;
         private readonly IEventAggregator _eventAggregator;
+        private readonly ILocalSyncDigestRepository _localSyncDigestRepository;
+        private readonly SQLiteAsyncConnection _sageSalesDB;
         private string _log = string.Empty;
 
         public CustomerRepository(IDatabase database, ILocalSyncDigestRepository localSyncDigestRepository,
@@ -37,10 +36,11 @@ namespace SageMobileSales.DataAccess.Repositories
         # region Public Methods
 
         /// <summary>
-        /// Extracts customer data from Json repsonse and updates LocalSyncDigest(local tick) in LocalDB
+        ///     Extracts customer data from Json repsonse and updates LocalSyncDigest(local tick) in LocalDB
         /// </summary>
-        /// <param name="sDataProducts"></param>        
-        /// <param name="localSyncDigest"></param>s
+        /// <param name="sDataProducts"></param>
+        /// <param name="localSyncDigest"></param>
+        /// s
         /// <returns></returns>
         public async Task SaveCustomersAsync(JsonObject sDataCustomers, LocalSyncDigest localSyncDigest)
         {
@@ -52,14 +52,17 @@ namespace SageMobileSales.DataAccess.Repositories
                 //List<Customer> lstCustomers = new List<Customer>();
                 for (int customer = 0; customer < sDataCustomersArray.Count; customer++)
                 {
-                    var sDataCustomer = sDataCustomersArray[customer].GetObject();
+                    JsonObject sDataCustomer = sDataCustomersArray[customer].GetObject();
 
                     // Extracting CustomerJson and adding it into Customer Table and passing the same to Address Table to store addresses
-                    await _addressRepository.SaveAddressesAsync(sDataCustomer, (await SaveCustomerDetailsAsync(sDataCustomer)).CustomerId);
+                    await
+                        _addressRepository.SaveAddressesAsync(sDataCustomer,
+                            (await SaveCustomerDetailsAsync(sDataCustomer)).CustomerId);
 
                     if (localSyncDigest != null)
                     {
-                        if ((Convert.ToInt32(sDataCustomer.GetNamedNumber("SyncEndpointTick")) > localSyncDigest.localTick))
+                        if ((Convert.ToInt32(sDataCustomer.GetNamedNumber("SyncEndpointTick")) >
+                             localSyncDigest.localTick))
                             localSyncDigest.localTick = Convert.ToInt32(sDataCustomer.GetNamedNumber("SyncEndpointTick"));
                     }
 
@@ -89,7 +92,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Extracts data from response and updates customer, addresses and contacts
+        ///     Extracts data from response and updates customer, addresses and contacts
         /// </summary>
         /// <param name="sDataCustomer"></param>
         /// <returns></returns>
@@ -102,7 +105,178 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Extracts customer from Json and updates the same
+        ///     Adds or updates customer json response to dB
+        /// </summary>
+        /// <param name="customer"></param>
+        /// <returns></returns>
+        public async Task<Customer> AddOrUpdateCustomerJsonToDbAsync(JsonObject sDataCustomer)
+        {
+            try
+            {
+                IJsonValue value;
+                if (sDataCustomer.TryGetValue("$key", out value))
+                {
+                    if (value.ValueType.ToString() != DataAccessUtils.Null)
+                    {
+                        List<Customer> customerList;
+                        customerList =
+                            await
+                                _sageSalesDB.QueryAsync<Customer>("SELECT * FROM Customer where CustomerId=?",
+                                    sDataCustomer.GetNamedString("$key"));
+
+                        if (customerList.FirstOrDefault() != null)
+                        {
+                            return await UpdateCustomerJsonToDbAsync(sDataCustomer, customerList.FirstOrDefault());
+                        }
+                        return await AddCustomerJsonToDbAsync(sDataCustomer);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+            return null;
+        }
+
+        /// <summary>
+        ///     Returns list of all customers
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<Customer>> GetCustomerList()
+        {
+            List<Customer> customer = null;
+            try
+            {
+                //Need to implement "where IsActive='1'" on completion of Entity Status handling
+                customer = await _sageSalesDB.QueryAsync<Customer>("SELECT * FROM Customer order by customerName asc");
+            }
+            catch (Exception ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+            return customer;
+        }
+
+
+        /// <summary>
+        ///     Gets list of customers from LocalDB
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<CustomerDetails>> GetCustomerListDtlsAsync()
+        {
+            List<CustomerDetails> customerAddressList = null;
+            try
+            {
+                customerAddressList =
+                    await
+                        _sageSalesDB.QueryAsync<CustomerDetails>(
+                            "SELECT distinct customer.CustomerId, customer.CustomerName, customer.CreditAvailable, customer.CreditLimit, customer.PaymentTerms, address.AddressName, address.Street1, address.City, address.StateProvince, address.PostalCode, address.Phone FROM Customer  as customer Join Address  as address on customer.CustomerId = address.customerId and addresstype='Mailing' and Customer.EntityStatus= 'Active'");
+            }
+            catch (Exception ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+            return customerAddressList;
+        }
+
+        /// <summary>
+        ///     Gets Customer based on search text
+        /// </summary>
+        /// <param name="customerId"></param>
+        /// <returns></returns>
+        public async Task<List<Customer>> GetCustomerSearchSuggestionsAsync(string searchTerm)
+        {
+            try
+            {
+                // Retrieve the search suggestions from LocalDB
+                List<Customer> searchSuggestions =
+                    await
+                        _sageSalesDB.QueryAsync<Customer>("SELECT * from customer where CustomerName like '%" +
+                                                          searchTerm + "%'");
+                return searchSuggestions;
+            }
+            catch (Exception ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+            return null;
+        }
+
+        /// <summary>
+        ///     Get Customer list for that quote
+        /// </summary>
+        /// <param name="quote"></param>
+        /// <returns></returns>
+        public async Task<CustomerDetails> GetCustomerDtlsForQuote(string customerId, string addressId)
+        {
+            List<CustomerDetails> customerAddressList = null;
+            try
+            {
+                customerAddressList =
+                    await
+                        _sageSalesDB.QueryAsync<CustomerDetails>(
+                            "SELECT distinct customer.CustomerId, customer.CustomerName, customer.CreditAvailable, customer.CreditLimit, customer.PaymentTerms, address.AddressName, address.Street1, address.City, address.StateProvince, address.PostalCode, address.Phone FROM Customer  as customer Join Address  as address on customer.CustomerId = ? and AddressId=?",
+                            customerId, addressId);
+            }
+            catch (Exception ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+            return customerAddressList.FirstOrDefault();
+        }
+
+        /// <summary>
+        ///     Get Customer list for that order
+        /// </summary>
+        /// <param name="quote"></param>
+        /// <returns></returns>
+        public async Task<CustomerDetails> GetCustomerDtlsForOrder(OrderDetails order)
+        {
+            List<CustomerDetails> customerDetailsList = null;
+            try
+            {
+                customerDetailsList =
+                    await
+                        _sageSalesDB.QueryAsync<CustomerDetails>(
+                            "SELECT distinct customer.CustomerId, customer.CustomerName, customer.CreditAvailable, customer.CreditLimit, customer.PaymentTerms, address.AddressName, address.Street1, address.City, address.StateProvince, address.PostalCode, address.Phone FROM Customer  as customer Join Address  as address on customer.CustomerId = ? and AddressId=?",
+                            order.CustomerId, order.AddressId);
+            }
+            catch (Exception ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+            return customerDetailsList.FirstOrDefault();
+        }
+
+        /// <summary>
+        ///     Get Customer data from LocalDB
+        /// </summary>
+        /// <returns></returns>
+        public async Task<Customer> GetCustomerDataAsync(string customerId)
+        {
+            List<Customer> customer = null;
+            try
+            {
+                customer =
+                    await _sageSalesDB.QueryAsync<Customer>("SELECT * FROM Customer where CustomerId=?", customerId);
+            }
+            catch (Exception ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+            return customer.FirstOrDefault();
+        }
+
+        /// <summary>
+        ///     Extracts customer from Json and updates the same
         /// </summary>
         /// Can implement delete functionality for customers here
         /// <param name="sDataCustomer"></param>
@@ -121,189 +295,24 @@ namespace SageMobileSales.DataAccess.Repositories
             return null;
         }
 
-        /// <summary>
-        /// Adds or updates customer json response to dB
-        /// </summary>
-        /// <param name="customer"></param>
-        /// <returns></returns>
-        public async Task<Customer> AddOrUpdateCustomerJsonToDbAsync(JsonObject sDataCustomer)
-        {
-            try
-            {
-                IJsonValue value;
-                if (sDataCustomer.TryGetValue("$key", out value))
-                {
-                    if (value.ValueType.ToString() != DataAccessUtils.Null)
-                    {
-                        List<Customer> customerList;
-                        customerList = await _sageSalesDB.QueryAsync<Customer>("SELECT * FROM Customer where CustomerId=?", sDataCustomer.GetNamedString("$key"));
-
-                        if (customerList.FirstOrDefault() != null)
-                        {
-                            return await UpdateCustomerJsonToDbAsync(sDataCustomer, customerList.FirstOrDefault());
-                        }
-                        else
-                        {
-                            return await AddCustomerJsonToDbAsync(sDataCustomer);
-                        }
-                    }
-                }
-               
-            }
-            catch (Exception ex)
-            {
-                _log = AppEventSource.Log.WriteLine(ex);
-                AppEventSource.Log.Error(_log);
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// Returns list of all customers
-        /// </summary>
-        /// <returns></returns>
-        public async Task<List<Customer>> GetCustomerList()
-        {
-            List<Customer> customer=null;
-            try
-            {
-                //Need to implement "where IsActive='1'" on completion of Entity Status handling
-                customer = await _sageSalesDB.QueryAsync<Customer>("SELECT * FROM Customer order by customerName asc");
-            }
-            catch (Exception ex)
-            {
-                _log = AppEventSource.Log.WriteLine(ex);
-                AppEventSource.Log.Error(_log);
-            }
-            return customer;
-        }
-
-
-        /// <summary>
-        /// Gets list of customers from LocalDB
-        /// </summary>
-        /// <returns></returns>
-        public async Task<List<CustomerDetails>> GetCustomerListDtlsAsync()
-        {
-            List<CustomerDetails> customerAddressList=null;
-            try
-            {              
-                customerAddressList = await _sageSalesDB.QueryAsync<CustomerDetails>("SELECT distinct customer.CustomerId, customer.CustomerName, customer.CreditAvailable, customer.CreditLimit, customer.PaymentTerms, address.AddressName, address.Street1, address.City, address.StateProvince, address.PostalCode, address.Phone FROM Customer  as customer Join Address  as address on customer.CustomerId = address.customerId and addresstype='Mailing' and Customer.EntityStatus= 'Active'");             
-            }
-            catch (Exception ex)
-            {
-                _log = AppEventSource.Log.WriteLine(ex);
-                AppEventSource.Log.Error(_log);
-            }
-            return customerAddressList;
-        }
-
-        /// <summary>
-        /// Gets Customer based on search text
-        /// </summary>
-        /// <param name="customerId"></param>
-        /// <returns></returns>
-
-        public async Task<List<Customer>> GetCustomerSearchSuggestionsAsync(string searchTerm)
-        {
-            try
-            {
-                // Retrieve the search suggestions from LocalDB
-                var searchSuggestions = await _sageSalesDB.QueryAsync<Customer>("SELECT * from customer where CustomerName like '%" + searchTerm + "%'");
-                return searchSuggestions;
-            }
-            catch (Exception ex)
-            {
-                _log = AppEventSource.Log.WriteLine(ex);
-                AppEventSource.Log.Error(_log);
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// Get Customer list for that quote
-        /// </summary>
-        /// <param name="quote"></param>
-        /// <returns></returns>
-        public async Task<CustomerDetails> GetCustomerDtlsForQuote(string customerId, string addressId)
-        {
-            List<CustomerDetails> customerAddressList=null;
-            try
-            {             
-                customerAddressList = await _sageSalesDB.QueryAsync<CustomerDetails>("SELECT distinct customer.CustomerId, customer.CustomerName, customer.CreditAvailable, customer.CreditLimit, customer.PaymentTerms, address.AddressName, address.Street1, address.City, address.StateProvince, address.PostalCode, address.Phone FROM Customer  as customer Join Address  as address on customer.CustomerId = ? and AddressId=?", customerId, addressId);
-            }
-            catch (Exception ex)
-            {
-                _log = AppEventSource.Log.WriteLine(ex);
-                AppEventSource.Log.Error(_log);
-            }
-            return customerAddressList.FirstOrDefault();
-        }
-
-        /// <summary>
-        /// Get Customer list for that order
-        /// </summary>
-        /// <param name="quote"></param>
-        /// <returns></returns>
-        public async Task<CustomerDetails> GetCustomerDtlsForOrder(OrderDetails order)
-        {
-            List<CustomerDetails> customerDetailsList=null;
-            try
-            {
-                customerDetailsList = await _sageSalesDB.QueryAsync<CustomerDetails>("SELECT distinct customer.CustomerId, customer.CustomerName, customer.CreditAvailable, customer.CreditLimit, customer.PaymentTerms, address.AddressName, address.Street1, address.City, address.StateProvince, address.PostalCode, address.Phone FROM Customer  as customer Join Address  as address on customer.CustomerId = ? and AddressId=?", order.CustomerId, order.AddressId);
-            }
-            catch (Exception ex)
-            {
-                _log = AppEventSource.Log.WriteLine(ex);
-                AppEventSource.Log.Error(_log);
-            }
-            return customerDetailsList.FirstOrDefault();
-        }
-
-        /// <summary>
-        /// Get Customer data from LocalDB
-        /// </summary>        
-        /// <returns></returns>
-        public async Task<Customer> GetCustomerDataAsync(string customerId)
-        {
-            List<Customer> customer=null;
-            try
-            {
-              
-                customer = await _sageSalesDB.QueryAsync<Customer>("SELECT * FROM Customer where CustomerId=?", customerId);
-
-              
-            }
-            catch (Exception ex)
-            {
-                _log = AppEventSource.Log.WriteLine(ex);
-                AppEventSource.Log.Error(_log);
-            }
-            return customer.FirstOrDefault();
-        }
-
         # endregion
 
         # region Private Methods
 
         /// <summary>
-        /// Add customer json response to dB
+        ///     Add customer json response to dB
         /// </summary>
         /// <param name="sDataCustomer"></param>
         /// <returns></returns>
         private async Task<Customer> AddCustomerJsonToDbAsync(JsonObject sDataCustomer)
         {
-            Customer customerObj = new Customer();
+            var customerObj = new Customer();
             try
             {
-               
-
                 customerObj.CustomerId = sDataCustomer.GetNamedString("$key");
                 customerObj = ExtractCustomerFromJsonAsync(sDataCustomer, customerObj);
 
                 await _sageSalesDB.InsertAsync(customerObj);
-
-               
             }
             catch (Exception ex)
             {
@@ -315,7 +324,7 @@ namespace SageMobileSales.DataAccess.Repositories
 
 
         /// <summary>
-        /// Update customer json response to dB
+        ///     Update customer json response to dB
         /// </summary>
         /// <param name="sDataCustomer"></param>
         /// <param name="customerDbObj"></param>
@@ -326,8 +335,6 @@ namespace SageMobileSales.DataAccess.Repositories
             {
                 customerDbObj = ExtractCustomerFromJsonAsync(sDataCustomer, customerDbObj);
                 await _sageSalesDB.UpdateAsync(customerDbObj);
-
-               
             }
             catch (Exception ex)
             {
@@ -338,7 +345,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Extract customer json response
+        ///     Extract customer json response
         /// </summary>
         /// <param name="sDataCustomer"></param>
         /// <param name="customer"></param>
@@ -368,7 +375,7 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        customer.IsOnCreditHold = (bool)sDataCustomer.GetNamedBoolean("IsOnCreditHold");
+                        customer.IsOnCreditHold = sDataCustomer.GetNamedBoolean("IsOnCreditHold");
                     }
                 }
 
@@ -384,7 +391,7 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        customer.IsCreditLimitUsed = (bool)sDataCustomer.GetNamedBoolean("IsCreditLimitUsed");
+                        customer.IsCreditLimitUsed = sDataCustomer.GetNamedBoolean("IsCreditLimitUsed");
                     }
                 }
 
@@ -411,8 +418,6 @@ namespace SageMobileSales.DataAccess.Repositories
                         customer.EntityStatus = sDataCustomer.GetNamedString("EntityStatus");
                     }
                 }
-
-           
             }
             catch (Exception ex)
             {
