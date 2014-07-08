@@ -265,9 +265,9 @@ namespace SageMobileSales.UILogic.ViewModels
             }
             if (selected.SelectedItem.ToString() == "Local Machine")
             {
-                ClientId = @"HGr7ysGn2MO1KfrB2f7V3UlJDYIyjhZ0";
-                Url = "http://10.150.204.34:81";
-                Scope = @"6o6x4swc();";
+                ClientId = @"FhVDZU7p11pFRItTweZsh8XSGdEeFZ0g";
+                Url = "http://172.29.59.122:8080/sdata/api/msales/1.0/";
+                Scope = @"kipgf40h();";
                 IsSageIdProduction = false;
                 SelectedType = "Local Machine";
                 RedirectUrl = "https://signon.sso.staging.services.sage.com/oauth/native";

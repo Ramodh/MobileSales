@@ -102,6 +102,18 @@ namespace SageMobileSales.ServiceAgents.Common
                             "Mozilla/5.0 (Windows NT 6.2; WOW64; rv:19.0) Gecko/20100101 Firefox/19.0");
                         httpClient.DefaultRequestHeaders.TryAddWithoutValidation("AppProtocolVersion", "1.0.0.0");
 
+                        //httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Accept", "application/json");
+                        //httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Accept-Language", "en;q=1, fr;q=0.9, de;q=0.8, zh-Hans;q=0.7, zh-Hant;q=0.6, ja;q=0.5");
+                        ////httpClient.DefaultRequestHeaders.TryAddWithoutValidation("AppProtocol", "Mobile Sales");
+                        ////httpClient.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent",
+                        ////"Mozilla/5.0 (Windows NT 6.2; WOW64; rv:19.0) Gecko/20100101 Firefox/19.0");
+                        //httpClient.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", "Mobile Sales 3.00 (IOS 7.1) (compatible; 1.0)");
+
+
+                        //httpClient.DefaultRequestHeaders.TryAddWithoutValidation("AppProtocolVersion", "1.0.0.0");
+                        //httpClient.DefaultRequestHeaders.TryAddWithoutValidation("gzip,deflate", "Accept-Encoding");
+
+
                         req = new HttpRequestMessage(HttpMethod.Get, _url);
                         if (Constants.ConnectedToInternet())
                         {

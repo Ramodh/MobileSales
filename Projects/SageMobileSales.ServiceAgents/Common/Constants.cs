@@ -29,7 +29,7 @@ namespace SageMobileSales.ServiceAgents.Common
 
         # region Entities
 
-        public static string CurrentUserEnitty = "CurrentUser";
+        public static string CurrentUserEnitty = "-/CurrentUser";
         public static string GetSalesSettingsEntity = "Users";
         public static string CategoryEntity = "InventoryCategories";
         public static string ItemsEntity = "InventoryItems";
