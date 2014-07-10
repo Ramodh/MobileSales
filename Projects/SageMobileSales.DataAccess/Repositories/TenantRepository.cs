@@ -28,16 +28,19 @@ namespace SageMobileSales.DataAccess.Repositories
         /// </summary>
         /// <param name="sDataTenantDtls"></param>
         /// <returns></returns>
-        public async Task SaveTenantDtlsAsync(JsonObject sDataTenantDtls)
+        public async Task SaveTenantAsync(JsonArray sDataTenantArray, string repId)
         {
             try
             {
-                JsonArray sDataTenantArray = sDataTenantDtls.GetNamedArray("$resources");
+                //JsonArray sDataTenantArray = sDataTenantDtls.GetNamedArray("$resources");
+                //JsonArray sDataTenantArray = sDataTenantDtls.GetArray();
                 if (sDataTenantArray.Count > 0)
                 {
-                    JsonObject sDataTentObject = sDataTenantArray[0].GetObject();
-                    Tenant tenantDtls = ExtractTenantDtlsFromJsonAsync(sDataTentObject);
-                    await AddOrUpdateTenantAsync(tenantDtls);
+                    //JsonObject sDataTentObject = sDataTenantArray[0].GetObject();
+                    //Tenant tenantDtls = ExtractTenantDtlsFromJsonAsync(sDataTentObject);
+                    //await AddOrUpdateTenantAsync(tenantDtls);
+
+                    await SaveTenantDetailsAsync(sDataTenantArray, repId);
                 }
             }
             catch (SQLiteException ex)
@@ -50,6 +53,30 @@ namespace SageMobileSales.DataAccess.Repositories
                 _log = AppEventSource.Log.WriteLine(ex);
                 AppEventSource.Log.Error(_log);
             }
+        }
+
+        public async Task<string> GetTenantId()
+        {
+            try
+            {
+                List<Tenant> tenants =
+                    await _sageSalesDB.QueryAsync<Tenant>("select * from Tenant");
+                if (tenants.Count > 0)
+                {
+                    return tenants.FirstOrDefault().TenantId;
+                }                
+            }
+            catch (SQLiteException ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+            catch (Exception ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+            return null;
         }
 
         /// <summary>
@@ -86,23 +113,36 @@ namespace SageMobileSales.DataAccess.Repositories
 
         # region private methods
 
-        /// <summary>
-        ///     Adds or Updates TenantDtls to localDB
-        /// </summary>
-        /// <param name="tenantDtls"></param>
-        /// <returns></returns>
-        private async Task AddOrUpdateTenantAsync(Tenant tenantDtls)
+        private async Task SaveTenantDetailsAsync(JsonArray sDataTenantArray, string repId)
+        {
+            foreach (var tenant in sDataTenantArray)
+            {
+                JsonObject sDataTenant = tenant.GetObject();
+                await AddOrUpdateTenantJsonToDbAsync(sDataTenant, repId);
+            }
+        }
+
+        private async Task<Tenant> AddOrUpdateTenantJsonToDbAsync(JsonObject sDataTenant, string repId)
         {
             try
             {
-                Tenant localDBTenant = await GetTenantDtlsAsync(tenantDtls.TenantId);
-                if (localDBTenant != null)
+                IJsonValue value;
+                if (sDataTenant.TryGetValue("TenantGuid", out value))
                 {
-                    await _sageSalesDB.UpdateAsync(tenantDtls);
-                }
-                else
-                {
-                    await _sageSalesDB.InsertAsync(tenantDtls);
+                    if (value.ValueType.ToString() != DataAccessUtils.Null)
+                    {
+                        List<Tenant> tenantList;
+                        tenantList =
+                            await
+                                _sageSalesDB.QueryAsync<Tenant>("SELECT * FROM Tenant where TenantId=?",
+                                    sDataTenant.GetNamedString("TenantGuid"));
+
+                        if (tenantList.FirstOrDefault() != null)
+                        {
+                            return await UpdateTenantJsonToDbAsync(sDataTenant, tenantList.FirstOrDefault());
+                        }
+                        return await AddTenantJsonToDbAsync(sDataTenant, repId);
+                    }
                 }
             }
             catch (SQLiteException ex)
@@ -110,94 +150,166 @@ namespace SageMobileSales.DataAccess.Repositories
                 _log = AppEventSource.Log.WriteLine(ex);
                 AppEventSource.Log.Error(_log);
             }
+
             catch (Exception ex)
             {
                 _log = AppEventSource.Log.WriteLine(ex);
                 AppEventSource.Log.Error(_log);
             }
+
+            return null;
         }
 
-        private Tenant ExtractTenantDtlsFromJsonAsync(JsonObject sDataTentObject)
+        private async Task<Tenant> AddTenantJsonToDbAsync(JsonObject sDataTenant, string repId)
+        {
+            var tenantObj = new Tenant();
+            try
+            {
+                tenantObj.RepId = repId;
+                tenantObj.TenantId = sDataTenant.GetNamedString("TenantGuid");
+
+                tenantObj = ExtractTenantDtlsFromJsonAsync(sDataTenant, tenantObj);
+                await _sageSalesDB.InsertAsync(tenantObj);
+            }
+            catch (SQLiteException ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+
+            catch (Exception ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+            return tenantObj;
+        }
+
+        private async Task<Tenant> UpdateTenantJsonToDbAsync(JsonObject sDataTenant, Tenant tenantObj)
+        {
+            try
+            {
+                tenantObj = ExtractTenantDtlsFromJsonAsync(sDataTenant, tenantObj);
+                await _sageSalesDB.UpdateAsync(tenantObj);
+            }
+            catch (SQLiteException ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+
+            catch (Exception ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+            return tenantObj;
+        }
+
+        ///// <summary>
+        /////     Adds or Updates TenantDtls to localDB
+        ///// </summary>
+        ///// <param name="tenantDtls"></param>
+        ///// <returns></returns>
+        //private async Task AddOrUpdateTenantAsync(Tenant tenantDtls)
+        //{
+        //    try
+        //    {
+        //        Tenant localDBTenant = await GetTenantDtlsAsync(tenantDtls.TenantId);
+        //        if (localDBTenant != null)
+        //        {
+        //            await _sageSalesDB.UpdateAsync(tenantDtls);
+        //        }
+        //        else
+        //        {
+        //            await _sageSalesDB.InsertAsync(tenantDtls);
+        //        }
+        //    }
+        //    catch (SQLiteException ex)
+        //    {
+        //        _log = AppEventSource.Log.WriteLine(ex);
+        //        AppEventSource.Log.Error(_log);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _log = AppEventSource.Log.WriteLine(ex);
+        //        AppEventSource.Log.Error(_log);
+        //    }
+        //}
+
+        private Tenant ExtractTenantDtlsFromJsonAsync(JsonObject sDataTenant, Tenant tenant)
         {
             IJsonValue value;
-            var tenant = new Tenant();
 
-            if (sDataTentObject.TryGetValue("$key", out value))
+            if (sDataTenant.TryGetValue("ERPCompanyCode", out value))
             {
                 if (value.ValueType.ToString() != DataAccessUtils.Null)
                 {
-                    tenant.TenantId = sDataTentObject.GetNamedString("$key");
+                    tenant.Code = sDataTenant.GetNamedString("ERPCompanyCode");
                 }
             }
-            if (sDataTentObject.TryGetValue("ERPCompanyCode", out value))
+            if (sDataTenant.TryGetValue("ERPCompanyName", out value))
             {
                 if (value.ValueType.ToString() != DataAccessUtils.Null)
                 {
-                    tenant.Code = sDataTentObject.GetNamedString("ERPCompanyCode");
+                    tenant.Name = sDataTenant.GetNamedString("ERPCompanyName");
                 }
             }
-            if (sDataTentObject.TryGetValue("ERPCompanyName", out value))
+            if (sDataTenant.TryGetValue("ERPCompanyAddressLine1", out value))
             {
                 if (value.ValueType.ToString() != DataAccessUtils.Null)
                 {
-                    tenant.Name = sDataTentObject.GetNamedString("ERPCompanyName");
-                }
-            }
-            if (sDataTentObject.TryGetValue("ERPCompanyAddressLine1", out value))
-            {
-                if (value.ValueType.ToString() != DataAccessUtils.Null)
-                {
-                    tenant.AddressLine1 = sDataTentObject.GetNamedString("ERPCompanyAddressLine1");
+                    tenant.AddressLine1 = sDataTenant.GetNamedString("ERPCompanyAddressLine1");
                 }
             }
 
-            if (sDataTentObject.TryGetValue("ERPCompanyAddressLine2", out value))
+            if (sDataTenant.TryGetValue("ERPCompanyAddressLine2", out value))
             {
                 if (value.ValueType.ToString() != DataAccessUtils.Null)
                 {
-                    tenant.AddressLine2 = sDataTentObject.GetNamedString("ERPCompanyAddressLine2");
+                    tenant.AddressLine2 = sDataTenant.GetNamedString("ERPCompanyAddressLine2");
                 }
             }
-            if (sDataTentObject.TryGetValue("ERPCompanyAddressLine3", out value))
+            if (sDataTenant.TryGetValue("ERPCompanyAddressLine3", out value))
             {
                 if (value.ValueType.ToString() != DataAccessUtils.Null)
                 {
-                    tenant.AddressLine3 = sDataTentObject.GetNamedString("ERPCompanyAddressLine3");
+                    tenant.AddressLine3 = sDataTenant.GetNamedString("ERPCompanyAddressLine3");
                 }
             }
-            if (sDataTentObject.TryGetValue("ERPCompanyAddressLine4", out value))
+            if (sDataTenant.TryGetValue("ERPCompanyAddressLine4", out value))
             {
                 if (value.ValueType.ToString() != DataAccessUtils.Null)
                 {
-                    tenant.AddressLine4 = sDataTentObject.GetNamedString("ERPCompanyAddressLine4");
+                    tenant.AddressLine4 = sDataTenant.GetNamedString("ERPCompanyAddressLine4");
                 }
             }
-            if (sDataTentObject.TryGetValue("ERPCompanyCity", out value))
+            if (sDataTenant.TryGetValue("ERPCompanyCity", out value))
             {
                 if (value.ValueType.ToString() != DataAccessUtils.Null)
                 {
-                    tenant.City = sDataTentObject.GetNamedString("ERPCompanyCity");
+                    tenant.City = sDataTenant.GetNamedString("ERPCompanyCity");
                 }
             }
-            if (sDataTentObject.TryGetValue("ERPCompanyRegion", out value))
+            if (sDataTenant.TryGetValue("ERPCompanyRegion", out value))
             {
                 if (value.ValueType.ToString() != DataAccessUtils.Null)
                 {
-                    tenant.Region = sDataTentObject.GetNamedString("ERPCompanyRegion");
+                    tenant.Region = sDataTenant.GetNamedString("ERPCompanyRegion");
                 }
             }
-            if (sDataTentObject.TryGetValue("ERPCompanyCountry", out value))
+            if (sDataTenant.TryGetValue("ERPCompanyCountry", out value))
             {
                 if (value.ValueType.ToString() != DataAccessUtils.Null)
                 {
-                    tenant.County = sDataTentObject.GetNamedString("ERPCompanyCountry");
+                    tenant.County = sDataTenant.GetNamedString("ERPCompanyCountry");
                 }
             }
-            if (sDataTentObject.TryGetValue("ERPCompanyPostalCode", out value))
+            if (sDataTenant.TryGetValue("ERPCompanyPostalCode", out value))
             {
                 if (value.ValueType.ToString() != DataAccessUtils.Null)
                 {
-                    tenant.PostalCode = sDataTentObject.GetNamedString("ERPCompanyPostalCode");
+                    tenant.PostalCode = sDataTenant.GetNamedString("ERPCompanyPostalCode");
                 }
             }
             return tenant;

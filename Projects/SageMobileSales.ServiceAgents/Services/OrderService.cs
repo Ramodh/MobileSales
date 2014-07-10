@@ -159,7 +159,7 @@ namespace SageMobileSales.ServiceAgents.Services
 
                     ordersResponse =
                         await
-                            _serviceAgent.BuildAndSendRequest(Constants.OrderEntity, Constants.syncQueryEntity, null,
+                            _serviceAgent.BuildAndSendRequest(null, Constants.OrderEntity, Constants.syncQueryEntity, null,
                                 Constants.AccessToken, parameters);
                     if (ordersResponse != null && ordersResponse.IsSuccessStatusCode)
                     {
@@ -242,7 +242,7 @@ namespace SageMobileSales.ServiceAgents.Services
             // Need confirmation here too
             orderjson.TaxAmount = "0";
 
-            long milliseconds = DateTime.UtcNow.Ticks/TimeSpan.TicksPerMillisecond;
+            long milliseconds = DateTime.UtcNow.Ticks / TimeSpan.TicksPerMillisecond;
             orderjson.TransactionDate = "/Date(" + milliseconds + ")/";
             //order.TransactionDate ="/Date(1392833833000-0600)/";
 

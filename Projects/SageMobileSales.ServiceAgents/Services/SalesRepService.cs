@@ -28,7 +28,7 @@ namespace SageMobileSales.ServiceAgents.Services
         {
             HttpResponseMessage salesRepResponse =
                 await
-                    _serviceAgent.BuildAndSendRequest(Constants.CurrentUserEnitty, null, null, Constants.AccessToken,
+                    _serviceAgent.BuildAndSendRequest(null, Constants.CurrentUserEnitty, null, null, Constants.AccessToken,
                         null);
             if (salesRepResponse.IsSuccessStatusCode)
             {
@@ -57,13 +57,15 @@ namespace SageMobileSales.ServiceAgents.Services
             ApplicationDataContainer settingsLocal = ApplicationData.Current.LocalSettings;
             settingsLocal.Containers["SageSalesContainer"].Values["TrackingId"] = Constants.TrackingId;
 
-            if (userId != null)
+            /*
+             *  peagausus
+             * if (userId != null)
             {
                 var parameters = new Dictionary<string, string>();
                 parameters.Add("userId", userId);
                 HttpResponseMessage salesRepSettingsResponse =
                     await
-                        _serviceAgent.BuildAndSendRequest(Constants.GetSalesSettingsEntity,
+                        _serviceAgent.BuildAndSendRequest(null, Constants.GetSalesSettingsEntity,
                             Constants.GetSalesSettingsQueryEntity, null, Constants.AccessToken, parameters);
                 if (salesRepSettingsResponse != null && salesRepSettingsResponse.IsSuccessStatusCode)
                 {
@@ -72,6 +74,8 @@ namespace SageMobileSales.ServiceAgents.Services
                     await _salesRepRepository.UpdateSalesRepDtlsAsync(sDatasalesRepSettings);
                 }
             }
+             * 
+             * **/
         }
     }
 }

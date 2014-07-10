@@ -43,7 +43,7 @@ namespace SageMobileSales.ServiceAgents.Common
         /// <param name="accessToken"></param>
         /// <param name="parameters"></param>
         /// <returns>HttpResponse</returns>
-        public async Task<HttpResponseMessage> BuildAndSendRequest(string entity, string queryEntity,
+        public async Task<HttpResponseMessage> BuildAndSendRequest(string tenantId, string entity, string queryEntity,
             string associatedItems, string accessToken, Dictionary<string, string> parameters)
         {
             _requestUrl = Constants.Url;
@@ -56,6 +56,12 @@ namespace SageMobileSales.ServiceAgents.Common
                         string _url = string.Empty;
                         string _parameters = string.Empty;
                         HttpRequestMessage req = null;
+
+                        if (!string.IsNullOrEmpty(tenantId))
+                        {
+                            _requestUrl = _requestUrl + tenantId + "/";
+                        }
+
                         if (entity != null && queryEntity != null)
                         {
                             _url += _requestUrl + entity + "/" + queryEntity;
@@ -102,17 +108,8 @@ namespace SageMobileSales.ServiceAgents.Common
                             "Mozilla/5.0 (Windows NT 6.2; WOW64; rv:19.0) Gecko/20100101 Firefox/19.0");
                         httpClient.DefaultRequestHeaders.TryAddWithoutValidation("AppProtocolVersion", "1.0.0.0");
 
-                        //httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Accept", "application/json");
-                        //httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Accept-Language", "en;q=1, fr;q=0.9, de;q=0.8, zh-Hans;q=0.7, zh-Hant;q=0.6, ja;q=0.5");
-                        ////httpClient.DefaultRequestHeaders.TryAddWithoutValidation("AppProtocol", "Mobile Sales");
-                        ////httpClient.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent",
-                        ////"Mozilla/5.0 (Windows NT 6.2; WOW64; rv:19.0) Gecko/20100101 Firefox/19.0");
-                        //httpClient.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", "Mobile Sales 3.00 (IOS 7.1) (compatible; 1.0)");
-
-
-                        //httpClient.DefaultRequestHeaders.TryAddWithoutValidation("AppProtocolVersion", "1.0.0.0");
-                        //httpClient.DefaultRequestHeaders.TryAddWithoutValidation("gzip,deflate", "Accept-Encoding");
-
+                        //http://172.29.59.122:8080/sdata/api/msales/1.0/f200ac19-1be6-48c5-b604-2d322020f48e/Customers/$SyncDigest
+                        //http://172.29.59.122:8080/sdata/api/msales/1.0/Customers/$SyncDigest
 
                         req = new HttpRequestMessage(HttpMethod.Get, _url);
                         if (Constants.ConnectedToInternet())
@@ -150,7 +147,7 @@ namespace SageMobileSales.ServiceAgents.Common
         /// <param name="accessToken"></param>
         /// <param name="parameters"></param>
         /// <returns>HttpResponse which in turn service returns</returns>
-        public async Task<bool> BuildAndPostRequest(string entity, string queryEntity, string accessToken,
+        public async Task<bool> BuildAndPostRequest(string tenantId, string entity, string queryEntity, string accessToken,
             Dictionary<string, string> parameters)
         {
             _requestUrl = Constants.Url;
@@ -160,6 +157,11 @@ namespace SageMobileSales.ServiceAgents.Common
                 {
                     string _url = string.Empty;
                     string _parameters = string.Empty;
+
+                    if (!string.IsNullOrEmpty(tenantId))
+                    {
+                        _requestUrl = _requestUrl + tenantId + "/";
+                    }
 
                     if (queryEntity != null)
                     {

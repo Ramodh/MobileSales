@@ -36,13 +36,25 @@ namespace SageMobileSales.DataAccess.Repositories
             {
                 if (!string.IsNullOrEmpty(customerId))
                 {
-                    JsonObject sDataAddresses = sDataCustomer.GetNamedObject("Addresses");
-                    if (sDataAddresses.ContainsKey("$resources"))
+                    //JsonObject sDataAddresses = sDataCustomer.GetNamedObject("Addresses");
+                    //if (sDataAddresses.ContainsKey("Addresses"))
+                    //{
+                    //    JsonArray sDataAddressArray = sDataAddresses.GetArray();
+                    //    if (sDataAddressArray.Count > 0)
+                    //    {
+                    //        await SaveAddressDetailsAsync(sDataAddressArray, customerId);
+                    //    }
+                    //}
+                    IJsonValue value;
+                    if (sDataCustomer.TryGetValue("Addresses", out value))
                     {
-                        JsonArray sDataAddressArray = sDataAddresses.GetNamedArray("$resources");
-                        if (sDataAddressArray.Count > 0)
+                        if (value.ValueType.ToString() != DataAccessUtils.Null)
                         {
-                            await SaveAddressDetailsAsync(sDataAddressArray, customerId);
+                            JsonArray sDataAddressArray = sDataCustomer.GetNamedArray("Addresses");
+                            if (sDataAddressArray.Count > 0)
+                            {
+                                await SaveAddressDetailsAsync(sDataAddressArray, customerId);
+                            }
                         }
                     }
                 }
@@ -71,7 +83,7 @@ namespace SageMobileSales.DataAccess.Repositories
             try
             {
                 IJsonValue value;
-                if (sDataAddress.TryGetValue("$key", out value))
+                if (sDataAddress.TryGetValue("Id", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
@@ -79,7 +91,7 @@ namespace SageMobileSales.DataAccess.Repositories
                         addressList =
                             await
                                 _sageSalesDB.QueryAsync<Address>("SELECT * FROM Address where AddressId=?",
-                                    sDataAddress.GetNamedString("$key"));
+                                    sDataAddress.GetNamedString("Id"));
 
                         if (addressList.FirstOrDefault() != null)
                         {
@@ -411,7 +423,7 @@ namespace SageMobileSales.DataAccess.Repositories
             try
             {
                 addressObj.CustomerId = customerId;
-                addressObj.AddressId = sDataAddress.GetNamedString("$key");
+                addressObj.AddressId = sDataAddress.GetNamedString("Id");
 
                 addressObj = ExtractAddressFromJsonAsync(sDataAddress, addressObj);
                 await _sageSalesDB.InsertAsync(addressObj);
@@ -602,11 +614,11 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     JsonObject sDataAddress = adress.GetObject();
                     var adressJsonObj = new Address();
-                    if (sDataAddress.TryGetValue("$key", out value))
+                    if (sDataAddress.TryGetValue("Id", out value))
                     {
                         if (value.ValueType.ToString() != DataAccessUtils.Null)
                         {
-                            adressJsonObj.AddressId = sDataAddress.GetNamedString("$key");
+                            adressJsonObj.AddressId = sDataAddress.GetNamedString("Id");
                         }
                     }
                     addressIdJsonList.Add(adressJsonObj);

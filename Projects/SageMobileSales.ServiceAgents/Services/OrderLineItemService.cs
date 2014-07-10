@@ -40,7 +40,7 @@ namespace SageMobileSales.ServiceAgents.Services
                 HttpResponseMessage orderLineItemResponse = null;
                 orderLineItemResponse =
                     await
-                        _serviceAgent.BuildAndSendRequest(orderEntityId, null, null, Constants.AccessToken, parameters);
+                        _serviceAgent.BuildAndSendRequest(null, orderEntityId, null, null, Constants.AccessToken, parameters);
                 if (orderLineItemResponse != null && orderLineItemResponse.IsSuccessStatusCode)
                 {
                     var sDataQuoteLineItem = await _serviceAgent.ConvertTosDataObject(orderLineItemResponse);

@@ -88,28 +88,28 @@ namespace SageMobileSales.ServiceAgents.Services
                 HttpResponseMessage customersResponse = null;
                 customersResponse =
                     await
-                        _serviceAgent.BuildAndSendRequest(Constants.CustomerEntity, Constants.syncQueryEntity, null,
+                        _serviceAgent.BuildAndSendRequest(Constants.TenantId, Constants.CustomerEntity, Constants.syncQueryEntity, null,
                             Constants.AccessToken, parameters);
                 if (customersResponse != null && customersResponse.IsSuccessStatusCode)
                 {
                     JsonObject sDataCustomers = await _serviceAgent.ConvertTosDataObject(customersResponse);
-                    if (Convert.ToInt32(sDataCustomers.GetNamedNumber("$totalResults")) >
+                    if (Convert.ToInt32(sDataCustomers.GetNamedString("$totalResults")) >
                         DataAccessUtils.CustomerTotalCount)
                         DataAccessUtils.CustomerTotalCount =
-                            Convert.ToInt32(sDataCustomers.GetNamedNumber("$totalResults"));
+                            Convert.ToInt32(sDataCustomers.GetNamedString("$totalResults"));
                     if (DataAccessUtils.CustomerTotalCount == 0)
                     {
                         _eventAggregator.GetEvent<CustomerDataChangedEvent>().Publish(true);
                     }
-                    int _totalCount = Convert.ToInt32(sDataCustomers.GetNamedNumber("$totalResults"));
+                    int _totalCount = Convert.ToInt32(sDataCustomers.GetNamedString("$totalResults"));
                     JsonArray customersObject = sDataCustomers.GetNamedArray("$resources");
                     int _returnedCount = customersObject.Count;
                     if (_returnedCount > 0 && _totalCount - _returnedCount >= 0 &&
                         !(DataAccessUtils.IsCustomerSyncCompleted))
                     {
                         JsonObject lastCustomerObject = customersObject.GetObjectAt(Convert.ToUInt32(_returnedCount - 1));
-                        digest.LastRecordId = lastCustomerObject.GetNamedString("$key");
-                        int _syncEndpointTick = Convert.ToInt32(lastCustomerObject.GetNamedNumber("SyncEndpointTick"));
+                        digest.LastRecordId = lastCustomerObject.GetNamedString("Id");
+                        int _syncEndpointTick = Convert.ToInt32(lastCustomerObject.GetNamedNumber("SyncTick"));
                         if (_syncEndpointTick > digest.localTick)
                         {
                             digest.localTick = _syncEndpointTick;

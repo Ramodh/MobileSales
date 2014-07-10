@@ -61,9 +61,9 @@ namespace SageMobileSales.DataAccess.Repositories
 
                     if (localSyncDigest != null)
                     {
-                        if ((Convert.ToInt32(sDataCustomer.GetNamedNumber("SyncEndpointTick")) >
+                        if ((Convert.ToInt32(sDataCustomer.GetNamedNumber("SyncTick")) >
                              localSyncDigest.localTick))
-                            localSyncDigest.localTick = Convert.ToInt32(sDataCustomer.GetNamedNumber("SyncEndpointTick"));
+                            localSyncDigest.localTick = Convert.ToInt32(sDataCustomer.GetNamedNumber("SyncTick"));
                     }
 
                     if (customer == (sDataCustomersArray.Count - 1) && localSyncDigest != null)
@@ -114,7 +114,7 @@ namespace SageMobileSales.DataAccess.Repositories
             try
             {
                 IJsonValue value;
-                if (sDataCustomer.TryGetValue("$key", out value))
+                if (sDataCustomer.TryGetValue("Id", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
@@ -122,7 +122,7 @@ namespace SageMobileSales.DataAccess.Repositories
                         customerList =
                             await
                                 _sageSalesDB.QueryAsync<Customer>("SELECT * FROM Customer where CustomerId=?",
-                                    sDataCustomer.GetNamedString("$key"));
+                                    sDataCustomer.GetNamedString("Id"));
 
                         if (customerList.FirstOrDefault() != null)
                         {
@@ -172,8 +172,9 @@ namespace SageMobileSales.DataAccess.Repositories
             {
                 customerAddressList =
                     await
-                        _sageSalesDB.QueryAsync<CustomerDetails>(
-                            "SELECT distinct customer.CustomerId, customer.CustomerName, customer.CreditAvailable, customer.CreditLimit, customer.PaymentTerms, address.AddressName, address.Street1, address.City, address.StateProvince, address.PostalCode, address.Phone FROM Customer  as customer Join Address  as address on customer.CustomerId = address.customerId and addresstype='Mailing' and Customer.EntityStatus= 'Active'");
+                        _sageSalesDB.QueryAsync<CustomerDetails>("SELECT * FROM Customer where Customer.EntityStatus= 'Active' order by customerName asc ");
+                            //"SELECT distinct customer.CustomerId, customer.CustomerName, customer.CreditAvailable, customer.CreditLimit, customer.PaymentTerms, address.AddressName, address.Street1, address.City, address.StateProvince, address.PostalCode, address.Phone FROM Customer  as customer Join Address  as address on customer.CustomerId = address.customerId and addresstype='Mailing' and Customer.EntityStatus= 'Active'"
+
             }
             catch (Exception ex)
             {
@@ -309,7 +310,7 @@ namespace SageMobileSales.DataAccess.Repositories
             var customerObj = new Customer();
             try
             {
-                customerObj.CustomerId = sDataCustomer.GetNamedString("$key");
+                customerObj.CustomerId = sDataCustomer.GetNamedString("Id");
                 customerObj = ExtractCustomerFromJsonAsync(sDataCustomer, customerObj);
 
                 await _sageSalesDB.InsertAsync(customerObj);
@@ -383,7 +384,7 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        customer.CreditLimit = Convert.ToDecimal(sDataCustomer.GetNamedNumber("CreditLimit"));
+                        customer.CreditLimit = Convert.ToDecimal(sDataCustomer.GetNamedString("CreditLimit"));
                     }
                 }
 
@@ -399,7 +400,7 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        customer.CreditAvailable = Convert.ToDecimal(sDataCustomer.GetNamedNumber("CreditAvailable"));
+                        customer.CreditAvailable = Convert.ToDecimal(sDataCustomer.GetNamedString("CreditAvailable"));
                     }
                 }
 

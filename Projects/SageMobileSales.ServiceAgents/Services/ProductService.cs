@@ -73,7 +73,7 @@ namespace SageMobileSales.ServiceAgents.Services
                 HttpResponseMessage productsResponse = null;
                 productsResponse =
                     await
-                        _serviceAgent.BuildAndSendRequest(Constants.ItemsEntity, Constants.syncQueryEntity, null,
+                        _serviceAgent.BuildAndSendRequest(null, Constants.ItemsEntity, Constants.syncQueryEntity, null,
                             Constants.AccessToken, parameters);
                 if (productsResponse != null && productsResponse.IsSuccessStatusCode)
                 {

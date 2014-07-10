@@ -13,14 +13,16 @@ namespace SageMobileSales.DataAccess.Repositories
     public class SalesRepRepository : ISalesRepRepository
     {
         private readonly IDatabase _database;
+        private readonly ITenantRepository _tenantRepository;
         private string _log = string.Empty;
         private SQLiteAsyncConnection _sageSalesDB;
 
-        public SalesRepRepository(IDatabase database)
+        public SalesRepRepository(IDatabase database, ITenantRepository tenantRepository)
         {
             _database = database;
             _database.Initialize();
             _sageSalesDB = _database.GetAsyncConnection();
+            _tenantRepository = tenantRepository;
         }
 
         /// <summary>
@@ -30,7 +32,7 @@ namespace SageMobileSales.DataAccess.Repositories
         /// <returns>LoginUserId(RepId)</returns>
         public async Task<string> SaveSalesRepDtlsAsync(JsonObject sDataSalesRepDtls)
         {
-            var _salesRepDtls = new SalesRep();
+            var salesRepDtls = new SalesRep();
             try
             {
                 // ReIntializing the Database as if user clicks on Logout and start login again the database won't be initiated as 
@@ -40,13 +42,18 @@ namespace SageMobileSales.DataAccess.Repositories
                 //await _database.Initialize();
                 //_sageSalesDB = _database.GetAsyncConnection();
 
-                JsonArray sDataSalesRepArray = sDataSalesRepDtls.GetNamedArray("$resources");
+
+                /*--- Pegausus 
+                //JsonArray sDataSalesRepArray = sDataSalesRepDtls.GetNamedArray("$resources");
 
                 foreach (IJsonValue salesRep in sDataSalesRepArray)
                 {
                     JsonObject sDataSalesRep = salesRep.GetObject();
                     _salesRepDtls = await AddOrUpdateSalesRepJsonToDbAsync(sDataSalesRep);
                 }
+                 * */
+
+                salesRepDtls = await AddOrUpdateSalesRepJsonToDbAsync(sDataSalesRepDtls);
             }
             catch (SQLiteException ex)
             {
@@ -58,7 +65,7 @@ namespace SageMobileSales.DataAccess.Repositories
                 _log = AppEventSource.Log.WriteLine(ex);
                 AppEventSource.Log.Error(_log);
             }
-            return _salesRepDtls.RepId;
+            return salesRepDtls.RepId;
         }
 
         /// <summary>
@@ -165,13 +172,14 @@ namespace SageMobileSales.DataAccess.Repositories
         /// </summary>
         /// <param name="sDataSalesRep"></param>
         /// <returns></returns>
-        public async Task<SalesRep> AddOrUpdateSalesRepJsonToDbAsync(JsonObject sDataSalesRep)
+        public async Task<SalesRep> AddOrUpdateSalesRepJsonToDbAsync(JsonObject sDataSalesRepDtls)
         {
             try
             {
                 ApplicationDataContainer configSettings = ApplicationData.Current.LocalSettings;
+
                 IJsonValue value;
-                if (sDataSalesRep.TryGetValue("$key", out value))
+                if (sDataSalesRepDtls.TryGetValue("Id", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
@@ -179,7 +187,7 @@ namespace SageMobileSales.DataAccess.Repositories
                         salesRepList =
                             await
                                 _sageSalesDB.QueryAsync<SalesRep>("SELECT * FROM SalesRep where RepId=?",
-                                    sDataSalesRep.GetNamedString("$key"));
+                                    sDataSalesRepDtls.GetNamedString("Id"));
 
                         if (salesRepList.FirstOrDefault() != null)
                         {
@@ -195,7 +203,7 @@ namespace SageMobileSales.DataAccess.Repositories
                             //        }
                             //    }
                             //}
-                            return await UpdateSalesRepJsonToDbAsync(sDataSalesRep, salesRepList.FirstOrDefault());
+                            return await UpdateSalesRepJsonToDbAsync(sDataSalesRepDtls, salesRepList.FirstOrDefault());
                         }
                         if (!DataAccessUtils.IsServerChanged)
                         {
@@ -213,7 +221,7 @@ namespace SageMobileSales.DataAccess.Repositories
                             }
                         }
 
-                        return await AddSalesRepJsonToDbAsync(sDataSalesRep);
+                        return await AddSalesRepJsonToDbAsync(sDataSalesRepDtls);
                     }
                 }
             }
@@ -272,25 +280,18 @@ namespace SageMobileSales.DataAccess.Repositories
             {
                 IJsonValue value;
 
-                if (sDataSalesRep.TryGetValue("$key", out value))
+                if (sDataSalesRep.TryGetValue("Id", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        salesRepDBObj.RepId = sDataSalesRep.GetNamedString("$key");
+                        salesRepDBObj.RepId = sDataSalesRep.GetNamedString("Id");
                     }
                 }
-                if (sDataSalesRep.TryGetValue("TenantId", out value))
+                if (sDataSalesRep.TryGetValue("PrimaryEmailAddress", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        salesRepDBObj.TenantId = sDataSalesRep.GetNamedString("TenantId");
-                    }
-                }
-                if (sDataSalesRep.TryGetValue("UM_PrimaryEmail", out value))
-                {
-                    if (value.ValueType.ToString() != DataAccessUtils.Null)
-                    {
-                        salesRepDBObj.EmailAddress = sDataSalesRep.GetNamedString("UM_PrimaryEmail");
+                        salesRepDBObj.EmailAddress = sDataSalesRep.GetNamedString("PrimaryEmailAddress");
                     }
                 }
                 if (sDataSalesRep.TryGetValue("FirstName", out value) ||
@@ -303,12 +304,28 @@ namespace SageMobileSales.DataAccess.Repositories
                             : sDataSalesRep.GetNamedString("FirstName");
                     }
                 }
-
                 if (sDataSalesRep.TryGetValue("Phone", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
                         salesRepDBObj.Phone = sDataSalesRep.GetNamedString("Phone");
+                    }
+                }
+                /* pegausus
+                if (sDataSalesRep.TryGetValue("TenantId", out value))
+                {
+                    if (value.ValueType.ToString() != DataAccessUtils.Null)
+                    {
+                        salesRepDBObj.TenantId = sDataSalesRep.GetNamedString("TenantId");
+                    }
+                }
+                 * */
+                if (sDataSalesRep.TryGetValue("Tenants", out value))
+                {
+                    if (value.ValueType.ToString() != DataAccessUtils.Null)
+                    {
+                        JsonArray sDataTenants = sDataSalesRep.GetNamedArray("Tenants");
+                        _tenantRepository.SaveTenantAsync(sDataTenants, salesRepDBObj.RepId);
                     }
                 }
             }

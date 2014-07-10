@@ -94,7 +94,7 @@ namespace SageMobileSales.ServiceAgents.Services
 
                 productCategoryResponse =
                     await
-                        _serviceAgent.BuildAndSendRequest(Constants.CategoryEntity, Constants.syncQueryEntity,
+                        _serviceAgent.BuildAndSendRequest(null, Constants.CategoryEntity, Constants.syncQueryEntity,
                             Constants.AssociatedItems, Constants.AccessToken, parameters);
                 if (productCategoryResponse != null && productCategoryResponse.IsSuccessStatusCode)
                 {

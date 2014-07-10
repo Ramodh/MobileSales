@@ -38,7 +38,7 @@ namespace SageMobileSales.ServiceAgents.Services
             string customerEntityId = Constants.CustomerEntity + "('" + customerId + "')";
             HttpResponseMessage contactResponse = null;
             contactResponse =
-                await _serviceAgent.BuildAndSendRequest(customerEntityId, null, null, Constants.AccessToken, parameters);
+                await _serviceAgent.BuildAndSendRequest(null, customerEntityId, null, null, Constants.AccessToken, parameters);
             if (contactResponse != null && contactResponse.IsSuccessStatusCode)
             {
                 var sDataCustomer = await _serviceAgent.ConvertTosDataObject(contactResponse);
@@ -59,7 +59,7 @@ namespace SageMobileSales.ServiceAgents.Services
             {
                 conatctJsonObject = new ContactJson();
 
-                conatctJsonObject.Customer = new CustomerKeyJson {key = contact.CustomerId};
+                conatctJsonObject.Customer = new CustomerKeyJson { key = contact.CustomerId };
                 conatctJsonObject.EmailPersonal = contact.EmailPersonal == null ? "" : contact.EmailPersonal;
                 conatctJsonObject.EmailWork = contact.EmailWork == null ? "" : contact.EmailWork;
                 conatctJsonObject.FirstName = contact.FirstName;

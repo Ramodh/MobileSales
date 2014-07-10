@@ -6,7 +6,8 @@ namespace SageMobileSales.DataAccess.Repositories
 {
     public interface ITenantRepository
     {
-        Task SaveTenantDtlsAsync(JsonObject sDataTenantDtls);
+        Task SaveTenantAsync(JsonArray sDataTenants, string repId);
         Task<Tenant> GetTenantDtlsAsync(string tenantId);
+        Task<string> GetTenantId();
     }
 }

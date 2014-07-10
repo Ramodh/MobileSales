@@ -36,7 +36,7 @@ namespace SageMobileSales.ServiceAgents.Services
             try
             {
                 HttpResponseMessage localDigestResponse =
-                    await _serviceAgent.BuildAndSendRequest(entity, queryEntity, null, Constants.AccessToken, null);
+                    await _serviceAgent.BuildAndSendRequest(Constants.TenantId, entity, queryEntity, null, Constants.AccessToken, null);
                 if (localDigestResponse != null && localDigestResponse.StatusCode == HttpStatusCode.OK)
                 {
                     // Make's call to ConvertToJsonObject and inturn we will get JsonObject
@@ -96,7 +96,7 @@ namespace SageMobileSales.ServiceAgents.Services
                 _log = AppEventSource.Log.WriteLine(ex);
                 AppEventSource.Log.Error(_log);
             }
-            return await _serviceAgent.BuildAndPostRequest(entity, queryEntity, Constants.AccessToken, parameters);
+            return await _serviceAgent.BuildAndPostRequest(Constants.TenantId, entity, queryEntity, Constants.AccessToken, parameters);
         }
 
         /// <summary>

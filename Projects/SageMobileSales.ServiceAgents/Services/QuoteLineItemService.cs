@@ -47,7 +47,7 @@ namespace SageMobileSales.ServiceAgents.Services
                 HttpResponseMessage quoteLineItemResponse = null;
                 quoteLineItemResponse =
                     await
-                        _serviceAgent.BuildAndSendRequest(quoteEntityId, null, null, Constants.AccessToken, parameters);
+                        _serviceAgent.BuildAndSendRequest(null, quoteEntityId, null, null, Constants.AccessToken, parameters);
                 if (quoteLineItemResponse != null && quoteLineItemResponse.IsSuccessStatusCode)
                 {
                     var sDataQuoteLineItem = await _serviceAgent.ConvertTosDataObject(quoteLineItemResponse);
@@ -305,10 +305,10 @@ namespace SageMobileSales.ServiceAgents.Services
             quoteJsonObject.QuoteTotal = quote.Amount;
             quoteJsonObject.SandH = quote.ShippingAndHandling;
             quoteJsonObject.Status = quote.QuoteStatus;
-            quoteJsonObject.Customer = new CustomerKeyJson {key = quote.CustomerId};
-            quoteJsonObject.SalesRep = new SalesKeyJson {key = quote.RepId};
+            quoteJsonObject.Customer = new CustomerKeyJson { key = quote.CustomerId };
+            quoteJsonObject.SalesRep = new SalesKeyJson { key = quote.RepId };
 
-            quoteJsonObject.ShippingAddress = new ShippingAddressKeyJson {key = quote.AddressId};
+            quoteJsonObject.ShippingAddress = new ShippingAddressKeyJson { key = quote.AddressId };
             quoteJsonObject.Details = new QuoteDetailsJson();
 
             quoteJsonObject.Details.resources = new List<Resource>();
@@ -317,7 +317,7 @@ namespace SageMobileSales.ServiceAgents.Services
             if (quoteLineItem != null)
             {
                 resource = new Resource();
-                resource.InventoryItem = new InventoryItemKeyJson {key = quoteLineItem.ProductId};
+                resource.InventoryItem = new InventoryItemKeyJson { key = quoteLineItem.ProductId };
                 resource.Price = quoteLineItem.Price;
                 resource.Quantity = quoteLineItem.Quantity;
                 quoteJsonObject.Details.resources.Add(resource);
@@ -342,10 +342,10 @@ namespace SageMobileSales.ServiceAgents.Services
             quoteJsonObject.QuoteTotal = quote.Amount;
             quoteJsonObject.SandH = quote.ShippingAndHandling;
             quoteJsonObject.Status = quote.QuoteStatus;
-            quoteJsonObject.Customer = new CustomerKeyJson {key = quote.CustomerId};
-            quoteJsonObject.SalesRep = new SalesKeyJson {key = quote.RepId};
+            quoteJsonObject.Customer = new CustomerKeyJson { key = quote.CustomerId };
+            quoteJsonObject.SalesRep = new SalesKeyJson { key = quote.RepId };
 
-            quoteJsonObject.ShippingAddress = new ShippingAddressKeyJson {key = quote.AddressId};
+            quoteJsonObject.ShippingAddress = new ShippingAddressKeyJson { key = quote.AddressId };
             quoteJsonObject.Details = new EditQuoteDetailsJson();
 
             quoteJsonObject.Details.resources = new List<ResourceKey>();
@@ -355,7 +355,7 @@ namespace SageMobileSales.ServiceAgents.Services
             {
                 resource = new ResourceKey();
                 resource.key = quoteLineItem.QuoteLineItemId;
-                resource.InventoryItem = new InventoryItemKeyJson {key = quoteLineItem.ProductId};
+                resource.InventoryItem = new InventoryItemKeyJson { key = quoteLineItem.ProductId };
                 resource.Price = quoteLineItem.Price;
                 resource.Quantity = quoteLineItem.Quantity;
                 quoteJsonObject.Details.resources.Add(resource);

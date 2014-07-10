@@ -29,6 +29,7 @@ namespace SageMobileSales.ServiceAgents.Common
 
         # region Entities
 
+        public static string TenantId = string.Empty;
         public static string CurrentUserEnitty = "-/CurrentUser";
         public static string GetSalesSettingsEntity = "Users";
         public static string CategoryEntity = "InventoryCategories";
