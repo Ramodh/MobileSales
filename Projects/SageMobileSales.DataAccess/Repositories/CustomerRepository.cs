@@ -172,9 +172,10 @@ namespace SageMobileSales.DataAccess.Repositories
             {
                 customerAddressList =
                     await
-                        _sageSalesDB.QueryAsync<CustomerDetails>("SELECT * FROM Customer where Customer.EntityStatus= 'Active' order by customerName asc ");
-                            //"SELECT distinct customer.CustomerId, customer.CustomerName, customer.CreditAvailable, customer.CreditLimit, customer.PaymentTerms, address.AddressName, address.Street1, address.City, address.StateProvince, address.PostalCode, address.Phone FROM Customer  as customer Join Address  as address on customer.CustomerId = address.customerId and addresstype='Mailing' and Customer.EntityStatus= 'Active'"
+                        _sageSalesDB.QueryAsync<CustomerDetails>(
+                        "SELECT distinct customer.CustomerId, customer.CustomerName, customer.CreditAvailable, customer.CreditLimit, customer.PaymentTerms, address.AddressName, address.Street1, address.City, address.StateProvince, address.PostalCode, address.Phone FROM Customer  as customer Join Address  as address on customer.CustomerId = address.customerId and addresstype='Mailing' and Customer.EntityStatus= 'Active'");
 
+                //"SELECT * FROM Customer where Customer.EntityStatus= 'Active' order by customerName asc "
             }
             catch (Exception ex)
             {

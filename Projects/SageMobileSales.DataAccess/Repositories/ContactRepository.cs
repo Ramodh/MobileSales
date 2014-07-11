@@ -33,13 +33,26 @@ namespace SageMobileSales.DataAccess.Repositories
         {
             if (!string.IsNullOrEmpty(customerId))
             {
-                JsonObject sDataContacts = sDataCustomer.GetNamedObject("Contacts");
-                if (sDataContacts.ContainsKey("$resources"))
+                //JsonObject sDataContacts = sDataCustomer.GetNamedObject("Contacts");
+                //if (sDataContacts.ContainsKey("$resources"))
+                //{
+                //    JsonArray sDataContactArray = sDataContacts.GetNamedArray("$resources");
+                //    if (sDataContactArray.Count > 0)
+                //    {
+                //        await SaveContactDetailsAsync(sDataContactArray, customerId);
+                //    }
+                //}
+
+                IJsonValue value;
+                if (sDataCustomer.TryGetValue("Contacts", out value))
                 {
-                    JsonArray sDataContactArray = sDataContacts.GetNamedArray("$resources");
-                    if (sDataContactArray.Count > 0)
+                    if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        await SaveContactDetailsAsync(sDataContactArray, customerId);
+                        JsonArray sDataContactArray = sDataCustomer.GetNamedArray("Contacts");
+                        if (sDataContactArray.Count > 0)
+                        {
+                            await SaveContactDetailsAsync(sDataContactArray, customerId);
+                        }
                     }
                 }
             }
@@ -68,11 +81,11 @@ namespace SageMobileSales.DataAccess.Repositories
             contactResponse.CustomerId = customer.CustomerId;
 
             IJsonValue value;
-            if (sDataContact.TryGetValue("$key", out value))
+            if (sDataContact.TryGetValue("Id", out value))
             {
                 if (value.ValueType.ToString() != DataAccessUtils.Null)
                 {
-                    contactResponse.ContactId = sDataContact.GetNamedString("$key");
+                    contactResponse.ContactId = sDataContact.GetNamedString("Id");
                 }
             }
 
@@ -149,7 +162,7 @@ namespace SageMobileSales.DataAccess.Repositories
             try
             {
                 IJsonValue value;
-                if (sDataContact.TryGetValue("$key", out value))
+                if (sDataContact.TryGetValue("Id", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
@@ -157,7 +170,7 @@ namespace SageMobileSales.DataAccess.Repositories
                         contactList =
                             await
                                 _sageSalesDB.QueryAsync<Contact>("SELECT * FROM Contact where contactId=?",
-                                    sDataContact.GetNamedString("$key"));
+                                    sDataContact.GetNamedString("Id"));
 
                         if (contactList.FirstOrDefault() != null)
                         {
@@ -214,7 +227,7 @@ namespace SageMobileSales.DataAccess.Repositories
             try
             {
                 contactObj.CustomerId = customerId;
-                contactObj.ContactId = sDataContact.GetNamedString("$key");
+                contactObj.ContactId = sDataContact.GetNamedString("Id");
                 contactObj = ExtractContactFromJsonAsync(sDataContact, contactObj);
 
                 await _sageSalesDB.InsertAsync(contactObj);
@@ -376,11 +389,11 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     JsonObject sDataContact = contact.GetObject();
                     var contactJsonObj = new Contact();
-                    if (sDataContact.TryGetValue("$key", out value))
+                    if (sDataContact.TryGetValue("Id", out value))
                     {
                         if (value.ValueType.ToString() != DataAccessUtils.Null)
                         {
-                            contactJsonObj.ContactId = sDataContact.GetNamedString("$key");
+                            contactJsonObj.ContactId = sDataContact.GetNamedString("Id");
                         }
                     }
                     contactIdJsonList.Add(contactJsonObj);

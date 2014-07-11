@@ -255,9 +255,9 @@ namespace SageMobileSales.UILogic.ViewModels
             }
             if (selected.SelectedItem.ToString() == "Ash")
             {
-                ClientId = @"HGr7ysGn2MO1KfrB2f7V3UlJDYIyjhZ0";
-                Url = "http://ashplatformsdc.cloudapp.net";
-                Scope = @"6o6x4swc();";
+                ClientId = @"xeQaIFwQvbDjKZvwzb92kFOLzDCd9CCc";
+                Url = "http://ashmsalessdcweb.cloudapp.net/sdata/api/msales/1.0/";
+                Scope = @"k1mcudfb();";
                 IsSageIdProduction = false;
                 SelectedType = "Ash";
                 RedirectUrl = "https://signon.sso.staging.services.sage.com/oauth/native";
