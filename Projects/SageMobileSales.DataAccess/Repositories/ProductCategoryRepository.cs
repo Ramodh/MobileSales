@@ -50,9 +50,9 @@ namespace SageMobileSales.DataAccess.Repositories
 
                     if (localSyncDigest != null)
                     {
-                        if ((Convert.ToInt32(sDataCategory.GetNamedNumber("SyncEndpointTick")) >
+                        if ((Convert.ToInt32(sDataCategory.GetNamedNumber("SyncTick")) >
                              localSyncDigest.localTick))
-                            localSyncDigest.localTick = Convert.ToInt32(sDataCategory.GetNamedNumber("SyncEndpointTick"));
+                            localSyncDigest.localTick = Convert.ToInt32(sDataCategory.GetNamedNumber("SyncTick"));
                     }
 
                     if (category == sDataCategoriesArray.Count - 1)
@@ -234,7 +234,7 @@ namespace SageMobileSales.DataAccess.Repositories
             {
                 IJsonValue value;
                 bool entityStatusDeleted = false;
-                if (sDataProductCategory.TryGetValue("$key", out value))
+                if (sDataProductCategory.TryGetValue("Id", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
@@ -243,7 +243,7 @@ namespace SageMobileSales.DataAccess.Repositories
                             await
                                 _sageSalesDB.QueryAsync<ProductCategory>(
                                     "SELECT * FROM ProductCategory where CategoryId=?",
-                                    sDataProductCategory.GetNamedString("$key"));
+                                    sDataProductCategory.GetNamedString("Id"));
 
                         if (sDataProductCategory.TryGetValue("EntityStatus", out value))
                         {
@@ -260,7 +260,7 @@ namespace SageMobileSales.DataAccess.Repositories
                                 await
                                     _sageSalesDB.QueryAsync<ProductCategory>(
                                         "DELETE FROM ProductCategory where CategoryId=?",
-                                        sDataProductCategory.GetNamedString("$key"));
+                                        sDataProductCategory.GetNamedString("Id"));
                             else
                                 return
                                     await
@@ -288,26 +288,33 @@ namespace SageMobileSales.DataAccess.Repositories
         {
             try
             {
+                IJsonValue value;
                 //ProductCategory productCategory = new ProductCategory();
-                productCategory.CategoryId = sDataProductCategory.GetNamedString("$key");
-                if (sDataProductCategory.GetNamedValue("Name").ValueType.ToString() != DataAccessUtils.Null)
+                productCategory.CategoryId = sDataProductCategory.GetNamedString("Id");
+                
+                if (sDataProductCategory.TryGetValue("Name", out value))
                 {
-                    productCategory.CategoryName = sDataProductCategory.GetNamedString("Name");
+                    if (value.ValueType.ToString() != DataAccessUtils.Null)
+                    {
+                        productCategory.CategoryName = sDataProductCategory.GetNamedString("Name");
+                    }
                 }
-                productCategory.TenantId = sDataProductCategory.GetNamedString("TenantId");
+              //  productCategory.TenantId = sDataProductCategory.GetNamedString("TenantId");
 
                 //if ((Convert.ToInt32(sDataCategory.GetNamedNumber("SyncEndpointTick")) > localSyncDigest.localTick))
                 //    localSyncDigest.localTick = Convert.ToInt32(sDataCategory.GetNamedNumber("SyncEndpointTick"));
 
-                if (sDataProductCategory.GetNamedValue("Parent").ValueType.ToString() != DataAccessUtils.Null)
+                if (sDataProductCategory.TryGetValue("Parent", out value))
                 {
-                    JsonObject sDataParentIds = sDataProductCategory.GetNamedObject("Parent");
-                    productCategory.ParentId = sDataParentIds.GetNamedString("$key");
-                }
-                JsonObject sDataAssociatedItems = sDataProductCategory.GetNamedObject("AssociatedItems");
-                if (sDataAssociatedItems.ContainsKey("$resources"))
-                {
-                    JsonArray sDataAssociatedItemsArray = sDataAssociatedItems.GetNamedArray("$resources");
+                    if (value.ValueType.ToString() != DataAccessUtils.Null)
+                    {
+                        JsonObject sDataParentIds = sDataProductCategory.GetNamedObject("Parent");
+                        productCategory.ParentId = sDataParentIds.GetNamedString("Id");
+                    }
+                }              
+               // JsonObject sDataAssociatedItems = sDataProductCategory.GetNamedObject("AssociatedItems");
+                JsonArray sDataAssociatedItemsArray = sDataProductCategory.GetNamedArray("AssociatedItems");
+               
                     if (sDataAssociatedItemsArray.Count > 0)
                     {
                         var lstProductCategoryLink = new List<ProductCategoryLink>();
@@ -317,12 +324,11 @@ namespace SageMobileSales.DataAccess.Repositories
                             JsonObject sDataAssociatedItem = associatedItem.GetObject();
                             var productCategoryLink = new ProductCategoryLink();
                             productCategoryLink.CategoryId = productCategory.CategoryId;
-                            productCategoryLink.ProductId = sDataAssociatedItem.GetNamedString("$key");
+                            productCategoryLink.ProductId = sDataAssociatedItem.GetNamedString("Id");
                             lstProductCategoryLink.Add(productCategoryLink);
                         }
                         await _sageSalesDB.InsertAllAsync(lstProductCategoryLink);
-                    }
-                }
+                    }                
             }
             catch (Exception ex)
             {
