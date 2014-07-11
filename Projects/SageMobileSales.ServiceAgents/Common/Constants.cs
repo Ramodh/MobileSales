@@ -63,7 +63,7 @@ namespace SageMobileSales.ServiceAgents.Common
 
         #region AssociatedItems
 
-        public static string AssociatedItems = "AssociatedItems/id";
+        public static string AssociatedItems = "Parent&select=*,AssociatedItems/Id,Parent/Id";
         public static string AssociatedBlobs = "AssociatedBlobs/*,RelatedItems/id";
 
         # endregion

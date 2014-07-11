@@ -73,25 +73,25 @@ namespace SageMobileSales.ServiceAgents.Services
                 HttpResponseMessage productsResponse = null;
                 productsResponse =
                     await
-                        _serviceAgent.BuildAndSendRequest(null, Constants.ItemsEntity, Constants.syncQueryEntity, null,
+                        _serviceAgent.BuildAndSendRequest(Constants.TenantId, Constants.ItemsEntity, Constants.syncQueryEntity, null,
                             Constants.AccessToken, parameters);
                 if (productsResponse != null && productsResponse.IsSuccessStatusCode)
                 {
                     JsonObject sDataProducts = await _serviceAgent.ConvertTosDataObject(productsResponse);
-                    if (Convert.ToInt32(sDataProducts.GetNamedNumber("$totalResults")) >
+                    if (Convert.ToInt32(sDataProducts.GetNamedString("$totalResults")) >
                         DataAccessUtils.ProductTotalCount)
                         DataAccessUtils.ProductTotalCount =
-                            Convert.ToInt32(sDataProducts.GetNamedNumber("$totalResults"));
+                            Convert.ToInt32(sDataProducts.GetNamedString("$totalResults"));
 
-                    int _totalCount = Convert.ToInt32(sDataProducts.GetNamedNumber("$totalResults"));
+                    int _totalCount = Convert.ToInt32(sDataProducts.GetNamedString("$totalResults"));
                     JsonArray categoriesObject = sDataProducts.GetNamedArray("$resources");
                     int _returnedCount = categoriesObject.Count;
                     if (_returnedCount > 0 && _totalCount - _returnedCount >= 0 &&
                         !(DataAccessUtils.IsProductSyncCompleted))
                     {
                         JsonObject lastProductObject = categoriesObject.GetObjectAt(Convert.ToUInt32(_returnedCount - 1));
-                        digest.LastRecordId = lastProductObject.GetNamedString("$key");
-                        int _syncEndpointTick = Convert.ToInt32(lastProductObject.GetNamedNumber("SyncEndpointTick"));
+                        digest.LastRecordId = lastProductObject.GetNamedString("Id");
+                        int _syncEndpointTick = Convert.ToInt32(lastProductObject.GetNamedNumber("SyncTick"));
                         if (_syncEndpointTick > digest.localTick)
                         {
                             digest.localTick = _syncEndpointTick;
