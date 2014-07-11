@@ -53,7 +53,9 @@ namespace SageMobileSales.UILogic.ViewModels
             Servers.Add("Performance2");
             Servers.Add("End to End Testing");
             Servers.Add("Ash");
-            Servers.Add("Local Machine");
+            Servers.Add("Local Machine 1");
+            Servers.Add("Local Machine 2");
+
             SelectedType = Constants.SelectedType;
         }
 
@@ -264,16 +266,27 @@ namespace SageMobileSales.UILogic.ViewModels
                 SetConfigurationValues();
             }
 
-            if (selected.SelectedItem.ToString() == "Local Machine")
+            if (selected.SelectedItem.ToString() == "Local Machine 1")
+            {
+                ClientId = @"FhVDZU7p11pFRItTweZsh8XSGdEeFZ0g";
+                Url = "http://172.29.59.122:8080/sdata/api/msales/1.0/";
+                Scope = @"kipgf40h();";
+                IsSageIdProduction = false;
+                SelectedType = "Local Machine1";
+                RedirectUrl = "https://signon.sso.staging.services.sage.com/oauth/native";
+                SetConfigurationValues();
+            }
+            if (selected.SelectedItem.ToString() == "Local Machine 2")
             {
                 ClientId = @"FhVDZU7p11pFRItTweZsh8XSGdEeFZ0g";
                 Url = "http://172.25.19.4:8080/sdata/api/msales/1.0/";
                 Scope = @"kipgf40h();";
                 IsSageIdProduction = false;
-                SelectedType = "Local Machine";
+                SelectedType = "Local Machine2";
                 RedirectUrl = "https://signon.sso.staging.services.sage.com/oauth/native";
                 SetConfigurationValues();
             }
+
         }
 
         private async Task LogoutHandler()

@@ -80,44 +80,15 @@ namespace SageMobileSales.UILogic.Common
             Constants.SelectedType = "Production";
       #else
 
-            Constants.ClientId = @"TO3afnij1xMZrsH8akholwxvcJFlFc1N";
-            Constants.Scope = @"gvb7lu14();";
-            Constants.Url = "https://mobilesales.sagenephos.com/sdata/api/dynamic/-/";
-            Constants.RedirectUrl = "https://signon.sso.staging.services.sage.com/oauth/native";
+            Constants.ClientId = @"xeQaIFwQvbDjKZvwzb92kFOLzDCd9CCc";
+            Constants.Url = "http://ashmsalessdcweb.cloudapp.net/sdata/api/msales/1.0/";
+            Constants.Scope = @"k1mcudfb();";
             Constants.IsSageIdProduction = false;
-            Constants.SelectedType = "Mobile Sales";
+            Constants.SelectedType = "Ash";
+            Constants.RedirectUrl = "https://signon.sso.staging.services.sage.com/oauth/native";
 
 #endif
 
-            ApplicationDataContainer configSettings = ApplicationData.Current.LocalSettings;
-            if (configSettings.Containers != null)
-            {
-                if (configSettings.Containers.ContainsKey("ConfigurationSettingsContainer"))
-                {
-                    Constants.ClientId =
-                        configSettings.Containers["ConfigurationSettingsContainer"].Values["ClientId"].ToString();
-                    Constants.Scope =
-                        configSettings.Containers["ConfigurationSettingsContainer"].Values["Scope"].ToString();
-                    Constants.Url = configSettings.Containers["ConfigurationSettingsContainer"].Values["Url"].ToString();
-                    Constants.RedirectUrl =
-                        configSettings.Containers["ConfigurationSettingsContainer"].Values["RedirectUrl"].ToString();
-                    Constants.IsSageIdProduction =
-                        Convert.ToBoolean(
-                            configSettings.Containers["ConfigurationSettingsContainer"].Values["IsSageProduction"]);
-                    Constants.SelectedType =
-                        configSettings.Containers["ConfigurationSettingsContainer"].Values["SelectedType"].ToString();
-                }
-            }
-        }
-
-        public static void GetProductionConfigurationSettings()
-        {
-            Constants.ClientId = @"7XtkBANAnzQ9a1aRqspNlHR5UtSRUP0J";
-            Constants.Url = "https://mobilesales.na.sage.com/sdata/api/dynamic/-/";
-            Constants.Scope = @"hrixtfgl();";
-            Constants.RedirectUrl = "https://signon.sso.services.sage.com/oauth/native";
-            Constants.IsSageIdProduction = true;
-            Constants.SelectedType = "Production";
             ApplicationDataContainer configSettings = ApplicationData.Current.LocalSettings;
             if (configSettings.Containers != null)
             {

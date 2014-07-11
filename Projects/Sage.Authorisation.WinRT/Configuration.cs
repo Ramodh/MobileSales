@@ -27,13 +27,7 @@ namespace Sage.Authorisation.WinRT
         private readonly string GetAccessTokenUriDefault =
             @"https://services.sso.services.sage.com/SSO/OAuthServiceMutualSSL/WebGetAccessToken";
 
-//#if(PRE_PROD)
-//        private const string RedirectUriDefault =                                   @"https://signon.sso.staging.services.sage.com/oauth/native";
-//        private const string GetClientCredentialUriDefault =                        @"https://signon.sso.staging.services.sage.com/SSO/OAuthService/WebGetClientCredential";
-//        private const string StartAuthorisationAttemptUriDefault =                  @"https://signon.sso.staging.services.sage.com/SSO/OAuthService/WebStartAuthorisationAttempt?response_type={RESPONSETYPE}&client_id={CLIENTID}&redirect_uri={REDIRECTURI}&scope={SCOPE}&state={STATE}&template_name=WinRT";
-//        private const string GetAccessTokenUriDefault =                             @"https://services.sso.staging.services.sage.com/SSO/OAuthServiceMutualSSL/WebGetAccessToken";
-//        private const string StartAuthorisationAttemptUriDefault_WithCredential =   @"https://services.sso.staging.services.sage.com/SSO/OAuthServiceMutualSSL/WebStartAuthorisationAttempt?response_type={RESPONSETYPE}&client_id={CLIENTID}&redirect_uri={REDIRECTURI}&scope={SCOPE}&state={STATE}&template_name=WinRT";
-//#elif(PRODUCTION)
+
 
         private readonly string GetClientCredentialUriDefault =
             @"https://signon.sso.services.sage.com/SSO/OAuthService/WebGetClientCredential";
@@ -87,10 +81,7 @@ namespace Sage.Authorisation.WinRT
                         Convert.ToBoolean(
                             configSettings.Containers["ConfigurationSettingsContainer"].Values["IsSageProduction"]);
                 }
-                //else
-                //{
-                //    IsSageIdProduction = false;
-                //}
+             
             }
 
             // for non production we need to use staging URLs, so change it
