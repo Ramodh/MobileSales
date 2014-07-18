@@ -150,16 +150,16 @@ namespace SageMobileSales.ServiceAgents.Services
                 {
                     salesRepId = "SalesRep.id eq " + "'" + salesRepId + "'";
                     parameters.Add("Count", "100");
-                    parameters.Add("where", salesRepId);
-                    parameters.Add("include",
-                        "Details,Details/InventoryItem&select=*,Details/Price,Details/Quantity,Details/InventoryItem/Name,Details/InventoryItem/Sku");
+                 //   parameters.Add("where", salesRepId);
+                  //  parameters.Add("include",
+                  //      "Details,Details/InventoryItem&select=*,Details/Price,Details/Quantity,Details/InventoryItem/Name,Details/InventoryItem/Sku");
                     HttpResponseMessage ordersResponse = null;
 
                     Constants.syncQueryEntity = Constants.syncSourceQueryEntity + "('" + Constants.TrackingId + "')";
 
                     ordersResponse =
                         await
-                            _serviceAgent.BuildAndSendRequest(null, Constants.OrderEntity, Constants.syncQueryEntity, null,
+                            _serviceAgent.BuildAndSendRequest(Constants.TenantId, Constants.OrderEntity, Constants.syncQueryEntity, null,
                                 Constants.AccessToken, parameters);
                     if (ordersResponse != null && ordersResponse.IsSuccessStatusCode)
                     {

@@ -181,20 +181,35 @@ namespace SageMobileSales.DataAccess.Repositories
             return null;
         }
 
-        public async Task<List<ProductAssociatedBlob>> GetProductRelatedItems(string productId)
+        public async Task<List<ProductDetails>> GetProductRelatedItems(string productId)
         {
+            // Need to get confirmation from ramodh before removing the below code.
+            //try
+            //{
+            //    List<ProductAssociatedBlob> productDetails =
+            //        await
+            //            _sageSalesDB.QueryAsync<ProductAssociatedBlob>(
+            //                "SELECT distinct PAB.ProductId, PAB.Url,PAB.Name FROM ProductRelatedItem  as PRI Inner Join ProductAssociatedBlob  as PAB on  PRI.RelatedItemId = PAB.ProductId where PRI.ProductId=? AND PAB.IsPrimary=1",
+            //                productId);
+            //    if (productDetails != null)
+            //    {
+            //        return productDetails;
+            //    }
+            //    return null;
+            //}
+
+            List<ProductDetails> productsList = null;
             try
             {
-                List<ProductAssociatedBlob> productDetails =
+                productsList =
                     await
-                        _sageSalesDB.QueryAsync<ProductAssociatedBlob>(
-                            "SELECT distinct PAB.ProductId, PAB.Url,PAB.Name FROM ProductRelatedItem  as PRI Inner Join ProductAssociatedBlob  as PAB on  PRI.RelatedItemId =PAB.ProductId where PRI.ProductId=? AND PAB.IsPrimary=1",
+                        _sageSalesDB.QueryAsync<ProductDetails>(
+                            "select distinct PRD.ProductId, PRD.ProductName, (select Url from ProductAssociatedBlob as PAB where PAB.ProductId = PRD.ProductId AND PAB.IsPrimary='1') as Url from ProductRelatedItem as PRI join Product as PRD on PRD.ProductId = PRI.RelatedItemId and PRD.EntityStatus='Active' where PRI.ProductId = ?",
                             productId);
-                if (productDetails != null)
+                if (productsList != null)
                 {
-                    return productDetails;
+                    return productsList;
                 }
-                return null;
             }
             catch (SQLiteException ex)
             {
@@ -293,7 +308,7 @@ namespace SageMobileSales.DataAccess.Repositories
             {
                 if (value.ValueType.ToString() != DataAccessUtils.Null)
                 {
-                    product.ProductId = sDataProduct.GetNamedString("Id");
+                    product.ProductId = sDataProduct.GetNamedString("Id").ToLower();
                 }
             }
             if (sDataProduct.TryGetValue("Sku", out value))
@@ -351,7 +366,7 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        product.ProductId = sDataProduct.GetNamedString("Id");
+                        product.ProductId = sDataProduct.GetNamedString("Id").ToLower();
                     }
                 }
 
@@ -431,46 +446,38 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        JsonObject sDataRelatedItems = sDataProduct.GetNamedObject("RelatedItems");
-                        if (sDataRelatedItems.ContainsKey("$resources"))
+                        JsonArray sDataRelatedItemsArray = sDataProduct.GetNamedArray("RelatedItems");
+                        if (sDataRelatedItemsArray.Count > 0)
                         {
-                            JsonArray sDataRelatedItemsArray = sDataRelatedItems.GetNamedArray("$resources");
-                            if (sDataRelatedItemsArray.Count > 0)
-                            {
-                                var lstProductRelatedItem = new List<ProductRelatedItem>();
+                            var lstProductRelatedItem = new List<ProductRelatedItem>();
 
-                                foreach (IJsonValue relatedItem in sDataRelatedItemsArray)
-                                {
-                                    JsonObject sDataRelatedItem = relatedItem.GetObject();
-                                    var productRelatedItem = new ProductRelatedItem();
-                                    productRelatedItem.ProductId = product.ProductId;
-                                    productRelatedItem.RelatedItemId = sDataRelatedItem.GetNamedString("Id");
-                                    lstProductRelatedItem.Add(productRelatedItem);
-                                }
-                                await UpdateProductRelatedItemsAsync(lstProductRelatedItem, product.ProductId);
+                            foreach (IJsonValue relatedItem in sDataRelatedItemsArray)
+                            {
+                                JsonObject sDataRelatedItem = relatedItem.GetObject();
+                                var productRelatedItem = new ProductRelatedItem();
+                                productRelatedItem.ProductId = product.ProductId;
+                                productRelatedItem.RelatedItemId = sDataRelatedItem.GetNamedString("Id").ToLower();
+                                lstProductRelatedItem.Add(productRelatedItem);
                             }
+                            await UpdateProductRelatedItemsAsync(lstProductRelatedItem, product.ProductId);
                         }
                     }
                 }
 
 
-                if (sDataProduct.TryGetValue("AssociatedBlobs", out value))
+                if (sDataProduct.TryGetValue("Images", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        JsonObject sDataAssociatedBlobs = sDataProduct.GetNamedObject("AssociatedBlobs");
-                        if (sDataAssociatedBlobs.ContainsKey("$resources"))
+                        JsonArray sDataAssociatedBlobsArray = sDataProduct.GetNamedArray("Images");
+                        if (sDataAssociatedBlobsArray.Count > 0)
                         {
-                            JsonArray sDataAssociatedBlobsArray = sDataAssociatedBlobs.GetNamedArray("$resources");
-                            if (sDataAssociatedBlobsArray.Count > 0)
+                            foreach (IJsonValue associatedBlob in sDataAssociatedBlobsArray)
                             {
-                                foreach (IJsonValue associatedBlob in sDataAssociatedBlobsArray)
-                                {
-                                    JsonObject sDataAssociatedBlob = associatedBlob.GetObject();
-                                    await
-                                        _productAssociatedBlobsRepository.UpdatProductAssociatedBlobAsync(
-                                            sDataAssociatedBlob);
-                                }
+                                JsonObject sDataAssociatedBlob = associatedBlob.GetObject();
+                                await
+                                    _productAssociatedBlobsRepository.UpdatProductAssociatedBlobAsync(
+                                        sDataAssociatedBlob);
                             }
                         }
                     }

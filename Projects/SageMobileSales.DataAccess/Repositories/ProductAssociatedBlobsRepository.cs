@@ -51,10 +51,10 @@ namespace SageMobileSales.DataAccess.Repositories
                         sDataProductAssociatedBlobsArray[productAssociatedBlob].GetObject();
                     lstProductAssociatedBlobs.Add(GetProductAssociatedBlobDataFromJson(sDataProductAssociatedBlob));
 
-                    if ((Convert.ToInt32(sDataProductAssociatedBlob.GetNamedNumber("SyncEndpointTick")) >
+                    if ((Convert.ToInt32(sDataProductAssociatedBlob.GetNamedNumber("SyncTick")) >
                          localSyncDigest.localTick))
                         localSyncDigest.localTick =
-                            Convert.ToInt32(sDataProductAssociatedBlob.GetNamedNumber("SyncEndpointTick"));
+                            Convert.ToInt32(sDataProductAssociatedBlob.GetNamedNumber("SyncTick"));
                     if (productAssociatedBlob == sDataProductAssociatedBlobsArray.Count - 1)
                     {
                         if (DataAccessUtils.ProductAssociatedBlobsTotalCount ==
@@ -163,39 +163,79 @@ namespace SageMobileSales.DataAccess.Repositories
         {
             try
             {
+                IJsonValue value;
                 var _productAssociatedBlob = new ProductAssociatedBlob();
-                _productAssociatedBlob.ProductAssociatedBlobId = sDataProductAssociatedBlob.GetNamedString("$key");
-                if (sDataProductAssociatedBlob.GetNamedValue("FileName").ValueType.ToString() != DataAccessUtils.Null)
+
+                if (sDataProductAssociatedBlob.TryGetValue("Id", out value))
                 {
-                    _productAssociatedBlob.Name = sDataProductAssociatedBlob.GetNamedString("FileName");
+                    if (value.ValueType.ToString() != DataAccessUtils.Null)
+                    {
+
+                        _productAssociatedBlob.ProductAssociatedBlobId = sDataProductAssociatedBlob.GetNamedString("Id").ToLower();
+                    }
                 }
-                _productAssociatedBlob.TenantId = sDataProductAssociatedBlob.GetNamedString("TenantId");
-                if (sDataProductAssociatedBlob.GetNamedValue("Description").ValueType.ToString() != DataAccessUtils.Null)
+                if (sDataProductAssociatedBlob.TryGetValue("Name", out value))
                 {
-                    _productAssociatedBlob.productAssociatedBlobDescription =
-                        sDataProductAssociatedBlob.GetNamedString("Description");
-                }
-                if (sDataProductAssociatedBlob.GetNamedValue("MimeType").ValueType.ToString() != DataAccessUtils.Null)
+                    if (value.ValueType.ToString() != DataAccessUtils.Null)
+                    {
+                        _productAssociatedBlob.Name = sDataProductAssociatedBlob.GetNamedString("Name");
+                    }
+                }               
+                if (sDataProductAssociatedBlob.TryGetValue("Description", out value))
                 {
-                    _productAssociatedBlob.MimeType = sDataProductAssociatedBlob.GetNamedString("MimeType");
+                    if (value.ValueType.ToString() != DataAccessUtils.Null)
+                    {
+                        _productAssociatedBlob.productAssociatedBlobDescription =
+                            sDataProductAssociatedBlob.GetNamedString("Description");
+                    }
                 }
-                if (sDataProductAssociatedBlob.GetNamedValue("Url").ValueType.ToString() != DataAccessUtils.Null)
+                if (sDataProductAssociatedBlob.TryGetValue("MimeType", out value))
                 {
-                    _productAssociatedBlob.Url = sDataProductAssociatedBlob.GetNamedString("Url");
+                    if (value.ValueType.ToString() != DataAccessUtils.Null)
+                    {
+                        _productAssociatedBlob.MimeType = sDataProductAssociatedBlob.GetNamedString("MimeType");
+                    }
                 }
-                if (sDataProductAssociatedBlob.GetNamedValue("ThumbnailMimeType").ValueType.ToString() !=
-                    DataAccessUtils.Null)
+                if (sDataProductAssociatedBlob.TryGetValue("Url", out value))
                 {
-                    _productAssociatedBlob.ThumbnailMimeType =
-                        sDataProductAssociatedBlob.GetNamedString("ThumbnailMimeType");
+                    if (value.ValueType.ToString() != DataAccessUtils.Null)
+                    {
+                        _productAssociatedBlob.Url = sDataProductAssociatedBlob.GetNamedString("Url");
+                    }
                 }
-                if (sDataProductAssociatedBlob.GetNamedValue("ThumbnailUrl").ValueType.ToString() !=
-                    DataAccessUtils.Null)
+                if (sDataProductAssociatedBlob.TryGetValue("ThumbnailMimeType", out value))
                 {
-                    _productAssociatedBlob.ThumbnailUrl = sDataProductAssociatedBlob.GetNamedString("ThumbnailUrl");
+                    if (value.ValueType.ToString() != DataAccessUtils.Null)
+                    {
+                        _productAssociatedBlob.ThumbnailMimeType =
+                            sDataProductAssociatedBlob.GetNamedString("ThumbnailMimeType");
+                    }
                 }
-                _productAssociatedBlob.ProductId = sDataProductAssociatedBlob.GetNamedString("ParentEntityId");
-                _productAssociatedBlob.IsPrimary = sDataProductAssociatedBlob.GetNamedBoolean("IsPrimaryImage");
+                if (sDataProductAssociatedBlob.TryGetValue("ThumbnailUrl", out value))
+                {
+                    if (value.ValueType.ToString() != DataAccessUtils.Null)
+                    {
+                        _productAssociatedBlob.ThumbnailUrl = sDataProductAssociatedBlob.GetNamedString("ThumbnailUrl");
+                    }
+                }
+                if (sDataProductAssociatedBlob.TryGetValue("ParentEntityId", out value))
+                {
+                    if (value.ValueType.ToString() != DataAccessUtils.Null)
+                    {
+                        _productAssociatedBlob.ProductId = sDataProductAssociatedBlob.GetNamedString("ParentEntityId").ToLower();
+                    }
+                }
+                if (sDataProductAssociatedBlob.TryGetValue("Type", out value))
+                {
+                    if (value.ValueType.ToString() != DataAccessUtils.Null)
+                    {
+                        //_productAssociatedBlob.IsPrimary = sDataProductAssociatedBlob.GetNamedBoolean("IsPrimaryImage");
+                        if (sDataProductAssociatedBlob.GetNamedString("Type") == "PrimaryImage")
+                        {
+                            _productAssociatedBlob.IsPrimary = true;
+                        }
+                    }
+                }
                 return _productAssociatedBlob;
             }
 

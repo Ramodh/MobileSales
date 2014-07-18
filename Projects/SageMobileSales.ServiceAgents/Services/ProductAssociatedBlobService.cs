@@ -81,32 +81,31 @@ namespace SageMobileSales.ServiceAgents.Services
                     parameters.Add("LocalTick", digest.localTick.ToString());
                     parameters.Add("LastRecordId", null);
                 }
-                parameters.Add("Count", "100");
-                parameters.Add("where", "App eq 'Sales'");
+                parameters.Add("Count", "100");              
                 HttpResponseMessage productAssociatedBlobsResponse = null;
                 productAssociatedBlobsResponse =
                     await
-                        _serviceAgent.BuildAndSendRequest(null, Constants.BlobsEntity, Constants.syncQueryEntity, null,
+                        _serviceAgent.BuildAndSendRequest(Constants.TenantId, Constants.BlobsEntity, Constants.syncQueryEntity, null,
                             Constants.AccessToken, parameters);
                 if (productAssociatedBlobsResponse != null && productAssociatedBlobsResponse.IsSuccessStatusCode)
                 {
                     JsonObject sDataProductAssociatedBlobs =
                         await _serviceAgent.ConvertTosDataObject(productAssociatedBlobsResponse);
-                    if (Convert.ToInt32(sDataProductAssociatedBlobs.GetNamedNumber("$totalResults")) >
+                    if (Convert.ToInt32(sDataProductAssociatedBlobs.GetNamedString("$totalResults")) >
                         DataAccessUtils.ProductAssociatedBlobsTotalCount)
                         DataAccessUtils.ProductAssociatedBlobsTotalCount =
-                            Convert.ToInt32(sDataProductAssociatedBlobs.GetNamedNumber("$totalResults"));
+                            Convert.ToInt32(sDataProductAssociatedBlobs.GetNamedString("$totalResults"));
 
-                    int _totalCount = Convert.ToInt32(sDataProductAssociatedBlobs.GetNamedNumber("$totalResults"));
+                    int _totalCount = Convert.ToInt32(sDataProductAssociatedBlobs.GetNamedString("$totalResults"));
                     JsonArray categoriesObject = sDataProductAssociatedBlobs.GetNamedArray("$resources");
                     int _returnedCount = categoriesObject.Count;
                     if (_returnedCount > 0 && _totalCount - _returnedCount >= 0)
                     {
                         JsonObject lastProductAssociatedBlobObject =
                             categoriesObject.GetObjectAt(Convert.ToUInt32(_returnedCount - 1));
-                        digest.LastRecordId = lastProductAssociatedBlobObject.GetNamedString("$key");
+                        digest.LastRecordId = lastProductAssociatedBlobObject.GetNamedString("Id");
                         int _syncEndpointTick =
-                            Convert.ToInt32(lastProductAssociatedBlobObject.GetNamedNumber("SyncEndpointTick"));
+                            Convert.ToInt32(lastProductAssociatedBlobObject.GetNamedNumber("SyncTick"));
                         if (_syncEndpointTick > digest.localTick)
                         {
                             digest.localTick = _syncEndpointTick;

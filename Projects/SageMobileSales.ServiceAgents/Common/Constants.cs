@@ -34,7 +34,7 @@ namespace SageMobileSales.ServiceAgents.Common
         public static string GetSalesSettingsEntity = "Users";
         public static string CategoryEntity = "InventoryCategories";
         public static string ItemsEntity = "InventoryItems";
-        public static string BlobsEntity = "Blobs";
+        public static string BlobsEntity = "Files";
         public static string CustomerEntity = "Customers";
         public static string ContactEntity = "Contacts";
         public static string QuoteEntity = "Quotes";
@@ -64,7 +64,7 @@ namespace SageMobileSales.ServiceAgents.Common
         #region AssociatedItems
 
         public static string AssociatedItems = "Parent&select=*,AssociatedItems/Id,Parent/Id";
-        public static string AssociatedBlobs = "AssociatedBlobs/*,RelatedItems/id";
+        public static string AssociatedBlobs = "Images/*,RelatedItems/Id";
 
         # endregion
 

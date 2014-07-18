@@ -47,7 +47,7 @@ namespace SageMobileSales.ServiceAgents.Services
                 HttpResponseMessage quoteLineItemResponse = null;
                 quoteLineItemResponse =
                     await
-                        _serviceAgent.BuildAndSendRequest(null, quoteEntityId, null, null, Constants.AccessToken, parameters);
+                        _serviceAgent.BuildAndSendRequest(Constants.TenantId, quoteEntityId, null, null, Constants.AccessToken, parameters);
                 if (quoteLineItemResponse != null && quoteLineItemResponse.IsSuccessStatusCode)
                 {
                     var sDataQuoteLineItem = await _serviceAgent.ConvertTosDataObject(quoteLineItemResponse);
