@@ -38,7 +38,7 @@ namespace SageMobileSales.ServiceAgents.Services
             string customerEntityId = Constants.CustomerEntity + "('" + customerId + "')";
             HttpResponseMessage contactResponse = null;
             contactResponse =
-                await _serviceAgent.BuildAndSendRequest(null, customerEntityId, null, null, Constants.AccessToken, parameters);
+                await _serviceAgent.BuildAndSendRequest(Constants.TenantId, customerEntityId, null, null, Constants.AccessToken, parameters);
             if (contactResponse != null && contactResponse.IsSuccessStatusCode)
             {
                 var sDataCustomer = await _serviceAgent.ConvertTosDataObject(contactResponse);
