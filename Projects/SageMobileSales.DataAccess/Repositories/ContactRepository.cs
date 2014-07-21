@@ -74,11 +74,11 @@ namespace SageMobileSales.DataAccess.Repositories
         /// </summary>
         /// <param name="sDataContact"></param>
         /// <returns></returns>
-        public async Task SavePostedContactJSonToDbAsync(JsonObject sDataContact, Customer customer,
+        public async Task SavePostedContactJSonToDbAsync(JsonObject sDataContact, string customerId,
             Contact contactPending)
         {
             var contactResponse = new Contact();
-            contactResponse.CustomerId = customer.CustomerId;
+            contactResponse.CustomerId = customerId;
 
             IJsonValue value;
             if (sDataContact.TryGetValue("Id", out value))

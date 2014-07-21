@@ -110,6 +110,8 @@ namespace SageMobileSales.ServiceAgents.Common
 
                         //http://172.29.59.122:8080/sdata/api/msales/1.0/f200ac19-1be6-48c5-b604-2d322020f48e/Customers/$SyncDigest
                         //http://172.29.59.122:8080/sdata/api/msales/1.0/Customers/$SyncDigest
+                        //http://ashmsalessdcweb.cloudapp.net/sdata/api/msales/1.0/70b032c0-385d-42be-8f53-2d10c53206ca/Orders/$SyncSource('AwDYagUApEAFAFruBgABAAQALiUEACC3BABUvgEAOhICALabCQD6oA==d2df1527-6d3b-4970-afc6-dea092358e13')?LocalTick=0&Count=100&where=SalesRep.id eq 'd2df1527-6d3b-4970-afc6-dea092358e13'&include=Details,Details/InventoryItem&select=*,Details/Price,Details/Quantity,Details/InventoryItem/Name,Details/InventoryItem/Sku
+                        //http://172.29.59.122:8080/sdata/api/msales/1.0/f200ac19-1be6-48c5-b604-2d322020f48e/Orders/$SyncSource('B181349C-FFEC-42FD-9A20-B83A5C07F7A6-8e144a26-f89a-4a7f-9265-8a9453a27222')?Count=50&LocalTick=0 
 
                         req = new HttpRequestMessage(HttpMethod.Get, _url);
                         if (Constants.ConnectedToInternet())
@@ -227,7 +229,7 @@ namespace SageMobileSales.ServiceAgents.Common
         /// <param name="parameters"></param>
         /// <param name="obj"></param>
         /// <returns>HttpResponse which in turn service returns</returns>
-        public async Task<HttpResponseMessage> BuildAndPostObjectRequest(string entity, string queryEntity,
+        public async Task<HttpResponseMessage> BuildAndPostObjectRequest(string tenantId, string entity, string queryEntity,
             string accessToken, Dictionary<string, string> parameters, object obj)
         {
             _requestUrl = Constants.Url;
@@ -236,6 +238,12 @@ namespace SageMobileSales.ServiceAgents.Common
             {
                 string _url = string.Empty;
                 string _parameters = string.Empty;
+
+                if (!string.IsNullOrEmpty(tenantId))
+                {
+                    _requestUrl = _requestUrl + tenantId + "/";
+                }
+
                 if (queryEntity != null)
                 {
                     _url += _requestUrl + entity + "/" + queryEntity;

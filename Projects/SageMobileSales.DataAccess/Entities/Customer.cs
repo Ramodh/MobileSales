@@ -15,7 +15,7 @@ namespace SageMobileSales.DataAccess.Entities
         public string CustomerName { get; set; }
         public bool IsCreditLimitUsed { get; set; }
         public bool IsOnCreditHold { get; set; }
-        public string PaymentMethod { get; set; }
+        //public string PaymentMethod { get; set; }
         public string PaymentTerms { get; set; }
         public string EntityStatus { get; set; }
     }

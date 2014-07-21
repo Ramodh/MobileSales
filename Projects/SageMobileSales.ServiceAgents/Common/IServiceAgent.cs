@@ -15,7 +15,7 @@ namespace SageMobileSales.ServiceAgents.Common
         Task<bool> BuildAndPostRequest(string tenantId, string entity, string queryEntity, string accessToken,
             Dictionary<string, string> parameters);
 
-        Task<HttpResponseMessage> BuildAndPostObjectRequest(string entity, string queryEntity, string accessToken,
+        Task<HttpResponseMessage> BuildAndPostObjectRequest(string tenantId, string entity, string queryEntity, string accessToken,
             Dictionary<string, string> parameters, object obj);
 
         Task<HttpResponseMessage> BuildAndPutObjectRequest(string entity, string queryEntity, string accessToken,

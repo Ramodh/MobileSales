@@ -95,7 +95,7 @@ namespace SageMobileSales.ServiceAgents.Services
 
                 quoteResponse =
                     await
-                        _serviceAgent.BuildAndPostObjectRequest(Constants.QuoteEntity, null, Constants.AccessToken,
+                        _serviceAgent.BuildAndPostObjectRequest(null,Constants.QuoteEntity, null, Constants.AccessToken,
                             parameters, obj);
                 if (quoteResponse != null && quoteResponse.IsSuccessStatusCode)
                 {
@@ -562,7 +562,7 @@ namespace SageMobileSales.ServiceAgents.Services
             quoteJsonObject.QuoteTotal = quote.Amount;
             quoteJsonObject.SandH = quote.ShippingAndHandling;
             quoteJsonObject.Status = quote.QuoteStatus;
-            quoteJsonObject.Customer = new CustomerKeyJson { key = quote.CustomerId };
+            quoteJsonObject.Customer = new CustomerKeyJson { Id = quote.CustomerId };
             quoteJsonObject.SalesRep = new SalesKeyJson { key = quote.RepId };
 
             quoteJsonObject.Details = new QuoteDetailsJson();
@@ -605,7 +605,7 @@ namespace SageMobileSales.ServiceAgents.Services
             quoteJsonObject.ShippingAddress.Street4 = address.Street4 == null ? "" : address.Street4;
             quoteJsonObject.ShippingAddress.Type = address.AddressType == null ? "" : address.AddressType;
             quoteJsonObject.ShippingAddress.URL = address.Url == null ? "" : address.Url;
-            quoteJsonObject.ShippingAddress.Customer = new CustomerKeyJson { key = quote.CustomerId };
+            quoteJsonObject.ShippingAddress.Customer = new CustomerKeyJson { Id = quote.CustomerId };
             return quoteJsonObject;
         }
 
@@ -624,7 +624,7 @@ namespace SageMobileSales.ServiceAgents.Services
             quoteJsonObject.QuoteTotal = quote.Amount;
             quoteJsonObject.SandH = quote.ShippingAndHandling;
             quoteJsonObject.Status = quote.QuoteStatus;
-            quoteJsonObject.Customer = new CustomerKeyJson { key = quote.CustomerId };
+            quoteJsonObject.Customer = new CustomerKeyJson { Id = quote.CustomerId };
             quoteJsonObject.SalesRep = new SalesKeyJson { key = quote.RepId };
 
             quoteJsonObject.ShippingAddress = new ShippingAddressKeyJson { key = quote.AddressId };

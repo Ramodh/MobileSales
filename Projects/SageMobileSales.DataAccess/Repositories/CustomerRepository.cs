@@ -365,13 +365,13 @@ namespace SageMobileSales.DataAccess.Repositories
                     }
                 }
 
-                if (sDataCustomer.TryGetValue("PaymentMethod", out value))
-                {
-                    if (value.ValueType.ToString() != DataAccessUtils.Null)
-                    {
-                        customer.PaymentMethod = sDataCustomer.GetNamedString("PaymentMethod");
-                    }
-                }
+                //if (sDataCustomer.TryGetValue("PaymentMethod", out value))
+                //{
+                //    if (value.ValueType.ToString() != DataAccessUtils.Null)
+                //    {
+                //        customer.PaymentMethod = sDataCustomer.GetNamedString("PaymentMethod");
+                //    }
+                //}
 
                 if (sDataCustomer.TryGetValue("IsOnCreditHold", out value))
                 {

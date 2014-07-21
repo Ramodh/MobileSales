@@ -59,7 +59,7 @@ namespace SageMobileSales.ServiceAgents.Services
             {
                 conatctJsonObject = new ContactJson();
 
-                conatctJsonObject.Customer = new CustomerKeyJson { key = contact.CustomerId };
+                conatctJsonObject.Customer = new CustomerKeyJson { Id = contact.CustomerId };
                 conatctJsonObject.EmailPersonal = contact.EmailPersonal == null ? "" : contact.EmailPersonal;
                 conatctJsonObject.EmailWork = contact.EmailWork == null ? "" : contact.EmailWork;
                 conatctJsonObject.FirstName = contact.FirstName;
@@ -68,22 +68,22 @@ namespace SageMobileSales.ServiceAgents.Services
                 conatctJsonObject.PhoneMobile = contact.PhoneMobile == null ? "" : contact.PhoneMobile;
                 conatctJsonObject.PhoneWork = contact.PhoneWork == null ? "" : contact.PhoneWork;
                 conatctJsonObject.Title = contact.Title == null ? "" : contact.Title;
-                conatctJsonObject.URL = contact.Url == null ? "" : contact.Url;
+                //conatctJsonObject.URL = contact.Url == null ? "" : contact.Url;
 
                 HttpResponseMessage contactResponse = null;
                 contactResponse =
                     await
-                        _serviceAgent.BuildAndPostObjectRequest(Constants.ContactEntity, null, Constants.AccessToken,
+                        _serviceAgent.BuildAndPostObjectRequest(Constants.TenantId, Constants.ContactEntity, null, Constants.AccessToken,
                             null, conatctJsonObject);
                 if (contactResponse != null && contactResponse.IsSuccessStatusCode)
                 {
                     JsonObject sDataContact = await _serviceAgent.ConvertTosDataObject(contactResponse);
 
-                    JsonObject customerObj = sDataContact.GetNamedObject("Customer");
-                    Customer customer =
-                        await _customerRepository.GetCustomerDataAsync(customerObj.GetNamedString("$key"));
-                    if (customer != null)
-                        await _contactRepository.SavePostedContactJSonToDbAsync(sDataContact, customer, contact);
+                    //JsonObject customerObj = sDataContact.GetNamedObject("Customer");
+                    //Customer customer =
+                    //    await _customerRepository.GetCustomerDataAsync(customerObj.GetNamedString("$key"));
+                    //if (customer != null)
+                        await _contactRepository.SavePostedContactJSonToDbAsync(sDataContact, contact.CustomerId, contact);
                 }
             }
             catch

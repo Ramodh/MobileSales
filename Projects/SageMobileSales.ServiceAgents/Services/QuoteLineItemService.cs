@@ -305,7 +305,7 @@ namespace SageMobileSales.ServiceAgents.Services
             quoteJsonObject.QuoteTotal = quote.Amount;
             quoteJsonObject.SandH = quote.ShippingAndHandling;
             quoteJsonObject.Status = quote.QuoteStatus;
-            quoteJsonObject.Customer = new CustomerKeyJson { key = quote.CustomerId };
+            quoteJsonObject.Customer = new CustomerKeyJson { Id = quote.CustomerId };
             quoteJsonObject.SalesRep = new SalesKeyJson { key = quote.RepId };
 
             quoteJsonObject.ShippingAddress = new ShippingAddressKeyJson { key = quote.AddressId };
@@ -342,7 +342,7 @@ namespace SageMobileSales.ServiceAgents.Services
             quoteJsonObject.QuoteTotal = quote.Amount;
             quoteJsonObject.SandH = quote.ShippingAndHandling;
             quoteJsonObject.Status = quote.QuoteStatus;
-            quoteJsonObject.Customer = new CustomerKeyJson { key = quote.CustomerId };
+            quoteJsonObject.Customer = new CustomerKeyJson { Id = quote.CustomerId };
             quoteJsonObject.SalesRep = new SalesKeyJson { key = quote.RepId };
 
             quoteJsonObject.ShippingAddress = new ShippingAddressKeyJson { key = quote.AddressId };
