@@ -224,7 +224,7 @@ namespace SageMobileSales.UILogic.ViewModels
                     QuotePageTitle = _customerAddress.CustomerName;
                 }
                 else
-                {
+                {                   
                     QuoteDetails = await _quoteRepository.GetQuotesListAsync(await _salesRepRepository.GetSalesRepId());
                     QuotePageTitle = ResourceLoader.GetForCurrentView("Resources").GetString("quotePageTitle");
                 }
@@ -594,7 +594,7 @@ namespace SageMobileSales.UILogic.ViewModels
         public async Task UpdateQuoteListInfo()
         {
             if (_customerAddress == null)
-            {
+            {              
                 QuoteDetails = await _quoteRepository.GetQuotesListAsync(await _salesRepRepository.GetSalesRepId());
             }
             else

@@ -65,8 +65,8 @@ namespace SageMobileSales.DataAccess.Repositories
 
                 if (localSyncDigest != null)
                 {
-                    if ((Convert.ToInt32(sDataQuote.GetNamedNumber("SyncEndpointTick")) > localSyncDigest.localTick))
-                        localSyncDigest.localTick = Convert.ToInt32(sDataQuote.GetNamedNumber("SyncEndpointTick"));
+                    if ((Convert.ToInt32(sDataQuote.GetNamedNumber("SyncTick")) > localSyncDigest.localTick))
+                        localSyncDigest.localTick = Convert.ToInt32(sDataQuote.GetNamedNumber("SyncTick"));
                 }
 
                 if (quote == (sDataQuotesArray.Count - 1) && localSyncDigest != null)
@@ -93,6 +93,7 @@ namespace SageMobileSales.DataAccess.Repositories
         /// </summary>
         /// <param name="salesRepId"></param>
         /// <returns></returns>
+     
         public async Task<List<QuoteDetails>> GetQuotesListAsync(string salesRepId)
         {
             List<QuoteDetails> quotesList = null;
@@ -101,9 +102,9 @@ namespace SageMobileSales.DataAccess.Repositories
                 quotesList =
                     await
                         _sageSalesDB.QueryAsync<QuoteDetails>(
-                            "SELECT distinct customer.customerName, quote.Id, quote.CustomerId, quote.QuoteId, quote.CreatedOn, quote.amount, quote.quoteStatus,quote.QuoteDescription, SalesRep.RepName FROM quote INNER JOIN customer ON customer.customerID = quote.customerId Inner Join SalesRep On Quote.RepId=? And Quote.QuoteStatus!='" +
+                            "SELECT distinct customer.customerName, quote.Id, quote.CustomerId, quote.QuoteId, quote.CreatedOn, quote.amount, quote.quoteStatus,quote.QuoteDescription,(select RepName from SalesRep as RP where RP.RepId='" + salesRepId + "') as RepName FROM quote INNER JOIN customer ON customer.customerID = quote.customerId And Quote.QuoteStatus!='" +
                             DataAccessUtils.IsOrderQuoteStatus + "' And Quote.QuoteStatus!='" +
-                            DataAccessUtils.TemporaryQuoteStatus + "' And Quote.IsDeleted='0'", salesRepId);
+                            DataAccessUtils.TemporaryQuoteStatus + "' And Quote.IsDeleted='0'");
             }
             catch (SQLiteException ex)
             {
@@ -228,12 +229,14 @@ namespace SageMobileSales.DataAccess.Repositories
         public async Task<QuoteDetails> GetQuoteDetailsAsync(string quoteId)
         {
             List<QuoteDetails> quote = null;
+            string salesRepId = await _salesRepRepository.GetSalesRepId();
             try
             {
+               
                 quote =
                     await
                         _sageSalesDB.QueryAsync<QuoteDetails>(
-                            "SELECT distinct quote.Id, quote.QuoteId, quote.CreatedOn, quote.ExpiryDate, quote.CustomerId, quote.AddressId, quote.Amount, quote.Tax, quote.ShippingAndHandling, quote.DiscountPercent, quote.quoteStatus, quote.QuoteDescription, quote.TenantId, SalesRep.RepName FROM quote INNER JOIN SalesRep ON salesRep.RepId = quote.RepId and QuoteId=?",
+                            "SELECT distinct quote.Id, quote.QuoteId, quote.CreatedOn, quote.ExpiryDate, quote.CustomerId, quote.AddressId, quote.Amount, quote.Tax, quote.ShippingAndHandling, quote.DiscountPercent, quote.quoteStatus, quote.QuoteDescription, quote.TenantId, (select RepName from SalesRep as RP where RP.RepId='" + salesRepId + "') as RepName FROM quote where QuoteId=?",
                             quoteId);
             }
             catch (SQLiteException ex)
@@ -360,7 +363,7 @@ namespace SageMobileSales.DataAccess.Repositories
             {
                 IJsonValue value;
                 bool entityStatusDeleted = false;
-                if (sDataQuote.TryGetValue("$key", out value))
+                if (sDataQuote.TryGetValue("Id", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
@@ -368,7 +371,7 @@ namespace SageMobileSales.DataAccess.Repositories
                         quoteList =
                             await
                                 _sageSalesDB.QueryAsync<Quote>("SELECT * FROM Quote where QuoteId=?",
-                                    sDataQuote.GetNamedString("$key"));
+                                    sDataQuote.GetNamedString("Id"));
 
                         if (sDataQuote.TryGetValue("EntityStatus", out value))
                         {
@@ -385,12 +388,12 @@ namespace SageMobileSales.DataAccess.Repositories
                             {
                                 if (!quoteList.FirstOrDefault().IsPending)
                                     //await _sageSalesDB.QueryAsync<Quote>("DELETE FROM Quote where QuoteId=?", sDataQuote.GetNamedString("$key"));
-                                    await DeleteQuoteFromDbAsync(sDataQuote.GetNamedString("$key"));
+                                    await DeleteQuoteFromDbAsync(sDataQuote.GetNamedString("Id"));
                                 else
                                     await
                                         _sageSalesDB.QueryAsync<Quote>(
                                             "UPDATE Quote SET EntityStatus=? where QuoteId=?",
-                                            sDataQuote.GetNamedString("EntityStatus"), sDataQuote.GetNamedString("$key"));
+                                            sDataQuote.GetNamedString("EntityStatus"), sDataQuote.GetNamedString("Id"));
                             }
                             else
                             {
@@ -734,7 +737,7 @@ namespace SageMobileSales.DataAccess.Repositories
             var quoteObj = new Quote();
             try
             {
-                quoteObj.QuoteId = sDataQuote.GetNamedString("$key");
+                quoteObj.QuoteId = sDataQuote.GetNamedString("Id");
                 quoteObj = await ExtractQuoteFromJsonAsync(sDataQuote, quoteObj);
 
                 await _sageSalesDB.InsertAsync(quoteObj);
@@ -821,14 +824,14 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        quote.ShippingAndHandling = Convert.ToDecimal(sDataQuote.GetNamedNumber("SandH"));
+                        quote.ShippingAndHandling = Convert.ToDecimal(sDataQuote.GetNamedString("SandH"));
                     }
                 }
                 if (sDataQuote.TryGetValue("Tax", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        quote.Tax = Convert.ToDecimal(sDataQuote.GetNamedNumber("Tax"));
+                        quote.Tax = Convert.ToDecimal(sDataQuote.GetNamedString("Tax"));
                     }
                 }
                 if (sDataQuote.TryGetValue("ExpiryDate", out value))
@@ -842,21 +845,29 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        quote.Amount = Convert.ToDecimal(sDataQuote.GetNamedNumber("QuoteTotal"));
+                        quote.Amount = Convert.ToDecimal(sDataQuote.GetNamedString("QuoteTotal"));
                     }
                 }
-                if (sDataQuote.TryGetValue("ExternalReference", out value))
+                if (sDataQuote.TryGetValue("SubTotal", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        quote.ExternalReferenceNumber = sDataQuote.GetNamedString("ExternalReference");
+                        quote.SubTotal = Convert.ToDecimal(sDataQuote.GetNamedString("SubTotal"));
+                    }
+                }
+                
+                if (sDataQuote.TryGetValue("ExtRef", out value))
+                {
+                    if (value.ValueType.ToString() != DataAccessUtils.Null)
+                    {
+                        quote.ExternalReferenceNumber = sDataQuote.GetNamedString("ExtRef");
                     }
                 }
                 if (sDataQuote.TryGetValue("DiscountPercent", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        quote.DiscountPercent = Convert.ToDecimal(sDataQuote.GetNamedNumber("DiscountPercent"));
+                        quote.DiscountPercent = Convert.ToDecimal(sDataQuote.GetNamedString("DiscountPercent"));
                     }
                 }
                 if (sDataQuote.TryGetValue("QuoteNumber", out value))
@@ -867,35 +878,18 @@ namespace SageMobileSales.DataAccess.Repositories
                     }
                 }
 
-                if (sDataQuote.TryGetValue("Customer", out value))
+                if (sDataQuote.TryGetValue("CustomerId", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        JsonObject sDataCustomer = sDataQuote.GetNamedObject("Customer");
-                        Customer customer = await _customerRepository.AddOrUpdateCustomerJsonToDbAsync(sDataCustomer);
-                        if (customer != null)
-                        {
-                            quote.CustomerId = customer.CustomerId;
-                        }
+                        quote.CustomerId = sDataQuote.GetNamedString("CustomerId");
                     }
-                }
-
-                if (sDataQuote.TryGetValue("ShippingAddress", out value))
+                }               
+                if (sDataQuote.TryGetValue("ShippingAddressId", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
-                    {
-                        JsonObject sDataShippingAdress = sDataQuote.GetNamedObject("ShippingAddress");
-                        if (!string.IsNullOrEmpty(quote.CustomerId))
-                        {
-                            Address address =
-                                await
-                                    _addressRepository.AddOrUpdateAddressJsonToDbAsync(sDataShippingAdress,
-                                        quote.CustomerId);
-                            if (address != null)
-                            {
-                                quote.AddressId = address.AddressId;
-                            }
-                        }
+                    {                                             
+                         quote.AddressId = sDataQuote.GetNamedString("ShippingAddressId");                        
                     }
                 }
 
@@ -905,7 +899,7 @@ namespace SageMobileSales.DataAccess.Repositories
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
                         JsonObject sDataSalesRep = sDataQuote.GetNamedObject("SalesRep");
-                        if (sDataSalesRep.GetNamedValue("$key").ValueType.ToString() != DataAccessUtils.Null)
+                        if (sDataSalesRep.GetNamedValue("Id").ValueType.ToString() != DataAccessUtils.Null)
                         {
                             SalesRep salesRep =
                                 await _salesRepRepository.AddOrUpdateSalesRepJsonToDbAsync(sDataSalesRep);
@@ -931,6 +925,7 @@ namespace SageMobileSales.DataAccess.Repositories
             }
             return quote;
         }
+        
 
 
         //Need to confirm with this..............*******
