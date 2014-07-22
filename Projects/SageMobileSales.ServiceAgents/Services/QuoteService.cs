@@ -496,33 +496,33 @@ namespace SageMobileSales.ServiceAgents.Services
             {
                 salesRepId = "SalesRep.id eq " + "'" + salesRepId + "'";
                 parameters.Add("Count", "100");
-                parameters.Add("where", salesRepId);
+               // parameters.Add("where", salesRepId);
                 HttpResponseMessage quotesResponse = null;
 
                 Constants.syncQueryEntity = Constants.syncSourceQueryEntity + "('" + Constants.TrackingId + "')";
 
                 quotesResponse =
                     await
-                        _serviceAgent.BuildAndSendRequest(null, Constants.QuoteEntity, Constants.syncQueryEntity, null,
+                        _serviceAgent.BuildAndSendRequest(Constants.TenantId, Constants.QuoteEntity, Constants.syncQueryEntity, null,
                             Constants.AccessToken, parameters);
                 if (quotesResponse != null && quotesResponse.IsSuccessStatusCode)
                 {
                     JsonObject sDataQuotes = await _serviceAgent.ConvertTosDataObject(quotesResponse);
-                    if (Convert.ToInt32(sDataQuotes.GetNamedNumber("$totalResults")) > DataAccessUtils.QuotesTotalCount)
-                        DataAccessUtils.QuotesTotalCount = Convert.ToInt32(sDataQuotes.GetNamedNumber("$totalResults"));
+                    if (Convert.ToInt32(sDataQuotes.GetNamedString("$totalResults")) > DataAccessUtils.QuotesTotalCount)
+                        DataAccessUtils.QuotesTotalCount = Convert.ToInt32(sDataQuotes.GetNamedString("$totalResults"));
                     if (DataAccessUtils.QuotesTotalCount == 0)
                     {
                         _eventAggregator.GetEvent<QuoteDataChangedEvent>().Publish(true);
                     }
-                    int _totalCount = Convert.ToInt32(sDataQuotes.GetNamedNumber("$totalResults"));
+                    int _totalCount = Convert.ToInt32(sDataQuotes.GetNamedString("$totalResults"));
                     JsonArray quotesObject = sDataQuotes.GetNamedArray("$resources");
                     int _returnedCount = quotesObject.Count;
                     if (_returnedCount > 0 && _totalCount - _returnedCount >= 0 &&
                         !(DataAccessUtils.IsQuotesSyncCompleted))
                     {
                         JsonObject lastQuoteObject = quotesObject.GetObjectAt(Convert.ToUInt32(_returnedCount - 1));
-                        digest.LastRecordId = lastQuoteObject.GetNamedString("$key");
-                        int _syncEndpointTick = Convert.ToInt32(lastQuoteObject.GetNamedNumber("SyncEndpointTick"));
+                        digest.LastRecordId = lastQuoteObject.GetNamedString("Id");
+                        int _syncEndpointTick = Convert.ToInt32(lastQuoteObject.GetNamedNumber("SyncTick"));
                         if (_syncEndpointTick > digest.localTick)
                         {
                             digest.localTick = _syncEndpointTick;

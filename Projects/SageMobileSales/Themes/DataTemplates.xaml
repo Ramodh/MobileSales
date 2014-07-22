@@ -51,7 +51,7 @@
             </Border>
             <StackPanel VerticalAlignment="Bottom"
                         Background="{StaticResource ListViewItemOverlayBackgroundThemeBrush}">
-                <TextBlock Text="{Binding Name}" Foreground="{StaticResource ListViewItemOverlayForegroundThemeBrush}"
+                <TextBlock Text="{Binding ProductName}" Foreground="{StaticResource ListViewItemOverlayForegroundThemeBrush}"
                            Height="60" Margin="15,15,15,0" FontSize="18"
                            Style="{StaticResource SubheaderTextBlockStyle}" TextTrimming="WordEllipsis"
                            TextWrapping="NoWrap" />
