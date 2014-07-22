@@ -76,7 +76,7 @@ namespace SageMobileSales.ServiceAgents.Services
 
                 quoteResponse =
                     await
-                        _serviceAgent.BuildAndPostObjectRequest(Constants.QuoteEntity, queryEntity,
+                        _serviceAgent.BuildAndPostObjectRequest(null,Constants.QuoteEntity, queryEntity,
                             Constants.AccessToken, null, obj);
                 if (quoteResponse != null && quoteResponse.IsSuccessStatusCode)
                 {
@@ -148,39 +148,40 @@ namespace SageMobileSales.ServiceAgents.Services
                 string salesRepId = await _salesRepRepository.GetSalesRepId();
                 if (!string.IsNullOrEmpty(salesRepId))
                 {
-                    salesRepId = "SalesRep.id eq " + "'" + salesRepId + "'";
-                    parameters.Add("Count", "100");
-                    parameters.Add("where", salesRepId);
-                    parameters.Add("include",
-                        "Details,Details/InventoryItem&select=*,Details/Price,Details/Quantity,Details/InventoryItem/Name,Details/InventoryItem/Sku");
+                //http://172.29.59.122:8080/sdata/api/msales/1.0/f200ac19-1be6-48c5-b604-2d322020f48e/Orders/
+                    //$SyncSource('B181349C-FFEC-42FD-9A20-B83A5C07F7A6-8e144a26-f89a-4a7f-9265-8a9453a27222')?Count=50&LocalTick=0 
+                    //salesRepId = "SalesRep.id eq " + "'" + salesRepId + "'";
+                    parameters.Add("Count", "50");
+                    //parameters.Add("where", salesRepId);
+                    //parameters.Add("include", "Details,Details/InventoryItem&select=*,Details/Price,Details/Quantity,Details/InventoryItem/Name,Details/InventoryItem/Sku");
                     HttpResponseMessage ordersResponse = null;
 
                     Constants.syncQueryEntity = Constants.syncSourceQueryEntity + "('" + Constants.TrackingId + "')";
 
                     ordersResponse =
                         await
-                            _serviceAgent.BuildAndSendRequest(null, Constants.OrderEntity, Constants.syncQueryEntity, null,
+                            _serviceAgent.BuildAndSendRequest(Constants.TenantId, Constants.OrderEntity, Constants.syncQueryEntity, null,
                                 Constants.AccessToken, parameters);
                     if (ordersResponse != null && ordersResponse.IsSuccessStatusCode)
                     {
                         JsonObject sDataOrders = await _serviceAgent.ConvertTosDataObject(ordersResponse);
-                        if (Convert.ToInt32(sDataOrders.GetNamedNumber("$totalResults")) >
+                        if (Convert.ToInt32(sDataOrders.GetNamedString("$totalResults")) >
                             DataAccessUtils.OrdersTotalCount)
                             DataAccessUtils.OrdersTotalCount =
-                                Convert.ToInt32(sDataOrders.GetNamedNumber("$totalResults"));
+                                Convert.ToInt32(sDataOrders.GetNamedString("$totalResults"));
                         if (DataAccessUtils.OrdersTotalCount == 0)
                         {
                             _eventAggregator.GetEvent<OrderDataChangedEvent>().Publish(true);
                         }
-                        int _totalCount = Convert.ToInt32(sDataOrders.GetNamedNumber("$totalResults"));
+                        int _totalCount = Convert.ToInt32(sDataOrders.GetNamedString("$totalResults"));
                         JsonArray ordersObject = sDataOrders.GetNamedArray("$resources");
                         int _returnedCount = ordersObject.Count;
                         if (_returnedCount > 0 && _totalCount - _returnedCount >= 0 &&
                             !(DataAccessUtils.IsOrdersSyncCompleted))
                         {
                             JsonObject lastOrderObject = ordersObject.GetObjectAt(Convert.ToUInt32(_returnedCount - 1));
-                            digest.LastRecordId = lastOrderObject.GetNamedString("$key");
-                            int _syncEndpointTick = Convert.ToInt32(lastOrderObject.GetNamedNumber("SyncEndpointTick"));
+                            digest.LastRecordId = lastOrderObject.GetNamedString("Id");
+                            int _syncEndpointTick = Convert.ToInt32(lastOrderObject.GetNamedNumber("SyncTick"));
                             if (_syncEndpointTick > digest.localTick)
                             {
                                 digest.localTick = _syncEndpointTick;

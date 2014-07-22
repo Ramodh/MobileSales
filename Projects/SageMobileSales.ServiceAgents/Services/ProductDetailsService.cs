@@ -36,13 +36,13 @@ namespace SageMobileSales.ServiceAgents.Services
                 string syncQueryEntity = Constants.ItemsEntity + "('" + productId + "')";
                 parameters = new Dictionary<string, string>();
 
-                parameters.Add("include", "AssociatedBlobs,RelatedItems");
+                parameters.Add("include", "Images,RelatedItems");
                 parameters.Add("select", "*");
 
                 HttpResponseMessage productDetailsResponse = null;
                 productDetailsResponse =
                     await
-                        _serviceAgent.BuildAndSendRequest(null, null, syncQueryEntity, Constants.AssociatedBlobs,
+                        _serviceAgent.BuildAndSendRequest(Constants.TenantId, null, syncQueryEntity, Constants.AssociatedBlobs,
                             Constants.AccessToken, parameters);
                 if (productDetailsResponse != null && productDetailsResponse.IsSuccessStatusCode)
                 {

@@ -10,7 +10,7 @@
         public string PhoneHome { get; set; }
         public string PhoneMobile { get; set; }
         public string PhoneWork { get; set; }
-        public string URL { get; set; }
+        //public string URL { get; set; }
         public string Title { get; set; }
     }
 }

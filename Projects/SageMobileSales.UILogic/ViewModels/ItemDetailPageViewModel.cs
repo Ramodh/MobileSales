@@ -12,6 +12,7 @@ using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
 using SageMobileSales.ServiceAgents.Services;
 using SageMobileSales.UILogic.Common;
+using SageMobileSales.DataAccess.Model;
 
 namespace SageMobileSales.UILogic.ViewModels
 {
@@ -30,7 +31,7 @@ namespace SageMobileSales.UILogic.ViewModels
 
         private List<Customer> _customerList;
         private bool _emptyText;
-        private List<ProductAssociatedBlob> _otherProduct;
+        private List<ProductDetails> _otherProduct;
         private List<ProductAssociatedBlob> _productImage;
 
         public ItemDetailPageViewModel(INavigationService navigationService, IProductRepository productRepository,
@@ -126,7 +127,7 @@ namespace SageMobileSales.UILogic.ViewModels
             private set { SetProperty(ref _productImage, value); }
         }
 
-        public List<ProductAssociatedBlob> OtherProducts
+        public List<ProductDetails> OtherProducts
         {
             get { return _otherProduct; }
             private set { SetProperty(ref _otherProduct, value); }
@@ -208,7 +209,7 @@ namespace SageMobileSales.UILogic.ViewModels
         /// <param name="parameter"></param>
         public async void GridViewItemClick(object sender, object parameter)
         {
-            string productId = (((parameter as ItemClickEventArgs).ClickedItem as ProductAssociatedBlob).ProductId);
+            string productId = (((parameter as ItemClickEventArgs).ClickedItem as ProductDetails).ProductId);
 
             //Display data from LocalDB
             DisplayProductDetails(productId);

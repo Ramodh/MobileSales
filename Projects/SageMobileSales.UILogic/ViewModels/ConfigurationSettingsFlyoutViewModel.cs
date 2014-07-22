@@ -279,7 +279,7 @@ namespace SageMobileSales.UILogic.ViewModels
             if (selected.SelectedItem.ToString() == "Local Machine 2")
             {
                 ClientId = @"FhVDZU7p11pFRItTweZsh8XSGdEeFZ0g";
-                Url = "http://172.25.19.4:8080/sdata/api/msales/1.0/";
+                Url = "http://172.25.19.12:8080/sdata/api/msales/1.0/";
                 Scope = @"kipgf40h();";
                 IsSageIdProduction = false;
                 SelectedType = "Local Machine 2";
