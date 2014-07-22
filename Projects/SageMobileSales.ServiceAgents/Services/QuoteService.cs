@@ -494,9 +494,7 @@ namespace SageMobileSales.ServiceAgents.Services
             string salesRepId = await _salesRepRepository.GetSalesRepId();
             if (!string.IsNullOrEmpty(salesRepId))
             {
-                salesRepId = "SalesRep.id eq " + "'" + salesRepId + "'";
                 parameters.Add("Count", "100");
-               // parameters.Add("where", salesRepId);
                 HttpResponseMessage quotesResponse = null;
 
                 Constants.syncQueryEntity = Constants.syncSourceQueryEntity + "('" + Constants.TrackingId + "')";

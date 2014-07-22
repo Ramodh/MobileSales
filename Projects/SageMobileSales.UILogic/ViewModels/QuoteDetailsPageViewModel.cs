@@ -566,20 +566,23 @@ namespace SageMobileSales.UILogic.ViewModels
                     SalesRep salesRep = (await _salesRepRepository.GetSalesRepDtlsAsync()).FirstOrDefault();
 
                     DiscountPercent = Convert.ToDecimal(((TextBox) args).Text);
+
                     if (DiscountPercent < 100)
                     {
-                        if (DiscountPercent > Convert.ToDecimal(salesRep.MaximumDiscountPercent))
+                        if (salesRep.MaximumDiscountPercent != null)
                         {
-                            var maxDiscountMesDialog =
-                                new MessageDialog(
-                                    ResourceLoader.GetForCurrentView("Resources")
-                                        .GetString("MesDialogDiscountPercentageText"),
-                                    ResourceLoader.GetForCurrentView("Resources")
-                                        .GetString("MesDialogDiscountPercentageTitle"));
-                            await maxDiscountMesDialog.ShowAsync();
-                            DiscountPercent = Convert.ToDecimal(salesRep.MaximumDiscountPercent);
+                            if (DiscountPercent > Convert.ToDecimal(salesRep.MaximumDiscountPercent))
+                            {
+                                var maxDiscountMesDialog =
+                                    new MessageDialog(
+                                        ResourceLoader.GetForCurrentView("Resources")
+                                            .GetString("MesDialogDiscountPercentageText"),
+                                        ResourceLoader.GetForCurrentView("Resources")
+                                            .GetString("MesDialogDiscountPercentageTitle"));
+                                await maxDiscountMesDialog.ShowAsync();
+                                DiscountPercent = Convert.ToDecimal(salesRep.MaximumDiscountPercent);
+                            }
                         }
-
                         // DiscountPercentageValue = Math.Round(((_discountPercent / 100) * SubTotal), 2);
                     }
                 }
