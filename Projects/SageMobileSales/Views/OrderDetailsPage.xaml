@@ -1,0 +1,328 @@
+﻿<prism:VisualStateAwarePage
+    x:Name="pageRoot"
+    x:Class="SageMobileSales.Views.OrderDetailsPage"
+    DataContext="{Binding DefaultViewModel, RelativeSource={RelativeSource Self}}"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:views="using:SageMobileSales.Views"
+    xmlns:common="using:SageMobileSales.Common"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:prism="using:Microsoft.Practices.Prism.StoreApps"
+    xmlns:behaviors="using:SageMobileSales.Behaviors"
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    prism:ViewModelLocator.AutoWireViewModel="true"
+    mc:Ignorable="d">
+
+    <prism:VisualStateAwarePage.Resources>
+        <CollectionViewSource x:Name="OrderLineItemsViewSource"
+                              Source="{Binding OrderLineItemsList}" />
+    </prism:VisualStateAwarePage.Resources>
+
+    <Page.TopAppBar>
+        <AppBar x:Name="TopAppBar1" Style="{StaticResource TopAppBarUserControlStyle}" x:Uid="TopAppBar1">
+            <views:TopAppBarUserControl />
+        </AppBar>
+    </Page.TopAppBar>
+    <Page.BottomAppBar>
+        <CommandBar Style="{StaticResource BottomAppBarStyle}"
+                    IsOpen="{Binding IsBottomAppBarOpened, Mode=TwoWay}"
+                    IsSticky="True"
+                    AutomationProperties.AutomationId="BottomAppBar"
+                    x:Uid="BottomAppBar">
+            <CommandBar.PrimaryCommands>
+                <AppBarButton x:Name="MailAppBarButton"
+                              x:Uid="MailAppBarButton"
+                              AutomationProperties.AutomationId="MailAppBarButton"
+                              Label="Mail"
+                              Icon="MailForward"
+                              Command="{Binding SendMailCommand}"
+                              Visibility="{Binding IsSendmailVisible,Mode=TwoWay}"
+                              Margin="0,1,0,-1" />
+            </CommandBar.PrimaryCommands>
+        </CommandBar>
+    </Page.BottomAppBar>
+
+    <!--
+        This grid acts as a root panel for the page that defines two rows:
+        * Row 0 contains the back button and page title
+        * Row 1 contains the rest of the page layout
+    -->
+    <Grid Style="{StaticResource LayoutRootStyle}">
+        <Grid.ChildrenTransitions>
+            <TransitionCollection>
+                <EntranceThemeTransition />
+            </TransitionCollection>
+        </Grid.ChildrenTransitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="140" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <ProgressRing Grid.Row="1" Height="70" Width="70"
+                      IsActive="{Binding InProgress, Mode=TwoWay}"
+                      Visibility="{Binding InProgress, Mode=TwoWay,Converter={StaticResource InProgessVisibilityConverter}}"
+                      Style="{StaticResource GridViewProgressRingStyle}" />
+
+        <ScrollViewer x:Name="scrollViewer" Grid.Row="1" HorizontalScrollMode="Enabled" IsHorizontalRailEnabled="False"
+                      VerticalScrollMode="Disabled" IsVerticalRailEnabled="False" ZoomMode="Disabled"
+                      IsDeferredScrollingEnabled="False" BringIntoViewOnFocusChange="True"
+                      HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+            <Grid x:Name="scrollGrid">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="120" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Grid x:Name="orderDetailsview" Grid.Column="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="120" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="10" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="10" />
+                    </Grid.RowDefinitions>
+                    <!--<Grid Grid.Row="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Row="0" Grid.ColumnSpan="2" Text="{Binding CustomerDtls.CustomerName}" Style="{StaticResource SubHeaderCustomerDashBoardTextStyle}" VerticalAlignment="Bottom" TextWrapping="NoWrap"/>
+                        <TextBlock Grid.Row="1" Grid.Column="0" x:Uid="StatusText" Text="Status:" Style="{StaticResource DetailsPageTextblockTextStyle}"  VerticalAlignment="Bottom" TextWrapping="NoWrap"/>
+                        <TextBlock Grid.Column="1" x:Uid="Status" Text="{Binding OrderDtls.OrderStatus}" Style="{StaticResource DetailsPageTextblockTextStyle}" HorizontalAlignment="Left" VerticalAlignment="Bottom" TextWrapping="NoWrap" Grid.RowSpan="2"/>
+                        <TextBlock Grid.Row="2" Grid.Column="0" x:Uid="SalesRepNameText" Text="RepName:" Style="{StaticResource DetailsPageTextblockTextStyle}"  VerticalAlignment="Bottom" TextWrapping="NoWrap"/>
+                        <TextBlock Grid.Row="2" Grid.Column="1" x:Uid="SalesRep" Text="{Binding OrderDtls.RepName}" Style="{StaticResource DetailsPageTextblockTextStyle}" VerticalAlignment="Bottom" TextWrapping="NoWrap" Width="300"/>
+                        <TextBlock Grid.Row="3" Grid.Column="0" x:Uid="AddressText" Text="Address:" Style="{StaticResource DetailsPageTextblockTextStyle}"  VerticalAlignment="Top" TextWrapping="NoWrap"/>
+                    </Grid>-->
+                    <StackPanel Grid.Row="0">
+                        <TextBlock Text="{Binding CustomerDtls.CustomerName}"
+                                   Style="{StaticResource SubHeaderCustomerDashBoardTextStyle}"
+                                   VerticalAlignment="Bottom" TextWrapping="NoWrap" />
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock x:Uid="StatusText" Text="Status:" FontWeight="Bold"
+                                       Style="{StaticResource DetailsPageTextblockTextStyle}"
+                                       VerticalAlignment="Bottom" TextWrapping="NoWrap" />
+                            <TextBlock x:Uid="Status" Text="{Binding OrderDtls.OrderStatus}" FontWeight="Bold"
+                                       Style="{StaticResource DetailsPageTextblockTextStyle}"
+                                       VerticalAlignment="Bottom" TextWrapping="NoWrap" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock x:Uid="SalesRepNameText" Text="Salesperson:"
+                                       Style="{StaticResource DetailsPageTextblockTextStyle}"
+                                       VerticalAlignment="Bottom" TextWrapping="NoWrap" />
+                            <TextBlock x:Uid="SalesRep" Text="{Binding OrderDtls.RepName}"
+                                       Style="{StaticResource DetailsPageTextblockTextStyle}"
+                                       VerticalAlignment="Bottom" TextWrapping="NoWrap" Width="300" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock x:Uid="AddressText" Text="Address:"
+                                       Style="{StaticResource DetailsPageTextblockTextStyle}" VerticalAlignment="Top"
+                                       TextWrapping="NoWrap" />
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Row="0" Text="{Binding CustomerDtls.CustomerName}"
+                                           Style="{StaticResource DetailsPageTextblockTextStyle}"
+                                           VerticalAlignment="Top" TextWrapping="NoWrap" Width="240"
+                                           TextTrimming="WordEllipsis" />
+                                <TextBlock Grid.Row="1" Text="{Binding CustomerDtls.Street1}"
+                                           Style="{StaticResource DetailsPageTextblockTextStyle}"
+                                           VerticalAlignment="Top" TextWrapping="NoWrap" Width="240"
+                                           TextTrimming="WordEllipsis" />
+                                <StackPanel Grid.Row="2" Orientation="Horizontal">
+                                    <TextBlock Text="{Binding CustomerDtls.City}"
+                                               Style="{StaticResource DetailsPageTextblockTextStyle}"
+                                               VerticalAlignment="Top" TextWrapping="NoWrap"
+                                               TextTrimming="WordEllipsis" />
+                                    <TextBlock Text="{Binding CustomerDtls.StateProvince}"
+                                               Style="{StaticResource DetailsPageTextblockTextStyle}"
+                                               VerticalAlignment="Top" TextWrapping="NoWrap"
+                                               TextTrimming="WordEllipsis" HorizontalAlignment="Left" Width="50" />
+                                    <TextBlock Text="{Binding CustomerDtls.PostalCode}"
+                                               Style="{StaticResource DetailsPageTextblockTextStyle}"
+                                               VerticalAlignment="Top" TextWrapping="NoWrap"
+                                               TextTrimming="WordEllipsis" HorizontalAlignment="Left" />
+                                </StackPanel>
+                                <TextBlock Grid.Row="3" Text="{Binding CustomerDtls.Phone}"
+                                           Style="{StaticResource DetailsPageTextblockTextStyle}"
+                                           VerticalAlignment="Top" Width="240" TextWrapping="NoWrap"
+                                           TextTrimming="WordEllipsis" />
+                            </Grid>
+                        </StackPanel>
+                    </StackPanel>
+
+
+                    <StackPanel Grid.Row="2">
+                        <TextBlock x:Uid="Summary" Text="Summary"
+                                   Style="{StaticResource SubHeaderCustomerDashBoardTextStyle}"
+                                   VerticalAlignment="Bottom" />
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock x:Uid="SubTotal" Text="Subtotal:"
+                                       Style="{StaticResource DetailsPageTextblockTextStyle}"
+                                       VerticalAlignment="Bottom" />
+                            <TextBlock
+                                Text="{Binding SubTotal, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:C}'}"
+                                Style="{StaticResource DetailsPageTextblockTextStyle}" VerticalAlignment="Bottom"
+                                TextWrapping="NoWrap" Width="300" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock x:Uid="Shipping" Text="Shipping:"
+                                       Style="{StaticResource DetailsPageTextblockTextStyle}"
+                                       VerticalAlignment="Bottom" />
+                            <TextBlock
+                                Text="{Binding OrderDtls.ShippingAndHandling,Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:C}'}"
+                                Style="{StaticResource DetailsPageTextblockTextStyle}" VerticalAlignment="Bottom" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock x:Uid="Discount" Text="Discount:"
+                                       Style="{StaticResource DetailsPageTextblockTextStyle}"
+                                       VerticalAlignment="Bottom" />
+                            <TextBlock
+                                Text="{Binding DiscountPercentageValue,Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:C}'}"
+                                Style="{StaticResource DetailsPageTextblockTextStyle}" VerticalAlignment="Bottom" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock x:Uid="EstimatedTax" Text="Est. Tax:"
+                                       Style="{StaticResource DetailsPageTextblockTextStyle}"
+                                       VerticalAlignment="Bottom" />
+                            <TextBlock
+                                Text="{Binding OrderDtls.Tax,Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:C}'}"
+                                Style="{StaticResource DetailsPageTextblockTextStyle}" VerticalAlignment="Bottom" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock x:Uid="Total" Text="Total:" FontWeight="Bold"
+                                       Style="{StaticResource DetailsPageTextblockTextStyle}"
+                                       VerticalAlignment="Bottom" />
+                            <TextBlock
+                                Text="{Binding OrderDtls.Amount,Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:C}'}"
+                                Style="{StaticResource DetailsPageTextblockTextStyle}" FontWeight="Bold"
+                                VerticalAlignment="Bottom" Width="300" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="4">
+                        <TextBlock x:Uid="shippedto" Text="Shipped to"
+                                   Style="{StaticResource SubHeaderCustomerDashBoardTextStyle}"
+                                   VerticalAlignment="Bottom" />
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Row="0" Text="{Binding ShippingAddress.AddressName}"
+                                       Style="{StaticResource DetailsPageTextblockTextStyle}" VerticalAlignment="Top"
+                                       TextWrapping="NoWrap" Width="240" TextTrimming="WordEllipsis" />
+                            <TextBlock Grid.Row="1" Text="{Binding ShippingAddress.Street1}"
+                                       Style="{StaticResource DetailsPageTextblockTextStyle}" VerticalAlignment="Top"
+                                       TextWrapping="NoWrap" Width="240" TextTrimming="WordEllipsis" />
+                            <StackPanel Grid.Row="2" Orientation="Horizontal">
+                                <TextBlock Text="{Binding ShippingAddress.City}"
+                                           Style="{StaticResource DetailsPageTextblockTextStyle}"
+                                           VerticalAlignment="Top" TextWrapping="NoWrap" TextTrimming="WordEllipsis" />
+                                <TextBlock Text="{Binding ShippingAddress.StateProvince}"
+                                           Style="{StaticResource DetailsPageTextblockTextStyle}"
+                                           VerticalAlignment="Top" TextWrapping="NoWrap" TextTrimming="WordEllipsis"
+                                           HorizontalAlignment="Left" Width="50" />
+                                <TextBlock Text="{Binding ShippingAddress.PostalCode}"
+                                           Style="{StaticResource DetailsPageTextblockTextStyle}"
+                                           VerticalAlignment="Top" TextWrapping="NoWrap" TextTrimming="WordEllipsis"
+                                           HorizontalAlignment="Left" />
+                            </StackPanel>
+                            <TextBlock Grid.Row="3" Text="{Binding ShippingAddress.Phone}"
+                                       Style="{StaticResource DetailsPageTextblockTextStyle}" VerticalAlignment="Top"
+                                       Width="240" TextWrapping="NoWrap" TextTrimming="WordEllipsis" />
+                        </Grid>
+
+                        <!--<TextBlock  x:Uid="shippedto" Text="Shipped to" Style="{StaticResource SubHeaderCustomerDashBoardTextStyle}" VerticalAlignment="Bottom" />
+                        <TextBlock Text="{Binding CustomerDtls.CustomerName}" Style="{StaticResource DetailsPageTextblockTextStyle}" VerticalAlignment="Bottom"/>
+                        <TextBlock Text="{Binding ShippingAddressStreet1}" Style="{StaticResource DetailsPageTextblockTextStyle}" VerticalAlignment="Bottom"/>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding ShippingAddressCity}" Style="{StaticResource DetailsPageTextblockTextStyle}" VerticalAlignment="Bottom"/>
+                            <TextBlock Text="{Binding ShippingAddressStateProvince}" Style="{StaticResource DetailsPageTextblockTextStyle}" VerticalAlignment="Bottom"/>
+                            <TextBlock Text="{Binding ShippingAddressPostalCode}" Style="{StaticResource DetailsPageTextblockTextStyle}" VerticalAlignment="Bottom"/>
+                        </StackPanel>-->
+                    </StackPanel>
+                </Grid>
+
+                <Grid x:Name="orderLineItemsGrid" Grid.Column="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="95" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Items" Grid.Row="0" Style="{StaticResource SubHeaderCustomerDashBoardTextStyle}" />
+                    <GridView Grid.Row="1"
+                              x:Name="orderLineItemsGridView"
+                              AutomationProperties.AutomationId="OrderLineItemsGridView"
+                              AutomationProperties.Name="OrderLineItems"
+                              SelectionMode="None"
+                              IsSwipeEnabled="false"
+                              IsItemClickEnabled="false"
+                              TabIndex="1"
+                              Grid.RowSpan="2"
+                              Padding="0,0,116,36"
+                              ItemsSource="{Binding Source={StaticResource OrderLineItemsViewSource}}"
+                              ItemTemplate="{StaticResource OrderItemsTemplate}">
+                        <!--<interactivity:Interaction.Behaviors>
+                            <core:EventTriggerBehavior EventName="ItemClick">
+                                <core:CallMethodAction MethodName="GridViewItemClick"
+                TargetObject="{Binding Mode=OneWay}" />
+                            </core:EventTriggerBehavior>
+                        </interactivity:Interaction.Behaviors>-->
+                    </GridView>
+                </Grid>
+            </Grid>
+        </ScrollViewer>
+        <!-- Back button and page title -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="120" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Button x:Name="backButton" Margin="39,59,39,0"
+                    Command="{Binding NavigationHelper.GoBackCommand, ElementName=pageRoot}"
+                    Style="{StaticResource NavigationBackButtonNormalStyle}"
+                    VerticalAlignment="Top"
+                    AutomationProperties.Name="Back"
+                    AutomationProperties.AutomationId="BackButton"
+                    AutomationProperties.ItemType="Navigation Button" />
+            <TextBlock x:Name="pageTitle" Text="{Binding OrderDetailsPageTitle}"
+                       Style="{StaticResource PageTitleTextStyle}" Grid.Column="1"
+                       IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="0,0,30,40" />
+        </Grid>
+    </Grid>
+</prism:VisualStateAwarePage>

@@ -1,0 +1,395 @@
+﻿<prism:VisualStateAwarePage
+    x:Name="pageRoot"
+    x:Class="SageMobileSales.Views.CustomerDetailPage"
+    DataContext="{Binding DefaultViewModel, RelativeSource={RelativeSource Self}}"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:views="using:SageMobileSales.Views"
+    xmlns:common="using:SageMobileSales.Common"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:prism="using:Microsoft.Practices.Prism.StoreApps"
+    xmlns:behaviors="using:SageMobileSales.Behaviors"
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    prism:ViewModelLocator.AutoWireViewModel="true"
+    mc:Ignorable="d">
+
+    <prism:VisualStateAwarePage.Resources>
+        <x:String x:Key="ChevronGlyph">&#xE26B;</x:String>
+        <CollectionViewSource x:Name="customerOtherAddressViewSource"
+                              Source="{Binding OtherAddresses}" />
+        <CollectionViewSource x:Name="customerContactsViewSource"
+                              Source="{Binding CustomerContactList}" />
+        <CollectionViewSource x:Name="customerOrdersViewSource"
+                              Source="{Binding CustomerOrders}" />
+        <CollectionViewSource x:Name="customerQuotesViewSource"
+                              Source="{Binding CustomerQuotes}" />
+    </prism:VisualStateAwarePage.Resources>
+    <!--Bottom AppBar-->
+    <Page.BottomAppBar>
+        <AppBar>
+            <Grid x:Name="appbarGrid" Background="#FF355B4E">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50*" />
+                    <ColumnDefinition Width="50*" />
+                </Grid.ColumnDefinitions>
+                <StackPanel x:Name="RightPanel" Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right">
+                    <AppBarButton x:Uid="addContact" Icon="Contact" Label="">
+                        <interactivity:Interaction.Behaviors>
+                            <core:EventTriggerBehavior EventName="Click">
+                                <core:CallMethodAction MethodName="AddContactsButton_Click"
+                                                       TargetObject="{Binding Mode=OneWay}" />
+                            </core:EventTriggerBehavior>
+                        </interactivity:Interaction.Behaviors>
+                    </AppBarButton>
+                    <AppBarButton x:Uid="appbtncreateQuote" Icon="Add" Label="">
+                        <interactivity:Interaction.Behaviors>
+                            <core:EventTriggerBehavior EventName="Click">
+                                <core:CallMethodAction MethodName="CreateQuoteButton_Click"
+                                                       TargetObject="{Binding Mode=OneWay}" />
+                            </core:EventTriggerBehavior>
+                        </interactivity:Interaction.Behaviors>
+                    </AppBarButton>
+                </StackPanel>
+            </Grid>
+        </AppBar>
+    </Page.BottomAppBar>
+
+
+    <prism:VisualStateAwarePage.TopAppBar>
+        <AppBar x:Name="TopAppBar1" Style="{StaticResource TopAppBarUserControlStyle}" x:Uid="TopAppBar1">
+            <views:TopAppBarUserControl />
+        </AppBar>
+    </prism:VisualStateAwarePage.TopAppBar>
+
+    <!--
+        This grid acts as a root panel for the page that defines two rows:
+        * Row 0 contains the back button and page title
+        * Row 1 contains the rest of the page layout
+    -->
+    <Grid Style="{StaticResource LayoutRootStyle}">
+        <Grid.ChildrenTransitions>
+            <TransitionCollection>
+                <EntranceThemeTransition />
+            </TransitionCollection>
+        </Grid.ChildrenTransitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="140" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <ProgressRing Grid.Row="1" Height="70" Width="70"
+                      IsActive="{Binding InProgress, Mode=TwoWay}"
+                      Visibility="{Binding InProgress, Mode=TwoWay,Converter={StaticResource InProgessVisibilityConverter}}"
+                      Style="{StaticResource GridViewProgressRingStyle}" />
+        <ScrollViewer x:Name="scrollViewer" Grid.Row="1" HorizontalScrollMode="Enabled" IsHorizontalRailEnabled="False"
+                      VerticalScrollMode="Disabled" IsVerticalRailEnabled="False" ZoomMode="Disabled"
+                      IsDeferredScrollingEnabled="False" BringIntoViewOnFocusChange="True"
+                      HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+            <Grid x:Name="scrollGrid">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="60" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="60" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="40" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="40" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="40" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="40" />
+                </Grid.ColumnDefinitions>
+                <!--<Grid.RowDefinitions>
+                    <RowDefinition Height="140"/>
+                    <RowDefinition Height="75"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>-->
+
+                <Grid x:Name="customerDetailsGrid" Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="20" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="20" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="20" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="20" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <StackPanel Grid.Row="0">
+                        <TextBlock x:Uid="Address" Style="{StaticResource SubHeaderCustomerDashBoardTextStyle}"
+                                   VerticalAlignment="Bottom" />
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Row="0" Text="{Binding CustomerDtls.AddressName}"
+                                       Style="{StaticResource DetailsPageTextblockTextStyle}" VerticalAlignment="Top"
+                                       TextWrapping="NoWrap" Width="240" TextTrimming="WordEllipsis" />
+                            <TextBlock Grid.Row="1" Text="{Binding CustomerDtls.Street1}"
+                                       Style="{StaticResource DetailsPageTextblockTextStyle}" VerticalAlignment="Top"
+                                       TextWrapping="NoWrap" Width="240" TextTrimming="WordEllipsis" />
+                            <StackPanel Grid.Row="2" Orientation="Horizontal">
+                                <TextBlock Text="{Binding CustomerDtls.City}"
+                                           Style="{StaticResource DetailsPageTextblockTextStyle}"
+                                           VerticalAlignment="Top" TextWrapping="NoWrap" TextTrimming="WordEllipsis"
+                                           HorizontalAlignment="Left" />
+                                <TextBlock Text="{Binding CustomerDtls.StateProvince}"
+                                           Style="{StaticResource DetailsPageTextblockTextStyle}"
+                                           VerticalAlignment="Top" TextWrapping="NoWrap" TextTrimming="WordEllipsis"
+                                           HorizontalAlignment="Left" Width="50" />
+                                <TextBlock Text="{Binding CustomerDtls.PostalCode}"
+                                           Style="{StaticResource DetailsPageTextblockTextStyle}"
+                                           VerticalAlignment="Top" TextWrapping="NoWrap" TextTrimming="WordEllipsis"
+                                           HorizontalAlignment="Left" />
+                            </StackPanel>
+                            <TextBlock Grid.Row="3" Text="{Binding CustomerDtls.Phone}"
+                                       Style="{StaticResource DetailsPageTextblockTextStyle}" VerticalAlignment="Top"
+                                       Width="240" TextWrapping="NoWrap" TextTrimming="WordEllipsis" />
+
+                            <!--<TextBlock Text="{Binding Address}" LineHeight="26" Style="{StaticResource DetailsPageTextblockTextStyle}" VerticalAlignment="Bottom"/>-->
+                        </Grid>
+                    </StackPanel>
+                    <!--<StackPanel  Grid.Row="2">
+                        <TextBlock x:Name="Phone" Text="Phone:"  Style="{StaticResource SubHeaderCustomerDashBoardTextStyle}" VerticalAlignment="Bottom" />
+                    <TextBlock Text="{Binding Phone}" Style="{StaticResource ProductTextblockTextStyle}" VerticalAlignment="Bottom"/>
+                    </StackPanel>-->
+                    <StackPanel Grid.Row="2">
+                        <TextBlock x:Uid="SalesThisMonth" Style="{StaticResource SubHeaderCustomerDashBoardTextStyle}"
+                                   VerticalAlignment="Bottom" />
+                        <TextBlock Text="{Binding SalesThisMonth}"
+                                   Style="{StaticResource DetailsPageTextblockTextStyle}" VerticalAlignment="Bottom" />
+                    </StackPanel>
+                    <StackPanel Grid.Row="4">
+                        <TextBlock x:Uid="SalesYTD" Style="{StaticResource SubHeaderCustomerDashBoardTextStyle}"
+                                   VerticalAlignment="Bottom" />
+                        <TextBlock Text="{Binding SalesYTD}" Style="{StaticResource DetailsPageTextblockTextStyle}"
+                                   VerticalAlignment="Bottom" />
+                    </StackPanel>
+                    <StackPanel Grid.Row="6">
+                        <TextBlock x:Uid="Account" Style="{StaticResource SubHeaderCustomerDashBoardTextStyle}"
+                                   VerticalAlignment="Bottom" />
+                        <Grid x:Name="customerAccountDetailsGrid">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="10" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="10" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <StackPanel Grid.Row="0" Orientation="Horizontal">
+                                <TextBlock x:Uid="Terms" Grid.Column="0"
+                                           Style="{StaticResource DetailsPageTextblockTextStyle}"
+                                           VerticalAlignment="Bottom" />
+                                <TextBlock Grid.Column="1" Text="{Binding CustomerDtls.PaymentTerms}"
+                                           Style="{StaticResource DetailsPageTextblockTextStyle}"
+                                           VerticalAlignment="Bottom" Width="200" TextTrimming="WordEllipsis"
+                                           TextWrapping="NoWrap" />
+                            </StackPanel>
+                            <StackPanel Grid.Row="2" Orientation="Horizontal">
+                                <TextBlock x:Uid="CreditLimit" Grid.Column="0"
+                                           Style="{StaticResource DetailsPageTextblockTextStyle}"
+                                           VerticalAlignment="Bottom" />
+                                <TextBlock Grid.Column="1"
+                                           Text="{Binding CustomerDtls.CreditLimit,Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:C}'}"
+                                           Style="{StaticResource DetailsPageTextblockTextStyle}"
+                                           VerticalAlignment="Bottom" Width="200" TextTrimming="WordEllipsis"
+                                           TextWrapping="NoWrap" />
+                            </StackPanel>
+                            <StackPanel Grid.Row="4" Orientation="Horizontal">
+                                <TextBlock x:Uid="Availablecredit" Grid.Column="0"
+                                           Style="{StaticResource DetailsPageTextblockTextStyle}"
+                                           VerticalAlignment="Bottom" Width="110" />
+                                <TextBlock Grid.Column="1"
+                                           Text="{Binding CustomerDtls.CreditAvailable,Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:C}'}"
+                                           Style="{StaticResource DetailsPageTextblockTextStyle}"
+                                           VerticalAlignment="Bottom" Width="200" TextTrimming="WordEllipsis"
+                                           TextWrapping="NoWrap" />
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Grid>
+
+                <Grid x:Name="customerOrdersGrid" Grid.Column="3" Visibility="{Binding IsOrdersVisible}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="95" />
+                    </Grid.RowDefinitions>
+                    <Button Grid.Row="0" Foreground="{ThemeResource ApplicationHeaderForegroundThemeBrush}"
+                            AutomationProperties.Name="Group Title"
+                            Style="{StaticResource TextBlockButtonStyle}" Command="{Binding OrdersNavigationCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock x:Uid="recentOrders" Text="" Style="{StaticResource SubHeaderStyle}" />
+                            <TextBlock Text="{StaticResource ChevronGlyph}"
+                                       Style="{StaticResource SubHeaderGlyphStyle}" />
+                        </StackPanel>
+                    </Button>
+                    <GridView Grid.Row="1"
+                              x:Name="customerOrdersGridView"
+                              AutomationProperties.AutomationId="customerOrdersGridView"
+                              AutomationProperties.Name="CustomerOrders"
+                              TabIndex="1"
+                              Grid.RowSpan="2"
+
+                              ItemsSource="{Binding Source={StaticResource customerOrdersViewSource}}"
+                              SelectionMode="None"
+                              IsSwipeEnabled="false"
+                              IsItemClickEnabled="True"
+                              ItemTemplate="{StaticResource OrdersTemplate}">
+
+                        <interactivity:Interaction.Behaviors>
+                            <core:EventTriggerBehavior EventName="ItemClick">
+                                <core:CallMethodAction MethodName="GridViewOrderItemClick"
+                                                       TargetObject="{Binding Mode=OneWay}" />
+                            </core:EventTriggerBehavior>
+                        </interactivity:Interaction.Behaviors>
+                    </GridView>
+                </Grid>
+
+                <Grid x:Name="customerQuotesGrid" Grid.Column="5" Visibility="{Binding IsQuotesVisible}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="95" />
+                    </Grid.RowDefinitions>
+                    <!--<ProgressRing Grid.Row="1" Height="70" Width="70" 
+                      IsActive="{Binding InProgress, Mode=TwoWay}" 
+                      Visibility="{Binding InProgress, Mode=TwoWay,Converter={StaticResource InProgessVisibilityConverter}}"
+                      Style="{StaticResource GridViewProgressRingStyle}"/>-->
+                    <Button Grid.Row="0" Foreground="{ThemeResource ApplicationHeaderForegroundThemeBrush}"
+                            AutomationProperties.Name="Group Title"
+                            Style="{StaticResource TextBlockButtonStyle}" Command="{Binding QuotesNavigationCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock x:Uid="recentQuotes" Text="" Style="{StaticResource SubHeaderStyle}" />
+                            <TextBlock Text="{StaticResource ChevronGlyph}"
+                                       Style="{StaticResource SubHeaderGlyphStyle}" />
+                        </StackPanel>
+                    </Button>
+                    <GridView Grid.Row="1"
+                              x:Name="customerQuotesGridView"
+                              AutomationProperties.AutomationId="CustomerQuotesGridView"
+                              AutomationProperties.Name="CustomerQuotes"
+                              TabIndex="1"
+                              Grid.RowSpan="2"
+
+                              ItemsSource="{Binding Source={StaticResource customerQuotesViewSource}}"
+                              SelectionMode="None"
+                              IsSwipeEnabled="false"
+                              IsItemClickEnabled="True"
+                              ItemTemplate="{StaticResource QuotesTemplate}">
+
+                        <interactivity:Interaction.Behaviors>
+                            <core:EventTriggerBehavior EventName="ItemClick">
+                                <core:CallMethodAction MethodName="GridViewQuoteItemClick"
+                                                       TargetObject="{Binding Mode=OneWay}" />
+                            </core:EventTriggerBehavior>
+                        </interactivity:Interaction.Behaviors>
+                    </GridView>
+                </Grid>
+
+                <Grid x:Name="customerOtherAddressGrid" Grid.Column="7" Visibility="{Binding IsOtherAddressesVisible}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="95" />
+                    </Grid.RowDefinitions>
+                    <Button Grid.Row="0" Foreground="{ThemeResource ApplicationHeaderForegroundThemeBrush}"
+                            AutomationProperties.Name="Group Title"
+                            Style="{StaticResource TextBlockButtonStyle}"
+                            Command="{Binding OtherAddressesNavigationCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Other Addresses" Style="{StaticResource SubHeaderStyle}" />
+                            <TextBlock Text="{StaticResource ChevronGlyph}"
+                                       Style="{StaticResource SubHeaderGlyphStyle}" />
+                        </StackPanel>
+                    </Button>
+                    <GridView Grid.Row="1"
+                              x:Name="customerOtherAddressGridView"
+                              AutomationProperties.AutomationId="customerOtherAddressGridView"
+                              AutomationProperties.Name="CustomerOtherAddress"
+                              TabIndex="1"
+                              Grid.RowSpan="2"
+
+                              ItemsSource="{Binding Source={StaticResource customerOtherAddressViewSource}}"
+                              SelectionMode="None"
+                              IsSwipeEnabled="false"
+                              IsItemClickEnabled="false"
+                              ItemTemplate="{StaticResource CustomerOtherAddressDarkTemplate}">
+                        <!--<GridView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <ItemsWrapGrid ItemWidth="400"/>
+                        </ItemsPanelTemplate>
+                        </GridView.ItemsPanel>-->
+                    </GridView>
+                </Grid>
+
+                <Grid x:Name="customerContactsGrid" Grid.Column="9" Visibility="{Binding IsContactsVisible}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="95" />
+                    </Grid.RowDefinitions>
+                    <!--<ProgressRing Grid.Row="1" Height="70" Width="70" 
+                      IsActive="{Binding InProgress, Mode=TwoWay}" 
+                      Visibility="{Binding InProgress, Mode=TwoWay,Converter={StaticResource InProgessVisibilityConverter}}"
+                      Style="{StaticResource GridViewProgressRingStyle}"/>-->
+                    <Button Grid.Row="0" Foreground="{ThemeResource ApplicationHeaderForegroundThemeBrush}"
+                            AutomationProperties.Name="Group Title"
+                            Style="{StaticResource TextBlockButtonStyle}"
+                            Command="{Binding ContactsNavigationCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Contacts" Style="{StaticResource SubHeaderStyle}" />
+                            <TextBlock Text="{StaticResource ChevronGlyph}"
+                                       Style="{StaticResource SubHeaderGlyphStyle}" />
+                        </StackPanel>
+                    </Button>
+                    <GridView Grid.Row="1"
+                              x:Name="customerContactsGridView"
+                              AutomationProperties.AutomationId="customerContactsGridView"
+                              AutomationProperties.Name="CustomerContacts"
+                              TabIndex="1"
+                              Grid.RowSpan="2"
+
+
+                              ItemsSource="{Binding Source={StaticResource customerContactsViewSource}}"
+                              SelectionMode="None"
+                              IsSwipeEnabled="false"
+                              IsItemClickEnabled="false"
+                              ItemTemplate="{StaticResource CustomerContactsDashBoardDarkTemplate}" />
+                </Grid>
+
+
+            </Grid>
+        </ScrollViewer>
+
+        <!-- Back button and page title -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="120" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Button x:Name="backButton" Margin="39,59,39,0"
+                    Command="{Binding NavigationHelper.GoBackCommand, ElementName=pageRoot}"
+                    Style="{StaticResource NavigationBackButtonNormalStyle}"
+                    VerticalAlignment="Top"
+                    AutomationProperties.Name="Back"
+                    AutomationProperties.AutomationId="BackButton"
+                    AutomationProperties.ItemType="Navigation Button" />
+            <TextBlock x:Name="customerDetailPageTitle" Text="{Binding CustomerDetailPageTitle}"
+                       Style="{StaticResource PageTitleTextStyle}" Grid.Column="1"
+                       IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="0,0,30,40" />
+        </Grid>
+    </Grid>
+</prism:VisualStateAwarePage>
