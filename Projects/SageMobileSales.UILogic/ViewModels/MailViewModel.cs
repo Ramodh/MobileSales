@@ -65,13 +65,12 @@ namespace SageMobileSales.UILogic.ViewModels
                     _companyInfoDatesTable =
                         "<table width='100%'><tr><td align='right'><table border='0' width='100%'><tr><td><table width='100%'><tr><td>" +
                         tenant.Name + "</td></tr><tr><td>" + tenant.AddressLine1 + "</td></tr><tr><td>" +
-                        tenant.AddressLine2 + "</td></tr><tr><td>" + tenant.City + ',' + tenant.Region + "," +
+                        tenant.AddressLine2 + "</td></tr><tr><td>" + (tenant.City!=null?tenant.City + ',':string.Empty) + (tenant.Region!=null?tenant.Region + ",":string.Empty) +
                         tenant.PostalCode +
                         "</td></tr></table></td><td style='padding:3px;' align='right'><table border='1px'><tr><td style='border-bottom:1px solid lightgray;'>Date:</td><td style='border-bottom:1px solid lightgray;'>" +
-                        quoteDetails.CreatedOn.ToString("MM/dd/yyyy") +
-                        "</td></tr><tr><td style='border-bottom:1px solid lightgray;'>Expires:</td><td style='border-bottom:1px solid lightgray;'>" +
-                        quoteDetails.ExpiredOn + "</td></tr><tr><td>" + quoteDetails.QuoteStatus +
-                        "Number:</td><td></td></tr></table></td></tr></table></td></tr></table>";
+                        quoteDetails.CreatedOn.ToString("MMM d, yyyy") +
+                        "</td></tr><tr><td style='border-bottom:1px solid lightgray;'>Quote Number:</td><td style='border-bottom:1px solid lightgray;'>" +
+                        quoteDetails.QuoteNumber + "</td></tr></table></td></tr></table></td></tr></table>";
 
                     _customerDetailsTable = "<table border='0'><tr><td><b>Prepared for:</b></td><td>" +
                                             customerDetails.CustomerName + "</td></tr><tr><td></td><td>" +
@@ -122,7 +121,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 quoteLineItem += "<tr><td><b>" + lineItem.ProductName + "</b><br />" + lineItem.ProductDescription +
                                  "</td><td>" + lineItem.ProductSku + "</td><td>" + lineItem.LineItemQuantity +
                                  "</td><td>" + lineItem.LineItemPrice + "</td><td>" +
-                                 Math.Round(lineItem.LineItemQuantity*lineItem.LineItemPrice, 2) + "</td></tr>";
+                                 Math.Round(lineItem.LineItemQuantity * lineItem.LineItemPrice, 2) + "</td></tr>";
                 _subTotal += lineItem.Amount;
             }
 
@@ -158,14 +157,12 @@ namespace SageMobileSales.UILogic.ViewModels
                     _companyInfoDatesTable =
                         "<table width='100%'><tr><td align='right'><table border='0' width='100%'><tr><td><table width='100%'><tr><td>" +
                         tenant.Name + "</td></tr><tr><td>" + tenant.AddressLine1 + "</td></tr><tr><td>" +
-                        tenant.AddressLine2 + "</td></tr><tr><td>" + tenant.City + ',' + tenant.Region + "," +
+                        tenant.AddressLine2 + "</td></tr><tr><td>" + (tenant.City != null ? tenant.City + ',' : string.Empty) + (tenant.Region != null ? tenant.Region + "," : string.Empty) +
                         tenant.PostalCode +
-                        "</td></tr></table></td><td style='padding:3px;' align='right'><table border='1px'><tr><td style='border-bottom:1px solid lightgray;'>Approved:</td><td style='border-bottom:1px solid lightgray;'>" +
-                        orderDetails.CreatedOn.ToString("MM/dd/yyyy") +
-                        "</td></tr><tr><td style='border-bottom:1px solid lightgray;'>Updated:</td><td style='border-bottom:1px solid lightgray;'>" +
-                        orderDetails.UpdatedOn.ToString("MM/dd/yyyy") +
+                        "</td></tr></table></td><td style='padding:3px;' align='right'><table border='1px'><tr><td style='border-bottom:1px solid lightgray;'>Order Date:</td><td style='border-bottom:1px solid lightgray;'>" +
+                        orderDetails.CreatedOn.ToString("MMM d, yyyy") +
                         "</td></tr><tr><td style='border-bottom:1px solid lightgray;'>Order Number:</td><td style='border-bottom:1px solid lightgray;'>" +
-                        orderDetails.ExternalReferenceNumber +
+                        orderDetails.OrderNumber +
                         "</td></tr></tr></table></td></tr></table></td></tr></table>";
 
                     _customerDetailsTable = "<table border='0'><tr><td><b>Prepared for:</b></td><td>" +
@@ -205,7 +202,7 @@ namespace SageMobileSales.UILogic.ViewModels
         private decimal CalculateDiscountPercent(decimal discountPercent, decimal subTotal)
         {
             // discountPercentage = Math.Round(((1 - ((SubTotal - DiscountPercentageValue) / SubTotal)) * 100), 2);
-            return (Math.Round(((discountPercent/100)*subTotal), 2));
+            return (Math.Round(((discountPercent / 100) * subTotal), 2));
         }
     }
 }

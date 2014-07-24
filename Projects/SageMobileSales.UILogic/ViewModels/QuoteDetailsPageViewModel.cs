@@ -395,8 +395,8 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             try
             {
-                await _tenantService.SyncTenant();
-                _tenant = await _tenantRepository.GetTenantDtlsAsync(QuoteDetails.TenantId);
+               // await _tenantService.SyncTenant();
+                _tenant = await _tenantRepository.GetTenantDtlsAsync(Constants.TenantId);
                 DataTransferManager.ShowShareUI();
             }
             catch (Exception ex)
@@ -626,13 +626,13 @@ namespace SageMobileSales.UILogic.ViewModels
             bool succeeded = false;
             var objMail = new MailViewModel();
             QuoteDetails.ShippingAndHandling = ShippingAndHandling;
-            QuoteDetails.DiscountPercent = DiscountPercent;
+            QuoteDetails.DiscountPercent = DiscountPercent;            
             string HtmlContentString = objMail.BuildQuoteEmailContent(_tenant, CustomerDetails, QuoteDetails,
                 QuoteLineItemsList, SubTotal.ToString(), Total.ToString());
             if (!String.IsNullOrEmpty(HtmlContentString))
             {
                 DataPackage requestData = request.Data;
-                requestData.Properties.Title = "Quote Details";
+                requestData.Properties.Title = "Quote";
                 requestData.Properties.Description = CustomerDetails.CustomerName; // The description is optional.
                 //requestData.SetData(HtmlContentString,HtmlContentString);
                 requestData.SetHtmlFormat(HtmlFormatHelper.CreateHtmlFormat(HtmlContentString));
