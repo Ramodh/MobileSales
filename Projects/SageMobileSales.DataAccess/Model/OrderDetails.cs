@@ -23,12 +23,12 @@ namespace SageMobileSales.DataAccess.Model
             set { _orderdescription = value; }
         }
 
-        public string ExternalReferenceNumber { get; set; }
+        //public string ExternalReferenceNumber { get; set; }
         public int OrderNumber { get; set; }
         public string CustomerId { get; set; }
         public string AddressId { get; set; }
         public string RepId { get; set; }
         public string TenantId { get; set; }
-        public DateTime UpdatedOn { get; set; }
+        public DateTime SubmittedDate { get; set; }
     }
 }

@@ -38,10 +38,10 @@ namespace SageMobileSales.DataAccess.Repositories
             {
                 if (!string.IsNullOrEmpty(orderId))
                 {
-                    JsonObject sDataOrdeLineItems = sDataOrder.GetNamedObject("Details");
-                    if (sDataOrdeLineItems.ContainsKey("$resources"))
+                    //JsonObject sDataOrdeLineItems = sDataOrder.GetNamedObject("Details");
+                    if (sDataOrder.ContainsKey("Details"))
                     {
-                        JsonArray sDataOrderLineItemArray = sDataOrdeLineItems.GetNamedArray("$resources");
+                        JsonArray sDataOrderLineItemArray = sDataOrder.GetNamedArray("Details");
                         if (sDataOrderLineItemArray.Count > 0)
                         {
                             await SaveOrderLineItemDetailsAsync(sDataOrderLineItemArray, orderId);
@@ -155,7 +155,7 @@ namespace SageMobileSales.DataAccess.Repositories
             try
             {
                 IJsonValue value;
-                if (sDataOrderLineItem.TryGetValue("$key", out value))
+                if (sDataOrderLineItem.TryGetValue("Id", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
@@ -164,7 +164,7 @@ namespace SageMobileSales.DataAccess.Repositories
                             await
                                 _sageSalesDB.QueryAsync<OrderLineItem>(
                                     "SELECT * FROM OrderLineItem where OrderLineItemId=?",
-                                    sDataOrderLineItem.GetNamedString("$key"));
+                                    sDataOrderLineItem.GetNamedString("Id"));
 
                         if (orderLineItemList.FirstOrDefault() != null)
                         {
@@ -226,7 +226,7 @@ namespace SageMobileSales.DataAccess.Repositories
                 orderLineItemObj = new OrderLineItem();
 
                 orderLineItemObj.OrderId = orderId;
-                orderLineItemObj.OrderLineItemId = sDataOrderLineItem.GetNamedString("$key");
+                orderLineItemObj.OrderLineItemId = sDataOrderLineItem.GetNamedString("Id");
 
                 orderLineItemObj = await ExtractOrderLineItemFromJsonAsync(sDataOrderLineItem, orderLineItemObj);
                 await _sageSalesDB.InsertAsync(orderLineItemObj);
@@ -299,17 +299,36 @@ namespace SageMobileSales.DataAccess.Repositories
                         orderLineItem.Price = Convert.ToDecimal(sDataOrderLineItem.GetNamedNumber("Price"));
                     }
                 }
-
-                //yet to implement product.......
+                
                 if (sDataOrderLineItem.TryGetValue("InventoryItem", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        JsonObject sDataProduct = sDataOrderLineItem.GetNamedObject("InventoryItem");
+                        //JsonObject sDataProduct = sDataOrderLineItem.GetNamedString("InventoryItemId");
+                        //JsonObject sDataCustomer = sDataOrder.GetNamedObject("Customer");                        
+                        var productDb = await _sageSalesDB.QueryAsync<Product>("SELECT * FROM Product WHERE ProductId=?", sDataOrderLineItem.GetNamedString("InventoryItemId"));
+                        //Customer customer = await _customerRepository.AddOrUpdateCustomerJsonToDbAsync(sDataCustomer);
+                        //if (customer != null)
+                        //{
+                        //    order.CustomerId = customer.CustomerId;
+                        //}
+                        if (productDb.FirstOrDefault() != null)
+                        {
+                            orderLineItem.ProductId = productDb.FirstOrDefault().ProductId;
+                        }
+                        else
+                        {
+                            Product product = new Product();
+                            product.ProductId = sDataOrderLineItem.GetNamedString("InventoryItemId");
 
-                        Product product = await _productRepository.AddOrUpdateProductJsonToDbAsync(sDataProduct);
+                            orderLineItem.ProductId = product.ProductId;
 
-                        orderLineItem.ProductId = product.ProductId;
+                            await _sageSalesDB.InsertAsync(product);
+                        }
+
+                        //Product product = await _productRepository.AddOrUpdateProductJsonToDbAsync(sDataProduct);
+
+                        //orderLineItem.ProductId = product.ProductId;
                     }
                 }
             }

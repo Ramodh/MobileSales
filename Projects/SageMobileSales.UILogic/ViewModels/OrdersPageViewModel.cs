@@ -409,13 +409,13 @@ namespace SageMobileSales.UILogic.ViewModels
                     if (IsAscending)
                     {
                         List<OrderDetails> sortedQuoteDetails =
-                            OrdersList.OrderBy(sortby => sortby.ExternalReferenceNumber).ToList();
+                            OrdersList.OrderBy(sortby => sortby.OrderNumber).ToList();
                         OrdersList = sortedQuoteDetails;
                     }
                     else
                     {
                         List<OrderDetails> sortedQuoteDetails =
-                            OrdersList.OrderByDescending(sortby => sortby.ExternalReferenceNumber).ToList();
+                            OrdersList.OrderByDescending(sortby => sortby.OrderNumber).ToList();
                         OrdersList = sortedQuoteDetails;
                     }
                     _selectedItem = selectedItem;

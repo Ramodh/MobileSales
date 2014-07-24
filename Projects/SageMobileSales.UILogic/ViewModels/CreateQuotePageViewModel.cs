@@ -317,7 +317,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 _createQuoteFrom.Add(new QuoteType
                 {
                     createFrom = PageUtils.PreviousOrder,
-                    createFromText = _orderDetails.ExternalReferenceNumber
+                    createFromText = _orderDetails.OrderNumber.ToString()
                 });
             }
             else

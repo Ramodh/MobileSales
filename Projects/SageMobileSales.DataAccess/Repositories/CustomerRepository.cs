@@ -385,7 +385,7 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        customer.CreditLimit = Convert.ToDecimal(sDataCustomer.GetNamedString("CreditLimit"));
+                        customer.CreditLimit = Convert.ToDecimal(sDataCustomer.GetNamedNumber("CreditLimit"));
                     }
                 }
 
@@ -401,7 +401,7 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        customer.CreditAvailable = Convert.ToDecimal(sDataCustomer.GetNamedString("CreditAvailable"));
+                        customer.CreditAvailable = Convert.ToDecimal(sDataCustomer.GetNamedNumber("CreditAvailable"));
                     }
                 }
 

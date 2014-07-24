@@ -13,13 +13,13 @@ namespace SageMobileSales.DataAccess.Entities
         public string OrderDescription { get; set; }
         public string TenantId { set; get; }
         public DateTime CreatedOn { get; set; }
-        public DateTime UpdatedOn { get; set; }
+        public DateTime SubmittedDate { get; set; }
         public string OrderStatus { get; set; }
         public decimal ShippingAndHandling { get; set; }
         public decimal Tax { get; set; }
         //public DateTime ExpiryDate { get; set; }
         public decimal Amount { get; set; }
-        public string ExternalReferenceNumber { get; set; }
+        //public string ExternalReferenceNumber { get; set; }
         public decimal DiscountPercent { get; set; }
         public int OrderNumber { get; set; }
 

@@ -163,9 +163,9 @@ namespace SageMobileSales.UILogic.ViewModels
                         "</td></tr></table></td><td style='padding:3px;' align='right'><table border='1px'><tr><td style='border-bottom:1px solid lightgray;'>Approved:</td><td style='border-bottom:1px solid lightgray;'>" +
                         orderDetails.CreatedOn.ToString("MM/dd/yyyy") +
                         "</td></tr><tr><td style='border-bottom:1px solid lightgray;'>Updated:</td><td style='border-bottom:1px solid lightgray;'>" +
-                        orderDetails.UpdatedOn.ToString("MM/dd/yyyy") +
+                        orderDetails.SubmittedDate.ToString("MM/dd/yyyy") +
                         "</td></tr><tr><td style='border-bottom:1px solid lightgray;'>Order Number:</td><td style='border-bottom:1px solid lightgray;'>" +
-                        orderDetails.ExternalReferenceNumber +
+                        orderDetails.OrderNumber +
                         "</td></tr></tr></table></td></tr></table></td></tr></table>";
 
                     _customerDetailsTable = "<table border='0'><tr><td><b>Prepared for:</b></td><td>" +

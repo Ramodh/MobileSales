@@ -217,7 +217,7 @@
             <TextBlock Text="{Binding OrderDescription}" Style="{StaticResource AddressTextStyle}"
                        TextWrapping="NoWrap" TextTrimming="WordEllipsis" />
             <StackPanel Orientation="Horizontal">
-                <TextBlock Text="{Binding ExternalReferenceNumber}" Style="{StaticResource AddressTextStyle}"
+                <TextBlock Text="{Binding OrderNumber}" Style="{StaticResource AddressTextStyle}"
                            TextWrapping="NoWrap" TextTrimming="WordEllipsis" />
                 <TextBlock
                     Text="{Binding CreatedOn,Converter={StaticResource StringFormatConverter},ConverterParameter='{}{0:MM/dd/yyyy}'}"
@@ -267,7 +267,7 @@
             <TextBlock Grid.Row="1" Text="{Binding OrderDescription}" Style="{StaticResource AddressTextStyle}"
                        TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.ColumnSpan="3" />
 
-            <TextBlock Grid.Row="2" Text="{Binding ExternalReferenceNumber}" Style="{StaticResource AddressTextStyle}"
+            <TextBlock Grid.Row="2" Text="{Binding OrderNumber}" Style="{StaticResource AddressTextStyle}"
                        TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="0" />
             <TextBlock Grid.Row="2"
                        Text="{Binding CreatedOn,Converter={StaticResource StringFormatConverter},ConverterParameter='{}{0:MM/dd/yyyy}'}"

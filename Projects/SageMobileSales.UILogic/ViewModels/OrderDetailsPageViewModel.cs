@@ -137,7 +137,7 @@ namespace SageMobileSales.UILogic.ViewModels
 
         private async void DisplayOrderDtls()
         {
-            OrderDetailsPageTitle = "Order " + _orderDtls.ExternalReferenceNumber;
+            OrderDetailsPageTitle = "Order " + _orderDtls.OrderNumber;
             InProgress = true;
             if (Constants.ConnectedToInternet())
             {

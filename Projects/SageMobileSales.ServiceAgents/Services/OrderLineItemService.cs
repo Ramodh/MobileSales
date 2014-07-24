@@ -34,13 +34,13 @@ namespace SageMobileSales.ServiceAgents.Services
             try
             {
                 parameters = new Dictionary<string, string>();
-                parameters.Add("Include", "ShippingAddress,Details");
+                parameters.Add("include", "Details");
 
                 string orderEntityId = Constants.OrderEntity + "('" + orderId + "')";
                 HttpResponseMessage orderLineItemResponse = null;
                 orderLineItemResponse =
                     await
-                        _serviceAgent.BuildAndSendRequest(null, orderEntityId, null, null, Constants.AccessToken, parameters);
+                        _serviceAgent.BuildAndSendRequest(Constants.TenantId, orderEntityId, null, null, Constants.AccessToken, parameters);
                 if (orderLineItemResponse != null && orderLineItemResponse.IsSuccessStatusCode)
                 {
                     var sDataQuoteLineItem = await _serviceAgent.ConvertTosDataObject(orderLineItemResponse);
