@@ -203,7 +203,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 if (!String.IsNullOrEmpty(HtmlContentString))
                 {
                     DataPackage requestData = request.Data;
-                    requestData.Properties.Title = "Order Details";
+                    requestData.Properties.Title = "Order";
                     requestData.Properties.Description = CustomerDtls.CustomerName;
                     requestData.SetHtmlFormat(HtmlFormatHelper.CreateHtmlFormat(HtmlContentString));
                     succeeded = true;
@@ -228,8 +228,8 @@ namespace SageMobileSales.UILogic.ViewModels
             {
                 if (!InProgress)
                 {
-                    await _tenantService.SyncTenant();
-                    _tenant = await _tenantRepository.GetTenantDtlsAsync(OrderDtls.TenantId);
+                    //await _tenantService.SyncTenant();
+                    _tenant = await _tenantRepository.GetTenantDtlsAsync(Constants.TenantId);
 
 
                     DataTransferManager.ShowShareUI();

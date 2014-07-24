@@ -236,7 +236,7 @@ namespace SageMobileSales.DataAccess.Repositories
                 quote =
                     await
                         _sageSalesDB.QueryAsync<QuoteDetails>(
-                            "SELECT distinct quote.Id, quote.QuoteId, quote.CreatedOn, quote.ExpiryDate, quote.CustomerId, quote.AddressId, quote.Amount, quote.Tax, quote.ShippingAndHandling, quote.DiscountPercent, quote.quoteStatus, quote.QuoteDescription, quote.TenantId, (select RepName from SalesRep as RP where RP.RepId='" + salesRepId + "') as RepName FROM quote where QuoteId=?",
+                            "SELECT distinct quote.Id, quote.QuoteId, quote.CreatedOn, quote.ExpiryDate, quote.CustomerId, quote.AddressId, quote.Amount, quote.Tax, quote.ShippingAndHandling, quote.DiscountPercent, quote.quoteStatus, quote.QuoteDescription, quote.TenantId, quote.QuoteNumber, (select RepName from SalesRep as RP where RP.RepId='" + salesRepId + "') as RepName FROM quote where QuoteId=?",
                             quoteId);
             }
             catch (SQLiteException ex)

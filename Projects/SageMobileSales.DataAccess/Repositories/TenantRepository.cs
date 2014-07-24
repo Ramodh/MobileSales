@@ -241,6 +241,14 @@ namespace SageMobileSales.DataAccess.Repositories
         {
             IJsonValue value;
 
+            if (sDataTenant.TryGetValue("UmTenantName", out value))
+            {
+                if (value.ValueType.ToString() != DataAccessUtils.Null)
+                {
+                    tenant.Name = sDataTenant.GetNamedString("UmTenantName");
+                }
+            }
+            /*
             if (sDataTenant.TryGetValue("ERPCompanyCode", out value))
             {
                 if (value.ValueType.ToString() != DataAccessUtils.Null)
@@ -312,6 +320,7 @@ namespace SageMobileSales.DataAccess.Repositories
                     tenant.PostalCode = sDataTenant.GetNamedString("ERPCompanyPostalCode");
                 }
             }
+             */
             return tenant;
         }
 
