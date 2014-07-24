@@ -101,23 +101,23 @@ namespace SageMobileSales.DataAccess.Repositories
 
             Orders order = await SaveOrderDetailsAsync(sDataOrder);
 
-            //if (sDataOrder.TryGetValue("ShippingAddress", out value))
-            //{
-            //    if (value.ValueType.ToString() != DataAccessUtils.Null)
-            //    {
-            //        JsonObject sDataShippingAdress = sDataOrder.GetNamedObject("ShippingAddress");
-            //        if (!string.IsNullOrEmpty(order.CustomerId))
-            //        {
-            //            Address address =
-            //                await
-            //                    _addressRepository.AddOrUpdateAddressJsonToDbAsync(sDataShippingAdress, order.CustomerId);
-            //            if (address != null)
-            //            {
-            //                order.AddressId = address.AddressId;
-            //            }
-            //        }
-            //    }
-            //}
+            if (sDataOrder.TryGetValue("ShippingAddress", out value))
+            {
+                if (value.ValueType.ToString() != DataAccessUtils.Null)
+                {
+                    JsonObject sDataShippingAdress = sDataOrder.GetNamedObject("ShippingAddress");
+                    if (!string.IsNullOrEmpty(order.CustomerId))
+                    {
+                        Address address =
+                            await
+                                _addressRepository.AddOrUpdateAddressJsonToDbAsync(sDataShippingAdress, order.CustomerId);
+                        if (address != null)
+                        {
+                            order.AddressId = address.AddressId;
+                        }
+                    }
+                }
+            }
 
             await _orderLineItemRepository.SaveOrderLineItemsAsync(sDataOrder, order.OrderId);
             return order;
@@ -186,7 +186,7 @@ namespace SageMobileSales.DataAccess.Repositories
                 ordersList =
                     await
                         _sageSalesDB.QueryAsync<OrderDetails>(
-                            "SELECT distinct customer.customerName, customer.CustomerId, orders.OrderId, orders.OrderStatus, orders.CreatedOn,orders.SubmittedDate,orders.AddressId, orders.Amount, orders.DiscountPercent, orders.Tax, orders.ShippingAndHandling, orders.TenantId,orders.OrderDescription, SalesRep.RepName FROM orders INNER JOIN customer ON customer.customerID = orders.customerId Inner Join SalesRep");
+                            "SELECT distinct customer.customerName, customer.CustomerId, orders.OrderId, orders.OrderStatus, orders.CreatedOn,orders.SubmittedDate,orders.AddressId, orders.Amount, orders.DiscountPercent, orders.Tax, orders.ShippingAndHandling, orders.TenantId,orders.OrderDescription,orders.OrderNumber, SalesRep.RepName FROM orders INNER JOIN customer ON customer.customerID = orders.customerId Inner Join SalesRep");
             }
             catch (Exception ex)
             {
@@ -327,13 +327,13 @@ namespace SageMobileSales.DataAccess.Repositories
                         order.CreatedOn = ConvertJsonStringToDateTime(sDataOrder.GetNamedString("CreatedOn"));
                     }
                 }
-                if (sDataOrder.TryGetValue("SubmittedDate", out value))
-                {
-                    if (value.ValueType.ToString() != DataAccessUtils.Null)
-                    {
-                        order.SubmittedDate = ConvertJsonStringToDateTime(sDataOrder.GetNamedString("SubmittedDate"));
-                    }
-                }
+                //if (sDataOrder.TryGetValue("UpdatedOn", out value))
+                //{
+                //    if (value.ValueType.ToString() != DataAccessUtils.Null)
+                //    {
+                //        order.UpdatedOn = ConvertJsonStringToDateTime(sDataOrder.GetNamedString("UpdatedOn"));
+                //    }
+                //}
                 if (sDataOrder.TryGetValue("Status", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
@@ -345,21 +345,21 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        order.ShippingAndHandling = Convert.ToDecimal(sDataOrder.GetNamedNumber("SandH"));
+                        order.ShippingAndHandling = Convert.ToDecimal(sDataOrder.GetNamedString("SandH"));
                     }
                 }
                 if (sDataOrder.TryGetValue("Tax", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        order.Tax = Convert.ToDecimal(sDataOrder.GetNamedNumber("Tax"));
+                        order.Tax = Convert.ToDecimal(sDataOrder.GetNamedString("Tax"));
                     }
                 }
                 if (sDataOrder.TryGetValue("OrderTotal", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        order.Amount = Convert.ToDecimal(sDataOrder.GetNamedNumber("OrderTotal"));
+                        order.Amount = Convert.ToDecimal(sDataOrder.GetNamedString("OrderTotal"));
                     }
                 }
                 //if (sDataOrder.TryGetValue("ExternalReference", out value))
@@ -373,7 +373,7 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        order.DiscountPercent = Convert.ToDecimal(sDataOrder.GetNamedNumber("DiscountPercent"));
+                        order.DiscountPercent = Convert.ToDecimal(sDataOrder.GetNamedString("DiscountPercent"));
                     }
                 }
                 if (sDataOrder.TryGetValue("OrderNumber", out value))
