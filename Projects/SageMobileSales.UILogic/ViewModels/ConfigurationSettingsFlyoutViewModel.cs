@@ -55,6 +55,8 @@ namespace SageMobileSales.UILogic.ViewModels
             Servers.Add("Ash");
             Servers.Add("Local Machine 1");
             Servers.Add("Local Machine 2");
+            Servers.Add("Local Machine 3");
+            Servers.Add("Elm");
 
             SelectedType = Constants.SelectedType;
         }
@@ -269,8 +271,7 @@ namespace SageMobileSales.UILogic.ViewModels
             if (selected.SelectedItem.ToString() == "Local Machine 1")
             {
                 ClientId = @"FhVDZU7p11pFRItTweZsh8XSGdEeFZ0g";
-                //Url = "http://172.29.59.122:8080/sdata/api/msales/1.0/";
-                Url = "http://127.255.0.2:85/sdata/api/msales/1.0/";
+                Url = "http://172.29.59.122:8080/sdata/api/msales/1.0/";                
                 Scope = @"kipgf40h();";
                 IsSageIdProduction = false;
                 SelectedType = "Local Machine 1";
@@ -284,6 +285,26 @@ namespace SageMobileSales.UILogic.ViewModels
                 Scope = @"kipgf40h();";
                 IsSageIdProduction = false;
                 SelectedType = "Local Machine 2";
+                RedirectUrl = "https://signon.sso.staging.services.sage.com/oauth/native";
+                SetConfigurationValues();
+            }
+            if (selected.SelectedItem.ToString() == "Local Machine 3")
+            {
+                ClientId = @"FhVDZU7p11pFRItTweZsh8XSGdEeFZ0g";                
+                Url = "http://127.255.0.2:85/sdata/api/msales/1.0/";
+                Scope = @"kipgf40h();";
+                IsSageIdProduction = false;
+                SelectedType = "Local Machine 3";
+                RedirectUrl = "https://signon.sso.staging.services.sage.com/oauth/native";
+                SetConfigurationValues();
+            }
+            if (selected.SelectedItem.ToString() == "Elm")
+            {
+                ClientId = @"FhVDZU7p11pFRItTweZsh8XSGdEeFZ0g";
+                Url = "https://elmMsales.sagedatacloud.com/sdata/api/msales/1.0/";
+                Scope = @"kipgf40h();";
+                IsSageIdProduction = false;
+                SelectedType = "Elm";
                 RedirectUrl = "https://signon.sso.staging.services.sage.com/oauth/native";
                 SetConfigurationValues();
             }

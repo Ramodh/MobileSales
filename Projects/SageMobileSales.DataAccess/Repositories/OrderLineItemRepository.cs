@@ -299,8 +299,8 @@ namespace SageMobileSales.DataAccess.Repositories
                         orderLineItem.Price = Convert.ToDecimal(sDataOrderLineItem.GetNamedNumber("Price"));
                     }
                 }
-                
-                if (sDataOrderLineItem.TryGetValue("InventoryItem", out value))
+
+                if (sDataOrderLineItem.TryGetValue("InventoryItemId", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {

@@ -345,21 +345,21 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        order.ShippingAndHandling = Convert.ToDecimal(sDataOrder.GetNamedString("SandH"));
+                        order.ShippingAndHandling = Convert.ToDecimal(sDataOrder.GetNamedNumber("SandH"));
                     }
                 }
                 if (sDataOrder.TryGetValue("Tax", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        order.Tax = Convert.ToDecimal(sDataOrder.GetNamedString("Tax"));
+                        order.Tax = Convert.ToDecimal(sDataOrder.GetNamedNumber("Tax"));
                     }
                 }
                 if (sDataOrder.TryGetValue("OrderTotal", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        order.Amount = Convert.ToDecimal(sDataOrder.GetNamedString("OrderTotal"));
+                        order.Amount = Convert.ToDecimal(sDataOrder.GetNamedNumber("OrderTotal"));
                     }
                 }
                 //if (sDataOrder.TryGetValue("ExternalReference", out value))
@@ -373,7 +373,7 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        order.DiscountPercent = Convert.ToDecimal(sDataOrder.GetNamedString("DiscountPercent"));
+                        order.DiscountPercent = Convert.ToDecimal(sDataOrder.GetNamedNumber("DiscountPercent"));
                     }
                 }
                 if (sDataOrder.TryGetValue("OrderNumber", out value))
