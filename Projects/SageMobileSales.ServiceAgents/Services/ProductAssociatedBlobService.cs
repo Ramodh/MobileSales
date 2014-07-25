@@ -91,12 +91,12 @@ namespace SageMobileSales.ServiceAgents.Services
                 {
                     JsonObject sDataProductAssociatedBlobs =
                         await _serviceAgent.ConvertTosDataObject(productAssociatedBlobsResponse);
-                    if (Convert.ToInt32(sDataProductAssociatedBlobs.GetNamedString("$totalResults")) >
+                    if (Convert.ToInt32(sDataProductAssociatedBlobs.GetNamedNumber("$totalResults")) >
                         DataAccessUtils.ProductAssociatedBlobsTotalCount)
                         DataAccessUtils.ProductAssociatedBlobsTotalCount =
-                            Convert.ToInt32(sDataProductAssociatedBlobs.GetNamedString("$totalResults"));
+                            Convert.ToInt32(sDataProductAssociatedBlobs.GetNamedNumber("$totalResults"));
 
-                    int _totalCount = Convert.ToInt32(sDataProductAssociatedBlobs.GetNamedString("$totalResults"));
+                    int _totalCount = Convert.ToInt32(sDataProductAssociatedBlobs.GetNamedNumber("$totalResults"));
                     JsonArray categoriesObject = sDataProductAssociatedBlobs.GetNamedArray("$resources");
                     int _returnedCount = categoriesObject.Count;
                     if (_returnedCount > 0 && _totalCount - _returnedCount >= 0)

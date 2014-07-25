@@ -617,14 +617,14 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        quoteLineItem.Price = Convert.ToDecimal(sDataQuoteLineItem.GetNamedString("Price"));
+                        quoteLineItem.Price = Convert.ToDecimal(sDataQuoteLineItem.GetNamedNumber("Price"));
                     }
                 }
                 if (sDataQuoteLineItem.TryGetValue("Quantity", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        quoteLineItem.Quantity = Convert.ToInt32(Convert.ToDecimal(sDataQuoteLineItem.GetNamedString("Quantity")));
+                        quoteLineItem.Quantity = Convert.ToInt32(Convert.ToDecimal(sDataQuoteLineItem.GetNamedNumber("Quantity")));
                     }
                 }
                 if (sDataQuoteLineItem.TryGetValue("Id", out value))

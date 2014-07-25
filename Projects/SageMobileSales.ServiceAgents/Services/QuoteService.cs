@@ -144,7 +144,7 @@ namespace SageMobileSales.ServiceAgents.Services
         public async Task<Quote> SubmitQuote(Quote quote)
         {
             parameters = new Dictionary<string, string>();
-            parameters.Add("include", "Details,ShippingAddress");
+          //  parameters.Add("include", "Details,ShippingAddress");
             object obj;
 
             List<QuoteLineItem> quoteLineItemList =
@@ -187,11 +187,13 @@ namespace SageMobileSales.ServiceAgents.Services
             HttpResponseMessage quoteResponse = null;
             string quoteEntityId;
 
-            quoteEntityId = Constants.QuoteEntity + "('" + quote.QuoteId + "')";
-
+            quoteEntityId = "QuoteRequests" + "('" + quote.QuoteId + "')";
+            //quoteResponse =
+            // await
+            //     _serviceAgent.BuildAndPutObjectRequest(quoteEntityId, null, Constants.AccessToken, parameters, obj);
             quoteResponse =
                 await
-                    _serviceAgent.BuildAndPutObjectRequest(quoteEntityId, null, Constants.AccessToken, parameters, obj);
+                    _serviceAgent.BuildAndPostObjectRequest(Constants.TenantId,quoteEntityId, null, Constants.AccessToken, parameters, obj);
             if (quoteResponse != null && quoteResponse.IsSuccessStatusCode)
             {
                 JsonObject sDataQuote = await _serviceAgent.ConvertTosDataObject(quoteResponse);
@@ -506,13 +508,13 @@ namespace SageMobileSales.ServiceAgents.Services
                 if (quotesResponse != null && quotesResponse.IsSuccessStatusCode)
                 {
                     JsonObject sDataQuotes = await _serviceAgent.ConvertTosDataObject(quotesResponse);
-                    if (Convert.ToInt32(sDataQuotes.GetNamedString("$totalResults")) > DataAccessUtils.QuotesTotalCount)
-                        DataAccessUtils.QuotesTotalCount = Convert.ToInt32(sDataQuotes.GetNamedString("$totalResults"));
+                    if (Convert.ToInt32(sDataQuotes.GetNamedNumber("$totalResults")) > DataAccessUtils.QuotesTotalCount)
+                        DataAccessUtils.QuotesTotalCount = Convert.ToInt32(sDataQuotes.GetNamedNumber("$totalResults"));
                     if (DataAccessUtils.QuotesTotalCount == 0)
                     {
                         _eventAggregator.GetEvent<QuoteDataChangedEvent>().Publish(true);
                     }
-                    int _totalCount = Convert.ToInt32(sDataQuotes.GetNamedString("$totalResults"));
+                    int _totalCount = Convert.ToInt32(sDataQuotes.GetNamedNumber("$totalResults"));
                     JsonArray quotesObject = sDataQuotes.GetNamedArray("$resources");
                     int _returnedCount = quotesObject.Count;
                     if (_returnedCount > 0 && _totalCount - _returnedCount >= 0 &&

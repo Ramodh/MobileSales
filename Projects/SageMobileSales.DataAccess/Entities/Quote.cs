@@ -13,7 +13,7 @@ namespace SageMobileSales.DataAccess.Entities
         public string QuoteDescription { get; set; }
         public string TenantId { set; get; }
         public DateTime CreatedOn { get; set; }
-        public DateTime UpdatedOn { get; set; }
+        public DateTime SubmittedDate { get; set; }
         public string QuoteStatus { get; set; }
         public decimal ShippingAndHandling { get; set; }
         public decimal Tax { get; set; }
