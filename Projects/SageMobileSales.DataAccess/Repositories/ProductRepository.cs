@@ -406,7 +406,7 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        product.PriceStd = Convert.ToDecimal(sDataProduct.GetNamedString("PriceStd"));
+                        product.PriceStd = Convert.ToDecimal(sDataProduct.GetNamedNumber("PriceStd"));
                     }
                 }
 
@@ -414,7 +414,7 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        product.CostStd = Convert.ToDecimal(sDataProduct.GetNamedString("CostStd"));
+                        product.CostStd = Convert.ToDecimal(sDataProduct.GetNamedNumber("CostStd"));
                     }
                 }
 
@@ -422,7 +422,7 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        product.Quantity = Convert.ToInt32(Convert.ToDecimal(sDataProduct.GetNamedString("Quantity")));
+                        product.Quantity = Convert.ToInt32(Convert.ToDecimal(sDataProduct.GetNamedNumber("Quantity")));
                     }
                 }
 

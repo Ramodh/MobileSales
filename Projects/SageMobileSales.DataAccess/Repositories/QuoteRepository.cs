@@ -445,7 +445,7 @@ namespace SageMobileSales.DataAccess.Repositories
                 quote.QuoteId = DataAccessUtils.Pending + Guid.NewGuid();
                 quote.QuoteStatus = DataAccessUtils.DraftQuote;
                 quote.CreatedOn = DateTime.Now;
-                quote.UpdatedOn = DateTime.Now;
+                quote.SubmittedDate = DateTime.Now;
                 quote.QuoteDescription = quoteDtls.QuoteDescription;
                 quote.CustomerId = quoteDtls.CustomerId;
                 quote.AddressId = address.AddressId;
@@ -805,11 +805,11 @@ namespace SageMobileSales.DataAccess.Repositories
                     }
                 }
 
-                if (sDataQuote.TryGetValue("UpdatedOn", out value))
+                if (sDataQuote.TryGetValue("SubmittedDate", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        quote.UpdatedOn = ConvertJsonStringToDateTime(sDataQuote.GetNamedString("UpdatedOn"));
+                        quote.SubmittedDate = ConvertJsonStringToDateTime(sDataQuote.GetNamedString("SubmittedDate"));
                     }
                 }
                 if (sDataQuote.TryGetValue("Status", out value))
@@ -824,14 +824,14 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        quote.ShippingAndHandling = Convert.ToDecimal(sDataQuote.GetNamedString("SandH"));
+                        quote.ShippingAndHandling = Convert.ToDecimal(sDataQuote.GetNamedNumber("SandH"));
                     }
                 }
                 if (sDataQuote.TryGetValue("Tax", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        quote.Tax = Convert.ToDecimal(sDataQuote.GetNamedString("Tax"));
+                        quote.Tax = Convert.ToDecimal(sDataQuote.GetNamedNumber("Tax"));
                     }
                 }
                 if (sDataQuote.TryGetValue("ExpiryDate", out value))
@@ -845,14 +845,14 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        quote.Amount = Convert.ToDecimal(sDataQuote.GetNamedString("QuoteTotal"));
+                        quote.Amount = Convert.ToDecimal(sDataQuote.GetNamedNumber("QuoteTotal"));
                     }
                 }
                 if (sDataQuote.TryGetValue("SubTotal", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        quote.SubTotal = Convert.ToDecimal(sDataQuote.GetNamedString("SubTotal"));
+                        quote.SubTotal = Convert.ToDecimal(sDataQuote.GetNamedNumber("SubTotal"));
                     }
                 }
                 
@@ -867,7 +867,7 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        quote.DiscountPercent = Convert.ToDecimal(sDataQuote.GetNamedString("DiscountPercent"));
+                        quote.DiscountPercent = Convert.ToDecimal(sDataQuote.GetNamedNumber("DiscountPercent"));
                     }
                 }
                 if (sDataQuote.TryGetValue("QuoteNumber", out value))

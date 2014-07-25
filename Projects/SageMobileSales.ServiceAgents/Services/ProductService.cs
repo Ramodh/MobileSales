@@ -78,12 +78,12 @@ namespace SageMobileSales.ServiceAgents.Services
                 if (productsResponse != null && productsResponse.IsSuccessStatusCode)
                 {
                     JsonObject sDataProducts = await _serviceAgent.ConvertTosDataObject(productsResponse);
-                    if (Convert.ToInt32(sDataProducts.GetNamedString("$totalResults")) >
+                    if (Convert.ToInt32(sDataProducts.GetNamedNumber("$totalResults")) >
                         DataAccessUtils.ProductTotalCount)
                         DataAccessUtils.ProductTotalCount =
-                            Convert.ToInt32(sDataProducts.GetNamedString("$totalResults"));
+                            Convert.ToInt32(sDataProducts.GetNamedNumber("$totalResults"));
 
-                    int _totalCount = Convert.ToInt32(sDataProducts.GetNamedString("$totalResults"));
+                    int _totalCount = Convert.ToInt32(sDataProducts.GetNamedNumber("$totalResults"));
                     JsonArray categoriesObject = sDataProducts.GetNamedArray("$resources");
                     int _returnedCount = categoriesObject.Count;
                     if (_returnedCount > 0 && _totalCount - _returnedCount >= 0 &&
