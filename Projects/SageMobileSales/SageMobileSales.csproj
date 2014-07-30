@@ -428,4 +428,13 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+   <!-- Staging -->
+  <PropertyGroup>
+    <StagingOutputDir>$(MSBuildProjectDirectory)\..\..\Output</StagingOutputDir>
+    <AppPublishDir>$(MSBuildProjectDirectory)\AppPackages</AppPublishDir>
+  </PropertyGroup>
+  <Target Name="StageFiles" AfterTargets="Build">
+    <Exec Command="xcopy.exe  $(AppPublishDir) $(StagingOutputDir) /e /y /i" WorkingDirectory="$(MSBuildProjectDirectory)/" />
+    
+  </Target>
 </Project>
