@@ -2,6 +2,11 @@
 {
     public class CustomerKeyJson
     {
+        public string CustomerId { get; set; }
+    }
+
+    public class CustomerContactKeyJson
+    {
         public string Id { get; set; }
     }
 
@@ -12,11 +17,11 @@
 
     public class ShippingAddressKeyJson
     {
-        public string key { get; set; }
+        public string ShippingAddressId { get; set; }
     }
 
     public class InventoryItemKeyJson
     {
-        public string key { get; set; }
+        public string InventoryItemKeyId { get; set; }
     }
 }

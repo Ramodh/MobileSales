@@ -163,7 +163,7 @@ namespace SageMobileSales.DataAccess.Repositories
 
             if (pendingQuoteId.Contains(DataAccessUtils.Pending))
             {
-                if (sDataQuote.TryGetValue("$key", out value))
+                if (sDataQuote.TryGetValue("Id", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
@@ -175,11 +175,11 @@ namespace SageMobileSales.DataAccess.Repositories
                         {
                             await
                                 _sageSalesDB.QueryAsync<Quote>("Update Quote Set QuoteId=? where QuoteId=?",
-                                    sDataQuote.GetNamedString("$key"), pendingQuoteList.FirstOrDefault().QuoteId);
+                                    sDataQuote.GetNamedString("Id"), pendingQuoteList.FirstOrDefault().QuoteId);
                             await
                                 _sageSalesDB.QueryAsync<QuoteLineItem>(
                                     "Update QuoteLineItem Set QuoteId=? where QuoteId=?",
-                                    sDataQuote.GetNamedString("$key"), pendingQuoteList.FirstOrDefault().QuoteId);
+                                    sDataQuote.GetNamedString("Id"), pendingQuoteList.FirstOrDefault().QuoteId);
                         }
                     }
                 }
@@ -192,15 +192,15 @@ namespace SageMobileSales.DataAccess.Repositories
 
             if (!string.IsNullOrEmpty(addressId))
             {
-                if (sDataQuote.TryGetValue("ShippingAddress", out value))
+                if (sDataQuote.TryGetValue("ShippingAddressId", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        JsonObject sDataShippingAdress = sDataQuote.GetNamedObject("ShippingAddress");
+                        //JsonObject sDataShippingAdress = sDataQuote.GetNamedObject("ShippingAddress");
 
                         await
                             _sageSalesDB.QueryAsync<Quote>("Update Address Set AddressId=? where AddressId=?",
-                                sDataShippingAdress.GetNamedString("$key"), addressId);
+                                sDataQuote.GetNamedString("ShippingAddressId"), addressId);
                         //if (!string.IsNullOrEmpty(quote.CustomerId))
                         //{
                         //Address address = await _addressRepository.AddOrUpdateAddressJsonToDbAsync(sDataShippingAdress, quote.CustomerId);
@@ -790,13 +790,13 @@ namespace SageMobileSales.DataAccess.Repositories
                     }
                 }
 
-                if (sDataQuote.TryGetValue("TenantId", out value))
-                {
-                    if (value.ValueType.ToString() != DataAccessUtils.Null)
-                    {
-                        quote.TenantId = sDataQuote.GetNamedString("TenantId");
-                    }
-                }
+                //if (sDataQuote.TryGetValue("TenantId", out value))
+                //{
+                //    if (value.ValueType.ToString() != DataAccessUtils.Null)
+                //    {
+                //        quote.TenantId = sDataQuote.GetNamedString("TenantId");
+                //    }
+                //}
                 if (sDataQuote.TryGetValue("CreatedOn", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
@@ -913,6 +913,14 @@ namespace SageMobileSales.DataAccess.Repositories
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
                         quote.EntityStatus = sDataQuote.GetNamedString("EntityStatus");
+                    }
+                }
+
+                if (sDataQuote.TryGetValue("IsDeleted", out value))
+                {
+                    if (value.ValueType.ToString() != DataAccessUtils.Null)
+                    {
+                        quote.IsDeleted = sDataQuote.GetNamedBoolean("IsDeleted");
                     }
                 }
 

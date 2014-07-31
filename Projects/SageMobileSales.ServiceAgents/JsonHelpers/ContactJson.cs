@@ -2,7 +2,7 @@
 {
     public class ContactJson
     {
-        public CustomerKeyJson Customer { get; set; }
+        public CustomerContactKeyJson Customer { get; set; }
         public string EmailWork { get; set; }
         public string EmailPersonal { get; set; }
         public string FirstName { get; set; }

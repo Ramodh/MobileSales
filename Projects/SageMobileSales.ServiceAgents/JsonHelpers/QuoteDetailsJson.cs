@@ -4,14 +4,16 @@ namespace SageMobileSales.ServiceAgents.JsonHelpers
 {
     public class QuoteDetailsJson
     {
-        public List<Resource> resources { get; set; }
+        public List<Detail> Details { get; set; }
     }
 
-    public class Resource
+    public class Detail
     {
-        public InventoryItemKeyJson InventoryItem { get; set; }
+        //public InventoryItemKeyJson InventoryItem { get; set; }
         public decimal Price { get; set; }
         public decimal Quantity { get; set; }
+        public string InventoryItemKeyId { get; set; }
+        public bool IsDeleted { get; set; }
     }
 
     public class EditQuoteDetailsJson

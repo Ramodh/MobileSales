@@ -23,5 +23,8 @@ namespace SageMobileSales.ServiceAgents.Common
 
         Task<HttpResponseMessage> BuildAndDeleteRequest(string entity, string queryEntity, string accessToken,
             Dictionary<string, string> parameters);
+
+        Task<HttpResponseMessage> BuildAndPatchObjectRequest(string tenantId, string entity, string queryEntity,
+            string accessToken, Dictionary<string, string> parameters, object obj);
     }
 }

@@ -59,7 +59,7 @@ namespace SageMobileSales.ServiceAgents.Services
             {
                 conatctJsonObject = new ContactJson();
 
-                conatctJsonObject.Customer = new CustomerKeyJson { Id = contact.CustomerId };
+                conatctJsonObject.Customer = new CustomerContactKeyJson { Id = contact.CustomerId };
                 conatctJsonObject.EmailPersonal = contact.EmailPersonal == null ? "" : contact.EmailPersonal;
                 conatctJsonObject.EmailWork = contact.EmailWork == null ? "" : contact.EmailWork;
                 conatctJsonObject.FirstName = contact.FirstName;

@@ -405,6 +405,111 @@ namespace SageMobileSales.ServiceAgents.Common
             return response;
         }
 
+
+        public async Task<HttpResponseMessage> BuildAndPatchObjectRequest(string tenantId, string entity, string queryEntity,
+            string accessToken, Dictionary<string, string> parameters, object obj)
+        {
+            _requestUrl = Constants.Url;
+            HttpResponseMessage response = null;
+            try
+            {
+                string _url = string.Empty;
+                string _parameters = string.Empty;
+
+                if (!string.IsNullOrEmpty(tenantId))
+                {
+                    _requestUrl = _requestUrl + tenantId + "/";
+                }
+
+                if (queryEntity != null)
+                {
+                    _url += _requestUrl + entity + "/" + queryEntity;
+                }
+                else
+                {
+                    _url += _requestUrl + entity;
+                }
+
+                if (parameters != null)
+                {
+                    for (int parameter = 0; parameter < parameters.Count; parameter++)
+                    {
+                        if (parameter == parameters.Count - 1)
+                        {
+                            if (parameters.ElementAt(parameter).Value != null)
+                                _parameters += parameters.ElementAt(parameter).Key + "=" +
+                                               parameters.ElementAt(parameter).Value;
+                        }
+                        else
+                        {
+                            if (parameters.ElementAt(parameter).Value != null)
+                                _parameters += parameters.ElementAt(parameter).Key + "=" +
+                                               parameters.ElementAt(parameter).Value + "&";
+                        }
+                    }
+                    _url += "?" + _parameters;
+                }
+
+                var httpClient = new HttpClient();
+
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+                httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Accept", "application/json");
+                httpClient.DefaultRequestHeaders.TryAddWithoutValidation("AppProtocol", "Mobile Sales");
+                httpClient.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent",
+                    "Mozilla/5.0 (Windows NT 6.2; WOW64; rv:19.0) Gecko/20100101 Firefox/19.0");
+                httpClient.DefaultRequestHeaders.TryAddWithoutValidation("AppProtocolVersion", "1.0.0.0");
+
+
+                //public async static Task<HttpResponseMessage> PatchAsync(this HttpClient client, string requestUri, HttpContent content)
+                //{
+                var method = new HttpMethod("PATCH");
+
+                string serialized = GetSerializedObject(obj);
+
+                var request = new HttpRequestMessage(method, _url)
+                {
+                    Content = new StringContent(serialized, Encoding.UTF8, "application/json")
+                };
+                if (Constants.ConnectedToInternet())
+                {
+                    response = await httpClient.SendAsync(request);
+                }
+
+                //}
+
+                //string serialized = GetSerializedObject(obj);
+
+                //if (Constants.ConnectedToInternet())
+                //{
+                //    response =
+                //        await
+                //            httpClient.PutAsync(_url, new StringContent(serialized, Encoding.UTF8, "application/json"));
+                //}
+            }
+            catch (HttpRequestException ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+            catch (TaskCanceledException ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+            catch (TimeoutException ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+            catch (Exception ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+            return response;
+        }
+
         /// <summary>
         ///     Builds and uses delete(http method) to delete
         /// </summary>
@@ -506,8 +611,8 @@ namespace SageMobileSales.ServiceAgents.Common
         private string GetSerializedObject(Object obj)
         {
             string serialized = JsonConvert.SerializeObject(obj);
-            serialized = serialized.Replace("\"key\"", "\"$key\"");
-            serialized = serialized.Replace("\"resources", "\"$resources");
+            //serialized = serialized.Replace("\"key\"", "\"$key\"");
+            //serialized = serialized.Replace("\"resources", "\"$resources");
 
             return serialized;
         }

@@ -43,6 +43,9 @@ namespace SageMobileSales.ServiceAgents.Common
         public static string TenantEntity = "Tenants";
         public static string ClientId = string.Empty;
 
+        public static string DraftQuotes = "DraftQuotes";
+
+
         public static string Scope = String.Empty;
         public static string Url = string.Empty;
         public static string Server = string.Empty;
