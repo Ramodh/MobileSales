@@ -276,7 +276,7 @@
                                        Style="{StaticResource DetailsPageTextblockTextStyle}"
                                        VerticalAlignment="Bottom" />
                             <TextBox x:Uid="ShipAndHandlingTextBox" x:Name="ShipAndHandlingTextBox"
-                                     Text="{Binding ShippingAndHandling, Mode=TwoWay}" VerticalAlignment="Bottom"
+                                     Text="{Binding ShippingAndHandling, Mode=TwoWay}" VerticalAlignment="Bottom" IsEnabled="{Binding IsShippingAndHandlingEnabled}"
                                      Style="{StaticResource QuantityTextBoxStyle}" PlaceholderText="0"
                                      PreventKeyboardDisplayOnProgrammaticFocus="True">
                                 <interactivity:Interaction.Behaviors>
@@ -294,7 +294,7 @@
                                        Style="{StaticResource DetailsPageTextblockTextStyle}"
                                        VerticalAlignment="Bottom" />
                             <TextBox x:Uid="DiscountTextBox" x:Name="DiscountTextBox"
-                                     Text="{Binding DiscountPercent, Mode=TwoWay}" VerticalAlignment="Bottom"
+                                     Text="{Binding DiscountPercent, Mode=TwoWay}" VerticalAlignment="Bottom" IsEnabled="{Binding IsDiscountEnabled}"
                                      Style="{StaticResource QuantityTextBoxStyle}"
                                      PreventKeyboardDisplayOnProgrammaticFocus="True">
                                 <interactivity:Interaction.Behaviors>

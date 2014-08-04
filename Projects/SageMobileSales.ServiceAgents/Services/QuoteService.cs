@@ -187,7 +187,7 @@ namespace SageMobileSales.ServiceAgents.Services
             HttpResponseMessage quoteResponse = null;
             string quoteEntityId;
 
-            quoteEntityId = "QuoteRequests" + "('" + quote.QuoteId + "')";
+            quoteEntityId = "QuoteRequests";// +"('" + quote.QuoteId + "')";
             //quoteResponse =
             // await
             //     _serviceAgent.BuildAndPutObjectRequest(quoteEntityId, null, Constants.AccessToken, parameters, obj);
@@ -220,11 +220,11 @@ namespace SageMobileSales.ServiceAgents.Services
             HttpResponseMessage quoteResponse = null;
             string quoteEntityId;
 
-            quoteEntityId = Constants.QuoteEntity + "('" + quote.QuoteId + "')";
+            quoteEntityId = Constants.SubmitQuoteEntity + "('" + quote.QuoteId + "')";
 
             quoteResponse =
                 await
-                    _serviceAgent.BuildAndPutObjectRequest(quoteEntityId, null, Constants.AccessToken, parameters, obj);
+                    _serviceAgent.BuildAndPatchObjectRequest(Constants.TenantId, quoteEntityId, null, Constants.AccessToken, parameters, obj);
             if (quoteResponse != null && quoteResponse.IsSuccessStatusCode)
             {
                 var sDataQuote = await _serviceAgent.ConvertTosDataObject(quoteResponse);
@@ -256,7 +256,7 @@ namespace SageMobileSales.ServiceAgents.Services
             HttpResponseMessage quoteResponse = null;
             string quoteEntityId;
 
-            quoteEntityId = Constants.QuoteEntity + "('" + quote.QuoteId + "')";
+            quoteEntityId = Constants.SubmitQuoteEntity + "('" + quote.QuoteId + "')";
 
             quoteResponse =
                 await
@@ -316,11 +316,11 @@ namespace SageMobileSales.ServiceAgents.Services
             HttpResponseMessage quoteResponse = null;
             string quoteEntityId;
 
-            quoteEntityId = Constants.QuoteEntity + "('" + quote.QuoteId + "')";
+            quoteEntityId = Constants.SubmitQuoteEntity + "('" + quote.QuoteId + "')";
 
             quoteResponse =
                 await
-                    _serviceAgent.BuildAndPutObjectRequest(quoteEntityId, null, Constants.AccessToken, parameters, obj);
+                    _serviceAgent.BuildAndPatchObjectRequest(Constants.TenantId, quoteEntityId, null, Constants.AccessToken, parameters, obj);
             if (quoteResponse != null && quoteResponse.IsSuccessStatusCode)
             {
                 var sDataQuote = await _serviceAgent.ConvertTosDataObject(quoteResponse);
@@ -569,7 +569,7 @@ namespace SageMobileSales.ServiceAgents.Services
             quoteJsonObject.SubTotal = quote.SubTotal;
             quoteJsonObject.SandH = quote.ShippingAndHandling;
             //quoteJsonObject.Status = quote.QuoteStatus;
-            quoteJsonObject.CustomerId = quote.CustomerId ;
+            quoteJsonObject.CustomerId = quote.CustomerId;
             //quoteJsonObject.SalesRep = new SalesKeyJson { key = quote.RepId };
 
             //quoteJsonObject.Details = new QuoteDetailsJson();
@@ -586,7 +586,7 @@ namespace SageMobileSales.ServiceAgents.Services
                     foreach (QuoteLineItem quoteLineItem in quoteLineItemList)
                     {
                         detail = new Detail();
-                        detail.InventoryItemKeyId = quoteLineItem.ProductId;
+                        detail.InventoryItemId = quoteLineItem.ProductId;
                         detail.Price = quoteLineItem.Price;
                         detail.Quantity = quoteLineItem.Quantity;
                         quoteJsonObject.Details.Add(detail);
@@ -632,10 +632,10 @@ namespace SageMobileSales.ServiceAgents.Services
             quoteJsonObject.SubTotal = quote.SubTotal;
             quoteJsonObject.SandH = quote.ShippingAndHandling;
             //quoteJsonObject.Status = quote.QuoteStatus;
-            quoteJsonObject.CustomerId = quote.CustomerId ;
+            quoteJsonObject.CustomerId = quote.CustomerId;
             //quoteJsonObject.SalesRep = new SalesKeyJson { key = quote.RepId };
 
-            quoteJsonObject.ShippingAddressId = quote.AddressId ;
+            quoteJsonObject.ShippingAddressId = quote.AddressId;
             //quoteJsonObject.Details = new QuoteDetailsJson();
 
             quoteJsonObject.Details = new List<Detail>();
@@ -651,7 +651,7 @@ namespace SageMobileSales.ServiceAgents.Services
                         if (quoteLineItem.Quantity > 0)
                         {
                             detail = new Detail();
-                            detail.InventoryItemKeyId = quoteLineItem.ProductId;
+                            detail.InventoryItemId = quoteLineItem.ProductId;
                             detail.Price = quoteLineItem.Price;
                             detail.Quantity = quoteLineItem.Quantity;
                             quoteJsonObject.Details.Add(detail);
