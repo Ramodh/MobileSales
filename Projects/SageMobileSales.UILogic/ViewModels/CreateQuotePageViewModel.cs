@@ -422,7 +422,7 @@ namespace SageMobileSales.UILogic.ViewModels
 
                 if (quote != null && Constants.ConnectedToInternet())
                 {
-                    quote = await _quoteService.PostQuote(quote);
+                    quote = await _quoteService.PostDraftQuote(quote);
                 }
 
                 InProgress = false;

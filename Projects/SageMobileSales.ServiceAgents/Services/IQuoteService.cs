@@ -6,7 +6,8 @@ namespace SageMobileSales.ServiceAgents.Services
     public interface IQuoteService
     {
         Task StartQuoteSyncProcess();
-        Task<Quote> PostQuote(Quote quote);
+        Task<Quote> PostDraftQuote(Quote quote);
+        Task<Quote> PatchDraftQuote(Quote quote);
         Task<Quote> SubmitQuote(Quote quote);
         Task DeleteQuote(string quoteId);
         Task UpdateQuoteShippingAddressKey(Quote quote);

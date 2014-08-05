@@ -302,7 +302,7 @@ namespace SageMobileSales.UILogic.ViewModels
             if (selected.SelectedItem.ToString() == "Elm")
             {
                 ClientId = @"FhVDZU7p11pFRItTweZsh8XSGdEeFZ0g";
-                Url = "https://elmMsales.sagedatacloud.com/sdata/api/msales/1.0/";
+                Url = "https://ElmMSales.sagedatacloud.com/sdata/api/msales/1.0/";
                 Scope = @"kipgf40h();";
                 IsSageIdProduction = false;
                 SelectedType = "Elm";

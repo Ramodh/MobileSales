@@ -44,6 +44,7 @@ namespace SageMobileSales.ServiceAgents.Common
         public static string ClientId = string.Empty;
 
         public static string DraftQuotes = "DraftQuotes";
+        public static string Address = "Addresses";
 
 
         public static string Scope = String.Empty;

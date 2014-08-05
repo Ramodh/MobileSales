@@ -12,8 +12,18 @@ namespace SageMobileSales.ServiceAgents.JsonHelpers
         //public InventoryItemKeyJson InventoryItem { get; set; }
         public decimal Price { get; set; }
         public decimal Quantity { get; set; }
-        public string InventoryItemKeyId { get; set; }
+        public string InventoryItemId { get; set; }
         public bool IsDeleted { get; set; }
+    }
+
+    public class EditDetail
+    {
+        //public InventoryItemKeyJson InventoryItem { get; set; }
+        public decimal Price { get; set; }
+        public decimal Quantity { get; set; }
+        public string InventoryItemId { get; set; }
+        public bool IsDeleted { get; set; }
+        public string Id { get; set; }
     }
 
     public class EditQuoteDetailsJson
