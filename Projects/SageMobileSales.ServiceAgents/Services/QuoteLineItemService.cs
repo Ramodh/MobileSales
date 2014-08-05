@@ -36,14 +36,15 @@ namespace SageMobileSales.ServiceAgents.Services
         /// </summary>
         /// <param name="quoteId"></param>
         /// <returns></returns>
-        public async Task SyncQuoteLineItems(string quoteId)
+        public async Task SyncQuoteLineItems(Quote quote)
         {
             try
             {
                 parameters = new Dictionary<string, string>();
                 parameters.Add("Include", "Customer/Addresses,Details");
-
-                string quoteEntityId = Constants.QuoteEntity + "('" + quoteId + "')";
+                //parameters.Add("Include", "Details")
+                //parameters.Add("Include", "Customer,Customer/Addresses,Details");
+                string quoteEntityId = Constants.QuoteEntity + "('" + quote.QuoteId + "')";
                 HttpResponseMessage quoteLineItemResponse = null;
                 quoteLineItemResponse =
                     await
@@ -51,8 +52,11 @@ namespace SageMobileSales.ServiceAgents.Services
                 if (quoteLineItemResponse != null && quoteLineItemResponse.IsSuccessStatusCode)
                 {
                     var sDataQuoteLineItem = await _serviceAgent.ConvertTosDataObject(quoteLineItemResponse);
+
                     //Saving or updating Quote, QuoteLineItem, Address table
                     await _quoteRepository.SaveQuoteAsync(sDataQuoteLineItem);
+
+                    //await _quoteRepository.SavePostedQuoteToDbAsync(sDataQuoteLineItem, quote, null, null);
                 }
             }
             catch (SQLiteException ex)
@@ -83,7 +87,7 @@ namespace SageMobileSales.ServiceAgents.Services
             try
             {
                 parameters = new Dictionary<string, string>();
-                parameters.Add("include", "Details,ShippingAddress");
+                parameters.Add("include", "Details");
                 object obj;
 
                 obj = ConvertQuoteDetailsWithShippingAddressKeyToJsonFormattedObject(quote, quoteLineItem);
@@ -92,16 +96,21 @@ namespace SageMobileSales.ServiceAgents.Services
                 string quoteEntityId;
 
 
-                quoteEntityId = Constants.QuoteEntity + "('" + quote.QuoteId + "')";
+                quoteEntityId = Constants.DraftQuotes + "('" + quote.QuoteId + "')";
+
+                //quoteResponse =
+                //    await
+                //        _serviceAgent.BuildAndPutObjectRequest(quoteEntityId, null, Constants.AccessToken, parameters,
+                //            obj);
 
                 quoteResponse =
                     await
-                        _serviceAgent.BuildAndPutObjectRequest(quoteEntityId, null, Constants.AccessToken, parameters,
+                        _serviceAgent.BuildAndPatchObjectRequest(Constants.TenantId, quoteEntityId, null, Constants.AccessToken, parameters,
                             obj);
                 if (quoteResponse != null && quoteResponse.IsSuccessStatusCode)
                 {
                     var sDataQuote = await _serviceAgent.ConvertTosDataObject(quoteResponse);
-                    await _quoteRepository.SavePostedQuoteToDbAsync(sDataQuote, quote.QuoteId, null, quoteLineItem);
+                    await _quoteRepository.SavePostedQuoteToDbAsync(sDataQuote, quote, null, quoteLineItem);
                 }
             }
             catch (SQLiteException ex)
@@ -133,24 +142,29 @@ namespace SageMobileSales.ServiceAgents.Services
             try
             {
                 parameters = new Dictionary<string, string>();
-                parameters.Add("include", "Details,ShippingAddress");
+                parameters.Add("include", "Details");
                 object obj;
 
-                obj = ConvertEditedQuoteDetailsWithShippingAddressKeyToJsonFormattedObject(quote, quoteLineItem);
+                obj = ConvertEditedQuoteDetailsWithShippingAddressKeyToJsonFormattedObject(quote, quoteLineItem, false);
 
                 HttpResponseMessage quoteResponse = null;
                 string quoteEntityId;
 
-                quoteEntityId = Constants.QuoteEntity + "('" + quote.QuoteId + "')";
+                quoteEntityId = Constants.DraftQuotes + "('" + quote.QuoteId + "')";
 
                 quoteResponse =
                     await
-                        _serviceAgent.BuildAndPutObjectRequest(quoteEntityId, null, Constants.AccessToken, parameters,
+                        _serviceAgent.BuildAndPatchObjectRequest(Constants.TenantId, quoteEntityId, null, Constants.AccessToken, parameters,
                             obj);
+
+                //quoteResponse =
+                //    await
+                //        _serviceAgent.BuildAndPutObjectRequest(quoteEntityId, null, Constants.AccessToken, parameters,
+                //            obj);
                 if (quoteResponse != null && quoteResponse.IsSuccessStatusCode)
                 {
                     var sDataQuote = await _serviceAgent.ConvertTosDataObject(quoteResponse);
-                    await _quoteRepository.SavePostedQuoteToDbAsync(sDataQuote, quote.QuoteId, null, quoteLineItem);
+                    await _quoteRepository.SavePostedQuoteToDbAsync(sDataQuote, quote, null, quoteLineItem);
                 }
             }
             catch (SQLiteException ex)
@@ -177,21 +191,38 @@ namespace SageMobileSales.ServiceAgents.Services
         /// <param name="quoteLineItem"></param>
         /// <returns></returns>
         //Need to confirm whether is it quotelineItemId or quoteId
-        public async Task DeleteQuoteLineItem(string quoteLineItemId)
+        public async Task DeleteQuoteLineItem(QuoteLineItem quoteLineItem)
         {
             try
             {
-                HttpResponseMessage quoteResponse = null;
-                string quoteDetailEntityId;
+                //HttpResponseMessage quoteResponse = null;
+                //string EntityId;
 
-                quoteDetailEntityId = Constants.QuoteDetailEntity + "('" + quoteLineItemId + "')";
+                //EntityId = Constants.QuoteDetailEntity + "('" + quoteLineItemId + "')";
+
+                //quoteResponse =
+                //    await
+                //        _serviceAgent.BuildAndDeleteRequest(Constants.TenantId, EntityId, null, Constants.AccessToken, parameters);
+
+                parameters = new Dictionary<string, string>();
+                parameters.Add("include", "Details");
+                object obj;
+
+                obj = ConvertEditedQuoteDetailsWithShippingAddressKeyToJsonFormattedObject(await _quoteRepository.GetQuoteAsync(quoteLineItem.QuoteId), quoteLineItem, true);
+
+                HttpResponseMessage quoteResponse = null;
+                string quoteEntityId;
+
+                quoteEntityId = Constants.DraftQuotes + "('" + quoteLineItem.QuoteId + "')";
 
                 quoteResponse =
                     await
-                        _serviceAgent.BuildAndDeleteRequest(quoteDetailEntityId, null, Constants.AccessToken, parameters);
+                        _serviceAgent.BuildAndPatchObjectRequest(Constants.TenantId, quoteEntityId, null, Constants.AccessToken, parameters,
+                            obj);
+
                 if (quoteResponse != null && quoteResponse.IsSuccessStatusCode)
                 {
-                    await _quoteLineItemRepository.DeleteQuoteLineItemFromDbAsync(quoteLineItemId);
+                    await _quoteLineItemRepository.DeleteQuoteLineItemFromDbAsync(quoteLineItem.QuoteLineItemId);
                 }
             }
             catch (SQLiteException ex)
@@ -228,7 +259,7 @@ namespace SageMobileSales.ServiceAgents.Services
                     {
                         if (quote.QuoteId.Contains(Constants.Pending))
                         {
-                            await _quoteService.PostQuote(quote);
+                            await _quoteService.PostDraftQuote(quote);
                         }
                         else
                         {
@@ -268,7 +299,7 @@ namespace SageMobileSales.ServiceAgents.Services
                 List<QuoteLineItem> quoteLineItemDeleteList = await _quoteLineItemRepository.GetDeletedQuoteLineItems();
                 foreach (QuoteLineItem quoteLineItem in quoteLineItemDeleteList)
                 {
-                    await DeleteQuoteLineItem(quoteLineItem.QuoteLineItemId);
+                    await DeleteQuoteLineItem(quoteLineItem);
                 }
             }
 
@@ -305,10 +336,10 @@ namespace SageMobileSales.ServiceAgents.Services
             quoteJsonObject.QuoteTotal = quote.Amount;
             quoteJsonObject.SandH = quote.ShippingAndHandling;
             //quoteJsonObject.Status = quote.QuoteStatus;
-            quoteJsonObject.CustomerId =quote.CustomerId ;
+            quoteJsonObject.CustomerId = quote.CustomerId;
             //quoteJsonObject.SalesRep = new SalesKeyJson { key = quote.RepId };
 
-            quoteJsonObject.ShippingAddressId =  quote.AddressId ;
+            quoteJsonObject.ShippingAddressId = quote.AddressId;
             //quoteJsonObject.Details = new QuoteDetailsJson();
 
             quoteJsonObject.Details = new List<Detail>();
@@ -334,31 +365,35 @@ namespace SageMobileSales.ServiceAgents.Services
         /// <returns></returns>
         private EditQuoteDetailsShippingAddressKeyJson
             ConvertEditedQuoteDetailsWithShippingAddressKeyToJsonFormattedObject(Quote quote,
-                QuoteLineItem quoteLineItem)
+                QuoteLineItem quoteLineItem, bool isDeleted)
         {
             var quoteJsonObject = new EditQuoteDetailsShippingAddressKeyJson();
             quoteJsonObject.Description = quote.QuoteDescription == null ? "" : quote.QuoteDescription;
-            quoteJsonObject.DiscountPercent = quote.DiscountPercent;
+            //quoteJsonObject.DiscountPercent = quote.DiscountPercent;
             quoteJsonObject.QuoteTotal = quote.Amount;
             quoteJsonObject.SandH = quote.ShippingAndHandling;
-            quoteJsonObject.Status = quote.QuoteStatus;
-            quoteJsonObject.Customer = new CustomerKeyJson { CustomerId = quote.CustomerId };
-            quoteJsonObject.SalesRep = new SalesKeyJson { key = quote.RepId };
+            //quoteJsonObject.Status = quote.QuoteStatus;
+            quoteJsonObject.CustomerId = quote.CustomerId;
+            //quoteJsonObject.SalesRep = new SalesKeyJson { key = quote.RepId };
 
-            quoteJsonObject.ShippingAddress = new ShippingAddressKeyJson { ShippingAddressId = quote.AddressId };
-            quoteJsonObject.Details = new EditQuoteDetailsJson();
-
-            quoteJsonObject.Details.resources = new List<ResourceKey>();
-            ResourceKey resource;
+            quoteJsonObject.ShippingAddressId = quote.AddressId;
+            quoteJsonObject.Details = new List<EditDetail>();
+            EditDetail detail;
+            //quoteJsonObject.Details.resources = new List<ResourceKey>();
+            //ResourceKey resource;
 
             if (quoteLineItem != null)
             {
-                resource = new ResourceKey();
-                resource.key = quoteLineItem.QuoteLineItemId;
-                resource.InventoryItem = new InventoryItemKeyJson { InventoryItemKeyId = quoteLineItem.ProductId };
-                resource.Price = quoteLineItem.Price;
-                resource.Quantity = quoteLineItem.Quantity;
-                quoteJsonObject.Details.resources.Add(resource);
+                detail = new EditDetail();
+                detail.Id = quoteLineItem.QuoteLineItemId;
+                detail.InventoryItemId = quoteLineItem.ProductId;
+                detail.Price = quoteLineItem.Price;
+                detail.Quantity = quoteLineItem.Quantity;
+
+                if (isDeleted)
+                    detail.IsDeleted = isDeleted;
+
+                quoteJsonObject.Details.Add(detail);
             }
 
             return quoteJsonObject;

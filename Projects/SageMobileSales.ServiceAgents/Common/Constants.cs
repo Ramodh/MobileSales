@@ -45,6 +45,7 @@ namespace SageMobileSales.ServiceAgents.Common
 
         public static string DraftQuotes = "DraftQuotes";
         public static string SubmitQuoteEntity = "QuoteRequests";
+        public static string Address = "Addresses";
 
 
         public static string Scope = String.Empty;

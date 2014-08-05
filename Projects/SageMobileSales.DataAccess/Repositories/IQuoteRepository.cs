@@ -19,7 +19,7 @@ namespace SageMobileSales.DataAccess.Repositories
         Task<Quote> AddQuoteToDbAsync(Quote quoteDtls, string selectedQuoteType, string orderId);
         Task<Quote> UpdateQuoteToDbAsync(Quote quote);
 
-        Task<Quote> SavePostedQuoteToDbAsync(JsonObject sDataQuote, string pendingQuoteId, string addressId,
+        Task<Quote> SavePostedQuoteToDbAsync(JsonObject sDataQuote, Quote quote, Address address,
             QuoteLineItem pendingQuoteLineItem);
 
         Task DeleteQuoteFromDbAsync(string quoteId);

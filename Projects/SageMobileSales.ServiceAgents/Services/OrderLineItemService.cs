@@ -34,7 +34,8 @@ namespace SageMobileSales.ServiceAgents.Services
             try
             {
                 parameters = new Dictionary<string, string>();
-                parameters.Add("include", "Details");
+                //parameters.Add("include", "Details");
+                parameters.Add("Include", "Customer/Addresses,Details");
 
                 string orderEntityId = Constants.OrderEntity + "('" + orderId + "')";
                 HttpResponseMessage orderLineItemResponse = null;

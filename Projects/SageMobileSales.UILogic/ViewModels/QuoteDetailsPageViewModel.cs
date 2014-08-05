@@ -757,7 +757,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 if (Constants.ConnectedToInternet())
                 {
                     //Delete quote line item via service
-                    await _quoteLineItemService.DeleteQuoteLineItem(selectedLineItem.QuoteLineItemId);
+                    await _quoteLineItemService.DeleteQuoteLineItem(selectedLineItem);
                 }
             }
             await DisplayQuotedetails();
@@ -863,7 +863,7 @@ namespace SageMobileSales.UILogic.ViewModels
             {
                 if (Constants.ConnectedToInternet())
                 {
-                    await _quoteLineItemService.SyncQuoteLineItems(_quoteId);
+                    await _quoteLineItemService.SyncQuoteLineItems(await _quoteRepository.GetQuoteAsync(_quoteId));
                 }
 
                 QuoteLineItemsList = await _quoteLineItemRepository.GetQuoteLineItemDetailsAsync(_quoteId);
@@ -1177,7 +1177,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 if (quote.AddressId.Contains(Constants.Pending))
                 {
                     // Confirm before posting quote whether it has Valid QuoteId                        
-                    quote = await _quoteService.PostQuote(quote);
+                    quote = await _quoteService.PostDraftQuote(quote);
 
                     if (quote != null)
                         await
@@ -1186,7 +1186,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 }
                 else
                 {
-                    quote = await _quoteService.PostQuote(quote);
+                    quote = await _quoteService.PostDraftQuote(quote);
                 }
 
                 if (quote != null)

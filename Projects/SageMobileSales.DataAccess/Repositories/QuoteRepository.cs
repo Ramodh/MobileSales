@@ -156,12 +156,12 @@ namespace SageMobileSales.DataAccess.Repositories
         /// </summary>
         /// <param name="sDataQuote"></param>
         /// <returns></returns>
-        public async Task<Quote> SavePostedQuoteToDbAsync(JsonObject sDataQuote, string pendingQuoteId, string addressId,
+        public async Task<Quote> SavePostedQuoteToDbAsync(JsonObject sDataQuote, Quote pendingQuote, Address address,
             QuoteLineItem pendingQuoteLineItem)
         {
             IJsonValue value;
 
-            if (pendingQuoteId.Contains(DataAccessUtils.Pending))
+            if (pendingQuote.QuoteId.Contains(DataAccessUtils.Pending))
             {
                 if (sDataQuote.TryGetValue("Id", out value))
                 {
@@ -169,7 +169,7 @@ namespace SageMobileSales.DataAccess.Repositories
                     {
                         List<Quote> pendingQuoteList;
                         pendingQuoteList =
-                            await _sageSalesDB.QueryAsync<Quote>("SELECT * FROM Quote where QuoteId=?", pendingQuoteId);
+                            await _sageSalesDB.QueryAsync<Quote>("SELECT * FROM Quote where QuoteId=?", pendingQuote.QuoteId);
 
                         if (pendingQuoteList.FirstOrDefault() != null)
                         {
@@ -190,24 +190,26 @@ namespace SageMobileSales.DataAccess.Repositories
             //    await _sageSalesDB.QueryAsync<QuoteLineItem>("Delete From QuoteLineItem Where QuoteLineItemId=?", pendingQuoteLineItemId);
             //}
 
-            if (!string.IsNullOrEmpty(addressId))
+            if (address!=null)
             {
-                if (sDataQuote.TryGetValue("ShippingAddressId", out value))
+                if (sDataQuote.TryGetValue("Id", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
                         //JsonObject sDataShippingAdress = sDataQuote.GetNamedObject("ShippingAddress");
 
                         await
-                            _sageSalesDB.QueryAsync<Quote>("Update Address Set AddressId=? where AddressId=?",
-                                sDataQuote.GetNamedString("ShippingAddressId"), addressId);
+                            _sageSalesDB.QueryAsync<Address>("Update Address Set AddressId=? where AddressId=?",
+                                sDataQuote.GetNamedString("Id"), address.AddressId);
                         //if (!string.IsNullOrEmpty(quote.CustomerId))
                         //{
-                        //Address address = await _addressRepository.AddOrUpdateAddressJsonToDbAsync(sDataShippingAdress, quote.CustomerId);
-                        //if (address != null)
-                        //{
-                        //    quote.AddressId = address.AddressId;
-                        //}
+                            Address addressObj=await _addressRepository.AddOrUpdateAddressJsonToDbAsync(sDataQuote, address.CustomerId);
+                            if (addressObj != null)
+                            {
+                                await
+                                _sageSalesDB.QueryAsync<Quote>("Update Quote Set AddressId=? where AddressId=?",
+                                    sDataQuote.GetNamedString("Id"), address.AddressId);
+                            }
                         //}
                     }
                 }
@@ -217,8 +219,8 @@ namespace SageMobileSales.DataAccess.Repositories
 
             // Commented below code as we are not getting Quote LineItem details in Quote response
 
-            //await
-            //    _quoteLineItemRepository.SavePostedQuoteLineItemsAsync(sDataQuote, quote.QuoteId, pendingQuoteLineItem);
+            await
+                _quoteLineItemRepository.SavePostedQuoteLineItemsAsync(sDataQuote, quote.QuoteId, pendingQuoteLineItem);
             //await _quoteLineItemRepository.SaveQuoteLineItemsAsync(sDataQuote, quote.QuoteId);
 
             return quote;

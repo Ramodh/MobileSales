@@ -299,7 +299,7 @@ namespace SageMobileSales.UILogic.ViewModels
                     if (quote.QuoteId.Contains(PageUtils.Pending))
                     {
                         if (Constants.ConnectedToInternet())
-                            await _quoteService.PostQuote(quote);
+                            await _quoteService.PostDraftQuote(quote);
                     }
                     else
                     {
@@ -335,7 +335,7 @@ namespace SageMobileSales.UILogic.ViewModels
                     if (quote.QuoteId.Contains(PageUtils.Pending))
                     {
                         if (Constants.ConnectedToInternet())
-                            await _quoteService.PostQuote(quote);
+                            await _quoteService.PostDraftQuote(quote);
                     }
                     else
                     {

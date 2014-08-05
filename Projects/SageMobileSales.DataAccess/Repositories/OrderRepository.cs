@@ -101,20 +101,33 @@ namespace SageMobileSales.DataAccess.Repositories
 
             Orders order = await SaveOrderDetailsAsync(sDataOrder);
 
-            if (sDataOrder.TryGetValue("ShippingAddress", out value))
+            //if (sDataOrder.TryGetValue("ShippingAddress", out value))
+            //{
+            //    if (value.ValueType.ToString() != DataAccessUtils.Null)
+            //    {
+            //        JsonObject sDataShippingAdress = sDataOrder.GetNamedObject("ShippingAddress");
+            //        if (!string.IsNullOrEmpty(order.CustomerId))
+            //        {
+            //            Address address =
+            //                await
+            //                    _addressRepository.AddOrUpdateAddressJsonToDbAsync(sDataShippingAdress, order.CustomerId);
+            //            if (address != null)
+            //            {
+            //                order.AddressId = address.AddressId;
+            //            }
+            //        }
+            //    }
+            //}
+
+            if (sDataOrder.TryGetValue("Customer", out value))
             {
                 if (value.ValueType.ToString() != DataAccessUtils.Null)
                 {
-                    JsonObject sDataShippingAdress = sDataOrder.GetNamedObject("ShippingAddress");
-                    if (!string.IsNullOrEmpty(order.CustomerId))
+                    JsonObject sDataCustomer = sDataOrder.GetNamedObject("Customer");
+                    Customer customer = await _customerRepository.AddOrUpdateCustomerJsonToDbAsync(sDataCustomer);
+                    if (customer != null)
                     {
-                        Address address =
-                            await
-                                _addressRepository.AddOrUpdateAddressJsonToDbAsync(sDataShippingAdress, order.CustomerId);
-                        if (address != null)
-                        {
-                            order.AddressId = address.AddressId;
-                        }
+                        await _addressRepository.SaveAddressesAsync(sDataCustomer, customer.CustomerId);
                     }
                 }
             }
@@ -133,10 +146,11 @@ namespace SageMobileSales.DataAccess.Repositories
             List<OrderDetails> order = null;
             try
             {
+                //SELECT distinct Orders.OrderId, Orders.CreatedOn, Orders.OrderNumber, Orders.CustomerId, Orders.AddressId, Orders.TenantId, Orders.Amount, Orders.Tax, Orders.ShippingAndHandling, Orders.DiscountPercent, Orders.OrderStatus,Orders.OrderDescription, SalesRep.RepName FROM Orders  INNER JOIN SalesRep ON salesRep.RepId = Orders.RepId and Orders.OrderId=?
                 order =
                     await
                         _sageSalesDB.QueryAsync<OrderDetails>(
-                            "SELECT distinct Orders.OrderId, Orders.CreatedOn, Orders.OrderNumber, Orders.CustomerId, Orders.AddressId, Orders.TenantId, Orders.Amount, Orders.Tax, Orders.ShippingAndHandling, Orders.DiscountPercent, Orders.OrderStatus,Orders.OrderDescription, SalesRep.RepName FROM Orders  INNER JOIN SalesRep ON salesRep.RepId = Orders.RepId and Orders.OrderId=?",
+                            "SELECT distinct Orders.OrderId, Orders.CreatedOn, Orders.OrderNumber, Orders.CustomerId, Orders.AddressId, Orders.TenantId, Orders.Amount, Orders.Tax, Orders.ShippingAndHandling, Orders.DiscountPercent, Orders.OrderStatus,Orders.OrderDescription, SalesRep.RepName FROM Orders  INNER JOIN SalesRep ON Orders.OrderId=?",
                             orderId);
             }
             catch (Exception ex)

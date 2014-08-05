@@ -518,7 +518,7 @@ namespace SageMobileSales.ServiceAgents.Common
         /// <param name="accessToken"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public async Task<HttpResponseMessage> BuildAndDeleteRequest(string entity, string queryEntity,
+        public async Task<HttpResponseMessage> BuildAndDeleteRequest(string tenantId, string entity, string queryEntity,
             string accessToken, Dictionary<string, string> parameters)
         {
             _requestUrl = Constants.Url;
@@ -527,6 +527,12 @@ namespace SageMobileSales.ServiceAgents.Common
             {
                 string _url = string.Empty;
                 string _parameters = string.Empty;
+
+                if (!string.IsNullOrEmpty(tenantId))
+                {
+                    _requestUrl = _requestUrl + tenantId + "/";
+                }
+
                 if (queryEntity != null)
                 {
                     _url += _requestUrl + entity + "/" + queryEntity;
