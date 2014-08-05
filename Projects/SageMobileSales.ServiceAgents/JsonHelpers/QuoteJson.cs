@@ -14,7 +14,7 @@ namespace SageMobileSales.ServiceAgents.JsonHelpers
         //public SalesKeyJson SalesRep { get; set; }
         //public QuoteDetailsJson Details { get; set; }
         public List<Detail> Details { get; set; }
-
+        //public string Id { get; set; }
         //public int QuoteNumber { get; set; }
         public decimal Tax { get; set; }
         public decimal SubTotal { get; set; }
@@ -66,5 +66,11 @@ namespace SageMobileSales.ServiceAgents.JsonHelpers
     {
         //public ShippingAddressKeyJson ShippingAddress { get; set; }
         public string ShippingAddressId { get; set; }
+    }
+
+    public class SubmitQuoteJson : QuoteJson
+    {
+        public string ShippingAddressId { get; set; }
+        public string Id { get; set; }
     }
 }
