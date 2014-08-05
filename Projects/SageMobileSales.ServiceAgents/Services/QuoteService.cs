@@ -182,12 +182,12 @@ namespace SageMobileSales.ServiceAgents.Services
             IEnumerable<QuoteLineItem> result =
                 quoteLineItemList.Where(e => e.QuoteLineItemId.Contains(Constants.Pending));
 
-            obj = ConvertQuoteWithShippingAddressKeyToJsonFormattedObject(quote, result.ToList());
+            obj = ConvertSubmitQuoteToJsonFormattedObject(quote, result.ToList());
 
             HttpResponseMessage quoteResponse = null;
             string quoteEntityId;
 
-            quoteEntityId = "QuoteRequests";// +"('" + quote.QuoteId + "')";
+            quoteEntityId = Constants.SubmitQuoteEntity;// +"('" + quote.QuoteId + "')";
             //quoteResponse =
             // await
             //     _serviceAgent.BuildAndPutObjectRequest(quoteEntityId, null, Constants.AccessToken, parameters, obj);
@@ -625,7 +625,7 @@ namespace SageMobileSales.ServiceAgents.Services
         private QuoteDetailsShippingAddressKeyJson ConvertQuoteWithShippingAddressKeyToJsonFormattedObject(Quote quote,
             List<QuoteLineItem> quoteLineItemList)
         {
-            var quoteJsonObject = new QuoteDetailsShippingAddressKeyJson();
+            var quoteJsonObject = new QuoteDetailsShippingAddressKeyJson();          
             quoteJsonObject.Description = quote.QuoteDescription == null ? "" : quote.QuoteDescription;
             //quoteJsonObject.DiscountPercent = quote.DiscountPercent;
             quoteJsonObject.QuoteTotal = quote.Amount;
@@ -662,6 +662,53 @@ namespace SageMobileSales.ServiceAgents.Services
             return quoteJsonObject;
         }
 
+
+        /// <summary>
+        ///     Converts quote to json formatted object for Submit Quote Request(payload)
+        /// </summary>
+        /// <param name="quote"></param>
+        /// <param name="quoteLineItemList"></param>
+        /// <returns></returns>
+        private SubmitQuoteJson ConvertSubmitQuoteToJsonFormattedObject(Quote quote,
+            List<QuoteLineItem> quoteLineItemList)
+        {
+            var quoteJsonObject = new SubmitQuoteJson();
+            quoteJsonObject.Id = quote.QuoteId;
+            quoteJsonObject.Description = quote.QuoteDescription == null ? "" : quote.QuoteDescription;
+            //quoteJsonObject.DiscountPercent = quote.DiscountPercent;
+            quoteJsonObject.QuoteTotal = quote.Amount;
+            quoteJsonObject.SubTotal = quote.SubTotal;
+            quoteJsonObject.SandH = quote.ShippingAndHandling;
+            //quoteJsonObject.Status = quote.QuoteStatus;
+            quoteJsonObject.CustomerId = quote.CustomerId;
+            //quoteJsonObject.SalesRep = new SalesKeyJson { key = quote.RepId };
+
+            quoteJsonObject.ShippingAddressId = quote.AddressId;
+            //quoteJsonObject.Details = new QuoteDetailsJson();
+
+            quoteJsonObject.Details = new List<Detail>();
+            Detail detail;
+
+            // ispending, isdeleted, pending prefix, quantiy> 0
+            if (quoteLineItemList != null)
+            {
+                if (quoteLineItemList.Count > 0)
+                {
+                    foreach (QuoteLineItem quoteLineItem in quoteLineItemList)
+                    {
+                        if (quoteLineItem.Quantity > 0)
+                        {
+                            detail = new Detail();
+                            detail.InventoryItemId = quoteLineItem.ProductId;
+                            detail.Price = quoteLineItem.Price;
+                            detail.Quantity = quoteLineItem.Quantity;
+                            quoteJsonObject.Details.Add(detail);
+                        }
+                    }
+                }
+            }
+            return quoteJsonObject;
+        }
         #endregion
     }
 }
