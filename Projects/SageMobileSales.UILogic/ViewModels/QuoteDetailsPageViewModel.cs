@@ -64,6 +64,8 @@ namespace SageMobileSales.UILogic.ViewModels
         private ShippingAddressDetails _shippingAddressDetails;
         private decimal _shippingAndHandling;
         private Tenant _tenant;
+        private bool _isShippingAndHandlingEnabled;
+        private bool _isDiscountEnabled;
         private DataTransferManager dataTransferManager;
 
         public QuoteDetailsPageViewModel(INavigationService navigationService, IEventAggregator eventAggregator,
@@ -255,6 +257,23 @@ namespace SageMobileSales.UILogic.ViewModels
             }
         }
 
+        public bool IsShippingAndHandlingEnabled
+        {
+            get { return _isShippingAndHandlingEnabled; }
+            private set
+            {
+                SetProperty(ref _isShippingAndHandlingEnabled, value);
+            }
+        }
+
+        public bool IsDiscountEnabled
+        {
+            get { return _isDiscountEnabled; }
+            private set
+            {
+                SetProperty(ref _isDiscountEnabled, value);
+            }
+        }
 
         public DelegateCommand IncrementCountCommand { get; private set; }
 
@@ -507,7 +526,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 {
                     _quote = await _quoteRepository.GetQuoteAsync(_quoteId);
                 }
-                if (_quote.QuoteStatus == DataAccessUtils.SubmitQuote || _quote.QuoteStatus == "Quote")
+                if (_quote.QuoteStatus == "Quote")
                 {
                     await
                         ShowMessageDialog(
@@ -982,6 +1001,7 @@ namespace SageMobileSales.UILogic.ViewModels
                     _quote.QuoteStatus = quoteStatus;
                 }
                 _quote.Amount = Total;
+                _quote.SubTotal = SubTotal;                
                 _quote.ShippingAndHandling = ShippingAndHandling;
                 _quote.DiscountPercent = DiscountPercent;
                 _quote = await _quoteRepository.UpdateQuoteToDbAsync(_quote);
@@ -989,10 +1009,10 @@ namespace SageMobileSales.UILogic.ViewModels
                 {
                     await _quoteService.RevertSubmittedQuoteToDraft(_quote);
                 }
-                else
-                {
-                    await _quoteService.UpdateDiscountOrShippingAndHandling(_quote);
-                }
+                //else
+                //{
+                //    await _quoteService.UpdateDiscountOrShippingAndHandling(_quote);
+                //}
             }
             catch (Exception ex)
             {
@@ -1023,6 +1043,8 @@ namespace SageMobileSales.UILogic.ViewModels
                     IsEditQuoteLineItemVisible = Visibility.Collapsed;
                     IsEditQuoteVisible = Visibility.Collapsed;
                     IsPlaceOrderVisible = Visibility.Collapsed;
+                    IsShippingAndHandlingEnabled = true;
+                    IsDiscountEnabled = true;
                 }
                 else if (_quote.QuoteStatus == DataAccessUtils.SubmitQuote && _itemNotSelected)
                 {
@@ -1032,8 +1054,10 @@ namespace SageMobileSales.UILogic.ViewModels
                     IsSendmailVisible = Visibility.Visible;
                     IsDeleteQuoteVisible = Visibility.Collapsed;
                     IsEditQuoteLineItemVisible = Visibility.Collapsed;
-                    IsEditQuoteVisible = Visibility.Visible;
+                    IsEditQuoteVisible = Visibility.Collapsed;
                     IsPlaceOrderVisible = Visibility.Collapsed;
+                    IsShippingAndHandlingEnabled = false;
+                    IsDiscountEnabled = false;
                 }
                 else if (_quote.QuoteStatus == DataAccessUtils.Quote && _itemNotSelected)
                 {
@@ -1056,9 +1080,23 @@ namespace SageMobileSales.UILogic.ViewModels
                     IsEditQuoteLineItemVisible = Visibility.Visible;
                     IsEditQuoteVisible = Visibility.Collapsed;
                     IsPlaceOrderVisible = Visibility.Collapsed;
+                    IsShippingAndHandlingEnabled = true;
+                    IsDiscountEnabled = true;
                 }
-                else if ((_quote.QuoteStatus == DataAccessUtils.SubmitQuote ||
-                          _quote.QuoteStatus == DataAccessUtils.Quote) && !(_itemNotSelected))
+                else if ((_quote.QuoteStatus == DataAccessUtils.SubmitQuote) && !(_itemNotSelected))
+                {
+                    IsAddItemVisible = Visibility.Collapsed;
+                    IsChangeAddressVisible = Visibility.Collapsed;
+                    IsSubmitQuoteVisible = Visibility.Collapsed;
+                    IsSendmailVisible = Visibility.Collapsed;
+                    IsDeleteQuoteVisible = Visibility.Collapsed;
+                    IsEditQuoteLineItemVisible = Visibility.Collapsed;
+                    IsEditQuoteVisible = Visibility.Collapsed;
+                    IsPlaceOrderVisible = Visibility.Collapsed;
+                    IsShippingAndHandlingEnabled = false;
+                    IsDiscountEnabled = false;
+                }
+                else if ((_quote.QuoteStatus == DataAccessUtils.Quote) && !(_itemNotSelected))
                 {
                     IsAddItemVisible = Visibility.Collapsed;
                     IsChangeAddressVisible = Visibility.Collapsed;
@@ -1079,6 +1117,8 @@ namespace SageMobileSales.UILogic.ViewModels
                     IsEditQuoteLineItemVisible = Visibility.Collapsed;
                     IsEditQuoteVisible = Visibility.Collapsed;
                     IsPlaceOrderVisible = Visibility.Collapsed;
+                    IsShippingAndHandlingEnabled = true;
+                    IsDiscountEnabled = true;
                 }
 
                 OnPropertyChanged("IsAddItemVisible");
@@ -1089,6 +1129,8 @@ namespace SageMobileSales.UILogic.ViewModels
                 OnPropertyChanged("IsEditQuoteLineItemVisible");
                 OnPropertyChanged("IsEditQuoteVisible");
                 OnPropertyChanged("IsPlaceOrderVisible");
+                OnPropertyChanged("IsShippingAndHandlingEnabled");
+                OnPropertyChanged("IsDiscountEnabled");
             }
             catch (Exception ex)
             {

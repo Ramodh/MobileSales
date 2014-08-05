@@ -231,7 +231,7 @@ namespace SageMobileSales.ServiceAgents.Services
             HttpResponseMessage quoteResponse = null;
             string quoteEntityId;
 
-            quoteEntityId = "QuoteRequests" + "('" + quote.QuoteId + "')";
+            quoteEntityId = "QuoteRequests";// +"('" + quote.QuoteId + "')";
             //quoteResponse =
             // await
             //     _serviceAgent.BuildAndPutObjectRequest(quoteEntityId, null, Constants.AccessToken, parameters, obj);
@@ -264,11 +264,11 @@ namespace SageMobileSales.ServiceAgents.Services
             HttpResponseMessage quoteResponse = null;
             string quoteEntityId;
 
-            quoteEntityId = Constants.QuoteEntity + "('" + quote.QuoteId + "')";
+            quoteEntityId = Constants.SubmitQuoteEntity + "('" + quote.QuoteId + "')";
 
             quoteResponse =
                 await
-                    _serviceAgent.BuildAndPutObjectRequest(quoteEntityId, null, Constants.AccessToken, parameters, obj);
+                    _serviceAgent.BuildAndPatchObjectRequest(Constants.TenantId, quoteEntityId, null, Constants.AccessToken, parameters, obj);
             if (quoteResponse != null && quoteResponse.IsSuccessStatusCode)
             {
                 var sDataQuote = await _serviceAgent.ConvertTosDataObject(quoteResponse);
@@ -389,11 +389,11 @@ namespace SageMobileSales.ServiceAgents.Services
             HttpResponseMessage quoteResponse = null;
             string quoteEntityId;
 
-            quoteEntityId = Constants.QuoteEntity + "('" + quote.QuoteId + "')";
+            quoteEntityId = Constants.SubmitQuoteEntity + "('" + quote.QuoteId + "')";
 
             quoteResponse =
                 await
-                    _serviceAgent.BuildAndPutObjectRequest(quoteEntityId, null, Constants.AccessToken, parameters, obj);
+                    _serviceAgent.BuildAndPatchObjectRequest(Constants.TenantId, quoteEntityId, null, Constants.AccessToken, parameters, obj);
             if (quoteResponse != null && quoteResponse.IsSuccessStatusCode)
             {
                 var sDataQuote = await _serviceAgent.ConvertTosDataObject(quoteResponse);

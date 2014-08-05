@@ -216,8 +216,11 @@ namespace SageMobileSales.DataAccess.Repositories
             }
 
             Quote quote = await SaveQuoteDetailsAsync(sDataQuote);
-            await
-                _quoteLineItemRepository.SavePostedQuoteLineItemsAsync(sDataQuote, quote.QuoteId, pendingQuoteLineItem);
+
+            // Commented below code as we are not getting Quote LineItem details in Quote response
+
+            //await
+            //    _quoteLineItemRepository.SavePostedQuoteLineItemsAsync(sDataQuote, quote.QuoteId, pendingQuoteLineItem);
             //await _quoteLineItemRepository.SaveQuoteLineItemsAsync(sDataQuote, quote.QuoteId);
 
             return quote;
@@ -736,20 +739,19 @@ namespace SageMobileSales.DataAccess.Repositories
         /// <returns></returns>
         private async Task<Quote> AddQuoteJsonToDbAsync(JsonObject sDataQuote)
         {
-            var quoteObj = new Quote();
+            var quoteObj = new Quote();           
             try
             {
                 quoteObj.QuoteId = sDataQuote.GetNamedString("Id");
                 quoteObj = await ExtractQuoteFromJsonAsync(sDataQuote, quoteObj);
-
-                await _sageSalesDB.InsertAsync(quoteObj);
+                await _sageSalesDB.InsertAsync(quoteObj);            
             }
             catch (Exception ex)
             {
                 _log = AppEventSource.Log.WriteLine(ex);
                 AppEventSource.Log.Error(_log);
             }
-            return quoteObj;
+            return quoteObj; 
         }
 
         /// <summary>
@@ -820,6 +822,10 @@ namespace SageMobileSales.DataAccess.Repositories
                     {
                         quote.QuoteStatus = sDataQuote.GetNamedString("Status");
                     }
+                }
+                else
+                {
+                    quote.QuoteStatus =DataAccessUtils.SubmitQuote;
                 }
 
                 if (sDataQuote.TryGetValue("SandH", out value))
