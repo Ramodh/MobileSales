@@ -219,8 +219,8 @@ namespace SageMobileSales.DataAccess.Repositories
 
             // Commented below code as we are not getting Quote LineItem details in Quote response
 
-            //await
-            //    _quoteLineItemRepository.SavePostedQuoteLineItemsAsync(sDataQuote, quote.QuoteId, pendingQuoteLineItem);
+            await
+                _quoteLineItemRepository.SavePostedQuoteLineItemsAsync(sDataQuote, quote.QuoteId, pendingQuoteLineItem);
             //await _quoteLineItemRepository.SaveQuoteLineItemsAsync(sDataQuote, quote.QuoteId);
 
             return quote;
