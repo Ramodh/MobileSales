@@ -148,7 +148,10 @@ namespace SageMobileSales.DataAccess.Repositories
                     }
                 }
             }
-            await _quoteLineItemRepository.SaveQuoteLineItemsAsync(sDataQuote, quote.QuoteId);
+            //Changed for pegasus
+            //await _quoteLineItemRepository.SaveQuoteLineItemsAsync(sDataQuote, quote.QuoteId);
+
+            await _quoteLineItemRepository.SavePostedQuoteLineItemsAsync(sDataQuote, quote.QuoteId, null);
         }
 
         /// <summary>

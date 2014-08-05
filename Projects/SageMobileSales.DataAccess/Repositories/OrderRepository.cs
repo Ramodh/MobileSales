@@ -101,36 +101,36 @@ namespace SageMobileSales.DataAccess.Repositories
 
             Orders order = await SaveOrderDetailsAsync(sDataOrder);
 
-            //if (sDataOrder.TryGetValue("ShippingAddress", out value))
-            //{
-            //    if (value.ValueType.ToString() != DataAccessUtils.Null)
-            //    {
-            //        JsonObject sDataShippingAdress = sDataOrder.GetNamedObject("ShippingAddress");
-            //        if (!string.IsNullOrEmpty(order.CustomerId))
-            //        {
-            //            Address address =
-            //                await
-            //                    _addressRepository.AddOrUpdateAddressJsonToDbAsync(sDataShippingAdress, order.CustomerId);
-            //            if (address != null)
-            //            {
-            //                order.AddressId = address.AddressId;
-            //            }
-            //        }
-            //    }
-            //}
-
-            if (sDataOrder.TryGetValue("Customer", out value))
+            if (sDataOrder.TryGetValue("ShippingAddress", out value))
             {
                 if (value.ValueType.ToString() != DataAccessUtils.Null)
                 {
-                    JsonObject sDataCustomer = sDataOrder.GetNamedObject("Customer");
-                    Customer customer = await _customerRepository.AddOrUpdateCustomerJsonToDbAsync(sDataCustomer);
-                    if (customer != null)
+                    JsonObject sDataShippingAdress = sDataOrder.GetNamedObject("ShippingAddress");
+                    if (!string.IsNullOrEmpty(order.CustomerId))
                     {
-                        await _addressRepository.SaveAddressesAsync(sDataCustomer, customer.CustomerId);
+                        Address address =
+                            await
+                                _addressRepository.AddOrUpdateAddressJsonToDbAsync(sDataShippingAdress, order.CustomerId);
+                        if (address != null)
+                        {
+                            order.AddressId = address.AddressId;
+                        }
                     }
                 }
             }
+
+            //if (sDataOrder.TryGetValue("Customer", out value))
+            //{
+            //    if (value.ValueType.ToString() != DataAccessUtils.Null)
+            //    {
+            //        JsonObject sDataCustomer = sDataOrder.GetNamedObject("Customer");
+            //        Customer customer = await _customerRepository.AddOrUpdateCustomerJsonToDbAsync(sDataCustomer);
+            //        if (customer != null)
+            //        {
+            //            await _addressRepository.SaveAddressesAsync(sDataCustomer, customer.CustomerId);
+            //        }
+            //    }
+            //}
 
             await _orderLineItemRepository.SaveOrderLineItemsAsync(sDataOrder, order.OrderId);
             return order;

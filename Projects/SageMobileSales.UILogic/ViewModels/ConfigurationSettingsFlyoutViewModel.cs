@@ -301,9 +301,11 @@ namespace SageMobileSales.UILogic.ViewModels
             }
             if (selected.SelectedItem.ToString() == "Elm")
             {
-                ClientId = @"FhVDZU7p11pFRItTweZsh8XSGdEeFZ0g";
+                //ClientId = @"FhVDZU7p11pFRItTweZsh8XSGdEeFZ0g";
+                ClientId = @"xeQaIFwQvbDjKZvwzb92kFOLzDCd9CCc";
                 Url = "https://ElmMSales.sagedatacloud.com/sdata/api/msales/1.0/";
-                Scope = @"kipgf40h();";
+                Scope = @"k1mcudfb();";
+                //Scope = @"kipgf40h();";
                 IsSageIdProduction = false;
                 SelectedType = "Elm";
                 RedirectUrl = "https://signon.sso.staging.services.sage.com/oauth/native";
