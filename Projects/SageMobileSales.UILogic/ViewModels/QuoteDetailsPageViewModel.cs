@@ -96,6 +96,7 @@ namespace SageMobileSales.UILogic.ViewModels
             EditQuoteCommand = DelegateCommand.FromAsyncHandler(ChangeQuoteStatus);
             ShippingAndHandlingTextChangedCommand = new DelegateCommand<object>(ShippingAndHandlingTextChanged);
             DiscountTextChangedCommand = new DelegateCommand<object>(DiscountPercentageTextChanged);
+            //RecentOrdersCommand = new DelegateCommand(NavigateToRecentOrders);
 
             ////IsBottomAppBarOpened = false;
             //IsItemSelected = Visibility.Collapsed;
@@ -298,6 +299,8 @@ namespace SageMobileSales.UILogic.ViewModels
         public DelegateCommand<object> ShippingAndHandlingTextChangedCommand { get; private set; }
 
         public DelegateCommand<object> DiscountTextChangedCommand { get; private set; }
+
+        public DelegateCommand RecentOrdersCommand { get; private set; }
 
 
         public QuoteLineItemViewModel SelectedItem
@@ -782,6 +785,19 @@ namespace SageMobileSales.UILogic.ViewModels
             }
         }
 
+        private void NavigateToRecentOrders()
+        {
+            try
+            {
+
+            }
+            catch (Exception ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+        }
+
         # endregion
 
         public override async void OnNavigatedTo(object navigationParameter, NavigationMode navigationMode,
@@ -873,7 +889,7 @@ namespace SageMobileSales.UILogic.ViewModels
                     QuoteLineItemViewModels = new ObservableCollection<QuoteLineItemViewModel>();
                     foreach (LineItemDetails lineitem in QuoteLineItemsList)
                     {
-                        var quoteLineItemViewModel = new QuoteLineItemViewModel(lineitem);
+                        var quoteLineItemViewModel = new QuoteLineItemViewModel(_navigationService, lineitem);
                         quoteLineItemViewModel.PropertyChanged += quoteLineItemViewModel_PropertyChanged;
                         QuoteLineItemViewModels.Add(quoteLineItemViewModel);
                     }
@@ -1203,6 +1219,6 @@ namespace SageMobileSales.UILogic.ViewModels
             await _quoteLineItemService.SyncOfflineQuoteLineItems();
             await _quoteService.SyncOfflineShippingAddress();
             await _quoteLineItemService.SyncOfflineQuoteLineItems();
-        }
+        }        
     }
 }

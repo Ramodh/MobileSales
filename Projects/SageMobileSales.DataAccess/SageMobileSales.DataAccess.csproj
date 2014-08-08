@@ -151,6 +151,7 @@
     <Compile Include="Model\QuoteDetails.cs" />
     <Compile Include="Model\LineItemDetails.cs" />
     <Compile Include="Model\QuoteShippingAddress.cs" />
+    <Compile Include="Model\RecentOrders.cs" />
     <Compile Include="Model\ShippingAddressDetails.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\AddressRepository.cs" />

@@ -137,6 +137,7 @@
     <Compile Include="ViewModels\QuoteDetailsPageViewModel.cs" />
     <Compile Include="ViewModels\QuoteLineItemViewModel.cs" />
     <Compile Include="ViewModels\QuotesPageViewModel.cs" />
+    <Compile Include="ViewModels\RecentOrdersPageViewModel.cs" />
     <Compile Include="ViewModels\SearchResultsPageViewModel.cs" />
     <Compile Include="ViewModels\SearchUserControlViewModel.cs" />
     <Compile Include="ViewModels\SigninPageViewModel.cs" />

@@ -33,6 +33,8 @@ namespace SageMobileSales.UILogic.ViewModels
         private bool _emptyText;
         private List<ProductDetails> _otherProduct;
         private List<ProductAssociatedBlob> _productImage;
+        private List<RecentOrders> _recentOrders;
+        private Visibility _isRecentOrdersVisible;
 
         public ItemDetailPageViewModel(INavigationService navigationService, IProductRepository productRepository,
             IProductAssociatedBlobsRepository productAssociatedBlobsRepository,
@@ -165,7 +167,16 @@ namespace SageMobileSales.UILogic.ViewModels
             get { return _enteredQuantity; }
             private set { SetProperty(ref _enteredQuantity, value); }
         }
-
+        public List<RecentOrders> RecentOrders
+        {
+            get { return _recentOrders; }
+            private set { SetProperty(ref _recentOrders, value); }
+        }
+        public Visibility IsRecentOrdersVisible
+        {
+            get { return _isRecentOrdersVisible; }
+            private set { SetProperty(ref _isRecentOrdersVisible, value); }
+        }
         #endregion
 
         public override async void OnNavigatedTo(object navigationParameter, NavigationMode navigationMode,
@@ -184,6 +195,20 @@ namespace SageMobileSales.UILogic.ViewModels
             }
             //Display data from LocalDB
             DisplayProductDetails(_productId);
+            //TODO
+            // Need to be replaced with real data once RecentOrders Service call is done
+            RecentOrders = new List<RecentOrders>();
+            for (int i = 0; i < 4; i++)
+            {
+                RecentOrders recentOrder = new RecentOrders();
+                recentOrder.Date = Convert.ToDateTime("05/09/2014");
+                recentOrder.Invoice = "#1234567";
+                recentOrder.Quantity = 9;
+                recentOrder.UnitPrice = Convert.ToDecimal("369.89");
+                recentOrder.Total = Convert.ToDecimal("3329.01");
+                RecentOrders.Add(recentOrder);
+            }            
+            IsRecentOrdersVisible = Visibility.Visible;
             // Making Service request to get complete details- images, product, other products
             await _productDetailsService.SyncProductDetails(_productId);
 
@@ -194,6 +219,8 @@ namespace SageMobileSales.UILogic.ViewModels
             EmptyText = true;
             PageUtils.ResetLocalVariables();
             PageUtils.SelectedProduct = null;
+
+
             base.OnNavigatedTo(navigationParameter, navigationMode, viewModelState);
         }
 
@@ -293,7 +320,7 @@ namespace SageMobileSales.UILogic.ViewModels
                     await _quoteLineItemRepository.UpdateQuoteLineItemToDbAsync(quoteLineItemExists);
 
                     quote.Amount = quote.Amount +
-                                   Math.Round((quoteLineItemExists.Price*quoteLineItemExists.Quantity), 2);
+                                   Math.Round((quoteLineItemExists.Price * quoteLineItemExists.Quantity), 2);
                     await _quoteRepository.UpdateQuoteToDbAsync(quote);
 
                     if (quote.QuoteId.Contains(PageUtils.Pending))
@@ -329,7 +356,7 @@ namespace SageMobileSales.UILogic.ViewModels
 
                     await _quoteLineItemRepository.AddQuoteLineItemToDbAsync(quoteLineItem);
 
-                    quote.Amount = quote.Amount + Math.Round((quoteLineItem.Price*quoteLineItem.Quantity), 2);
+                    quote.Amount = quote.Amount + Math.Round((quoteLineItem.Price * quoteLineItem.Quantity), 2);
                     await _quoteRepository.UpdateQuoteToDbAsync(quote);
 
                     if (quote.QuoteId.Contains(PageUtils.Pending))
@@ -391,9 +418,9 @@ namespace SageMobileSales.UILogic.ViewModels
         private void TextBoxTextChanged(object args)
         {
             EmptyText = false;
-            if (((TextBox) args).Text != null && ((TextBox) args).Text != string.Empty)
+            if (((TextBox)args).Text != null && ((TextBox)args).Text != string.Empty)
             {
-                EnteredQuantity = Convert.ToInt32(((TextBox) args).Text.Trim());
+                EnteredQuantity = Convert.ToInt32(((TextBox)args).Text.Trim());
                 ProductDetails.Quantity = EnteredQuantity;
             }
         }
