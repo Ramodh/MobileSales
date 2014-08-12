@@ -119,24 +119,24 @@ namespace SageMobileSales.DataAccess.Repositories
                                                     //if (sDataQuoteLineItem.GetNamedValue("Id").ValueType.ToString() !=
                                                     //    DataAccessUtils.Null)
                                                     //{
-                                                        for (int i = 0; i < QuoteLineItemList.Count; i++)
+                                                    for (int i = 0; i < QuoteLineItemList.Count; i++)
+                                                    {
+                                                        if (sDataQuoteLineItem.GetNamedString("InventoryItemId") ==
+                                                            QuoteLineItemList[i].ProductId)
                                                         {
-                                                            if (sDataQuoteLineItem.GetNamedString("InventoryItemId") ==
-                                                                QuoteLineItemList[i].ProductId)
-                                                            {
-                                                                await
-                                                                    _sageSalesDB.QueryAsync<QuoteLineItem>(
-                                                                        "Update QuoteLineItem Set QuoteLineItemId=? where QuoteLineItemId=?",
-                                                                        sDataQuoteLineItem.GetNamedString("Id"),
-                                                                        QuoteLineItemList[i].QuoteLineItemId);
-                                                                QuoteLineItemList[i].QuoteLineItemId =
-                                                                    sDataQuoteLineItem.GetNamedString("Id");
-                                                                await
-                                                                    UpdateQuoteLineItemJsonToDbAsync(
-                                                                        sDataQuoteLineItem, QuoteLineItemList[i]);
-                                                                break;
-                                                            }
+                                                            await
+                                                                _sageSalesDB.QueryAsync<QuoteLineItem>(
+                                                                    "Update QuoteLineItem Set QuoteLineItemId=? where QuoteLineItemId=?",
+                                                                    sDataQuoteLineItem.GetNamedString("Id"),
+                                                                    QuoteLineItemList[i].QuoteLineItemId);
+                                                            QuoteLineItemList[i].QuoteLineItemId =
+                                                                sDataQuoteLineItem.GetNamedString("Id");
+                                                            await
+                                                                UpdateQuoteLineItemJsonToDbAsync(
+                                                                    sDataQuoteLineItem, QuoteLineItemList[i]);
+                                                            break;
                                                         }
+                                                    }
                                                     //}
                                                 }
                                             }
@@ -635,11 +635,35 @@ namespace SageMobileSales.DataAccess.Repositories
                     }
                 }
 
+                if (sDataQuoteLineItem.TryGetValue("InventoryItem", out value))
+                {
+                    if (value.ValueType.ToString() != DataAccessUtils.Null)
+                    {
+                        await _productRepository.AddOrUpdateProductJsonToDbAsync(sDataQuoteLineItem);
+                    }
+                }
+
+                //Need to change based on the response
                 if (sDataQuoteLineItem.TryGetValue("InventoryItemId", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
                         quoteLineItem.ProductId = sDataQuoteLineItem.GetNamedString("InventoryItemId");
+
+                        var productDb = await _sageSalesDB.QueryAsync<Product>("SELECT * FROM Product WHERE ProductId=?", sDataQuoteLineItem.GetNamedString("InventoryItemId"));
+
+                        if (productDb.FirstOrDefault() != null)
+                        {
+                            quoteLineItem.ProductId = productDb.FirstOrDefault().ProductId;
+                        }
+                        else
+                        {
+                            Product product = new Product();
+                            product.ProductId = sDataQuoteLineItem.GetNamedString("InventoryItemId");
+                            quoteLineItem.ProductId = product.ProductId;
+
+                            await _sageSalesDB.InsertAsync(product);
+                        }
                     }
                 }
 

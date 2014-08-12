@@ -31,13 +31,13 @@ namespace SageMobileSales.ServiceAgents.Services
             {
                 HttpResponseMessage tenantResponse =
                     await
-                        _serviceAgent.BuildAndSendRequest(null, Constants.TenantEntity, null, null, Constants.AccessToken,
+                        _serviceAgent.BuildAndSendRequest(Constants.TenantId, Constants.CompanySettings, null, null, Constants.AccessToken,
                             null);
                 if (tenantResponse.IsSuccessStatusCode)
                 {
                     var sDataTenantDtls = await _serviceAgent.ConvertTosDataObject(tenantResponse);
                     //Changed by ramodh for pegausus
-                    //await _tenantRepository.SaveTenantDtlsAsync(sDataTenantDtls);
+                    await _tenantRepository.UpdateTenantAsync(sDataTenantDtls, Constants.TenantId);
                 }
             }
             catch (HttpRequestException ex)

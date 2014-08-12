@@ -41,9 +41,17 @@ namespace SageMobileSales.ServiceAgents.Services
             try
             {
                 parameters = new Dictionary<string, string>();
-                parameters.Add("Include", "Customer/Addresses,Details");
-                //parameters.Add("Include", "Details")
-                //parameters.Add("Include", "Customer,Customer/Addresses,Details");
+
+                List<QuoteLineItem> quoteLineItemList = await _quoteLineItemRepository.GetQuoteLineItemsForQuote(quote.QuoteId);
+                if (quoteLineItemList != null && quoteLineItemList.Count > 0)
+                {
+                    parameters.Add("Include", "Details,Customer/Addresses");
+                }
+                else
+                {
+                    parameters.Add("include", "Details,Customer/Addresses,Details/InventoryItem,Details/InventoryItem/Images");
+                }
+
                 string quoteEntityId = Constants.QuoteEntity + "('" + quote.QuoteId + "')";
                 HttpResponseMessage quoteLineItemResponse = null;
                 quoteLineItemResponse =
