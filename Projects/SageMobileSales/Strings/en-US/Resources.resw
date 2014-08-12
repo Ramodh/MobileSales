@@ -645,4 +645,48 @@
     <value>No Quotes present</value>
     <comment>Empty string which we display when no quotes available</comment>
   </data>
+  <data name="DividerSymbol.Text" xml:space="preserve">
+    <value>|</value>
+    <comment>Recent Orders Grid divider symbol between header and customer name</comment>
+  </data>
+  <data name="ItemdetailRecentOrders.Text" xml:space="preserve">
+    <value>Recent Orders</value>
+    <comment>Recent Orders Grid Header in Item detail Page</comment>
+  </data>
+  <data name="RecentOrderDate.Text" xml:space="preserve">
+    <value>Date:</value>
+    <comment>Recent orders Grid data template date column</comment>
+  </data>
+  <data name="RecentOrderInvoice.Text" xml:space="preserve">
+    <value>Invoice:</value>
+    <comment>Recent orders Grid data template invoice column</comment>
+  </data>
+  <data name="RecentOrderProductSku.Text" xml:space="preserve">
+    <value>Product No:</value>
+    <comment>Product No. textblock text in Recent Orders page</comment>
+  </data>
+  <data name="RecentOrderQty.Text" xml:space="preserve">
+    <value>Qty:</value>
+    <comment>Recent orders Grid data template Quantity column</comment>
+  </data>
+  <data name="RecentOrdersPageTitle.Text" xml:space="preserve">
+    <value>Recent Orders |</value>
+    <comment>Recent Orders page Title</comment>
+  </data>
+  <data name="RecentOrdersQuotelineitem.Text" xml:space="preserve">
+    <value>Recent Orders</value>
+    <comment>RecentOrder text inside Quote lineitem in quote details</comment>
+  </data>
+  <data name="RecentOrderStockInHand.Text" xml:space="preserve">
+    <value>Stock in hand:</value>
+    <comment>Stock in hand textblock text in Recent Orders page</comment>
+  </data>
+  <data name="RecentOrderTotal.Text" xml:space="preserve">
+    <value>Total:</value>
+    <comment>Recent orders Grid data template Total column</comment>
+  </data>
+  <data name="RecentOrderUnitPrice.Text" xml:space="preserve">
+    <value>Unit Price:</value>
+    <comment>Recent orders Grid data template Unit Price column</comment>
+  </data>
 </root>

@@ -17,10 +17,14 @@
     x:Uid="Page">
 
     <prism:VisualStateAwarePage.Resources>
-
+        <x:String x:Key="ChevronGlyph">&#xE26B;</x:String>
         <CollectionViewSource
             x:Name="itemsViewSourceImages"
             Source="{Binding ProductImages}" />
+
+        <CollectionViewSource
+            x:Name="itemsViewSourceRecentOrders"
+            Source="{Binding RecentOrders}" />
 
         <CollectionViewSource
             x:Name="itemsViewSource"
@@ -95,6 +99,10 @@
                     <ColumnDefinition Width="120" />
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="120" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="120" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="120" />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="140" />
@@ -162,7 +170,46 @@
                     </StackPanel>
                 </Grid>
 
-                <Grid x:Name="otherProductsGrid" Grid.RowSpan="3" Grid.Column="4">
+                <Grid x:Name="recentOrdersGrid" Grid.RowSpan="3" Grid.Column="4" Visibility="{Binding IsRecentOrdersVisible}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="210" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="95" />
+                    </Grid.RowDefinitions>
+                    <Button Grid.Row="0" Foreground="{ThemeResource ApplicationHeaderForegroundThemeBrush}"
+                            AutomationProperties.Name="Group Title"
+                            Style="{StaticResource TextBlockButtonStyle}" VerticalAlignment="Bottom">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock x:Uid="ItemdetailRecentOrders" Style="{StaticResource SubHeaderStyle}" />
+                            <TextBlock x:Uid="DividerSymbol" Style="{StaticResource SubHeaderStyle}" />
+                            <TextBlock x:Uid="recentOrdersCustomerName" Text="Actwin.Co.Ltd" Style="{StaticResource SubHeaderStyle}" FontSize="30"/>
+                            <TextBlock Text="{StaticResource ChevronGlyph}"
+                                       Style="{StaticResource SubHeaderGlyphStyle}" />
+                        </StackPanel>
+                    </Button>
+                    <GridView Grid.Row="1"
+                              x:Name="recentOrdersGridView"
+                              AutomationProperties.AutomationId="recentOrdersGridView"
+                              AutomationProperties.Name="recentOrders"
+                              TabIndex="1"
+                              Grid.RowSpan="2"
+
+                              ItemsSource="{Binding Source={StaticResource itemsViewSourceRecentOrders}}"
+                              SelectionMode="None"
+                              IsSwipeEnabled="false"
+                              IsItemClickEnabled="True"
+                              ItemTemplate="{StaticResource recentOrdersTemplate}">
+
+                        <interactivity:Interaction.Behaviors>
+                            <core:EventTriggerBehavior EventName="ItemClick">
+                                <core:CallMethodAction MethodName="GridViewRecentOrderItemClick"
+                                                       TargetObject="{Binding Mode=OneWay}" />
+                            </core:EventTriggerBehavior>
+                        </interactivity:Interaction.Behaviors>
+                    </GridView>
+                </Grid>
+                <!--<Button x:Uid="SeeMore" Name="SeeMore" Content="See More" Background="AliceBlue" Height="120" Width="350" Grid.RowSpan="3" Grid.Column="5" Margin="0,-485,0,0"/>-->
+                <Grid x:Name="otherProductsGrid" Grid.RowSpan="3" Grid.Column="8">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="225" />
                         <RowDefinition Height="*" />

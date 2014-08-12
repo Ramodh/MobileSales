@@ -576,7 +576,7 @@
     <SolidColorBrush x:Key="ItemBorderBrush" Color="Transparent" />
     <SolidColorBrush x:Key="ItemSelectionColor"
                      Color="Black" />
-
+    <SolidColorBrush x:Key="QuoteLineItemBorderBrush" Color="White" />
     <Style x:Key="QuoteItemFlyoutStyle"
            TargetType="FlyoutPresenter">
         <Setter Property="Padding"

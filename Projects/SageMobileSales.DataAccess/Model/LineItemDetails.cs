@@ -13,7 +13,7 @@ namespace SageMobileSales.DataAccess.Model
         public string Url { get; set; }
         public int ProductQuantity { get; set; }
         public string ProductSku { get; set; }
-
+        public string CustomerName { get; set; }
         public decimal Amount
         {
             get { return Math.Round(LineItemQuantity*LineItemPrice, 2); }

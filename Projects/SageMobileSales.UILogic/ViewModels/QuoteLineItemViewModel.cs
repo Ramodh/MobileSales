@@ -2,12 +2,15 @@
 using System.Runtime.Serialization;
 using Microsoft.Practices.Prism.StoreApps;
 using SageMobileSales.DataAccess.Model;
+using Windows.UI.Xaml.Controls;
+using Microsoft.Practices.Prism.StoreApps.Interfaces;
 
 namespace SageMobileSales.UILogic.ViewModels
 {
     [DataContract]
     public class QuoteLineItemViewModel : ViewModel
     {
+        private readonly INavigationService _navigationService;
         private readonly string _imageUri;
         private readonly string _lineItemId;
         private readonly decimal _lineItemPrice;
@@ -19,8 +22,9 @@ namespace SageMobileSales.UILogic.ViewModels
         private string _productId;
 
 
-        public QuoteLineItemViewModel(LineItemDetails quoteLineItemDetails)
+        public QuoteLineItemViewModel(INavigationService navigationService, LineItemDetails quoteLineItemDetails)
         {
+            _navigationService = navigationService;
             if (quoteLineItemDetails == null)
             {
                 throw new ArgumentNullException("quoteLineItem", "quoteLineItem cannot be null");
@@ -110,5 +114,18 @@ namespace SageMobileSales.UILogic.ViewModels
         //{
         //    get { return new BitmapImage(_imageUri); }
         //}
+
+        /// <summary>
+        ///     Grid View Item Click
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="parameter"></param>
+        public async void GridViewRecentOrderItemClick(object sender, object parameter)
+        {
+            var arg = sender as QuoteLineItemViewModel;
+
+            if (arg != null)
+                _navigationService.Navigate("RecentOrders", arg);
+        }
     }
 }
