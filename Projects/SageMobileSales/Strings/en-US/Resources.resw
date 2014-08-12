@@ -645,8 +645,8 @@
     <value>No Quotes present</value>
     <comment>Empty string which we display when no quotes available</comment>
   </data>
-  <data name="DividerSymbol.Text" xml:space="preserve">
-    <value>|</value>
+  <data name="DividerSymbol" xml:space="preserve">
+    <value>|  </value>
     <comment>Recent Orders Grid divider symbol between header and customer name</comment>
   </data>
   <data name="ItemdetailRecentOrders.Text" xml:space="preserve">
@@ -688,5 +688,35 @@
   <data name="RecentOrderUnitPrice.Text" xml:space="preserve">
     <value>Unit Price:</value>
     <comment>Recent orders Grid data template Unit Price column</comment>
+  </data>
+  <data name="frequentlyPurchasedItems.Text" xml:space="preserve">
+    <value>Frequently Purchased Items</value>
+    <comment>Frequently Purchased ItemsPage  Page title</comment>
+  </data>
+  <data name="FrequentlyPurchasedItemsPageTitle.Text" xml:space="preserve">
+    <value>Frequently Purchased Items |</value>
+    <comment>Frequently Purchased ItemsPage Header in Customerdetail Page</comment>
+  </data>
+  <data name="ItemName.Text" xml:space="preserve">
+    <value>Product :</value>
+    <comment>Product Textblock text in FrequentlyPurchasedItemsPage</comment>
+  </data>
+  <data name="ItemNo.Text" xml:space="preserve">
+    <value>Item No :</value>
+    <comment>ItemNo Textblock text in FrequentlyPurchasedItemsPage</comment>
+  </data>
+  <data name="OrdersPageTitle.Text" xml:space="preserve">
+    <value>Orders</value>
+  </data>
+  <data name="PriorYTD.Text" xml:space="preserve">
+    <value>Prior YTD :</value>
+    <comment>PriorTextblock text in FrequentlyPurchasedItemsPage</comment>
+  </data>
+  <data name="QuantityYTD.Text" xml:space="preserve">
+    <value>Qty YTD :</value>
+    <comment>QuantityTextblock text in FrequentlyPurchasedItemsPage</comment>
+  </data>
+  <data name="quotesPageTitle.Text" xml:space="preserve">
+    <value>Quotes</value>
   </data>
 </root>

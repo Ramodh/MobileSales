@@ -211,7 +211,7 @@ namespace SageMobileSales.UILogic.ViewModels
                     Customer customer = await _customerRepository.GetCustomerDataAsync(_customerId);
                     OrdersList = new List<OrderDetails>();
                     OrdersList = await _orderRepository.GetOrdersForCustomerAsync(customer.CustomerId);
-                    OrdersPageTitle = customer.CustomerName;
+                    CustomerName = ResourceLoader.GetForCurrentView("Resources").GetString("DividerSymbol") + customer.CustomerName;
                 }
                 else
                 {

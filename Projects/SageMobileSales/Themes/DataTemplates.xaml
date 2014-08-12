@@ -491,5 +491,47 @@
         </Grid>
     </DataTemplate>
 
-    
+    <!--FrequentlyPurchasedItems ItemTemplate-->
+
+    <DataTemplate x:Key="FrequentlyPurchasedItemsTemplate">
+        <Grid Height="110" Margin="2" Background="#FF355B4E" Width="350">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <!--<RowDefinition Height="20" />-->
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="90" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock x:Uid="ItemName" Grid.Row="0" Style="{StaticResource AddressTextStyle}"
+                      TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="0" />
+            <TextBlock Grid.Row="0" Text="{Binding ItemName}" Style="{StaticResource AddressTextStyle}"
+                       TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="1"/>
+
+            <TextBlock x:Uid="ItemNo" Grid.Row="1" Style="{StaticResource AddressTextStyle}"
+                       TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="0" />
+            <TextBlock Grid.Row="1"
+                       Text="{Binding ItemNo}"
+                       Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis"
+                       Grid.Column="1"/>
+            <TextBlock x:Uid="QuantityYTD" Grid.Row="2" Style="{StaticResource AddressTextStyle}"
+                       TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="0"/>
+            <TextBlock Grid.Row="2"
+                       Text="{Binding QuantityYTD}"
+                       Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis"
+                       Grid.Column="1" />
+            <TextBlock x:Uid="PriorYTD"  Grid.Row="3" Style="{StaticResource AddressTextStyle}"
+                       TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="0" />
+            <TextBlock Grid.Row="3" Text="{Binding PriorYTD}" Style="{StaticResource AddressTextStyle}"
+                       TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="1" />
+
+        </Grid>
+
+    </DataTemplate>
+
+
 </ResourceDictionary>
