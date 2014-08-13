@@ -132,10 +132,11 @@
             </interactivity:Interaction.Behaviors>
         </GridView>
 
-        <!-- Back button and page title -->
+        <!-- Back button and page title -->       
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="120" />
+                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <Button x:Name="backButton" Command="{Binding GoBackCommand, ElementName=pageRoot}"
@@ -144,9 +145,11 @@
                     AutomationProperties.Name="Back"
                     AutomationProperties.AutomationId="BackButton"
                     AutomationProperties.ItemType="Navigation Button" />
-            <TextBlock x:Name="quotePageTitle" x:Uid="quotePageTitle" Text="{Binding QuotePageTitle}"
+            <TextBlock x:Name="quotePageTitle" x:Uid="quotesPageTitle" Text=""
                        Style="{StaticResource PageTitleTextStyle}" Grid.Column="1"
                        IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" />
+            <TextBlock x:Name="CustomerName" Text="{Binding CustomerName}" Style="{StaticResource PageTitleTextStyle}" Grid.Column="2" Foreground="Black" 
+                        IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="0,0,30,40" FontSize="45"/>
             <views:BackgroundSyncIndicatorUserControl Grid.Column="1" HorizontalAlignment="Right"
                                                       VerticalAlignment="Top"
                                                       Visibility="{Binding SyncProgress, Mode=TwoWay,Converter={StaticResource InProgessVisibilityConverter}}" />

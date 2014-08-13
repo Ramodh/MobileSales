@@ -26,6 +26,8 @@ namespace SageMobileSales.UILogic.ViewModels
         private readonly IQuoteRepository _quoteRepository;
         private ICustomerRepository _customerRepository;
         private string _log = string.Empty;
+        private List<FrequentlyPurchasedItems> _frequentlyPurchasedItems;
+
 
         #region Properties
 
@@ -161,12 +163,14 @@ namespace SageMobileSales.UILogic.ViewModels
             OtherAddressesNavigationCommand = new DelegateCommand(NavigateToOtherAddresses);
             QuotesNavigationCommand = new DelegateCommand(NavigateToQuotes);
             OrdersNavigationCommand = new DelegateCommand(NavigateToOrders);
+           FrequentlyPurchasedItemsNavigationCommand = new DelegateCommand(NavigateToFrequentlyPurchasedItems);
         }
 
         public ICommand ContactsNavigationCommand { get; set; }
         public ICommand OtherAddressesNavigationCommand { get; set; }
         public ICommand QuotesNavigationCommand { get; set; }
         public ICommand OrdersNavigationCommand { get; set; }
+        public ICommand FrequentlyPurchasedItemsNavigationCommand { get; set; }
 
         /// <summary>
         ///     Data loading indicator
@@ -177,13 +181,22 @@ namespace SageMobileSales.UILogic.ViewModels
             private set { SetProperty(ref _inProgress, value); }
         }
 
+        public List<FrequentlyPurchasedItems> FrequentlyPurchasedItems
+        {
+            get { return _frequentlyPurchasedItems; }
+            private set
+            {
+                SetProperty(ref _frequentlyPurchasedItems, value);
+            }
+        }
+
         public override void OnNavigatedTo(object navigationParameter, NavigationMode navigationMode,
             Dictionary<string, object> viewModelState)
         {
             CustomerDtls = navigationParameter as CustomerDetails;
             CustomerDetailPageTitle = CustomerDtls.CustomerName;
             DisplayCustomerDetails();
-
+            GetFrequentlyPurchasedItems();
             base.OnNavigatedTo(navigationParameter, navigationMode, viewModelState);
         }
 
@@ -319,6 +332,14 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             _navigationService.Navigate("Orders", CustomerDtls.CustomerId);
         }
+        /// <summary>
+        ///     Navigate To Frequently Purchased Items where we are displaying Frequently Purchased Items for that Customer.
+        /// </summary>
+        public void NavigateToFrequentlyPurchasedItems()
+        {
+            _navigationService.Navigate("FrequentlyPurchasedItems", CustomerDtls.CustomerId);
+        }
+
 
         /// <summary>
         ///     //Navigate to Add Contact page on appbar button click
@@ -363,6 +384,47 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             _navigationService.ClearHistory();
             _navigationService.Navigate("CustomersGroup", null);
+        }
+
+
+        /// TODO
+        /// Replace dummy data with real data.
+        private void GetFrequentlyPurchasedItems()
+        {
+            FrequentlyPurchasedItems = new List<FrequentlyPurchasedItems>();
+
+            for (int i = 0; i < 10; i++)
+            {
+                FrequentlyPurchasedItems obj = new FrequentlyPurchasedItems();
+                obj.ItemNo = "1" + i;
+                obj.ItemName = "ProductName" + i;
+                obj.QuantityYTD = 334 + i;
+                obj.PriorYTD = 1 + i;
+                FrequentlyPurchasedItems.Add(obj);
+            }
+            OnPropertyChanged("FrequentlyPurchasedItems");
+        }
+
+        /// <summary>
+        ///Navigate to Item Detail page on grid view item click
+        ///TODO 
+        ///To be replaced by real data(productId)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="parameter"></param>
+        public void GridViewFrequentlyPurchasedItemClick(object sender, object parameter)
+        {
+            try
+            {
+                var arg = ((parameter as ItemClickEventArgs).ClickedItem as FrequentlyPurchasedItems);
+
+                _navigationService.Navigate("ItemDetail", "3ae2e78d-4dfc-4441-b41c-2487cbef3561");
+            }
+            catch (Exception ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
         }
 
         //    // TODO

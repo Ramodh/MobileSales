@@ -221,12 +221,12 @@ namespace SageMobileSales.UILogic.ViewModels
                     _customerAddress = navigationParameter as CustomerDetails;
 
                     QuoteDetails = await _quoteRepository.GetQuotesForCustomerAsync(_customerAddress.CustomerId);
-                    QuotePageTitle = _customerAddress.CustomerName;
+                    CustomerName = ResourceLoader.GetForCurrentView("Resources").GetString("DividerSymbol") + _customerAddress.CustomerName;
                 }
                 else
                 {                   
                     QuoteDetails = await _quoteRepository.GetQuotesListAsync(await _salesRepRepository.GetSalesRepId());
-                    QuotePageTitle = ResourceLoader.GetForCurrentView("Resources").GetString("quotePageTitle");
+                   // QuotePageTitle = ResourceLoader.GetForCurrentView("Resources").GetString("quotePageTitle");
                 }
 
                 IsDescending = true;

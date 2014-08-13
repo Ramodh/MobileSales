@@ -34,14 +34,17 @@ namespace SageMobileSales.UILogic.ViewModels
         private List<Address> _otherAddresses;
         private Quote _quote;
         private QuoteDetails _quoteDetails;
-
+        private string _customerName;
+        private Customer _customer;
+        private ICustomerRepository _customerRepository;
         public OtherAddressesPageViewModel(INavigationService navigationService, IAddressRepository addressRepository,
-            IQuoteRepository quoteRepository, IQuoteService quoteService)
+            IQuoteRepository quoteRepository, IQuoteService quoteService, ICustomerRepository customerRepository)
         {
             _navigationService = navigationService;
             _addressRepository = addressRepository;
             _quoteRepository = quoteRepository;
             _quoteService = quoteService;
+            _customerRepository= customerRepository;
             _address = new Address();
         }
 
@@ -112,6 +115,14 @@ namespace SageMobileSales.UILogic.ViewModels
                 InProgress = false;
             }
         }
+        /// <summary>
+        ///     Holds Customer Name
+        /// </summary>
+        public string CustomerName
+        {
+            get { return _customerName; }
+            private set { SetProperty(ref _customerName, value); }
+        }
 
         /// <summary>
         ///     Loads other Addresses for customer if present
@@ -136,6 +147,7 @@ namespace SageMobileSales.UILogic.ViewModels
                     GridViewItemClickable = true;
                     BottomAppbarVisible = Visibility.Visible;
                     CustomerAddresses = await _addressRepository.GetAddressesForCustomer(_quoteDetails.CustomerId);
+                  _customer = await _customerRepository.GetCustomerDataAsync(_quoteDetails.CustomerId);
                 }
                 else
                 {
@@ -143,9 +155,11 @@ namespace SageMobileSales.UILogic.ViewModels
                     GridViewItemClickable = false;
                     BottomAppbarVisible = Visibility.Collapsed;
                     CustomerAddresses = await _addressRepository.GetOtherAddressesForCustomers(_customerId);
-
+                    _customer = await _customerRepository.GetCustomerDataAsync(_customerId);
                     //CustomerOtherAddress = await _addressRepository.GetOtherAddressesForCustomer(_customerId);
                 }
+              
+                CustomerName = ResourceLoader.GetForCurrentView("Resources").GetString("DividerSymbol") + _customer.CustomerName;
 
                 if (!(CustomerAddresses.Count > 0))
                 {
