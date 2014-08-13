@@ -25,6 +25,8 @@
                               Source="{Binding CustomerOrders}" />
         <CollectionViewSource x:Name="customerQuotesViewSource"
                               Source="{Binding CustomerQuotes}" />
+        <CollectionViewSource x:Name="customerFrequentlyPurchasedViewSource"
+                              Source="{Binding FrequentlyPurchasedItems}" />
     </prism:VisualStateAwarePage.Resources>
     <!--Bottom AppBar-->
     <Page.BottomAppBar>
@@ -91,6 +93,8 @@
                     <ColumnDefinition Width="60" />
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="60" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="40" />
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="40" />
                     <ColumnDefinition Width="Auto" />
@@ -220,8 +224,44 @@
                         </Grid>
                     </StackPanel>
                 </Grid>
+                <Grid x:Name="frequentlyPurchaseItemsGrid" Grid.Column="3">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="95" />
+                    </Grid.RowDefinitions>
+                    <Button Grid.Row="0" Foreground="{ThemeResource ApplicationHeaderForegroundThemeBrush}"
+                            AutomationProperties.Name="Group Title"
+                            Style="{StaticResource TextBlockButtonStyle}" Command="{Binding FrequentlyPurchasedItemsNavigationCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock x:Uid="frequentlyPurchasedItems" Text="" Style="{StaticResource SubHeaderStyle}" />
+                            <TextBlock Text="{StaticResource ChevronGlyph}"
+                                       Style="{StaticResource SubHeaderGlyphStyle}" />
+                        </StackPanel>
+                    </Button>
+                    <GridView Grid.Row="1"
+                              x:Name="frequentlyPurchasedItemsGridView"
+                              AutomationProperties.AutomationId="frequentlyPurchasedItemsGridView"
+                              AutomationProperties.Name="frequentlyPurchasedItemsGridView"
+                              TabIndex="1"
+                              Grid.RowSpan="2"
 
-                <Grid x:Name="customerOrdersGrid" Grid.Column="3" Visibility="{Binding IsOrdersVisible}">
+                              ItemsSource="{Binding Source={StaticResource customerFrequentlyPurchasedViewSource}}"
+                              SelectionMode="None"
+                              IsSwipeEnabled="false"
+                              IsItemClickEnabled="True"
+                              ItemTemplate="{StaticResource FrequentlyPurchasedItemsTemplate}">
+
+                        <interactivity:Interaction.Behaviors>
+                            <core:EventTriggerBehavior EventName="ItemClick">
+                                <core:CallMethodAction MethodName="GridViewFrequentlyPurchasedItemClick"
+                                                       TargetObject="{Binding Mode=OneWay}" />
+                            </core:EventTriggerBehavior>
+                        </interactivity:Interaction.Behaviors>
+                    </GridView>
+                </Grid>
+
+                <Grid x:Name="customerOrdersGrid" Grid.Column="5" Visibility="{Binding IsOrdersVisible}">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
@@ -258,7 +298,7 @@
                     </GridView>
                 </Grid>
 
-                <Grid x:Name="customerQuotesGrid" Grid.Column="5" Visibility="{Binding IsQuotesVisible}">
+                <Grid x:Name="customerQuotesGrid" Grid.Column="7" Visibility="{Binding IsQuotesVisible}">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
@@ -299,7 +339,7 @@
                     </GridView>
                 </Grid>
 
-                <Grid x:Name="customerOtherAddressGrid" Grid.Column="7" Visibility="{Binding IsOtherAddressesVisible}">
+                <Grid x:Name="customerOtherAddressGrid" Grid.Column="9" Visibility="{Binding IsOtherAddressesVisible}">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
@@ -335,7 +375,7 @@
                     </GridView>
                 </Grid>
 
-                <Grid x:Name="customerContactsGrid" Grid.Column="9" Visibility="{Binding IsContactsVisible}">
+                <Grid x:Name="customerContactsGrid" Grid.Column="11" Visibility="{Binding IsContactsVisible}">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
