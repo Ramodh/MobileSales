@@ -27,6 +27,7 @@
             <converters:ErrorConverter x:Key="ErrorConverter" />
             <converters:TextHeaderVisibilityConverter x:Key="TextHeaderVisibilityConverter" />
             <converters:StringFormatConverter x:Key="StringFormatConverter" />
+            <converters:SeeMoreVisibilityConverter x:Key="SeeMoreVisibilityConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </prism:MvvmAppBase>

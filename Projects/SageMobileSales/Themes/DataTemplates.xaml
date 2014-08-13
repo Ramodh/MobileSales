@@ -249,7 +249,7 @@
     </DataTemplate>-->
 
     <DataTemplate x:Key="OrdersTemplate">
-        <Grid Height="120" Margin="2" Background="#FF355B4E" Width="350">
+        <Grid Height="120" Margin="2" Background="{Binding CustomerName,Converter={StaticResource SeeMoreVisibilityConverter}}" Width="350">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />

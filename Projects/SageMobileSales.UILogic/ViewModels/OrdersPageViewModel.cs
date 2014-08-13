@@ -169,7 +169,10 @@ namespace SageMobileSales.UILogic.ViewModels
                 OnPropertyChanged("OrdersList");
 
                 if (_ordersList.Count > 0)
+                {
+                    OrdersList.Add(new OrderDetails { CustomerName = "See More", OrderDescription = "" });
                     InProgress = false;
+                }
             }
         }
 
@@ -218,6 +221,8 @@ namespace SageMobileSales.UILogic.ViewModels
                     OrdersPageTitle = "Orders";
                     OrdersList = await _orderRepository.GetOrdersListAsync(await _salesRepRepository.GetSalesRepId());
                 }
+                OrdersList.Add(new OrderDetails { CustomerName="See More",OrderDescription=""});
+
                 IsDescending = true;
                 Sort(PageUtils.Date, IsAscending);
                 base.OnNavigatedTo(navigationParameter, navigationMode, viewModelState);
