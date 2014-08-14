@@ -217,7 +217,8 @@ namespace SageMobileSales.UILogic.ViewModels
                 {
                     OrdersPageTitle = "Orders";
                     OrdersList = await _orderRepository.GetOrdersListAsync(await _salesRepRepository.GetSalesRepId());
-                }
+                }                
+
                 IsDescending = true;
                 Sort(PageUtils.Date, IsAscending);
                 base.OnNavigatedTo(navigationParameter, navigationMode, viewModelState);
