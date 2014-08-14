@@ -402,6 +402,8 @@ namespace SageMobileSales.UILogic.ViewModels
                 obj.PriorYTD = 1 + i;
                 FrequentlyPurchasedItems.Add(obj);
             }
+            FrequentlyPurchasedItems.Add(new FrequentlyPurchasedItems { ItemName = "See More"});
+
             OnPropertyChanged("FrequentlyPurchasedItems");
         }
 

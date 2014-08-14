@@ -20,9 +20,12 @@ namespace SageMobileSales.Converters
 
             if (val.Equals("See More"))
             {
-                return new ImageBrush() { ImageSource = new BitmapImage(new Uri("ms-Appx:///Assets/img_see_more.png", UriKind.RelativeOrAbsolute)) };
+                return Visibility.Visible;
+                //return new Uri("ms-Appx:///Assets/img_see_more.png", UriKind.RelativeOrAbsolute);
+                //return new ImageBrush() { ImageSource = new BitmapImage(new Uri("ms-Appx:///Assets/img_see_more.png", UriKind.RelativeOrAbsolute)) };
             }
-            return new SolidColorBrush(Color.FromArgb(255, 53, 91, 78));
+            return Visibility.Collapsed;
+            //return new SolidColorBrush(Color.FromArgb(255, 53, 91, 78));
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
