@@ -143,6 +143,8 @@ namespace SageMobileSales.UILogic.ViewModels
                         Constants.TenantId = await _tenantRepository.GetTenantId();
                         //Company Settings
                         await _tenantService.SyncTenant();
+                        //SalesTeamMember
+                        await _salesRepService.UpdateSalesRep();
                         //});
                         //PageUtils.asyncActionSalesRep = asyncAction;
 

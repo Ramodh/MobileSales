@@ -38,6 +38,23 @@ namespace SageMobileSales.ServiceAgents.Services
             }
         }
 
+        public async Task UpdateSalesRep()
+        {
+            string repId = await _salesRepRepository.GetSalesRepId() + "SalesSalesTeamMember";
+            string salesTeamMember = Constants.UpdateUserEntity + "('"  +repId+ "')";
+            HttpResponseMessage salesRepResponse =
+                await
+                    _serviceAgent.BuildAndSendRequest(Constants.TenantId, salesTeamMember, null, null, Constants.AccessToken,
+                        null);
+            if (salesRepResponse.IsSuccessStatusCode)
+            {
+                var sDataSalesRep = await _serviceAgent.ConvertTosDataObject(salesRepResponse);
+
+                //await SaveSalesRepDtls(sDataSalesRep);
+                await _salesRepRepository.UpdateSalesRepDtlsAsync(sDataSalesRep);
+            }
+        }
+
         /// <summary>
         ///     makes call to SaveSalesRepDtlsAsync method where it will save loginuser details and
         ///     makes call to BuildAndSendRequest method to make service call to get loginuser(SalesRep) settings  data.

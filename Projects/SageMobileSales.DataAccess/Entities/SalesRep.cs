@@ -16,6 +16,6 @@ namespace SageMobileSales.DataAccess.Entities
         public string Phone { get; set; }
         public string EmailAddress { get; set; }
         public string TenantId { get; set; }
-        public string MaximumDiscountPercent { get; set; }
+        public decimal MaximumDiscountPercent { get; set; }
     }
 }

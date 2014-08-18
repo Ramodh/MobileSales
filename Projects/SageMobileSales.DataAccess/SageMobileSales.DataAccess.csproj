@@ -123,6 +123,7 @@
     <Compile Include="Entities\Address.cs" />
     <Compile Include="Entities\Contact.cs" />
     <Compile Include="Entities\Customer.cs" />
+    <Compile Include="Entities\FrequentlyPurchasedItem.cs" />
     <Compile Include="Entities\LocalSyncDigest.cs" />
     <Compile Include="Entities\Orders.cs" />
     <Compile Include="Entities\OrderLineItem.cs" />
