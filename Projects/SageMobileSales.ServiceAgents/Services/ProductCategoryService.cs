@@ -115,7 +115,7 @@ namespace SageMobileSales.ServiceAgents.Services
                     {
                         JsonObject lastCategoryObject =
                             categoriesObject.GetObjectAt(Convert.ToUInt32(_returnedCount - 1));
-                        digest.LastRecordId = lastCategoryObject.GetNamedString("Id");
+                        digest.LastRecordId = lastCategoryObject.GetNamedString("$key");
                         int _syncEndpointTick = Convert.ToInt32(lastCategoryObject.GetNamedNumber("SyncTick"));
                         if (_syncEndpointTick > digest.localTick)
                         {

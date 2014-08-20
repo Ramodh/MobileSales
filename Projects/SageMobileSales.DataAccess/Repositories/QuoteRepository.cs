@@ -166,7 +166,7 @@ namespace SageMobileSales.DataAccess.Repositories
 
             if (pendingQuote.QuoteId.Contains(DataAccessUtils.Pending))
             {
-                if (sDataQuote.TryGetValue("Id", out value))
+                if (sDataQuote.TryGetValue("$key", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
@@ -178,11 +178,11 @@ namespace SageMobileSales.DataAccess.Repositories
                         {
                             await
                                 _sageSalesDB.QueryAsync<Quote>("Update Quote Set QuoteId=? where QuoteId=?",
-                                    sDataQuote.GetNamedString("Id"), pendingQuoteList.FirstOrDefault().QuoteId);
+                                    sDataQuote.GetNamedString("$key"), pendingQuoteList.FirstOrDefault().QuoteId);
                             await
                                 _sageSalesDB.QueryAsync<QuoteLineItem>(
                                     "Update QuoteLineItem Set QuoteId=? where QuoteId=?",
-                                    sDataQuote.GetNamedString("Id"), pendingQuoteList.FirstOrDefault().QuoteId);
+                                    sDataQuote.GetNamedString("$key"), pendingQuoteList.FirstOrDefault().QuoteId);
                         }
                     }
                 }
@@ -195,7 +195,7 @@ namespace SageMobileSales.DataAccess.Repositories
 
             if (address!=null)
             {
-                if (sDataQuote.TryGetValue("Id", out value))
+                if (sDataQuote.TryGetValue("$key", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
@@ -203,7 +203,7 @@ namespace SageMobileSales.DataAccess.Repositories
 
                         await
                             _sageSalesDB.QueryAsync<Address>("Update Address Set AddressId=? where AddressId=?",
-                                sDataQuote.GetNamedString("Id"), address.AddressId);
+                                sDataQuote.GetNamedString("$key"), address.AddressId);
                         //if (!string.IsNullOrEmpty(quote.CustomerId))
                         //{
                             Address addressObj=await _addressRepository.AddOrUpdateAddressJsonToDbAsync(sDataQuote, address.CustomerId);
@@ -211,7 +211,7 @@ namespace SageMobileSales.DataAccess.Repositories
                             {
                                 await
                                 _sageSalesDB.QueryAsync<Quote>("Update Quote Set AddressId=? where AddressId=?",
-                                    sDataQuote.GetNamedString("Id"), address.AddressId);
+                                    sDataQuote.GetNamedString("$key"), address.AddressId);
                             }
                         //}
                     }
@@ -371,7 +371,7 @@ namespace SageMobileSales.DataAccess.Repositories
             {
                 IJsonValue value;
                 bool entityStatusDeleted = false;
-                if (sDataQuote.TryGetValue("Id", out value))
+                if (sDataQuote.TryGetValue("$key", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
@@ -379,7 +379,7 @@ namespace SageMobileSales.DataAccess.Repositories
                         quoteList =
                             await
                                 _sageSalesDB.QueryAsync<Quote>("SELECT * FROM Quote where QuoteId=?",
-                                    sDataQuote.GetNamedString("Id"));
+                                    sDataQuote.GetNamedString("$key"));
 
                         if (sDataQuote.TryGetValue("EntityStatus", out value))
                         {
@@ -396,12 +396,12 @@ namespace SageMobileSales.DataAccess.Repositories
                             {
                                 if (!quoteList.FirstOrDefault().IsPending)
                                     //await _sageSalesDB.QueryAsync<Quote>("DELETE FROM Quote where QuoteId=?", sDataQuote.GetNamedString("$key"));
-                                    await DeleteQuoteFromDbAsync(sDataQuote.GetNamedString("Id"));
+                                    await DeleteQuoteFromDbAsync(sDataQuote.GetNamedString("$key"));
                                 else
                                     await
                                         _sageSalesDB.QueryAsync<Quote>(
                                             "UPDATE Quote SET EntityStatus=? where QuoteId=?",
-                                            sDataQuote.GetNamedString("EntityStatus"), sDataQuote.GetNamedString("Id"));
+                                            sDataQuote.GetNamedString("EntityStatus"), sDataQuote.GetNamedString("$key"));
                             }
                             else
                             {
@@ -745,7 +745,7 @@ namespace SageMobileSales.DataAccess.Repositories
             var quoteObj = new Quote();           
             try
             {
-                quoteObj.QuoteId = sDataQuote.GetNamedString("Id");
+                quoteObj.QuoteId = sDataQuote.GetNamedString("$key");
                 quoteObj = await ExtractQuoteFromJsonAsync(sDataQuote, quoteObj);
                 await _sageSalesDB.InsertAsync(quoteObj);            
             }
@@ -910,7 +910,7 @@ namespace SageMobileSales.DataAccess.Repositories
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
                         JsonObject sDataSalesRep = sDataQuote.GetNamedObject("SalesRep");
-                        if (sDataSalesRep.GetNamedValue("Id").ValueType.ToString() != DataAccessUtils.Null)
+                        if (sDataSalesRep.GetNamedValue("$key").ValueType.ToString() != DataAccessUtils.Null)
                         {
                             SalesRep salesRep =
                                 await _salesRepRepository.AddOrUpdateSalesRepJsonToDbAsync(sDataSalesRep);

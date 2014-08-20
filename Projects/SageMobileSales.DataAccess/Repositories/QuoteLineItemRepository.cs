@@ -76,7 +76,7 @@ namespace SageMobileSales.DataAccess.Repositories
                             JsonObject sDataQuoteLineItem = sDataQuoteLineItemsArray[quoteLineItem].GetObject();
 
                             IJsonValue value;
-                            if (sDataQuoteLineItem.TryGetValue("Id", out value))
+                            if (sDataQuoteLineItem.TryGetValue("$key", out value))
                             {
                                 if (value.ValueType.ToString() != DataAccessUtils.Null)
                                 {
@@ -85,7 +85,7 @@ namespace SageMobileSales.DataAccess.Repositories
                                         await
                                             _sageSalesDB.QueryAsync<QuoteLineItem>(
                                                 "SELECT * FROM QuoteLineItem where QuoteLineItemId=?",
-                                                sDataQuoteLineItem.GetNamedString("Id"));
+                                                sDataQuoteLineItem.GetNamedString("$key"));
 
                                     if (quoteLineItemList.FirstOrDefault() != null)
                                     {
@@ -98,9 +98,9 @@ namespace SageMobileSales.DataAccess.Repositories
                                         await
                                             _sageSalesDB.QueryAsync<QuoteLineItem>(
                                                 "Update QuoteLineItem Set QuoteLineItemId=? where QuoteLineItemId=?",
-                                                sDataQuoteLineItem.GetNamedString("Id"),
+                                                sDataQuoteLineItem.GetNamedString("$key"),
                                                 pendingQuoteLineItem.QuoteLineItemId);
-                                        pendingQuoteLineItem.QuoteLineItemId = sDataQuoteLineItem.GetNamedString("Id");
+                                        pendingQuoteLineItem.QuoteLineItemId = sDataQuoteLineItem.GetNamedString("$key");
                                         await UpdateQuoteLineItemJsonToDbAsync(sDataQuoteLineItem, pendingQuoteLineItem);
                                     }
                                     else if (sDataQuoteLineItemsArray.Count <= QuoteLineItemList.Count &&
@@ -110,7 +110,7 @@ namespace SageMobileSales.DataAccess.Repositories
                                             QuoteLineItemList[quoteLineItem].QuoteLineItemId.Contains(
                                                 DataAccessUtils.Pending))
                                         {
-                                            if (sDataQuoteLineItem.TryGetValue("Id", out value))
+                                            if (sDataQuoteLineItem.TryGetValue("$key", out value))
                                             {
                                                 if (value.ValueType.ToString() != DataAccessUtils.Null)
                                                 {
@@ -127,10 +127,10 @@ namespace SageMobileSales.DataAccess.Repositories
                                                                 await
                                                                     _sageSalesDB.QueryAsync<QuoteLineItem>(
                                                                         "Update QuoteLineItem Set QuoteLineItemId=? where QuoteLineItemId=?",
-                                                                        sDataQuoteLineItem.GetNamedString("Id"),
+                                                                        sDataQuoteLineItem.GetNamedString("$key"),
                                                                         QuoteLineItemList[i].QuoteLineItemId);
                                                                 QuoteLineItemList[i].QuoteLineItemId =
-                                                                    sDataQuoteLineItem.GetNamedString("Id");
+                                                                    sDataQuoteLineItem.GetNamedString("$key");
                                                                 await
                                                                     UpdateQuoteLineItemJsonToDbAsync(
                                                                         sDataQuoteLineItem, QuoteLineItemList[i]);
@@ -520,7 +520,7 @@ namespace SageMobileSales.DataAccess.Repositories
             try
             {
                 IJsonValue value;
-                if (sDataQuoteLineItem.TryGetValue("Id", out value))
+                if (sDataQuoteLineItem.TryGetValue("$key", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
@@ -529,7 +529,7 @@ namespace SageMobileSales.DataAccess.Repositories
                             await
                                 _sageSalesDB.QueryAsync<QuoteLineItem>(
                                     "SELECT * FROM QuoteLineItem where QuoteLineItemId=?",
-                                    sDataQuoteLineItem.GetNamedString("Id"));
+                                    sDataQuoteLineItem.GetNamedString("$key"));
 
                         if (quoteLineItemList.FirstOrDefault() != null)
                         {
@@ -564,7 +564,7 @@ namespace SageMobileSales.DataAccess.Repositories
             try
             {
                 quoteLineItemObj.QuoteId = quoteId;
-                quoteLineItemObj.QuoteLineItemId = sDataQuoteLineItem.GetNamedString("Id");
+                quoteLineItemObj.QuoteLineItemId = sDataQuoteLineItem.GetNamedString("$key");
 
                 quoteLineItemObj = await ExtractQuoteLineItemFromJsonAsync(sDataQuoteLineItem, quoteLineItemObj);
                 await _sageSalesDB.InsertAsync(quoteLineItemObj);
@@ -627,11 +627,11 @@ namespace SageMobileSales.DataAccess.Repositories
                         quoteLineItem.Quantity = Convert.ToInt32(Convert.ToDecimal(sDataQuoteLineItem.GetNamedNumber("Quantity")));
                     }
                 }
-                if (sDataQuoteLineItem.TryGetValue("Id", out value))
+                if (sDataQuoteLineItem.TryGetValue("$key", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        quoteLineItem.QuoteLineItemId = sDataQuoteLineItem.GetNamedString("Id");
+                        quoteLineItem.QuoteLineItemId = sDataQuoteLineItem.GetNamedString("$key");
                     }
                 }
 
@@ -679,11 +679,11 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     JsonObject sDataQuoteLineItem = quoteLineItem.GetObject();
                     var quoteLineItemJsonObj = new QuoteLineItem();
-                    if (sDataQuoteLineItem.TryGetValue("Id", out value))
+                    if (sDataQuoteLineItem.TryGetValue("$key", out value))
                     {
                         if (value.ValueType.ToString() != DataAccessUtils.Null)
                         {
-                            quoteLineItemJsonObj.QuoteLineItemId = sDataQuoteLineItem.GetNamedString("Id");
+                            quoteLineItemJsonObj.QuoteLineItemId = sDataQuoteLineItem.GetNamedString("$key");
                         }
                     }
                     quoteLineItemIdJsonList.Add(quoteLineItemJsonObj);
