@@ -129,8 +129,10 @@
     <Compile Include="JsonHelpers\ShippingAddressJson.cs" />
     <Compile Include="Services\ContactService.cs" />
     <Compile Include="Services\CustomerService.cs" />
+    <Compile Include="Services\FrequentlyPurchasedItemService.cs" />
     <Compile Include="Services\IContactService.cs" />
     <Compile Include="Services\ICustomerService.cs" />
+    <Compile Include="Services\IFrequentlyPurchasedItemService.cs" />
     <Compile Include="Services\IOrderLineItemService.cs" />
     <Compile Include="Services\IOrderService.cs" />
     <Compile Include="Services\IProductAssociatedBlobService.cs" />

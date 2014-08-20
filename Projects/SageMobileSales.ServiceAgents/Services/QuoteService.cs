@@ -63,11 +63,7 @@ namespace SageMobileSales.ServiceAgents.Services
             {
                 _eventAggregator.GetEvent<QuoteDataChangedEvent>().Publish(true);
             }
-        }
-
-        #endregion
-
-        #region private methods
+        }        
 
         /// <summary>
         ///     Quote is posted and the response is updated in local dB

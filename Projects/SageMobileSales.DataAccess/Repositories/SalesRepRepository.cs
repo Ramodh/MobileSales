@@ -179,7 +179,7 @@ namespace SageMobileSales.DataAccess.Repositories
                 ApplicationDataContainer configSettings = ApplicationData.Current.LocalSettings;
 
                 IJsonValue value;
-                if (sDataSalesRepDtls.TryGetValue("Id", out value))
+                if (sDataSalesRepDtls.TryGetValue("$key", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
@@ -187,7 +187,7 @@ namespace SageMobileSales.DataAccess.Repositories
                         salesRepList =
                             await
                                 _sageSalesDB.QueryAsync<SalesRep>("SELECT * FROM SalesRep where RepId=?",
-                                    sDataSalesRepDtls.GetNamedString("Id"));
+                                    sDataSalesRepDtls.GetNamedString("$key"));
 
                         if (salesRepList.FirstOrDefault() != null)
                         {
@@ -280,11 +280,11 @@ namespace SageMobileSales.DataAccess.Repositories
             {
                 IJsonValue value;
 
-                if (sDataSalesRep.TryGetValue("Id", out value))
+                if (sDataSalesRep.TryGetValue("$key", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        salesRepDBObj.RepId = sDataSalesRep.GetNamedString("Id");
+                        salesRepDBObj.RepId = sDataSalesRep.GetNamedString("$key");
                     }
                 }
                 if (sDataSalesRep.TryGetValue("PrimaryEmailAddress", out value))

@@ -114,7 +114,7 @@ namespace SageMobileSales.DataAccess.Repositories
             try
             {
                 IJsonValue value;
-                if (sDataCustomer.TryGetValue("Id", out value))
+                if (sDataCustomer.TryGetValue("$key", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
@@ -122,7 +122,7 @@ namespace SageMobileSales.DataAccess.Repositories
                         customerList =
                             await
                                 _sageSalesDB.QueryAsync<Customer>("SELECT * FROM Customer where CustomerId=?",
-                                    sDataCustomer.GetNamedString("Id"));
+                                    sDataCustomer.GetNamedString("$key"));
 
                         if (customerList.FirstOrDefault() != null)
                         {
@@ -311,7 +311,7 @@ namespace SageMobileSales.DataAccess.Repositories
             var customerObj = new Customer();
             try
             {
-                customerObj.CustomerId = sDataCustomer.GetNamedString("Id");
+                customerObj.CustomerId = sDataCustomer.GetNamedString("$key");
                 customerObj = ExtractCustomerFromJsonAsync(sDataCustomer, customerObj);
 
                 await _sageSalesDB.InsertAsync(customerObj);

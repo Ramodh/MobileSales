@@ -509,27 +509,27 @@
             </Grid.ColumnDefinitions>
             <TextBlock x:Uid="ItemName" Grid.Row="0" Style="{StaticResource AddressTextStyle}"
                       TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="0" />
-            <TextBlock Grid.Row="0" Text="{Binding ItemName}" Style="{StaticResource AddressTextStyle}"
+            <TextBlock Grid.Row="0" Text="{Binding ItemDescription}" Style="{StaticResource AddressTextStyle}"
                        TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="1"/>
 
             <TextBlock x:Uid="ItemNo" Grid.Row="1" Style="{StaticResource AddressTextStyle}"
                        TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="0" />
             <TextBlock Grid.Row="1"
-                       Text="{Binding ItemNo}"
+                       Text="{Binding ItemId}"
                        Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis"
                        Grid.Column="1"/>
             <TextBlock x:Uid="QuantityYTD" Grid.Row="2" Style="{StaticResource AddressTextStyle}"
                        TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="0"/>
             <TextBlock Grid.Row="2"
-                       Text="{Binding QuantityYTD}"
+                       Text="{Binding QuantityYtd}"
                        Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis"
                        Grid.Column="1" />
             <TextBlock x:Uid="PriorYTD"  Grid.Row="3" Style="{StaticResource AddressTextStyle}"
                        TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="0" />
-            <TextBlock Grid.Row="3" Text="{Binding PriorYTD}" Style="{StaticResource AddressTextStyle}"
+            <TextBlock Grid.Row="3" Text="{Binding QuantityPriorYtd}" Style="{StaticResource AddressTextStyle}"
                        TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="1" />
 
-            <Image Grid.ColumnSpan="2" Visibility="{Binding ItemName,Converter={StaticResource SeeMoreVisibilityConverter}}" Source="/Assets/img_see_more.png" Stretch="UniformToFill" Margin="0,-10,0,0"/>
+            <Image Grid.ColumnSpan="2" Visibility="{Binding ItemDescription,Converter={StaticResource SeeMoreVisibilityConverter}}" Source="/Assets/img_see_more.png" Stretch="UniformToFill" Margin="0,-10,0,0"/>
         </Grid>
 
     </DataTemplate>

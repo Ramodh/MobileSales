@@ -81,11 +81,11 @@ namespace SageMobileSales.DataAccess.Repositories
             contactResponse.CustomerId = customerId;
 
             IJsonValue value;
-            if (sDataContact.TryGetValue("Id", out value))
+            if (sDataContact.TryGetValue("$key", out value))
             {
                 if (value.ValueType.ToString() != DataAccessUtils.Null)
                 {
-                    contactResponse.ContactId = sDataContact.GetNamedString("Id");
+                    contactResponse.ContactId = sDataContact.GetNamedString("$key");
                 }
             }
 
@@ -162,7 +162,7 @@ namespace SageMobileSales.DataAccess.Repositories
             try
             {
                 IJsonValue value;
-                if (sDataContact.TryGetValue("Id", out value))
+                if (sDataContact.TryGetValue("$key", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
@@ -170,7 +170,7 @@ namespace SageMobileSales.DataAccess.Repositories
                         contactList =
                             await
                                 _sageSalesDB.QueryAsync<Contact>("SELECT * FROM Contact where contactId=?",
-                                    sDataContact.GetNamedString("Id"));
+                                    sDataContact.GetNamedString("$key"));
 
                         if (contactList.FirstOrDefault() != null)
                         {
@@ -227,7 +227,7 @@ namespace SageMobileSales.DataAccess.Repositories
             try
             {
                 contactObj.CustomerId = customerId;
-                contactObj.ContactId = sDataContact.GetNamedString("Id");
+                contactObj.ContactId = sDataContact.GetNamedString("$key");
                 contactObj = ExtractContactFromJsonAsync(sDataContact, contactObj);
 
                 await _sageSalesDB.InsertAsync(contactObj);
@@ -389,11 +389,11 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     JsonObject sDataContact = contact.GetObject();
                     var contactJsonObj = new Contact();
-                    if (sDataContact.TryGetValue("Id", out value))
+                    if (sDataContact.TryGetValue("$key", out value))
                     {
                         if (value.ValueType.ToString() != DataAccessUtils.Null)
                         {
-                            contactJsonObj.ContactId = sDataContact.GetNamedString("Id");
+                            contactJsonObj.ContactId = sDataContact.GetNamedString("$key");
                         }
                     }
                     contactIdJsonList.Add(contactJsonObj);
