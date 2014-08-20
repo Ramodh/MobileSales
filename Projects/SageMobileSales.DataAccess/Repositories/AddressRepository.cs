@@ -83,7 +83,7 @@ namespace SageMobileSales.DataAccess.Repositories
             try
             {
                 IJsonValue value;
-                if (sDataAddress.TryGetValue("Id", out value))
+                if (sDataAddress.TryGetValue("$key", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
@@ -91,7 +91,7 @@ namespace SageMobileSales.DataAccess.Repositories
                         addressList =
                             await
                                 _sageSalesDB.QueryAsync<Address>("SELECT * FROM Address where AddressId=?",
-                                    sDataAddress.GetNamedString("Id"));
+                                    sDataAddress.GetNamedString("$key"));
 
                         if (addressList.FirstOrDefault() != null)
                         {
@@ -423,7 +423,7 @@ namespace SageMobileSales.DataAccess.Repositories
             try
             {
                 addressObj.CustomerId = customerId;
-                addressObj.AddressId = sDataAddress.GetNamedString("Id");
+                addressObj.AddressId = sDataAddress.GetNamedString("$key");
 
                 addressObj = ExtractAddressFromJsonAsync(sDataAddress, addressObj);
                 await _sageSalesDB.InsertAsync(addressObj);
@@ -614,11 +614,11 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     JsonObject sDataAddress = adress.GetObject();
                     var adressJsonObj = new Address();
-                    if (sDataAddress.TryGetValue("Id", out value))
+                    if (sDataAddress.TryGetValue("$key", out value))
                     {
                         if (value.ValueType.ToString() != DataAccessUtils.Null)
                         {
-                            adressJsonObj.AddressId = sDataAddress.GetNamedString("Id");
+                            adressJsonObj.AddressId = sDataAddress.GetNamedString("$key");
                         }
                     }
                     addressIdJsonList.Add(adressJsonObj);
