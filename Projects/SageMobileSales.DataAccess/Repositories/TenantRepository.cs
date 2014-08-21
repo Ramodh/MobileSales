@@ -64,7 +64,7 @@ namespace SageMobileSales.DataAccess.Repositories
                 if (tenants.Count > 0)
                 {
                     return tenants.FirstOrDefault().TenantId;
-                }                
+                }
             }
             catch (SQLiteException ex)
             {
@@ -107,6 +107,48 @@ namespace SageMobileSales.DataAccess.Repositories
                 AppEventSource.Log.Error(_log);
             }
             return null;
+        }
+
+
+        public async Task UpdateTenantAsync(JsonObject sDataTenants, string tenantGuid)
+        {
+            try
+            {
+                IJsonValue value;
+                JsonObject sDataTenant = null;
+
+                List<Tenant> tenantList;
+                tenantList =
+                    await
+                        _sageSalesDB.QueryAsync<Tenant>("SELECT * FROM Tenant where TenantId=?",
+                            tenantGuid);
+
+                if (sDataTenants.TryGetValue("$resources", out value))
+                {
+                    if (value.ValueType.ToString() != DataAccessUtils.Null)
+                    {
+                        JsonArray sDataTenantArray = sDataTenants.GetNamedArray("$resources");
+                        foreach(var tenant in sDataTenantArray)
+                        sDataTenant = tenant.GetObject();
+                        //_tenantRepository.SaveTenantAsync(sDataTenants, salesRepDBObj.RepId);
+                    }
+                }
+
+                await UpdateTenantJsonToDbAsync(sDataTenant, tenantList.FirstOrDefault());
+
+            }
+            catch (SQLiteException ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+
+            catch (Exception ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+
         }
 
         # endregion
@@ -241,14 +283,14 @@ namespace SageMobileSales.DataAccess.Repositories
         {
             IJsonValue value;
 
-            if (sDataTenant.TryGetValue("UmTenantName", out value))
+            /*if (sDataTenant.TryGetValue("UmTenantName", out value))
             {
                 if (value.ValueType.ToString() != DataAccessUtils.Null)
                 {
                     tenant.Name = sDataTenant.GetNamedString("UmTenantName");
                 }
             }
-            /*
+            
             if (sDataTenant.TryGetValue("ERPCompanyCode", out value))
             {
                 if (value.ValueType.ToString() != DataAccessUtils.Null)
@@ -321,6 +363,87 @@ namespace SageMobileSales.DataAccess.Repositories
                 }
             }
              */
+
+            if (sDataTenant.TryGetValue("Name", out value))
+            {
+                if (value.ValueType.ToString() != DataAccessUtils.Null)
+                {
+                    tenant.Name = sDataTenant.GetNamedString("Name");
+                }
+            }
+
+            if (sDataTenant.TryGetValue("Code", out value))
+            {
+                if (value.ValueType.ToString() != DataAccessUtils.Null)
+                {
+                    tenant.Code = sDataTenant.GetNamedString("Code");
+                }
+            }
+            //if (sDataTenant.TryGetValue("ERPCompanyName", out value))
+            //{
+            //    if (value.ValueType.ToString() != DataAccessUtils.Null)
+            //    {
+            //        tenant.Name = sDataTenant.GetNamedString("ERPCompanyName");
+            //    }
+            //}
+            if (sDataTenant.TryGetValue("AddressLine1", out value))
+            {
+                if (value.ValueType.ToString() != DataAccessUtils.Null)
+                {
+                    tenant.AddressLine1 = sDataTenant.GetNamedString("AddressLine1");
+                }
+            }
+
+            if (sDataTenant.TryGetValue("AddressLine2", out value))
+            {
+                if (value.ValueType.ToString() != DataAccessUtils.Null)
+                {
+                    tenant.AddressLine2 = sDataTenant.GetNamedString("AddressLine2");
+                }
+            }
+            if (sDataTenant.TryGetValue("AddressLine3", out value))
+            {
+                if (value.ValueType.ToString() != DataAccessUtils.Null)
+                {
+                    tenant.AddressLine3 = sDataTenant.GetNamedString("AddressLine3");
+                }
+            }
+            if (sDataTenant.TryGetValue("AddressLine4", out value))
+            {
+                if (value.ValueType.ToString() != DataAccessUtils.Null)
+                {
+                    tenant.AddressLine4 = sDataTenant.GetNamedString("AddressLine4");
+                }
+            }
+            if (sDataTenant.TryGetValue("City", out value))
+            {
+                if (value.ValueType.ToString() != DataAccessUtils.Null)
+                {
+                    tenant.City = sDataTenant.GetNamedString("City");
+                }
+            }
+            if (sDataTenant.TryGetValue("Region", out value))
+            {
+                if (value.ValueType.ToString() != DataAccessUtils.Null)
+                {
+                    tenant.Region = sDataTenant.GetNamedString("Region");
+                }
+            }
+            if (sDataTenant.TryGetValue("Country", out value))
+            {
+                if (value.ValueType.ToString() != DataAccessUtils.Null)
+                {
+                    tenant.County = sDataTenant.GetNamedString("Country");
+                }
+            }
+            if (sDataTenant.TryGetValue("PostalCode", out value))
+            {
+                if (value.ValueType.ToString() != DataAccessUtils.Null)
+                {
+                    tenant.PostalCode = sDataTenant.GetNamedString("PostalCode");
+                }
+            }
+             
             return tenant;
         }
 

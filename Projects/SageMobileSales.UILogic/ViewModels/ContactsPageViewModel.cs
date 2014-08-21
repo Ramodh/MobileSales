@@ -6,6 +6,7 @@ using Microsoft.Practices.Prism.StoreApps.Interfaces;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Entities;
 using SageMobileSales.DataAccess.Repositories;
+using Windows.ApplicationModel.Resources;
 
 namespace SageMobileSales.UILogic.ViewModels
 {
@@ -13,22 +14,33 @@ namespace SageMobileSales.UILogic.ViewModels
     {
         private readonly IContactRepository _contactRepository;
         private readonly INavigationService _navigationService;
+        private readonly ICustomerRepository _customerRepository;
 
 
         private List<Contact> _customerContactList;
         private string _customerId;
         private string _log = string.Empty;
+        private string _customerName;
 
-        public ContactsPageViewModel(INavigationService navigationService, IContactRepository contactRepository)
+        public ContactsPageViewModel(INavigationService navigationService, IContactRepository contactRepository, ICustomerRepository customerRepository)
         {
             _navigationService = navigationService;
             _contactRepository = contactRepository;
+            _customerRepository = customerRepository;
         }
 
         public List<Contact> CustomerContactList
         {
             get { return _customerContactList; }
             private set { SetProperty(ref _customerContactList, value); }
+        }
+        /// <summary>
+        ///     Holds Customer Name
+        /// </summary>
+        public string CustomerName
+        {
+            get { return _customerName; }
+            private set { SetProperty(ref _customerName, value); }
         }
 
         public override async void OnNavigatedTo(object navigationParameter, NavigationMode navigationMode,
@@ -37,7 +49,10 @@ namespace SageMobileSales.UILogic.ViewModels
             try
             {
                 _customerId = navigationParameter as string;
+               
                 CustomerContactList = await _contactRepository.GetContactDetailsAsync(_customerId);
+                Customer customer = await _customerRepository.GetCustomerDataAsync(_customerId);
+                CustomerName = ResourceLoader.GetForCurrentView("Resources").GetString("DividerSymbol") + customer.CustomerName;
                 base.OnNavigatedTo(navigationParameter, navigationMode, viewModelState);
             }
             catch (Exception ex)

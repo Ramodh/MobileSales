@@ -410,97 +410,7 @@
     </DataTemplate>
 
     <DataTemplate x:Key="QuoteItemsTemplate">
-        <Border BorderThickness="1" BorderBrush="{StaticResource ItemBorderBrush}">
-            <Grid Margin="10"
-                  Height="160" Width="410"
-                  Background="#FF355B4E">
-
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="110" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="290" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <Image Source="{Binding ImageUri}"
-                       Grid.Column="0"
-                       Height="120" Width="120"
-                       Margin="10" />
-                <Grid Grid.Column="1">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="30" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="120" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="140" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="120" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Text="{Binding ProductName}" Grid.Row="0" TextWrapping="NoWrap" Grid.ColumnSpan="4"
-                               Style="{StaticResource SubheaderTextBlockStyle}" VerticalAlignment="Bottom" Width="Auto"
-                               HorizontalAlignment="Left" TextTrimming="WordEllipsis" />
-                    <TextBlock Text="{Binding RecentOrders}" Grid.Row="1" Grid.ColumnSpan="3" TextWrapping="NoWrap"
-                               TextTrimming="WordEllipsis" Style="{StaticResource AddressTextStyle}"
-                               VerticalAlignment="Bottom" />
-                    <TextBlock Text="{Binding ProductSku}" Grid.Row="2" Grid.Column="1" TextWrapping="NoWrap"
-                               TextTrimming="WordEllipsis" Style="{StaticResource AddressTextStyle}"
-                               VerticalAlignment="Top" />
-                    <TextBlock Text="Stock on hand:" Grid.Row="2" Grid.Column="1" TextWrapping="NoWrap"
-                               TextTrimming="WordEllipsis" Style="{StaticResource AddressTextStyle}"
-                               VerticalAlignment="Top" FontWeight="Bold" HorizontalAlignment="Right" />
-                    <TextBlock Text="{Binding ProductQuantity}" Grid.Row="2" Grid.Column="2" TextWrapping="NoWrap"
-                               TextTrimming="WordEllipsis" Style="{StaticResource AddressTextStyle}"
-                               VerticalAlignment="Top" FontWeight="Bold" HorizontalAlignment="Left" />
-                    <Border Grid.Row="4" Grid.ColumnSpan="3" VerticalAlignment="Bottom"
-                            Width="290"
-                            Height="80"
-                            Background="{StaticResource ItemDarkerBackgroundBrush}">
-                        <!--<StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding UnitPrice}" TextWrapping="NoWrap" TextTrimming="WordEllipsis" Style="{StaticResource AddressTextStyle}"  VerticalAlignment="Bottom"/>
-                            <TextBlock Text="{Binding Quantity}" Foreground="White"  VerticalAlignment="Bottom"/>
-                            <TextBlock Text="{Binding Amount}" TextWrapping="NoWrap" TextTrimming="WordEllipsis" Style="{StaticResource AddressTextStyle}"  VerticalAlignment="Bottom"/>
-                        </StackPanel>-->
-                        <Grid VerticalAlignment="Bottom" Width="300"
-                              Height="80">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="90" />
-                                <ColumnDefinition Width="Auto" />
-                                <!--<ColumnDefinition Width="Auto"/>-->
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="Price : " Grid.Row="0" TextWrapping="NoWrap" Grid.Column="0"
-                                       Style="{StaticResource AddressTextStyle}" VerticalAlignment="Bottom" />
-                            <TextBlock Text="Qty : " Grid.Row="1" TextWrapping="NoWrap" Grid.Column="0"
-                                       Style="{StaticResource AddressTextStyle}" VerticalAlignment="Bottom" />
-                            <TextBlock Text="Amount : " Grid.Row="2" TextWrapping="NoWrap" Grid.Column="0"
-                                       Style="{StaticResource AddressTextStyle}" VerticalAlignment="Bottom" />
-
-                            <TextBlock
-                                Text="{Binding LineItemPrice,Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:C}'}"
-                                Grid.Row="0" Grid.Column="1" TextWrapping="NoWrap" FontSize="23" FontWeight="Light"
-                                TextTrimming="WordEllipsis" Style="{StaticResource AddressTextStyle}"
-                                VerticalAlignment="Center" />
-                            <TextBlock Grid.Column="1" Text="{Binding LineItemQuantity}" Grid.Row="1"
-                                       TextWrapping="NoWrap" FontSize="23" FontWeight="Light"
-                                       TextTrimming="WordEllipsis" VerticalAlignment="Center"
-                                       Style="{StaticResource AddressTextStyle}" />
-                            <TextBlock
-                                Text="{Binding Amount,Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:C}'}"
-                                Grid.Column="1" Grid.Row="2" TextWrapping="NoWrap" FontSize="23" FontWeight="Light"
-                                Style="{StaticResource AddressTextStyle}" VerticalAlignment="Center" />
-                        </Grid>
-                    </Border>
-                </Grid>
-            </Grid>
-        </Border>
+        <controls:QuoteLineItemUserControl/>      
     </DataTemplate>
 
     <DataTemplate x:Key="ChangeAddressDataTemplate">
@@ -536,5 +446,93 @@
             </StackPanel>
         </StackPanel>
     </DataTemplate>
+
+    <!--RecentOrders ItemTemplate-->
+    <DataTemplate x:Key="recentOrdersTemplate">
+        <Grid Height="120" Margin="2" Background="#FF355B4E" Width="350">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />                
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="90" />
+                <ColumnDefinition Width="Auto" />               
+            </Grid.ColumnDefinitions>
+            <TextBlock x:Uid="RecentOrderDate" Grid.Row="0" Text="Date:" Style="{StaticResource AddressTextStyle}"
+                      TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="0" />
+            <TextBlock Grid.Row="0" Text="{Binding Date,Converter={StaticResource StringFormatConverter},ConverterParameter='{}{0:MM/dd/yyyy}'}" Style="{StaticResource AddressTextStyle}"
+                       TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="1"/>
+
+            <TextBlock x:Uid="RecentOrderInvoice" Grid.Row="1" Text="Invoice:" Style="{StaticResource AddressTextStyle}"
+                       TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="0" />
+            <TextBlock Grid.Row="1"
+                       Text="{Binding Invoice}"
+                       Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis"
+                       Grid.Column="1"/>
+            <TextBlock x:Uid="RecentOrderQty" Grid.Row="2" Style="{StaticResource AddressTextStyle}"
+                       TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="0"/>
+            <TextBlock Grid.Row="2"
+                       Text="{Binding Quantity}"
+                       Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis"
+                       Grid.Column="1" />
+            <TextBlock x:Uid="RecentOrderUnitPrice" Grid.Row="3" Style="{StaticResource AddressTextStyle}"
+                       TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="0" />
+            <TextBlock Grid.Row="3" Text="{Binding UnitPrice,Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:C}'}" Style="{StaticResource AddressTextStyle}"
+                       TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="1" />
+            <TextBlock x:Uid="RecentOrderTotal" Grid.Row="4" Style="{StaticResource AddressTextStyle}"
+                       TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="0" />
+            <TextBlock Grid.Row="4" Text="{Binding Total,Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:C}'}" Style="{StaticResource AddressTextStyle}"
+                       TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="1" />
+
+        </Grid>
+    </DataTemplate>
+
+    <!--FrequentlyPurchasedItems ItemTemplate-->
+
+    <DataTemplate x:Key="FrequentlyPurchasedItemsTemplate">
+        <Grid Height="110" Margin="2" Background="#FF355B4E" Width="350">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <!--<RowDefinition Height="20" />-->
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="90" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock x:Uid="ItemName" Grid.Row="0" Style="{StaticResource AddressTextStyle}"
+                      TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="0" />
+            <TextBlock Grid.Row="0" Text="{Binding ItemDescription}" Style="{StaticResource AddressTextStyle}"
+                       TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="1"/>
+
+            <TextBlock x:Uid="ItemNo" Grid.Row="1" Style="{StaticResource AddressTextStyle}"
+                       TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="0" />
+            <TextBlock Grid.Row="1"
+                       Text="{Binding ItemId}"
+                       Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis"
+                       Grid.Column="1"/>
+            <TextBlock x:Uid="QuantityYTD" Grid.Row="2" Style="{StaticResource AddressTextStyle}"
+                       TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="0"/>
+            <TextBlock Grid.Row="2"
+                       Text="{Binding QuantityYtd}"
+                       Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis"
+                       Grid.Column="1" />
+            <TextBlock x:Uid="PriorYTD"  Grid.Row="3" Style="{StaticResource AddressTextStyle}"
+                       TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="0" />
+            <TextBlock Grid.Row="3" Text="{Binding QuantityPriorYtd}" Style="{StaticResource AddressTextStyle}"
+                       TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="1" />
+
+            <Image Grid.ColumnSpan="2" Visibility="{Binding ItemDescription,Converter={StaticResource SeeMoreVisibilityConverter}}" Source="/Assets/img_see_more.png" Stretch="UniformToFill" Margin="0,-10,0,0"/>
+        </Grid>
+
+    </DataTemplate>
+
 
 </ResourceDictionary>

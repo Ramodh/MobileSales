@@ -275,7 +275,7 @@ namespace SageMobileSales.DataAccess.Repositories
             var orderObj = new Orders();
             try
             {
-                orderObj.OrderId = sDataOrder.GetNamedString("Id");
+                orderObj.OrderId = sDataOrder.GetNamedString("$key");
                 orderObj = await ExtractOrderFromJsonAsync(sDataOrder, orderObj);
 
                 await _sageSalesDB.InsertAsync(orderObj);

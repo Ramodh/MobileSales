@@ -120,6 +120,7 @@
     <Compile Include="Behaviors\NavigateWithEventArgsToPageAction.cs" />
     <Compile Include="Behaviors\NumericTextBoxBehavior.cs" />
     <Compile Include="Converters\ErrorConverter.cs" />
+    <Compile Include="Converters\SeeMoreVisibilityConverter.cs" />
     <Compile Include="Converters\StringFormatConverter.cs" />
     <Compile Include="Converters\TextHeaderVisibilityConverter.cs" />
     <Compile Include="Converters\TextNegationVisibilityConverter.cs" />
@@ -170,6 +171,9 @@
     <Compile Include="Views\CustomersGroupPage.xaml.cs">
       <DependentUpon>CustomersGroupPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\FrequentlyPurchasedItemsPage.xaml.cs">
+      <DependentUpon>FrequentlyPurchasedItemsPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ImageplaceHolderUserControl.xaml.cs">
       <DependentUpon>ImageplaceHolderUserControl.xaml</DependentUpon>
     </Compile>
@@ -200,8 +204,14 @@
     <Compile Include="Views\QuoteDetailsPage.xaml.cs">
       <DependentUpon>QuoteDetailsPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\QuoteLineItemUserControl.xaml.cs">
+      <DependentUpon>QuoteLineItemUserControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\QuotesPage.xaml.cs">
       <DependentUpon>QuotesPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\RecentOrdersPage.xaml.cs">
+      <DependentUpon>RecentOrdersPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\SearchResultsPage.xaml.cs">
       <DependentUpon>SearchResultsPage.xaml</DependentUpon>
@@ -241,6 +251,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\imagePlaceholder_200x200.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\img_see_more.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\SageMobileSales_150x150.png" />
@@ -318,6 +331,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\FrequentlyPurchasedItemsPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\ImageplaceHolderUserControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -358,9 +375,17 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\QuoteLineItemUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\QuotesPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\RecentOrdersPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\SearchResultsPage.xaml">
       <SubType>Designer</SubType>
@@ -428,13 +453,12 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-   <!-- Staging -->
+  <!-- Staging -->
   <PropertyGroup>
     <StagingOutputDir>$(MSBuildProjectDirectory)\..\..\Output</StagingOutputDir>
     <AppPublishDir>$(MSBuildProjectDirectory)\AppPackages</AppPublishDir>
   </PropertyGroup>
   <Target Name="StageFiles" AfterTargets="Build">
     <Exec Command="xcopy.exe  $(AppPublishDir) $(StagingOutputDir) /e /y /i" WorkingDirectory="$(MSBuildProjectDirectory)/" />
-    
   </Target>
 </Project>

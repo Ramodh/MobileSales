@@ -300,6 +300,14 @@ namespace SageMobileSales.DataAccess.Repositories
                     }
                 }
 
+                if (sDataOrderLineItem.TryGetValue("InventoryItem", out value))
+                {
+                    if (value.ValueType.ToString() != DataAccessUtils.Null)
+                    {
+                        await _productRepository.AddOrUpdateProductJsonToDbAsync(sDataOrderLineItem);
+                    }
+                }
+
                 if (sDataOrderLineItem.TryGetValue("InventoryItemId", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)

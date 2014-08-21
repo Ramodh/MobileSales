@@ -81,11 +81,11 @@ namespace SageMobileSales.DataAccess.Repositories
             contactResponse.CustomerId = customerId;
 
             IJsonValue value;
-            if (sDataContact.TryGetValue("Id", out value))
+            if (sDataContact.TryGetValue("$key", out value))
             {
                 if (value.ValueType.ToString() != DataAccessUtils.Null)
                 {
-                    contactResponse.ContactId = sDataContact.GetNamedString("Id");
+                    contactResponse.ContactId = sDataContact.GetNamedString("$key");
                 }
             }
 
@@ -162,7 +162,7 @@ namespace SageMobileSales.DataAccess.Repositories
             try
             {
                 IJsonValue value;
-                if (sDataContact.TryGetValue("Id", out value))
+                if (sDataContact.TryGetValue("$key", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
@@ -170,7 +170,7 @@ namespace SageMobileSales.DataAccess.Repositories
                         contactList =
                             await
                                 _sageSalesDB.QueryAsync<Contact>("SELECT * FROM Contact where contactId=?",
-                                    sDataContact.GetNamedString("Id"));
+                                    sDataContact.GetNamedString("$key"));
 
                         if (contactList.FirstOrDefault() != null)
                         {

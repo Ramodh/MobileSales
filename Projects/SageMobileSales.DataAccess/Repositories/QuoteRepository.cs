@@ -825,11 +825,7 @@ namespace SageMobileSales.DataAccess.Repositories
                     {
                         quote.QuoteStatus = sDataQuote.GetNamedString("Status");
                     }
-                }
-                else
-                {
-                    quote.QuoteStatus =DataAccessUtils.SubmitQuote;
-                }
+                }               
 
                 if (sDataQuote.TryGetValue("SandH", out value))
                 {

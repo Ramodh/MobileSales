@@ -311,7 +311,7 @@ namespace SageMobileSales.UILogic.ViewModels
         public List<QuoteType> BindItemsToListView()
         {
             _createQuoteFrom = new List<QuoteType>();
-            _createQuoteFrom.Add(new QuoteType {createFrom = PageUtils.Scratch, createFromText = PageUtils.ScratchText});
+            _createQuoteFrom.Add(new QuoteType { createFrom = PageUtils.Scratch, createFromText = PageUtils.ScratchText });
             if (_orderDetails != null)
             {
                 _createQuoteFrom.Add(new QuoteType
@@ -379,7 +379,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 if (PageUtils.SelectedProduct != null)
                 {
                     ProductDetails = PageUtils.SelectedProduct;
-                    quote.Amount += Math.Round((ProductDetails.Quantity*ProductDetails.PriceStd), 2);
+                    quote.Amount += Math.Round((ProductDetails.Quantity * ProductDetails.PriceStd), 2);
                 }
                 //if (_orderId != null)
                 //{
@@ -422,7 +422,9 @@ namespace SageMobileSales.UILogic.ViewModels
 
                 if (quote != null && Constants.ConnectedToInternet())
                 {
-                    quote = await _quoteService.PostDraftQuote(quote);
+                    Quote postedQuote = await _quoteService.PostDraftQuote(quote);
+                    if (postedQuote != null)
+                        quote = postedQuote;
                 }
 
                 InProgress = false;
@@ -441,10 +443,10 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             try
             {
-                var quoteTypeListView = ((ListView) args);
+                var quoteTypeListView = ((ListView)args);
                 if (quoteTypeListView != null && quoteTypeListView.SelectedItem != null)
                 {
-                    SelectedType = (QuoteType) quoteTypeListView.SelectedItem;
+                    SelectedType = (QuoteType)quoteTypeListView.SelectedItem;
                     if (SelectedType.createFrom == PageUtils.PreviousOrder)
                     {
                         string customerId = null;

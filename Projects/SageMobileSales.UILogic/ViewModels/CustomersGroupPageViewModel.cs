@@ -31,6 +31,7 @@ namespace SageMobileSales.UILogic.ViewModels
         private readonly ISalesRepService _salesRepService;
         //private CustomerCollection _customerCollection;
         private readonly ISyncCoordinatorService _syncCoordinatorService;
+        private readonly ITenantService _tenantService;
         private readonly ITenantRepository _tenantRepository;
         private string _emptyCustomers;
         private List<CustomerGroupByAlphabet> _groupedCustomerList;
@@ -40,13 +41,14 @@ namespace SageMobileSales.UILogic.ViewModels
 
         public CustomersGroupPageViewModel(INavigationService navigationService, ICustomerRepository customerRepository,
             ISyncCoordinatorService syncCoordinatorService, IEventAggregator eventAggregator,
-            ISalesRepService salesRepService, ITenantRepository tenantRepository)
+            ISalesRepService salesRepService, ITenantRepository tenantRepository, ITenantService tenantService)
         {
             _navigationService = navigationService;
             _customerRepository = customerRepository;
             _eventAggregator = eventAggregator;
             _syncCoordinatorService = syncCoordinatorService;
             _salesRepService = salesRepService;
+            _tenantService = tenantService;
             _tenantRepository = tenantRepository;
             _eventAggregator.GetEvent<CustomerDataChangedEvent>().Subscribe(UpdateCustomerList, ThreadOption.UIThread);
             _eventAggregator.GetEvent<CustomerSyncChangedEvent>()
@@ -138,6 +140,11 @@ namespace SageMobileSales.UILogic.ViewModels
                         //                           {
                         // Sync SalesRep(Loggedin User) data
                         await _salesRepService.SyncSalesRep();
+                        Constants.TenantId = await _tenantRepository.GetTenantId();
+                        //Company Settings
+                        await _tenantService.SyncTenant();
+                        //SalesTeamMember
+                        await _salesRepService.UpdateSalesRep();
                         //});
                         //PageUtils.asyncActionSalesRep = asyncAction;
 

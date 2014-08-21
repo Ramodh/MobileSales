@@ -79,8 +79,8 @@ namespace SageMobileSales.DataAccess.Repositories
             {
                 SalesRep _salesRepDtls = await _sageSalesDB.Table<SalesRep>().FirstOrDefaultAsync();
 
-                string maxDiscountPercentage = sDataSalesRepSettings.GetNamedNumber("MaximumDiscountPercent").ToString();
-                _salesRepDtls.MaximumDiscountPercent = maxDiscountPercentage;
+                //decimal maxDiscountPercentage = Convert.ToDecimal(sDataSalesRepSettings.GetNamedNumber("MaximumDiscountPercent"));
+                _salesRepDtls.MaximumDiscountPercent = Convert.ToDecimal(sDataSalesRepSettings.GetNamedNumber("SalesRepMaxDiscPct"));
                 // Updates SalesRep data into SalesRep table       
                 await _sageSalesDB.UpdateAsync(_salesRepDtls);
             }
