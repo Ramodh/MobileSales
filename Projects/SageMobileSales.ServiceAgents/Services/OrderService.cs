@@ -180,7 +180,7 @@ namespace SageMobileSales.ServiceAgents.Services
                             !(DataAccessUtils.IsOrdersSyncCompleted))
                         {
                             JsonObject lastOrderObject = ordersObject.GetObjectAt(Convert.ToUInt32(_returnedCount - 1));
-                            digest.LastRecordId = lastOrderObject.GetNamedString("Id");
+                            digest.LastRecordId = lastOrderObject.GetNamedString("$key");
                             int _syncEndpointTick = Convert.ToInt32(lastOrderObject.GetNamedNumber("SyncTick"));
                             if (_syncEndpointTick > digest.localTick)
                             {

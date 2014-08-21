@@ -596,7 +596,7 @@ namespace SageMobileSales.ServiceAgents.Services
                         !(DataAccessUtils.IsQuotesSyncCompleted))
                     {
                         JsonObject lastQuoteObject = quotesObject.GetObjectAt(Convert.ToUInt32(_returnedCount - 1));
-                        digest.LastRecordId = lastQuoteObject.GetNamedString("Id");
+                        digest.LastRecordId = lastQuoteObject.GetNamedString("$key");
                         int _syncEndpointTick = Convert.ToInt32(lastQuoteObject.GetNamedNumber("SyncTick"));
                         if (_syncEndpointTick > digest.localTick)
                         {

@@ -220,7 +220,7 @@ namespace SageMobileSales.DataAccess.Repositories
             try
             {
                 IJsonValue value;
-                if (sDataOrder.TryGetValue("Id", out value))
+                if (sDataOrder.TryGetValue("$key", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
@@ -228,7 +228,7 @@ namespace SageMobileSales.DataAccess.Repositories
                         orderList =
                             await
                                 _sageSalesDB.QueryAsync<Orders>("SELECT * FROM Orders where OrderId=?",
-                                    sDataOrder.GetNamedString("Id"));
+                                    sDataOrder.GetNamedString("$key"));
 
                         if (orderList.FirstOrDefault() != null)
                         {
@@ -275,7 +275,7 @@ namespace SageMobileSales.DataAccess.Repositories
             var orderObj = new Orders();
             try
             {
-                orderObj.OrderId = sDataOrder.GetNamedString("Id");
+                orderObj.OrderId = sDataOrder.GetNamedString("$key");
                 orderObj = await ExtractOrderFromJsonAsync(sDataOrder, orderObj);
 
                 await _sageSalesDB.InsertAsync(orderObj);

@@ -155,7 +155,7 @@ namespace SageMobileSales.DataAccess.Repositories
             try
             {
                 IJsonValue value;
-                if (sDataOrderLineItem.TryGetValue("Id", out value))
+                if (sDataOrderLineItem.TryGetValue("$key", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
@@ -164,7 +164,7 @@ namespace SageMobileSales.DataAccess.Repositories
                             await
                                 _sageSalesDB.QueryAsync<OrderLineItem>(
                                     "SELECT * FROM OrderLineItem where OrderLineItemId=?",
-                                    sDataOrderLineItem.GetNamedString("Id"));
+                                    sDataOrderLineItem.GetNamedString("$key"));
 
                         if (orderLineItemList.FirstOrDefault() != null)
                         {
@@ -226,7 +226,7 @@ namespace SageMobileSales.DataAccess.Repositories
                 orderLineItemObj = new OrderLineItem();
 
                 orderLineItemObj.OrderId = orderId;
-                orderLineItemObj.OrderLineItemId = sDataOrderLineItem.GetNamedString("Id");
+                orderLineItemObj.OrderLineItemId = sDataOrderLineItem.GetNamedString("$key");
 
                 orderLineItemObj = await ExtractOrderLineItemFromJsonAsync(sDataOrderLineItem, orderLineItemObj);
                 await _sageSalesDB.InsertAsync(orderLineItemObj);

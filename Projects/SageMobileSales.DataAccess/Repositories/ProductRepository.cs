@@ -263,7 +263,7 @@ namespace SageMobileSales.DataAccess.Repositories
             try
             {
                 IJsonValue value;
-                if (sDataProduct.TryGetValue("Id", out value))
+                if (sDataProduct.TryGetValue("$key", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
@@ -271,7 +271,7 @@ namespace SageMobileSales.DataAccess.Repositories
                         productList =
                             await
                                 _sageSalesDB.QueryAsync<Product>("SELECT * FROM Product where ProductId=?",
-                                    sDataProduct.GetNamedString("Id"));
+                                    sDataProduct.GetNamedString("$key"));
 
                         if (productList.FirstOrDefault() != null)
                         {
@@ -304,11 +304,11 @@ namespace SageMobileSales.DataAccess.Repositories
         {
             IJsonValue value;
             var product = new Product();
-            if (sDataProduct.TryGetValue("Id", out value))
+            if (sDataProduct.TryGetValue("$key", out value))
             {
                 if (value.ValueType.ToString() != DataAccessUtils.Null)
                 {
-                    product.ProductId = sDataProduct.GetNamedString("Id").ToLower();
+                    product.ProductId = sDataProduct.GetNamedString("$key").ToLower();
                 }
             }
             if (sDataProduct.TryGetValue("Sku", out value))
@@ -362,11 +362,11 @@ namespace SageMobileSales.DataAccess.Repositories
             {
                 IJsonValue value;
 
-                if (sDataProduct.TryGetValue("Id", out value))
+                if (sDataProduct.TryGetValue("$key", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        product.ProductId = sDataProduct.GetNamedString("Id").ToLower();
+                        product.ProductId = sDataProduct.GetNamedString("$key").ToLower();
                     }
                 }
 
@@ -456,7 +456,7 @@ namespace SageMobileSales.DataAccess.Repositories
                                 JsonObject sDataRelatedItem = relatedItem.GetObject();
                                 var productRelatedItem = new ProductRelatedItem();
                                 productRelatedItem.ProductId = product.ProductId;
-                                productRelatedItem.RelatedItemId = sDataRelatedItem.GetNamedString("Id").ToLower();
+                                productRelatedItem.RelatedItemId = sDataRelatedItem.GetNamedString("$key").ToLower();
                                 lstProductRelatedItem.Add(productRelatedItem);
                             }
                             await UpdateProductRelatedItemsAsync(lstProductRelatedItem, product.ProductId);
@@ -566,7 +566,7 @@ namespace SageMobileSales.DataAccess.Repositories
             var productObj = new Product();
             try
             {
-                productObj.ProductId = sDataProduct.GetNamedString("Id");
+                productObj.ProductId = sDataProduct.GetNamedString("$key");
                 productObj = await ExtractProductFromJsonAsync(sDataProduct, productObj);
 
                 await _sageSalesDB.InsertAsync(productObj);

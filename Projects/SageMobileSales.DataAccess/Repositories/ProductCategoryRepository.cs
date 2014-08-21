@@ -234,7 +234,7 @@ namespace SageMobileSales.DataAccess.Repositories
             {
                 IJsonValue value;
                 bool entityStatusDeleted = false;
-                if (sDataProductCategory.TryGetValue("Id", out value))
+                if (sDataProductCategory.TryGetValue("$key", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
@@ -243,7 +243,7 @@ namespace SageMobileSales.DataAccess.Repositories
                             await
                                 _sageSalesDB.QueryAsync<ProductCategory>(
                                     "SELECT * FROM ProductCategory where CategoryId=?",
-                                    sDataProductCategory.GetNamedString("Id"));
+                                    sDataProductCategory.GetNamedString("$key"));
 
                         if (sDataProductCategory.TryGetValue("EntityStatus", out value))
                         {
@@ -260,7 +260,7 @@ namespace SageMobileSales.DataAccess.Repositories
                                 await
                                     _sageSalesDB.QueryAsync<ProductCategory>(
                                         "DELETE FROM ProductCategory where CategoryId=?",
-                                        sDataProductCategory.GetNamedString("Id"));
+                                        sDataProductCategory.GetNamedString("$key"));
                             else
                                 return
                                     await
@@ -290,7 +290,7 @@ namespace SageMobileSales.DataAccess.Repositories
             {
                 IJsonValue value;
                 //ProductCategory productCategory = new ProductCategory();
-                productCategory.CategoryId = sDataProductCategory.GetNamedString("Id");
+                productCategory.CategoryId = sDataProductCategory.GetNamedString("$key");
                 
                 if (sDataProductCategory.TryGetValue("Name", out value))
                 {
@@ -309,7 +309,7 @@ namespace SageMobileSales.DataAccess.Repositories
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
                         JsonObject sDataParentIds = sDataProductCategory.GetNamedObject("Parent");
-                        productCategory.ParentId = sDataParentIds.GetNamedString("Id");
+                        productCategory.ParentId = sDataParentIds.GetNamedString("$key");
                     }
                 }              
                // JsonObject sDataAssociatedItems = sDataProductCategory.GetNamedObject("AssociatedItems");
@@ -324,7 +324,7 @@ namespace SageMobileSales.DataAccess.Repositories
                             JsonObject sDataAssociatedItem = associatedItem.GetObject();
                             var productCategoryLink = new ProductCategoryLink();
                             productCategoryLink.CategoryId = productCategory.CategoryId;
-                            productCategoryLink.ProductId = sDataAssociatedItem.GetNamedString("Id");
+                            productCategoryLink.ProductId = sDataAssociatedItem.GetNamedString("$key");
                             lstProductCategoryLink.Add(productCategoryLink);
                         }
                         await _sageSalesDB.InsertAllAsync(lstProductCategoryLink);

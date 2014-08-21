@@ -166,12 +166,12 @@ namespace SageMobileSales.DataAccess.Repositories
                 IJsonValue value;
                 var _productAssociatedBlob = new ProductAssociatedBlob();
 
-                if (sDataProductAssociatedBlob.TryGetValue("Id", out value))
+                if (sDataProductAssociatedBlob.TryGetValue("$key", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
 
-                        _productAssociatedBlob.ProductAssociatedBlobId = sDataProductAssociatedBlob.GetNamedString("Id").ToLower();
+                        _productAssociatedBlob.ProductAssociatedBlobId = sDataProductAssociatedBlob.GetNamedString("$key").ToLower();
                     }
                 }
                 if (sDataProductAssociatedBlob.TryGetValue("Name", out value))
