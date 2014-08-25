@@ -134,7 +134,7 @@ namespace SageMobileSales.ServiceAgents.Services
                 //        _serviceAgent.BuildAndPostObjectRequest(Constants.TenantId, Constants.DraftQuotes, null, Constants.AccessToken,
                 //            null, obj);
 
-                await
+               quoteResponse= await
                     _serviceAgent.BuildAndPatchObjectRequest(Constants.TenantId, quoteEntityId, null, Constants.AccessToken,
                         null, obj);
                 if (quoteResponse != null && quoteResponse.IsSuccessStatusCode)
@@ -333,6 +333,8 @@ namespace SageMobileSales.ServiceAgents.Services
             if (quoteResponse != null && quoteResponse.IsSuccessStatusCode)
             {
                 var sDataQuote = await _serviceAgent.ConvertTosDataObject(quoteResponse);
+                quote.AddressId = sDataQuote.GetNamedString("$key");
+                quote = await PatchDraftQuote(quote);
                 await _quoteRepository.SavePostedQuoteToDbAsync(sDataQuote, quote, null, null);
             }
         }
@@ -363,8 +365,10 @@ namespace SageMobileSales.ServiceAgents.Services
             if (quoteResponse != null && quoteResponse.IsSuccessStatusCode)
             {
                 var sDataQuote = await _serviceAgent.ConvertTosDataObject(quoteResponse);
-                await _quoteRepository.SavePostedQuoteToDbAsync(sDataQuote, quote, address, null);
-            }
+                quote.AddressId = sDataQuote.GetNamedString("$key");
+               quote = await PatchDraftQuote(quote);
+               quote= await _quoteRepository.SavePostedQuoteToDbAsync(sDataQuote, quote, address, null);
+            }           
         }
 
         /// <summary>
@@ -681,7 +685,7 @@ namespace SageMobileSales.ServiceAgents.Services
             quoteJsonObject.ShippingAddress.Street4 = address.Street4 == null ? "" : address.Street4;
             //quoteJsonObject.ShippingAddress.Type = address.AddressType == null ? "" : address.AddressType;
             //quoteJsonObject.ShippingAddress.URL = address.Url == null ? "" : address.Url;
-            quoteJsonObject.ShippingAddress.Customer = new CustomerId { Id = quote.CustomerId };
+            quoteJsonObject.ShippingAddress.Customer = new CustomerId { key = quote.CustomerId };
             return quoteJsonObject;
         }
 
@@ -751,7 +755,7 @@ namespace SageMobileSales.ServiceAgents.Services
             ShippingAddress.Street4 = address.Street4 == null ? "" : address.Street4;
             ShippingAddress.Type = address.AddressType == null ? "" : address.AddressType;
             //quoteJsonObject.ShippingAddress.URL = address.Url == null ? "" : address.Url;
-            ShippingAddress.Customer = new CustomerId { Id = customerId };
+            ShippingAddress.Customer = new CustomerId { key = customerId };
 
             return ShippingAddress;
 
@@ -767,7 +771,7 @@ namespace SageMobileSales.ServiceAgents.Services
             List<QuoteLineItem> quoteLineItemList)
         {
             var quoteJsonObject = new SubmitQuoteJson();
-            quoteJsonObject.Id = quote.QuoteId;
+            quoteJsonObject.key = quote.QuoteId;
             quoteJsonObject.Description = quote.QuoteDescription == null ? "" : quote.QuoteDescription;
             //quoteJsonObject.DiscountPercent = quote.DiscountPercent;
             quoteJsonObject.QuoteTotal = quote.Amount;

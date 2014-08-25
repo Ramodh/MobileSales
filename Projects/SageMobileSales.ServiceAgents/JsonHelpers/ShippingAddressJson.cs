@@ -20,6 +20,6 @@
 
     public class CustomerId
     {
-        public string Id { get; set; }
+        public string key { get; set; }
     }
 }
