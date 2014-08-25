@@ -617,8 +617,8 @@ namespace SageMobileSales.ServiceAgents.Common
         private string GetSerializedObject(Object obj)
         {
             string serialized = JsonConvert.SerializeObject(obj);
-            //serialized = serialized.Replace("\"key\"", "\"$key\"");
-            //serialized = serialized.Replace("\"resources", "\"$resources");
+            serialized = serialized.Replace("\"key\"", "\"$key\"");
+            serialized = serialized.Replace("\"resources", "\"$resources");
 
             return serialized;
         }

@@ -39,7 +39,7 @@ namespace SageMobileSales.ServiceAgents.Services
                 parameters = new Dictionary<string, string>();
                 //parameters.Add("include", "Details");                               
 
-                string orderEntityId = Constants.OrderEntity + "('" + orderId + "')";
+                string orderEntityId = Constants.OrderDetailEntity + "('" + orderId + "')";
 
                 List<OrderLineItem> orderLineItemList = await _orderLineItemRepository.GetOrderLineItemForOrder(orderId);
                 if (orderLineItemList != null && orderLineItemList.Count > 0)

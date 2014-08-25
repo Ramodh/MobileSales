@@ -71,6 +71,6 @@ namespace SageMobileSales.ServiceAgents.JsonHelpers
     public class SubmitQuoteJson : QuoteJson
     {
         public string ShippingAddressId { get; set; }
-        public string Id { get; set; }
+        public string key { get; set; }
     }
 }

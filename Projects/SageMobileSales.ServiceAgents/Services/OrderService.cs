@@ -67,7 +67,7 @@ namespace SageMobileSales.ServiceAgents.Services
             Orders order = null;
             try
             {
-                string queryEntity = "$service/ConvertToOrder";
+                //string queryEntity = "$service/ConvertToOrder";
                 object obj = null;
 
                 obj = ConvertQuoteOrderToJsonFormattedObject(quote);
@@ -76,7 +76,7 @@ namespace SageMobileSales.ServiceAgents.Services
 
                 quoteResponse =
                     await
-                        _serviceAgent.BuildAndPostObjectRequest(null,Constants.QuoteEntity, queryEntity,
+                        _serviceAgent.BuildAndPostObjectRequest(Constants.TenantId, Constants.QuoteToOrder, null,
                             Constants.AccessToken, null, obj);
                 if (quoteResponse != null && quoteResponse.IsSuccessStatusCode)
                 {
@@ -85,6 +85,8 @@ namespace SageMobileSales.ServiceAgents.Services
                     // Need to confirm as what needs to be done here after posting order(with the response).
                     quote.QuoteStatus = "IsOrder";
                     await _quoteRepository.UpdateQuoteToDbAsync(quote);
+
+                    //TO DO save order response
                     order = await _orderRepository.SaveOrderAsync(sDataQuote);
                 }
             }
@@ -148,7 +150,7 @@ namespace SageMobileSales.ServiceAgents.Services
                 string salesRepId = await _salesRepRepository.GetSalesRepId();
                 if (!string.IsNullOrEmpty(salesRepId))
                 {
-                //http://172.29.59.122:8080/sdata/api/msales/1.0/f200ac19-1be6-48c5-b604-2d322020f48e/Orders/
+                    //http://172.29.59.122:8080/sdata/api/msales/1.0/f200ac19-1be6-48c5-b604-2d322020f48e/Orders/
                     //$SyncSource('B181349C-FFEC-42FD-9A20-B83A5C07F7A6-8e144a26-f89a-4a7f-9265-8a9453a27222')?Count=50&LocalTick=0 
                     //salesRepId = "SalesRep.id eq " + "'" + salesRepId + "'";
                     parameters.Add("Count", "50");
@@ -223,6 +225,7 @@ namespace SageMobileSales.ServiceAgents.Services
             }
         }
 
+
         private OrderJson ConvertQuoteOrderToJsonFormattedObject(Quote quote)
         {
             var orderjson = new OrderJson();
@@ -234,17 +237,18 @@ namespace SageMobileSales.ServiceAgents.Services
             orderjson.ExpirationMonth = quote.ToOrderCreditCardExpMonth == null ? "" : quote.ToOrderCreditCardExpMonth;
             orderjson.ExpirationYear = quote.ToOrderCreditCardExpYear == null ? "" : quote.ToOrderCreditCardExpYear;
             // Default value for Payment via Account
-            orderjson.InitialOrderStatus = quote.ToOrderStatus == null ? "2" : quote.ToOrderStatus;
+            //orderjson.InitialOrderStatus = quote.ToOrderStatus == null ? "2" : quote.ToOrderStatus;
             orderjson.PaymentMethod = quote.ToOrderPaymentType == null ? "Account" : quote.ToOrderPaymentType;
             orderjson.PaymentReference = quote.ToOrderReference == null ? "" : quote.ToOrderReference;
             // Need confirmation for status only for submitted
             //orderjson.Status = quote.QuoteStatus;
-            orderjson.Status = "Submitted";
+            //orderjson.Status = "Submitted";
             // Need confirmation here too
             orderjson.TaxAmount = "0";
 
-            long milliseconds = DateTime.UtcNow.Ticks / TimeSpan.TicksPerMillisecond;
-            orderjson.TransactionDate = "/Date(" + milliseconds + ")/";
+            //long milliseconds = DateTime.UtcNow.Ticks / TimeSpan.TicksPerMillisecond;
+            //orderjson.TransactionDate = "/Date(" + milliseconds + ")/";
+
             //order.TransactionDate ="/Date(1392833833000-0600)/";
 
             return orderjson;
