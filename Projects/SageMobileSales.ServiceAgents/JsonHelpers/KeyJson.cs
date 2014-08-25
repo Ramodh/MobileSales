@@ -7,7 +7,7 @@
 
     public class CustomerContactKeyJson
     {
-        public string Id { get; set; }
+        public string key { get; set; }
     }
 
     public class SalesKeyJson
