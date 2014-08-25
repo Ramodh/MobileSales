@@ -23,6 +23,7 @@ namespace SageMobileSales.UILogic.ViewModels
         private readonly IOrderLineItemService _orderLineItemService;
         private readonly ITenantRepository _tenantRepository;
         private readonly ITenantService _tenantService;
+        private readonly IOrderRepository _orderRepository;
 
         private CustomerDetails _customerDtls;
         private bool _inProgress;
@@ -38,10 +39,11 @@ namespace SageMobileSales.UILogic.ViewModels
         public OrderDetailsPageViewModel(INavigationService navigationService,
             IOrderLineItemService orderLineItemService, ICustomerRepository customerRepository,
             IOrderLineItemRepository orderLineItemRepository, IAddressRepository addressRepostiory,
-            ITenantService tenantService, ITenantRepository tenantRepository)
+            ITenantService tenantService, ITenantRepository tenantRepository, IOrderRepository orderRepository)
         {
             _navigationService = navigationService;
             _orderLineItemService = orderLineItemService;
+            _orderRepository = orderRepository;
             _customerRepository = customerRepository;
             _orderLineItemRepository = orderLineItemRepository;
             _addressRepostiory = addressRepostiory;
@@ -137,12 +139,16 @@ namespace SageMobileSales.UILogic.ViewModels
 
         private async void DisplayOrderDtls()
         {
-            OrderDetailsPageTitle = "Order " + _orderDtls.OrderNumber;
+            
             InProgress = true;
             if (Constants.ConnectedToInternet())
             {
                 await _orderLineItemService.SyncOrderLineItems(OrderDtls.OrderId);
             }
+            if (string.IsNullOrEmpty(OrderDtls.CustomerId))
+                OrderDtls = await _orderRepository.GetOrderDetailsAsync(OrderDtls.OrderId);
+
+            OrderDetailsPageTitle = "Order " + OrderDtls.OrderNumber;
             CustomerDtls = new CustomerDetails();
             ShippingAddress = await _addressRepostiory.GetShippingAddress(OrderDtls.AddressId);
             CustomerDtls = await _customerRepository.GetCustomerDtlsForOrder(OrderDtls);
@@ -160,7 +166,7 @@ namespace SageMobileSales.UILogic.ViewModels
             {
                 foreach (LineItemDetails orderlineItem in OrderLineItemsList)
                 {
-                    SubTotal += Math.Round((orderlineItem.LineItemPrice*orderlineItem.LineItemQuantity), 2);
+                    SubTotal += Math.Round((orderlineItem.LineItemPrice * orderlineItem.LineItemQuantity), 2);
                 }
             }
             return SubTotal;
@@ -174,7 +180,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 if (OrderDtls.DiscountPercent != 0 && SubTotal != 0)
                 {
                     // discountPercentage = Math.Round(((1 - ((SubTotal - DiscountPercentageValue) / SubTotal)) * 100), 2);
-                    discountPercentage = Math.Round(((OrderDtls.DiscountPercent/100)*SubTotal), 2);
+                    discountPercentage = Math.Round(((OrderDtls.DiscountPercent / 100) * SubTotal), 2);
                 }
             }
             return discountPercentage;

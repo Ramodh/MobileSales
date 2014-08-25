@@ -35,7 +35,7 @@ namespace SageMobileSales.ServiceAgents.Services
             parameters = new Dictionary<string, string>();
             parameters.Add("include", "Addresses,Contacts");
 
-            string customerEntityId = Constants.CustomerEntity + "('" + customerId + "')";
+            string customerEntityId = Constants.CustomerDetailEntity + "('" + customerId + "')";
             HttpResponseMessage contactResponse = null;
             contactResponse =
                 await _serviceAgent.BuildAndSendRequest(Constants.TenantId, customerEntityId, null, null, Constants.AccessToken, parameters);
