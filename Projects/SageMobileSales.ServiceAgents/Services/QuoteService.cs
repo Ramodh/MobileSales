@@ -63,7 +63,7 @@ namespace SageMobileSales.ServiceAgents.Services
             {
                 _eventAggregator.GetEvent<QuoteDataChangedEvent>().Publish(true);
             }
-        }        
+        }
 
         /// <summary>
         ///     Quote is posted and the response is updated in local dB
@@ -134,7 +134,7 @@ namespace SageMobileSales.ServiceAgents.Services
                 //        _serviceAgent.BuildAndPostObjectRequest(Constants.TenantId, Constants.DraftQuotes, null, Constants.AccessToken,
                 //            null, obj);
 
-               quoteResponse= await
+                quoteResponse = await
                     _serviceAgent.BuildAndPatchObjectRequest(Constants.TenantId, quoteEntityId, null, Constants.AccessToken,
                         null, obj);
                 if (quoteResponse != null && quoteResponse.IsSuccessStatusCode)
@@ -176,6 +176,50 @@ namespace SageMobileSales.ServiceAgents.Services
         //    catch (Exception e) { throw (e); }
         //}
 
+
+        public async Task<Quote> PostSubmitQuote(Quote quote, IEnumerable<QuoteLineItem> result)
+        {
+
+            Object obj = ConvertQuoteWithShippingAddressKeyToJsonFormattedObject(quote, result.ToList());
+
+            HttpResponseMessage quoteResponse = null;
+            //string quoteEntityId;
+
+            //quoteEntityId = Constants.SubmitQuoteEntity;
+
+            quoteResponse =
+                await
+                    _serviceAgent.BuildAndPostObjectRequest(Constants.TenantId, Constants.SubmitQuoteEntity, null, Constants.AccessToken, null, obj);
+            if (quoteResponse != null && quoteResponse.IsSuccessStatusCode)
+            {
+                JsonObject sDataQuote = await _serviceAgent.ConvertTosDataObject(quoteResponse);
+                quote = await _quoteRepository.SavePostedQuoteToDbAsync(sDataQuote, quote, null, null);
+            }
+            return quote;
+
+        }
+
+        public async Task<Quote> PatchSubmitQuote(Quote quote, IEnumerable<QuoteLineItem> result)
+        {
+            Object obj = ConvertSubmitQuoteToJsonFormattedObject(quote, result.ToList());
+
+            HttpResponseMessage quoteResponse = null;
+            string quoteEntityId;
+
+            quoteEntityId = Constants.SubmitQuoteEntity + "('" + quote.QuoteId + "')";
+
+            quoteResponse =
+                await
+                    _serviceAgent.BuildAndPatchObjectRequest(Constants.TenantId, quoteEntityId, null, Constants.AccessToken, null, obj);
+            if (quoteResponse != null && quoteResponse.IsSuccessStatusCode)
+            {
+                JsonObject sDataQuote = await _serviceAgent.ConvertTosDataObject(quoteResponse);
+                quote = await _quoteRepository.SavePostedQuoteToDbAsync(sDataQuote, quote, null, null);
+            }
+            return quote;
+
+        }
+
         /// <summary>
         ///     Submit quote via service using put http method
         /// </summary>
@@ -197,6 +241,10 @@ namespace SageMobileSales.ServiceAgents.Services
                     await _quoteLineItemRepository.DeleteQuoteLineItemFromDbAsync(quoteLineItem.QuoteLineItemId);
             }
 
+            //Checking whether post or patch
+            IEnumerable<QuoteLineItem> result =
+                quoteLineItemList.Where(e => e.QuoteLineItemId.Contains(Constants.Pending));
+
             //Checking for pending quoteId before submitting
             if (quote.QuoteId.Contains(Constants.Pending))
             {
@@ -204,46 +252,49 @@ namespace SageMobileSales.ServiceAgents.Services
                 {
                     // Confirm before posting quote whether it has Valid QuoteId
                     // submitted check
-                    quote = await PostDraftQuote(quote);
+                    quote = await PostSubmitQuote(quote, result);
                     await
                         UpdateQuoteShippingAddress(quote,
                             await _addressRepository.GetQuoteShippingAddress(quote.AddressId));
                 }
                 else
                 {
-                    quote = await PostDraftQuote(quote);
+                    quote = await PostSubmitQuote(quote, result);
                 }
                 return quote;
+            }
+            else
+            {
+                quote =await PatchSubmitQuote(quote, result);
             }
             //TO DO : As per info saved quoteLineItems are submitted without pending prefix and ispending=true.
 
             //List<QuoteLineItem> quoteLineItemList = await _quoteLineItemRepository.GetQuoteLineItemsForQuote(quote.QuoteId);
 
-            IEnumerable<QuoteLineItem> result =
-                quoteLineItemList.Where(e => e.QuoteLineItemId.Contains(Constants.Pending));
 
-            obj = ConvertSubmitQuoteToJsonFormattedObject(quote, result.ToList());
 
-            HttpResponseMessage quoteResponse = null;
-            string quoteEntityId;
+            //obj = ConvertSubmitQuoteToJsonFormattedObject(quote, result.ToList());
 
-            quoteEntityId = Constants.SubmitQuoteEntity;
+            //HttpResponseMessage quoteResponse = null;
+            //string quoteEntityId;
+
+            //quoteEntityId = Constants.SubmitQuoteEntity;
+            ////quoteResponse =
+            //// await
+            ////     _serviceAgent.BuildAndPutObjectRequest(quoteEntityId, null, Constants.AccessToken, parameters, obj);
             //quoteResponse =
-            // await
-            //     _serviceAgent.BuildAndPutObjectRequest(quoteEntityId, null, Constants.AccessToken, parameters, obj);
-            quoteResponse =
-                await
-                    _serviceAgent.BuildAndPostObjectRequest(Constants.TenantId, quoteEntityId, null, Constants.AccessToken, null, obj);
-            if (quoteResponse != null && quoteResponse.IsSuccessStatusCode)
-            {
-                JsonObject sDataQuote = await _serviceAgent.ConvertTosDataObject(quoteResponse);
-                quote = await _quoteRepository.SavePostedQuoteToDbAsync(sDataQuote, quote, null, null);
-            }
+            //    await
+            //        _serviceAgent.BuildAndPostObjectRequest(Constants.TenantId, quoteEntityId, null, Constants.AccessToken, null, obj);
+            //if (quoteResponse != null && quoteResponse.IsSuccessStatusCode)
+            //{
+            //    JsonObject sDataQuote = await _serviceAgent.ConvertTosDataObject(quoteResponse);
+            //    quote = await _quoteRepository.SavePostedQuoteToDbAsync(sDataQuote, quote, null, null);
+            //}
             return quote;
         }
 
         /// <summary>
-        ///     Revert submitted quote to draft via service using put http method
+        ///     Revert submitted quote to draft via service using patch http method
         /// </summary>
         /// <param name="quote"></param>
         /// <returns></returns>
@@ -260,7 +311,7 @@ namespace SageMobileSales.ServiceAgents.Services
             HttpResponseMessage quoteResponse = null;
             string quoteEntityId;
 
-            quoteEntityId = Constants.SubmitQuoteEntity + "('" + quote.QuoteId + "')";
+            quoteEntityId = Constants.DraftQuotes + "('" + quote.QuoteId + "')";
 
             quoteResponse =
                 await
@@ -333,8 +384,6 @@ namespace SageMobileSales.ServiceAgents.Services
             if (quoteResponse != null && quoteResponse.IsSuccessStatusCode)
             {
                 var sDataQuote = await _serviceAgent.ConvertTosDataObject(quoteResponse);
-                quote.AddressId = sDataQuote.GetNamedString("$key");
-                quote = await PatchDraftQuote(quote);
                 await _quoteRepository.SavePostedQuoteToDbAsync(sDataQuote, quote, null, null);
             }
         }
@@ -365,10 +414,13 @@ namespace SageMobileSales.ServiceAgents.Services
             if (quoteResponse != null && quoteResponse.IsSuccessStatusCode)
             {
                 var sDataQuote = await _serviceAgent.ConvertTosDataObject(quoteResponse);
+                //TODO
+                // Temporary Fix to update shipping Address to Quote
+                // Saving the Patch response into Quote Table
                 quote.AddressId = sDataQuote.GetNamedString("$key");
-               quote = await PatchDraftQuote(quote);
-               quote= await _quoteRepository.SavePostedQuoteToDbAsync(sDataQuote, quote, address, null);
-            }           
+                quote= await PatchDraftQuote(quote);
+                await _quoteRepository.SavePostedQuoteToDbAsync(sDataQuote, quote, address, null);
+            }
         }
 
         /// <summary>
@@ -397,6 +449,11 @@ namespace SageMobileSales.ServiceAgents.Services
             if (quoteResponse != null && quoteResponse.IsSuccessStatusCode)
             {
                 var sDataQuote = await _serviceAgent.ConvertTosDataObject(quoteResponse);
+                //TODO
+                // Temporary Fix to update shipping Address to Quote
+                // Saving the Patch response into Quote Table
+                quote.AddressId = sDataQuote.GetNamedString("$key");
+                quote = await PatchDraftQuote(quote);
                 await _quoteRepository.SavePostedQuoteToDbAsync(sDataQuote, quote, null, null);
             }
         }

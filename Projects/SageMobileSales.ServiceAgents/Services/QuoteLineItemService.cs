@@ -52,7 +52,7 @@ namespace SageMobileSales.ServiceAgents.Services
                     parameters.Add("include", "Details,Customer/Addresses,Details/InventoryItem,Details/InventoryItem/Images");
                 }
 
-                string quoteEntityId = Constants.QuoteEntity + "('" + quote.QuoteId + "')";
+                string quoteEntityId = Constants.QuoteDetailEntity + "('" + quote.QuoteId + "')";
                 HttpResponseMessage quoteLineItemResponse = null;
                 quoteLineItemResponse =
                     await
@@ -95,7 +95,7 @@ namespace SageMobileSales.ServiceAgents.Services
             try
             {
                 parameters = new Dictionary<string, string>();
-                parameters.Add("include", "Details");
+                //parameters.Add("include", "Details");
                 object obj;
 
                 obj = ConvertQuoteDetailsWithShippingAddressKeyToJsonFormattedObject(quote, quoteLineItem);

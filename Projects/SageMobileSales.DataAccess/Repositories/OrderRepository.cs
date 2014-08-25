@@ -114,6 +114,7 @@ namespace SageMobileSales.DataAccess.Repositories
                         if (address != null)
                         {
                             order.AddressId = address.AddressId;
+                            await _sageSalesDB.UpdateAsync(order);
                         }
                     }
                 }
@@ -147,6 +148,8 @@ namespace SageMobileSales.DataAccess.Repositories
             try
             {
                 //SELECT distinct Orders.OrderId, Orders.CreatedOn, Orders.OrderNumber, Orders.CustomerId, Orders.AddressId, Orders.TenantId, Orders.Amount, Orders.Tax, Orders.ShippingAndHandling, Orders.DiscountPercent, Orders.OrderStatus,Orders.OrderDescription, SalesRep.RepName FROM Orders  INNER JOIN SalesRep ON salesRep.RepId = Orders.RepId and Orders.OrderId=?
+
+                //SELECT distinct Orders.OrderId, Orders.CreatedOn, Orders.OrderNumber, Orders.CustomerId, Orders.AddressId, Orders.TenantId, Orders.Amount, Orders.Tax, Orders.ShippingAndHandling, Orders.DiscountPercent, Orders.OrderStatus,Orders.OrderDescription, SalesRep.RepName FROM Orders  INNER JOIN SalesRep ON Orders.OrderId=?"
                 order =
                     await
                         _sageSalesDB.QueryAsync<OrderDetails>(
@@ -235,6 +238,27 @@ namespace SageMobileSales.DataAccess.Repositories
                             return await UpdateOrderJsonToDbAsync(sDataOrder, orderList.FirstOrDefault());
                         }
                         return await AddOrderJsonToDbAsync(sDataOrder);
+                    }
+                }
+
+                //Basically the convert quote to order returns orderId.
+                if (sDataOrder.TryGetValue("OrderId", out value))
+                {
+                    if (value.ValueType.ToString() != DataAccessUtils.Null)
+                    {
+                        List<Orders> orderList;
+                        orderList =
+                            await
+                                _sageSalesDB.QueryAsync<Orders>("SELECT * FROM Orders where OrderId=?",
+                                    sDataOrder.GetNamedString("OrderId"));
+
+                        if (orderList.FirstOrDefault() != null)
+                        {
+                            return await UpdateOrderJsonToDbAsync(sDataOrder, orderList.FirstOrDefault());
+                        }
+                        Orders order = new Orders() { OrderId = sDataOrder.GetNamedString("OrderId") };
+                        await _sageSalesDB.InsertAsync(order);
+                        return await UpdateOrderJsonToDbAsync(sDataOrder, order);
                     }
                 }
             }
@@ -443,7 +467,7 @@ namespace SageMobileSales.DataAccess.Repositories
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
                         //JsonObject sDataShippingAdress = sDataOrder.GetNamedObject("ShippingAddress");
-                        
+
                         if (!string.IsNullOrEmpty(order.CustomerId))
                         {
                             var addressDb = await _sageSalesDB.QueryAsync<Address>("SELECT * FROM ADDRESS WHERE AddressId=?", sDataOrder.GetNamedString("ShippingAddressId"));
