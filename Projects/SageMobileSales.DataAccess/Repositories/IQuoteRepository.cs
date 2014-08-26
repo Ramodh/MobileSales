@@ -15,7 +15,7 @@ namespace SageMobileSales.DataAccess.Repositories
         Task<Quote> GetQuoteAsync(string quoteId);
         Task<Quote> GetQuoteFromPrimaryKey(int id);
         Task<Quote> AddOrUpdateQuoteJsonToDbAsync(JsonObject sDataQuote);
-        Task<List<QuoteDetails>> GetQuotesForCustomerAsync(string customerId);
+        Task<List<QuoteDetails>> GetQuotesForCustomerAsync(string customerId, bool isCameFrom);
         Task<Quote> AddQuoteToDbAsync(Quote quoteDtls, string selectedQuoteType, string orderId);
         Task<Quote> UpdateQuoteToDbAsync(Quote quote);
 

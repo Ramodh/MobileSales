@@ -108,12 +108,12 @@
                               IsItemClickEnabled="True"
                               ItemTemplate="{StaticResource recentOrdersTemplate}">
 
-                    <interactivity:Interaction.Behaviors>
+                    <!--<interactivity:Interaction.Behaviors>
                         <core:EventTriggerBehavior EventName="ItemClick">
                             <core:CallMethodAction MethodName="GridViewRecentOrderItemClick"
                                                        TargetObject="{Binding Mode=OneWay}" />
                         </core:EventTriggerBehavior>
-                    </interactivity:Interaction.Behaviors>
+                    </interactivity:Interaction.Behaviors>-->
                 </GridView>
             </Grid>
         </ScrollViewer>

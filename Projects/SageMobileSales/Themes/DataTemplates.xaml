@@ -2,7 +2,8 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:SageMobileSales"
-    xmlns:controls="using:SageMobileSales.Views">
+    xmlns:controls="using:SageMobileSales.Views"
+      xmlns:behaviors="using:SageMobileSales.Behaviors">
 
     <!-- CatalogItemTemlate -->
     <DataTemplate x:Key="CatalogItemTemplate">
@@ -429,7 +430,7 @@
     <DataTemplate x:Key="CustomerQuotesTemplate">
         <StackPanel Height="120" Margin="2" Background="#FF355B4E" Width="400">
             <TextBlock Text="{Binding CustomerName}" Style="{StaticResource SubheaderTextBlockStyle}"
-                       VerticalAlignment="Top" TextWrapping="NoWrap" Margin="7,5" />
+                       VerticalAlignment="Top" TextWrapping="NoWrap" Margin="7,5"  TextTrimming="WordEllipsis" />
             <TextBlock Text="{Binding QuoteDescription}" Style="{StaticResource AddressTextStyle}"
                        TextWrapping="NoWrap" TextTrimming="WordEllipsis" />
             <StackPanel Orientation="Horizontal">
@@ -529,10 +530,42 @@
             <TextBlock Grid.Row="3" Text="{Binding QuantityPriorYtd}" Style="{StaticResource AddressTextStyle}"
                        TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="1" />
 
-            <Image Grid.ColumnSpan="2" Visibility="{Binding ItemDescription,Converter={StaticResource SeeMoreVisibilityConverter}}" Source="/Assets/img_see_more.png" Stretch="UniformToFill" Margin="0,-10,0,0"/>
+            <!--<Image Grid.ColumnSpan="2" Visibility="{Binding ItemDescription,Converter={StaticResource SeeMoreVisibilityConverter}}" Source="/Assets/img_see_more.png" Stretch="UniformToFill" Margin="0,-10,0,0"/>-->
         </Grid>
 
     </DataTemplate>
+    
+    <DataTemplate x:Key="ImageDataTemplate">
+        <Grid HorizontalAlignment="Left" Width="400" Height="140">
+            <Border Background=
+                    "{StaticResource ListViewItemPlaceholderBackgroundThemeBrush}">
+                <Image Source="/Assets/img_see_more.png" Stretch="UniformToFill"/>
+            </Border>
+        </Grid>
+    </DataTemplate>
 
+
+    <behaviors:SeeMoreDataTemplateSelector x:Key="SeeMoreQuotesDataTemplateSelector"
+        GridItemsTemplate="{StaticResource QuotesTemplate}"
+        ImageTemplate="{StaticResource ImageDataTemplate}">
+    </behaviors:SeeMoreDataTemplateSelector>
+
+    <behaviors:SeeMoreDataTemplateSelector x:Key="SeeMoreOrderDataTemplateSelector"
+        GridItemsTemplate="{StaticResource OrdersTemplate}"
+        ImageTemplate="{StaticResource ImageDataTemplate}">
+    </behaviors:SeeMoreDataTemplateSelector>
+
+    <behaviors:SeeMoreDataTemplateSelector x:Key="SeeMorePurcahsedItemsDataTemplateSelector"
+        GridItemsTemplate="{StaticResource FrequentlyPurchasedItemsTemplate}"
+        ImageTemplate="{StaticResource ImageDataTemplate}">
+    </behaviors:SeeMoreDataTemplateSelector>
+    <behaviors:SeeMoreDataTemplateSelector x:Key="SeeMoreOtherAddressDataTemplateSelector"
+        GridItemsTemplate="{StaticResource CustomerOtherAddressDarkTemplate}"
+        ImageTemplate="{StaticResource ImageDataTemplate}">
+    </behaviors:SeeMoreDataTemplateSelector>
+    <behaviors:SeeMoreDataTemplateSelector x:Key="SeeMoreContactsDataTemplateSelector"
+        GridItemsTemplate="{StaticResource CustomerContactsDashBoardDarkTemplate}"
+        ImageTemplate="{StaticResource ImageDataTemplate}">
+    </behaviors:SeeMoreDataTemplateSelector>
 
 </ResourceDictionary>

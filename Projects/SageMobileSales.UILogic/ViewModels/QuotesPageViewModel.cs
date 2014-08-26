@@ -220,7 +220,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 {
                     _customerAddress = navigationParameter as CustomerDetails;
 
-                    QuoteDetails = await _quoteRepository.GetQuotesForCustomerAsync(_customerAddress.CustomerId);
+                    QuoteDetails = await _quoteRepository.GetQuotesForCustomerAsync(_customerAddress.CustomerId,false);
                     CustomerName = ResourceLoader.GetForCurrentView("Resources").GetString("DividerSymbol") + _customerAddress.CustomerName;
                 }
                 else
@@ -599,7 +599,7 @@ namespace SageMobileSales.UILogic.ViewModels
             }
             else
             {
-                QuoteDetails = await _quoteRepository.GetQuotesForCustomerAsync(_customerAddress.CustomerId);
+                QuoteDetails = await _quoteRepository.GetQuotesForCustomerAsync(_customerAddress.CustomerId,false);
             }
             if (QuoteDetails.Count == 0)
             {

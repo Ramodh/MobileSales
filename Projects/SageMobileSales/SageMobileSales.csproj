@@ -119,6 +119,7 @@
     <Compile Include="Behaviors\HighlightFormFieldOnErrors.cs" />
     <Compile Include="Behaviors\NavigateWithEventArgsToPageAction.cs" />
     <Compile Include="Behaviors\NumericTextBoxBehavior.cs" />
+    <Compile Include="Behaviors\SeeMoreDataTemplateSelector.cs" />
     <Compile Include="Converters\ErrorConverter.cs" />
     <Compile Include="Converters\SeeMoreVisibilityConverter.cs" />
     <Compile Include="Converters\StringFormatConverter.cs" />

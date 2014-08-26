@@ -129,13 +129,21 @@ namespace SageMobileSales.DataAccess.Repositories
         /// </summary>
         /// <param name="customerId"></param>
         /// <returns></returns>
-        public async Task<List<Contact>> GetContactDetailsAsync(string customerId)
+        public async Task<List<Contact>> GetContactDetailsAsync(string customerId, bool isCameFrom)
         {
             List<Contact> contacts = null;
             try
             {
                 contacts =
                     await _sageSalesDB.QueryAsync<Contact>("SELECT * FROM Contact where CustomerId=?", customerId);
+                if (isCameFrom)
+                {
+                    if (contacts.Count > 7)
+                    {
+                        contacts = contacts.GetRange(0, 7);
+                        contacts.Add(new Contact() { EmailPersonal = DataAccessUtils.SeeMore });
+                    }
+                }
             }
             catch (SQLiteException ex)
             {

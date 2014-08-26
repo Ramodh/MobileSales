@@ -318,7 +318,7 @@ namespace SageMobileSales.DataAccess.Repositories
         /// </summary>
         /// <param name="customerId"></param>
         /// <returns></returns>
-        public async Task<List<Address>> GetOtherAddressesForCustomers(string customerId)
+        public async Task<List<Address>> GetOtherAddressesForCustomers(string customerId, bool isCameFrom)
         {
             List<Address> customerAddresses = null;
             try
@@ -327,6 +327,14 @@ namespace SageMobileSales.DataAccess.Repositories
                     await
                         _sageSalesDB.QueryAsync<Address>(
                             "Select * from Address where CustomerId=? and AddressType='Other'", customerId);
+                if (isCameFrom)
+                {
+                    if (customerAddresses.Count > 7)
+                    {
+                        customerAddresses = customerAddresses.GetRange(0, 7);
+                        customerAddresses.Add(new Address() { PostalCode = DataAccessUtils.SeeMore });
+                    }
+                }
                 //if (customerAddresses != null && customerAddresses.Count > 0)
                 //{
             }

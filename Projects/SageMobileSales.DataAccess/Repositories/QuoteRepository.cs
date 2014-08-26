@@ -336,7 +336,7 @@ namespace SageMobileSales.DataAccess.Repositories
         /// </summary>
         /// <param name="quoteId"></param>
         /// <returns></returns>
-        public async Task<List<QuoteDetails>> GetQuotesForCustomerAsync(string customerId)
+        public async Task<List<QuoteDetails>> GetQuotesForCustomerAsync(string customerId, bool isCameFrom)
         {
             List<QuoteDetails> quote = null;
             try
@@ -346,6 +346,14 @@ namespace SageMobileSales.DataAccess.Repositories
                         _sageSalesDB.QueryAsync<QuoteDetails>(
                             "SELECT distinct customer.customerName, quote.Id, quote.CustomerId, quote.QuoteId, quote.CreatedOn, quote.amount, quote.quoteStatus,quote.QuoteDescription, SalesRep.RepName FROM customer, quote left Join SalesRep On SalesRep.RepId=Quote.RepId where Quote.QuoteStatus!='IsOrder'  And Quote.QuoteStatus!='Temporary' and customer.customerId=quote.customerId and quote.customerId=? order by quote.createdOn desc",
                             customerId);
+                if (isCameFrom)
+                {
+                    if (quote.Count > 7)
+                    {
+                        quote = quote.GetRange(0, 7);
+                        quote.Add(new QuoteDetails() { QuoteStatus = DataAccessUtils.SeeMore });
+                    }
+                }
             }
             catch (SQLiteException ex)
             {

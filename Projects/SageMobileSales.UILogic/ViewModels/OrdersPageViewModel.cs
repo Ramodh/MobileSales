@@ -210,7 +210,7 @@ namespace SageMobileSales.UILogic.ViewModels
                     _customerId = navigationParameter as string;
                     Customer customer = await _customerRepository.GetCustomerDataAsync(_customerId);
                     OrdersList = new List<OrderDetails>();
-                    OrdersList = await _orderRepository.GetOrdersForCustomerAsync(customer.CustomerId);
+                    OrdersList = await _orderRepository.GetOrdersForCustomerAsync(customer.CustomerId,false);
                     CustomerName = ResourceLoader.GetForCurrentView("Resources").GetString("DividerSymbol") + customer.CustomerName;
                 }
                 else
@@ -469,7 +469,7 @@ namespace SageMobileSales.UILogic.ViewModels
             }
             else
             {
-                OrdersList = await _orderRepository.GetOrdersForCustomerAsync(_customerId);
+                OrdersList = await _orderRepository.GetOrdersForCustomerAsync(_customerId,false);
             }
             if (OrdersList.Count == 0)
             {

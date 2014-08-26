@@ -169,7 +169,7 @@ namespace SageMobileSales.DataAccess.Repositories
         /// </summary>
         /// <param name="orderId"></param>
         /// <returns></returns>
-        public async Task<List<OrderDetails>> GetOrdersForCustomerAsync(string customerId)
+        public async Task<List<OrderDetails>> GetOrdersForCustomerAsync(string customerId, bool isCameFrom)
         {
             List<OrderDetails> orderList = null;
             try
@@ -179,6 +179,14 @@ namespace SageMobileSales.DataAccess.Repositories
                         _sageSalesDB.QueryAsync<OrderDetails>(
                             "SELECT distinct customer.customerName, orders.CustomerId, orders.AddressId, orders.TenantId, orders.OrderId, orders.CreatedOn, orders.amount, orders.DiscountPercent, orders.ShippingAndHandling, orders.Tax, orders.OrderStatus,orders.OrderDescription, SalesRep.RepName FROM customer, orders left Join SalesRep On SalesRep.RepId=Orders.RepId where Orders.OrderStatus!='IsOrder'  And Orders.OrderStatus!='Temporary' and customer.customerId=orders.customerId and orders.customerId=? order by orders.createdOn desc",
                             customerId);
+                if (isCameFrom)
+                {
+                    if (orderList.Count > 7)
+                    {
+                        orderList = orderList.GetRange(0, 7);
+                        orderList.Add(new OrderDetails() { OrderDescription = DataAccessUtils.SeeMore });
+                    }
+                }
                 //"SELECT distinct customer.customerName, quote.CustomerId, quote.QuoteId, quote.CreatedOn, quote.amount, quote.quoteStatus,quote.QuoteDescription, SalesRep.RepName FROM customer, quote left Join SalesRep On SalesRep.RepId=Quote.RepId where Quote.QuoteStatus!='IsOrder'  And Quote.QuoteStatus!='Temporary' and customer.customerId=quote.customerId and quote.customerId=? order by quote.createdOn desc", customerId);
             }
             catch (Exception ex)

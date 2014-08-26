@@ -200,12 +200,12 @@
                               IsItemClickEnabled="True"
                               ItemTemplate="{StaticResource recentOrdersTemplate}">
 
-                        <interactivity:Interaction.Behaviors>
+                        <!--<interactivity:Interaction.Behaviors>
                             <core:EventTriggerBehavior EventName="ItemClick">
                                 <core:CallMethodAction MethodName="GridViewRecentOrderItemClick"
                                                        TargetObject="{Binding Mode=OneWay}" />
                             </core:EventTriggerBehavior>
-                        </interactivity:Interaction.Behaviors>
+                        </interactivity:Interaction.Behaviors>-->
                     </GridView>
                 </Grid>
                 <!--<Button x:Uid="SeeMore" Name="SeeMore" Content="See More" Background="AliceBlue" Height="120" Width="350" Grid.RowSpan="3" Grid.Column="5" Margin="0,-485,0,0"/>-->

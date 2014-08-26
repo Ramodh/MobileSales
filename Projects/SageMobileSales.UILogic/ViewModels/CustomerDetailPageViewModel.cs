@@ -49,7 +49,7 @@ namespace SageMobileSales.UILogic.ViewModels
         private ISalesRepRepository _salesRepRepository;
         private string _salesThisMonth;
         private string _salesYTD;
-
+        private Visibility _isFrequentlyPurchasedItemsVisible;
 
         public CustomerDetails CustomerDtls
         {
@@ -57,6 +57,14 @@ namespace SageMobileSales.UILogic.ViewModels
             private set { SetProperty(ref _customerDtls, value); }
         }
 
+        /// <summary>
+        ///     checks whether Contacts textblock should be visible or not
+        /// </summary>
+        public Visibility IsFrequentlyPurchasedItemsVisible
+        {
+            get { return _isFrequentlyPurchasedItemsVisible; }
+            private set { SetProperty(ref _isFrequentlyPurchasedItemsVisible, value); }
+        }
         public List<Contact> CustomerContactList
         {
             get { return _customerContactList; }
@@ -202,6 +210,7 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             CustomerDtls = navigationParameter as CustomerDetails;
             CustomerDetailPageTitle = CustomerDtls.CustomerName;
+            PageUtils.CamefromCustomerDetails = true;
             DisplayCustomerDetails();
             //GetFrequentlyPurchasedItems();
             base.OnNavigatedTo(navigationParameter, navigationMode, viewModelState);
@@ -212,18 +221,12 @@ namespace SageMobileSales.UILogic.ViewModels
             try
             {
                 InProgress = true;
-                OtherAddresses = await _addressRepository.GetOtherAddressesForCustomers(CustomerDtls.CustomerId);
+                OtherAddresses = await _addressRepository.GetOtherAddressesForCustomers(CustomerDtls.CustomerId, PageUtils.CamefromCustomerDetails);
                 if (OtherAddresses.Count <= 0)
                 {
                     IsOtherAddressesVisible = Visibility.Collapsed;
                 }
-                else
-                {
-                    if (OtherAddresses.Count > 10)
-                    {
-                        OtherAddresses = OtherAddresses.GetRange(0, 10);
-                    }
-                }
+               
 
                 if (Constants.ConnectedToInternet())
                 {
@@ -234,33 +237,34 @@ namespace SageMobileSales.UILogic.ViewModels
                     await _frequentlyPurchasedItemService.SyncFrequentlyPurchasedItems(CustomerDtls.CustomerId);
                 }
 
-                CustomerContactList = await _contactRepository.GetContactDetailsAsync(CustomerDtls.CustomerId);                
-                FrequentlyPurchasedItems = await _frequentlyPurchasedItemRepository.GetFrequentlyPurchasedItems(CustomerDtls.CustomerId);                                
-
+                CustomerContactList = await _contactRepository.GetContactDetailsAsync(CustomerDtls.CustomerId, PageUtils.CamefromCustomerDetails);
+                FrequentlyPurchasedItems = await _frequentlyPurchasedItemRepository.GetFrequentlyPurchasedItems(CustomerDtls.CustomerId, PageUtils.CamefromCustomerDetails);
+                if (FrequentlyPurchasedItems.Count <= 0)
+                {
+                    IsFrequentlyPurchasedItemsVisible = Visibility.Collapsed;
+                }
+                
                 if (CustomerContactList.Count <= 0)
                 {
                     IsContactsVisible = Visibility.Collapsed;
                 }
-                if (CustomerContactList.Count > 10)
-                    CustomerContactList = CustomerContactList.GetRange(0, 10);
+              
 
                 CustomerQuotes = new List<QuoteDetails>();
-                CustomerQuotes = await _quoteRepository.GetQuotesForCustomerAsync(CustomerDtls.CustomerId);
+                CustomerQuotes = await _quoteRepository.GetQuotesForCustomerAsync(CustomerDtls.CustomerId, PageUtils.CamefromCustomerDetails);
                 if (CustomerQuotes.Count <= 0)
                 {
                     IsQuotesVisible = Visibility.Collapsed;
                 }
-                if (CustomerQuotes.Count > 10)
-                    CustomerQuotes = CustomerQuotes.GetRange(0, 10);
+               
 
                 CustomerOrders = new List<OrderDetails>();
-                CustomerOrders = await _orderRepository.GetOrdersForCustomerAsync(CustomerDtls.CustomerId);
+                CustomerOrders = await _orderRepository.GetOrdersForCustomerAsync(CustomerDtls.CustomerId, PageUtils.CamefromCustomerDetails);
                 if (CustomerOrders.Count <= 0)
                 {
                     IsOrdersVisible = Visibility.Collapsed;
                 }
-                if (CustomerOrders.Count > 10)
-                    CustomerOrders = CustomerOrders.GetRange(0, 10);
+             
                 PageUtils.ResetLocalVariables();
                 InProgress = false;
             }
@@ -278,20 +282,29 @@ namespace SageMobileSales.UILogic.ViewModels
         /// <param name="parameter"></param>
         public async void GridViewQuoteItemClick(object sender, object parameter)
         {
-            try
+
+             try
             {
                 var selectedQuotedetails = ((parameter as ItemClickEventArgs).ClickedItem as QuoteDetails);
 
                 if (selectedQuotedetails != null)
                 {
-                    Quote quote = await _quoteRepository.GetQuoteAsync(selectedQuotedetails.QuoteId);
-
-                    if (quote != null)
+                    if (selectedQuotedetails.QuoteStatus == PageUtils.SeeMore)
                     {
-                        _navigationService.Navigate("QuoteDetails", quote.QuoteId);
+                        NavigateToQuotes();
+                    }
+                    else
+                    {
+                        Quote quote = await _quoteRepository.GetQuoteAsync(selectedQuotedetails.QuoteId);
+
+                        if (quote != null)
+                        {
+                            _navigationService.Navigate("QuoteDetails", quote.QuoteId);
+                        }
                     }
                 }
             }
+           
             catch (Exception ex)
             {
                 _log = AppEventSource.Log.WriteLine(ex);
@@ -304,12 +317,21 @@ namespace SageMobileSales.UILogic.ViewModels
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="parameter"></param>
-        public async void GridViewOrderItemClick(object sender, object parameter)
+        public void GridViewOrderItemClick(object sender, object parameter)
         {
             var arg = (parameter as ItemClickEventArgs).ClickedItem as OrderDetails;
 
             if (arg != null)
-                _navigationService.Navigate("OrderDetails", arg);
+            {
+                if (arg.OrderDescription == PageUtils.SeeMore)
+                {
+                    NavigateToOrders();
+                }
+                else
+                {
+                    _navigationService.Navigate("OrderDetails", arg);
+                }
+            }
         }
 
         /// <summary>
@@ -399,30 +421,10 @@ namespace SageMobileSales.UILogic.ViewModels
         }
 
 
-        /// TODO
-        /// Replace dummy data with real data.
-        //private void GetFrequentlyPurchasedItems()
-        //{
-        //    FrequentlyPurchasedItems = new List<FrequentlyPurchasedItems>();
-
-        //    for (int i = 0; i < 10; i++)
-        //    {
-        //        FrequentlyPurchasedItems obj = new FrequentlyPurchasedItems();
-        //        obj.ItemNo = "1" + i;
-        //        obj.ItemName = "ProductName" + i;
-        //        obj.QuantityYTD = 334 + i;
-        //        obj.PriorYTD = 1 + i;
-        //        FrequentlyPurchasedItems.Add(obj);
-        //    }
-        //    FrequentlyPurchasedItems.Add(new FrequentlyPurchasedItems { ItemName = "See More" });
-
-        //    OnPropertyChanged("FrequentlyPurchasedItems");
-        //}
+      
 
         /// <summary>
         ///Navigate to Item Detail page on grid view item click
-        ///TODO 
-        ///To be replaced by real data(productId)
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="parameter"></param>
@@ -430,9 +432,9 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             try
             {
-                var arg = ((parameter as ItemClickEventArgs).ClickedItem as FrequentlyPurchasedItems);
+                var arg = ((parameter as ItemClickEventArgs).ClickedItem as FrequentlyPurchasedItem);
 
-                _navigationService.Navigate("ItemDetail", "3ae2e78d-4dfc-4441-b41c-2487cbef3561");
+                _navigationService.Navigate("ItemDetail", arg.ItemId);
             }
             catch (Exception ex)
             {
@@ -440,6 +442,37 @@ namespace SageMobileSales.UILogic.ViewModels
                 AppEventSource.Log.Error(_log);
             }
         }
+        /// <summary>
+        ///     Grid View Item Click for contacts
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="parameter"></param>
+        public void GridViewContactItemClick(object sender, object parameter)
+        {
+            var arg = (parameter as ItemClickEventArgs).ClickedItem as Contact;
+
+            if (arg != null)
+                if (arg.EmailPersonal == PageUtils.SeeMore)
+                {
+                    NavigateToContacts();
+                }
+        }
+        /// <summary>
+        ///     Grid View Item Click
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="parameter"></param>
+        public void GridViewOtherAddresstItemClick(object sender, object parameter)
+        {
+            var arg = (parameter as ItemClickEventArgs).ClickedItem as Address;
+
+            if (arg != null)
+                if (arg.AddressName == PageUtils.SeeMore)
+                {
+                    NavigateToOtherAddresses();
+                }
+        }
+      
 
         //    // TODO
         //    // Replace dummy data with real data.

@@ -25,7 +25,9 @@ namespace SageMobileSales.UILogic.ViewModels
         private readonly ISalesRepService _salesRepService;
         private readonly ISyncCoordinatorService _syncCoordinatorService;
         private readonly ITenantRepository _tenantRepository;
-        private List<FrequentlyPurchasedItems> _frequentlyPurchasedItems;
+        private readonly IFrequentlyPurchasedItemRepository _frequentlyPurchasedItemRepository;
+        private List<FrequentlyPurchasedItem> _frequentlyPurchasedItems;
+     
         private string _customerId;
         private string _customerName;
         private string _log = string.Empty;
@@ -33,7 +35,7 @@ namespace SageMobileSales.UILogic.ViewModels
 
         public FrequentlyPurchasedItemsPageViewModel(INavigationService navigationService, ICustomerRepository customerRepository,
             ISyncCoordinatorService syncCoordinatorService, IEventAggregator eventAggregator,
-            ISalesRepService salesRepService, ITenantRepository tenantRepository)
+            ISalesRepService salesRepService, ITenantRepository tenantRepository, IFrequentlyPurchasedItemRepository frequentlyPurchasedItemRepository)
         {
             _navigationService = navigationService;
             _customerRepository = customerRepository;
@@ -41,15 +43,16 @@ namespace SageMobileSales.UILogic.ViewModels
             _syncCoordinatorService = syncCoordinatorService;
             _salesRepService = salesRepService;
             _tenantRepository = tenantRepository;
-
+            _frequentlyPurchasedItemRepository = frequentlyPurchasedItemRepository;
         }
 
-        public List<FrequentlyPurchasedItems> FrequentlyPurchasedItems
+        public List<FrequentlyPurchasedItem> FrequentlyPurchasedItems
         {
             get { return _frequentlyPurchasedItems; }
             private set
             {
                 SetProperty(ref _frequentlyPurchasedItems, value);
+                  OnPropertyChanged("FrequentlyPurchasedItems");           
             }
         }
         /// <summary>
@@ -77,8 +80,8 @@ namespace SageMobileSales.UILogic.ViewModels
             {
 
                 _customerId = navigationParameter as string;
-                
-                GetFrequentlyPurchasedItems();
+                FrequentlyPurchasedItems = await _frequentlyPurchasedItemRepository.GetFrequentlyPurchasedItems(_customerId, false);
+               // GetFrequentlyPurchasedItems();
 
                 Customer customer = await _customerRepository.GetCustomerDataAsync(_customerId);
                 CustomerName = customer.CustomerName;
@@ -102,9 +105,9 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             try
             {
-                var arg = ((parameter as ItemClickEventArgs).ClickedItem as FrequentlyPurchasedItems);
+                var arg = ((parameter as ItemClickEventArgs).ClickedItem as FrequentlyPurchasedItem);
 
-                _navigationService.Navigate("ItemDetail", "3ae2e78d-4dfc-4441-b41c-2487cbef3561");
+                _navigationService.Navigate("ItemDetail", arg.ItemId);
             }
             catch (Exception ex)
             {
@@ -138,21 +141,21 @@ namespace SageMobileSales.UILogic.ViewModels
 
         /// TODO
         /// Replace dummy data with real data.
-        private void GetFrequentlyPurchasedItems()
-        {
-            FrequentlyPurchasedItems = new List<FrequentlyPurchasedItems>();
+        //private void GetFrequentlyPurchasedItems()
+        //{
+        //    FrequentlyPurchasedItems = new List<FrequentlyPurchasedItems>();
 
-            for (int i = 0; i < 20; i++)
-            {
-                FrequentlyPurchasedItems obj = new FrequentlyPurchasedItems();
-                obj.ItemNo = "1" + i;
-                obj.ItemName = "ProductName" + i;
-                obj.QuantityYTD = 334 + i;
-                obj.PriorYTD = 1 + i;
-                FrequentlyPurchasedItems.Add(obj);
-            }
-            OnPropertyChanged("FrequentlyPurchasedItems");
-        }
+        //    for (int i = 0; i < 20; i++)
+        //    {
+        //        FrequentlyPurchasedItems obj = new FrequentlyPurchasedItems();
+        //        obj.ItemNo = "1" + i;
+        //        obj.ItemName = "ProductName" + i;
+        //        obj.QuantityYTD = 334 + i;
+        //        obj.PriorYTD = 1 + i;
+        //        FrequentlyPurchasedItems.Add(obj);
+        //    }
+        //    OnPropertyChanged("FrequentlyPurchasedItems");
+        //}
     }
 
 }
