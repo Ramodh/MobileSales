@@ -10,7 +10,7 @@ namespace SageMobileSales.DataAccess.Repositories
     {
         Task SaveOrdersAsync(JsonObject sDataOrders, LocalSyncDigest localSyncDigest);
         Task<Orders> SaveOrderAsync(JsonObject sDataOrder);
-        Task<List<OrderDetails>> GetOrdersForCustomerAsync(string customerId, bool isCameFrom);
+        Task<List<OrderDetails>> GetOrdersForCustomerAsync(string customerId);
         Task<OrderDetails> GetOrderDetailsAsync(string orderId);
         Task<List<OrderDetails>> GetOrdersListAsync(string salesRepId);
     }

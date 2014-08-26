@@ -11,6 +11,6 @@ namespace SageMobileSales.DataAccess.Repositories
     public interface IFrequentlyPurchasedItemRepository
     {
         Task SaveFrequentlyPurchasedItemsAsync(JsonObject sDataFrequentlyPurchasedItem);
-        Task<List<FrequentlyPurchasedItem>> GetFrequentlyPurchasedItems(string customerId, bool isCameFrom);
+        Task<List<FrequentlyPurchasedItem>> GetFrequentlyPurchasedItems(string customerId);
     }
 }

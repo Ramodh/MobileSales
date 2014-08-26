@@ -109,7 +109,8 @@ namespace SageMobileSales.UILogic.ViewModels
         public List<QuoteDetails> CustomerQuotes
         {
             get { return _customerQuotes; }
-            private set { SetProperty(ref _customerQuotes, value); }
+            private set { SetProperty(ref _customerQuotes, value);          
+            }
         }
 
         public List<CustomerDetails> CustomerOtherAddress
@@ -221,11 +222,17 @@ namespace SageMobileSales.UILogic.ViewModels
             try
             {
                 InProgress = true;
-                OtherAddresses = await _addressRepository.GetOtherAddressesForCustomers(CustomerDtls.CustomerId, PageUtils.CamefromCustomerDetails);
-                if (OtherAddresses.Count <= 0)
+              List<Address> otherAddresses = await _addressRepository.GetOtherAddressesForCustomers(CustomerDtls.CustomerId);
+              if (otherAddresses.Count <= 0)
                 {
                     IsOtherAddressesVisible = Visibility.Collapsed;
                 }
+              if (otherAddresses.Count > 7)
+              {
+                  otherAddresses = otherAddresses.GetRange(0, 7);
+                  otherAddresses.Add(new Address() { PostalCode = DataAccessUtils.SeeMore });
+                  OtherAddresses = otherAddresses;
+              }
                
 
                 if (Constants.ConnectedToInternet())
@@ -237,36 +244,57 @@ namespace SageMobileSales.UILogic.ViewModels
                     await _frequentlyPurchasedItemService.SyncFrequentlyPurchasedItems(CustomerDtls.CustomerId);
                 }
 
-                CustomerContactList = await _contactRepository.GetContactDetailsAsync(CustomerDtls.CustomerId, PageUtils.CamefromCustomerDetails);
-                FrequentlyPurchasedItems = await _frequentlyPurchasedItemRepository.GetFrequentlyPurchasedItems(CustomerDtls.CustomerId, PageUtils.CamefromCustomerDetails);
-                if (FrequentlyPurchasedItems.Count <= 0)
+               List<Contact> customerContactList = await _contactRepository.GetContactDetailsAsync(CustomerDtls.CustomerId);
+               if (customerContactList.Count <= 0)
+               {
+                   IsContactsVisible = Visibility.Collapsed;
+               }
+               if (customerContactList.Count > 7)
+               {
+                   customerContactList = customerContactList.GetRange(0, 7);
+                   customerContactList.Add(new Contact() { EmailPersonal = DataAccessUtils.SeeMore });
+                   CustomerContactList = customerContactList;
+               }
+               List<FrequentlyPurchasedItem> frequentlyPurchasedItems = await _frequentlyPurchasedItemRepository.GetFrequentlyPurchasedItems(CustomerDtls.CustomerId);
+               if (frequentlyPurchasedItems.Count <= 0)
                 {
                     IsFrequentlyPurchasedItemsVisible = Visibility.Collapsed;
                 }
-                
-                if (CustomerContactList.Count <= 0)
-                {
-                    IsContactsVisible = Visibility.Collapsed;
-                }
-              
+               if (frequentlyPurchasedItems.Count > 7)
+               {
+                   frequentlyPurchasedItems = frequentlyPurchasedItems.GetRange(0, 7);
+                   frequentlyPurchasedItems.Add(new FrequentlyPurchasedItem() { ItemDescription = DataAccessUtils.SeeMore });
+                   FrequentlyPurchasedItems = frequentlyPurchasedItems;
+               }
 
-                CustomerQuotes = new List<QuoteDetails>();
-                CustomerQuotes = await _quoteRepository.GetQuotesForCustomerAsync(CustomerDtls.CustomerId, PageUtils.CamefromCustomerDetails);
-                if (CustomerQuotes.Count <= 0)
+               // CustomerQuotes = new List<QuoteDetails>();
+                List<QuoteDetails> customerQuotes = await _quoteRepository.GetQuotesForCustomerAsync(CustomerDtls.CustomerId);
+                if (customerQuotes.Count <= 0)
                 {
                     IsQuotesVisible = Visibility.Collapsed;
                 }
-               
-
-                CustomerOrders = new List<OrderDetails>();
-                CustomerOrders = await _orderRepository.GetOrdersForCustomerAsync(CustomerDtls.CustomerId, PageUtils.CamefromCustomerDetails);
-                if (CustomerOrders.Count <= 0)
+                if (customerQuotes.Count > 7)
+                {
+                    customerQuotes = customerQuotes.GetRange(0, 7);
+                    customerQuotes.Add(new QuoteDetails() { QuoteStatus = DataAccessUtils.SeeMore });
+                    CustomerQuotes = customerQuotes;
+                 
+                }                
+               List<OrderDetails> customerOrders = new List<OrderDetails>();
+                customerOrders = await _orderRepository.GetOrdersForCustomerAsync(CustomerDtls.CustomerId);
+                if (customerOrders.Count <= 0)
                 {
                     IsOrdersVisible = Visibility.Collapsed;
                 }
+                if (customerOrders.Count > 7)
+                {
+                    customerOrders = customerOrders.GetRange(0, 7);
+                    customerOrders.Add(new OrderDetails() { OrderDescription = DataAccessUtils.SeeMore });
+                    CustomerOrders = customerOrders;
+                }
              
                 PageUtils.ResetLocalVariables();
-                InProgress = false;
+                InProgress = false;                
             }
             catch (Exception ex)
             {
@@ -289,7 +317,7 @@ namespace SageMobileSales.UILogic.ViewModels
 
                 if (selectedQuotedetails != null)
                 {
-                    if (selectedQuotedetails.QuoteStatus == PageUtils.SeeMore)
+                    if (selectedQuotedetails.QuoteStatus == DataAccessUtils.SeeMore)
                     {
                         NavigateToQuotes();
                     }
@@ -323,7 +351,7 @@ namespace SageMobileSales.UILogic.ViewModels
 
             if (arg != null)
             {
-                if (arg.OrderDescription == PageUtils.SeeMore)
+                if (arg.OrderDescription == DataAccessUtils.SeeMore)
                 {
                     NavigateToOrders();
                 }
@@ -452,7 +480,7 @@ namespace SageMobileSales.UILogic.ViewModels
             var arg = (parameter as ItemClickEventArgs).ClickedItem as Contact;
 
             if (arg != null)
-                if (arg.EmailPersonal == PageUtils.SeeMore)
+                if (arg.EmailPersonal == DataAccessUtils.SeeMore)
                 {
                     NavigateToContacts();
                 }
@@ -467,7 +495,7 @@ namespace SageMobileSales.UILogic.ViewModels
             var arg = (parameter as ItemClickEventArgs).ClickedItem as Address;
 
             if (arg != null)
-                if (arg.AddressName == PageUtils.SeeMore)
+                if (arg.AddressName == DataAccessUtils.SeeMore)
                 {
                     NavigateToOtherAddresses();
                 }

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Windows.Data.Json;
 using SageMobileSales.DataAccess.Entities;
 using SageMobileSales.DataAccess.Model;
+using System.Collections.ObjectModel;
 
 namespace SageMobileSales.DataAccess.Repositories
 {
@@ -15,7 +16,7 @@ namespace SageMobileSales.DataAccess.Repositories
         Task<Quote> GetQuoteAsync(string quoteId);
         Task<Quote> GetQuoteFromPrimaryKey(int id);
         Task<Quote> AddOrUpdateQuoteJsonToDbAsync(JsonObject sDataQuote);
-        Task<List<QuoteDetails>> GetQuotesForCustomerAsync(string customerId, bool isCameFrom);
+        Task<List<QuoteDetails>> GetQuotesForCustomerAsync(string customerId);
         Task<Quote> AddQuoteToDbAsync(Quote quoteDtls, string selectedQuoteType, string orderId);
         Task<Quote> UpdateQuoteToDbAsync(Quote quote);
 

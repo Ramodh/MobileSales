@@ -17,7 +17,7 @@ namespace SageMobileSales.DataAccess.Repositories
         Task AddAddressToDbAsync(Address address);
         Task UpdateAddressToDbAsync(Address address);
         Task<List<Address>> GetAddressesForCustomer(string customerId);
-        Task<List<Address>> GetOtherAddressesForCustomers(string customerId, bool isCameFrom);
+        Task<List<Address>> GetOtherAddressesForCustomers(string customerId);
         Task<Address> GetShippingAddressForQuote(string customerId);
     }
 }

@@ -154,7 +154,7 @@ namespace SageMobileSales.UILogic.ViewModels
                     _customerId = navigationParameter as string;
                     GridViewItemClickable = false;
                     BottomAppbarVisible = Visibility.Collapsed;
-                    CustomerAddresses = await _addressRepository.GetOtherAddressesForCustomers(_customerId, false);
+                    CustomerAddresses = await _addressRepository.GetOtherAddressesForCustomers(_customerId);
                     _customer = await _customerRepository.GetCustomerDataAsync(_customerId);
                     //CustomerOtherAddress = await _addressRepository.GetOtherAddressesForCustomer(_customerId);
                 }

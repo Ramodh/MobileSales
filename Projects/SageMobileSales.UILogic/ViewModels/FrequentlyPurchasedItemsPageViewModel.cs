@@ -80,7 +80,7 @@ namespace SageMobileSales.UILogic.ViewModels
             {
 
                 _customerId = navigationParameter as string;
-                FrequentlyPurchasedItems = await _frequentlyPurchasedItemRepository.GetFrequentlyPurchasedItems(_customerId, false);
+                FrequentlyPurchasedItems = await _frequentlyPurchasedItemRepository.GetFrequentlyPurchasedItems(_customerId);
                // GetFrequentlyPurchasedItems();
 
                 Customer customer = await _customerRepository.GetCustomerDataAsync(_customerId);

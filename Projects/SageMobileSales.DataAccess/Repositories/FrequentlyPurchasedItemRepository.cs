@@ -54,21 +54,13 @@ namespace SageMobileSales.DataAccess.Repositories
             }
         }
 
-        public async Task<List<FrequentlyPurchasedItem>> GetFrequentlyPurchasedItems(string customerId, bool isCameFrom)
+        public async Task<List<FrequentlyPurchasedItem>> GetFrequentlyPurchasedItems(string customerId)
         {
             List<FrequentlyPurchasedItem> FrequentlyPurchasedItemList = null;
             try
             {
                 FrequentlyPurchasedItemList =
-                    await _sageSalesDB.QueryAsync<FrequentlyPurchasedItem>("Select * from FrequentlyPurchasedItem where CustomerId=?", customerId);
-                if (isCameFrom)
-                {
-                    if (FrequentlyPurchasedItemList.Count > 7)
-                    {
-                        FrequentlyPurchasedItemList = FrequentlyPurchasedItemList.GetRange(0, 7);
-                        FrequentlyPurchasedItemList.Add(new FrequentlyPurchasedItem() { ItemDescription = DataAccessUtils.SeeMore });
-                    }
-                }
+                    await _sageSalesDB.QueryAsync<FrequentlyPurchasedItem>("Select * from FrequentlyPurchasedItem where CustomerId=?", customerId);           
             }
             catch (SQLiteException ex)
             {
