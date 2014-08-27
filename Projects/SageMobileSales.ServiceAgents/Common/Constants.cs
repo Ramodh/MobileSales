@@ -37,8 +37,9 @@ namespace SageMobileSales.ServiceAgents.Common
         public static string CategoryEntity = "InventoryCategories";
         public static string ItemsEntity = "InventoryItems";
         public static string BlobsEntity = "Files";
-        public static string CustomerEntity = "Customers";
-        public static string CustomerDetailEntity = "Customers";
+        public static string CustomerEntity = "MyCustomers";
+        public static string CustomerDetailEntity = "AppSalesCustomers";
+        //public static string CustomerDetailEntity = "Customers";
         public static string ContactEntity = "Contacts";
         public static string QuoteEntity = "MyQuotes";
         public static string QuoteDetailEntity = "Quotes";

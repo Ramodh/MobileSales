@@ -33,7 +33,7 @@ namespace SageMobileSales.ServiceAgents.Services
         public async Task SyncContacts(string customerId)
         {
             parameters = new Dictionary<string, string>();
-            parameters.Add("include", "Addresses,Contacts");
+            parameters.Add("include", "PeriodToDateSales,Addresses,Contacts");
 
             string customerEntityId = Constants.CustomerDetailEntity + "('" + customerId + "')";
             HttpResponseMessage contactResponse = null;
