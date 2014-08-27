@@ -18,5 +18,7 @@ namespace SageMobileSales.DataAccess.Entities
         //public string PaymentMethod { get; set; }
         public string PaymentTerms { get; set; }
         public string EntityStatus { get; set; }
+        public decimal YearToDate { get; set; }
+        public decimal MonthToDate { get; set; }
     }
 }
