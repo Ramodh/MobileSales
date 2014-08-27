@@ -9,6 +9,7 @@
     xmlns:behaviors="using:SageMobileSales.Behaviors"
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:controls="using:SageMobileSales.Views"
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400">
@@ -27,14 +28,14 @@
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="110" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="290" />
-                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />               
             </Grid.ColumnDefinitions>
-            <Image Source="{Binding ImageUri}"
-                       Grid.Column="0" Grid.Row="0"
-                       Height="120" Width="120"
-                       Margin="10" />
+            <Border Background="{StaticResource ListViewItemPlaceholderBackgroundThemeBrush}" Grid.Column="0" Grid.Row="0"
+                       Height="110" Width="110" Margin="10">
+                <!--<Image Source="{Binding Url}" Stretch="UniformToFill" Height="100" Width="100"/>-->
+                <controls:ImageplaceHolderUserControl Placeholder="/Assets/imagePlaceholder_100x100.png"
+                                                      Source="{Binding ImageUri}" Height="110" Width="110"/>
+            </Border>                    
             <Grid Grid.Column="1" Grid.Row="0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -50,8 +51,8 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="120" />
                 </Grid.ColumnDefinitions>
-                <TextBlock Text="{Binding ProductName}" Grid.Row="0" TextWrapping="NoWrap" Grid.ColumnSpan="4"
-                               Style="{StaticResource SubheaderTextBlockStyle}" VerticalAlignment="Bottom" Width="Auto"
+                <TextBlock Text="{Binding ProductName}" Grid.Row="0" TextWrapping="NoWrap" Grid.ColumnSpan="4" Width="270" 
+                               Style="{StaticResource SubheaderTextBlockStyle}" VerticalAlignment="Bottom"
                                HorizontalAlignment="Left" TextTrimming="WordEllipsis" />
                 <TextBlock Text="{Binding RecentOrders}" Grid.Row="1" Grid.ColumnSpan="3" TextWrapping="NoWrap"
                                TextTrimming="WordEllipsis" Style="{StaticResource AddressTextStyle}"
