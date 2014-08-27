@@ -134,6 +134,7 @@
     <Compile Include="Entities\ProductRelatedItem.cs" />
     <Compile Include="Entities\Quote.cs" />
     <Compile Include="Entities\QuoteLineItem.cs" />
+    <Compile Include="Entities\SalesHistory.cs" />
     <Compile Include="Entities\SalesRep.cs" />
     <Compile Include="Entities\Tenant.cs" />
     <Compile Include="Events\CustomerDataChangedEvent.cs" />
@@ -172,6 +173,7 @@
     <Compile Include="Repositories\IProductRepository.cs" />
     <Compile Include="Repositories\IQuoteLineItemRepository.cs" />
     <Compile Include="Repositories\IQuoteRepository.cs" />
+    <Compile Include="Repositories\ISalesHistoryRepository.cs" />
     <Compile Include="Repositories\ISalesRepRepository.cs" />
     <Compile Include="Repositories\ITenantRepository.cs" />
     <Compile Include="Repositories\LocalSyncDigestRepository.cs" />
@@ -182,6 +184,7 @@
     <Compile Include="Repositories\ProductRepository.cs" />
     <Compile Include="Repositories\QuoteLineItemRepository.cs" />
     <Compile Include="Repositories\QuoteRepository.cs" />
+    <Compile Include="Repositories\SalesHistoryRepository.cs" />
     <Compile Include="Repositories\SalesRepRepository.cs" />
     <Compile Include="Repositories\TenantRepository.cs" />
     <Compile Include="SQLite.cs" />

@@ -115,7 +115,9 @@ namespace SageMobileSales
             _container.RegisterType<IOrderLineItemRepository, OrderLineItemRepository>(
                 new ContainerControlledLifetimeManager());
             _container.RegisterType<ITenantRepository, TenantRepository>(new ContainerControlledLifetimeManager());
-            _container.RegisterType<IFrequentlyPurchasedItemRepository,FrequentlyPurchasedItemRepository>(
+            _container.RegisterType<IFrequentlyPurchasedItemRepository, FrequentlyPurchasedItemRepository>(
+                new ContainerControlledLifetimeManager());
+            _container.RegisterType<ISalesHistoryRepository, SalesHistoryRepository>(
                 new ContainerControlledLifetimeManager());
 
 
@@ -144,6 +146,8 @@ namespace SageMobileSales
                 new ContainerControlledLifetimeManager());
             _container.RegisterType<ITenantService, TenantService>(new ContainerControlledLifetimeManager());
             _container.RegisterType<IFrequentlyPurchasedItemService, FrequentlyPurchasedItemService>(
+                new ContainerControlledLifetimeManager());
+            _container.RegisterType<ISalesHistoryService, SalesHistoryService>(
                 new ContainerControlledLifetimeManager());
 
             //_container.RegisterType<IAppEventSource, AppEventSource>(new ContainerControlledLifetimeManager());
