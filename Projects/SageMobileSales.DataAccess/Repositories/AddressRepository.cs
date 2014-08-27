@@ -327,6 +327,7 @@ namespace SageMobileSales.DataAccess.Repositories
                     await
                         _sageSalesDB.QueryAsync<Address>(
                             "Select * from Address where CustomerId=? and AddressType='Other'", customerId);
+            
                 //if (customerAddresses != null && customerAddresses.Count > 0)
                 //{
             }

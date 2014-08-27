@@ -41,6 +41,8 @@ namespace SageMobileSales.UILogic.Common
         public static string CustomerDetailPage = "CustomerDetailPage";
         public static string OrdersPage = "OrdersPage";
         public static string CreateQuotePage = "CreateQuotePage";
+        public static string SeeMore = "See More";
+        public static bool CamefromCustomerDetails = false;
         public static Customer SelectedCustomer = null;
         public static CustomerDetails SelectedCustomerDetails = null;
         public static IAsyncAction asyncActionCommon;

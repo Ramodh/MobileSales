@@ -224,7 +224,7 @@
                         </Grid>
                     </StackPanel>
                 </Grid>
-                <Grid x:Name="frequentlyPurchaseItemsGrid" Grid.Column="3">
+                <Grid x:Name="frequentlyPurchaseItemsGrid" Grid.Column="3"  Visibility="{Binding IsFrequentlyPurchasedItemsVisible}">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
@@ -232,7 +232,7 @@
                     </Grid.RowDefinitions>
                     <Button Grid.Row="0" Foreground="{ThemeResource ApplicationHeaderForegroundThemeBrush}"
                             AutomationProperties.Name="Group Title"
-                            Style="{StaticResource TextBlockButtonStyle}" Command="{Binding FrequentlyPurchasedItemsNavigationCommand}">
+                            Style="{StaticResource TextBlockButtonStyle}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock x:Uid="frequentlyPurchasedItems" Text="" Style="{StaticResource SubHeaderStyle}" />
                             <TextBlock Text="{StaticResource ChevronGlyph}"
@@ -250,8 +250,7 @@
                               SelectionMode="None"
                               IsSwipeEnabled="false"
                               IsItemClickEnabled="True"
-                              ItemTemplate="{StaticResource FrequentlyPurchasedItemsTemplate}">
-
+                              ItemTemplateSelector="{StaticResource SeeMorePurcahsedItemsDataTemplateSelector}">
                         <interactivity:Interaction.Behaviors>
                             <core:EventTriggerBehavior EventName="ItemClick">
                                 <core:CallMethodAction MethodName="GridViewFrequentlyPurchasedItemClick"
@@ -269,7 +268,7 @@
                     </Grid.RowDefinitions>
                     <Button Grid.Row="0" Foreground="{ThemeResource ApplicationHeaderForegroundThemeBrush}"
                             AutomationProperties.Name="Group Title"
-                            Style="{StaticResource TextBlockButtonStyle}" Command="{Binding OrdersNavigationCommand}">
+                            Style="{StaticResource TextBlockButtonStyle}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock x:Uid="recentOrders" Text="" Style="{StaticResource SubHeaderStyle}" />
                             <TextBlock Text="{StaticResource ChevronGlyph}"
@@ -287,7 +286,7 @@
                               SelectionMode="None"
                               IsSwipeEnabled="false"
                               IsItemClickEnabled="True"
-                              ItemTemplate="{StaticResource OrdersTemplate}">
+                              ItemTemplateSelector="{StaticResource SeeMoreOrderDataTemplateSelector}">
 
                         <interactivity:Interaction.Behaviors>
                             <core:EventTriggerBehavior EventName="ItemClick">
@@ -328,7 +327,8 @@
                               SelectionMode="None"
                               IsSwipeEnabled="false"
                               IsItemClickEnabled="True"
-                              ItemTemplate="{StaticResource QuotesTemplate}">
+                            
+                              ItemTemplateSelector="{StaticResource SeeMoreQuotesDataTemplateSelector}">
 
                         <interactivity:Interaction.Behaviors>
                             <core:EventTriggerBehavior EventName="ItemClick">
@@ -347,8 +347,7 @@
                     </Grid.RowDefinitions>
                     <Button Grid.Row="0" Foreground="{ThemeResource ApplicationHeaderForegroundThemeBrush}"
                             AutomationProperties.Name="Group Title"
-                            Style="{StaticResource TextBlockButtonStyle}"
-                            Command="{Binding OtherAddressesNavigationCommand}">
+                            Style="{StaticResource TextBlockButtonStyle}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Other Addresses" Style="{StaticResource SubHeaderStyle}" />
                             <TextBlock Text="{StaticResource ChevronGlyph}"
@@ -366,7 +365,12 @@
                               SelectionMode="None"
                               IsSwipeEnabled="false"
                               IsItemClickEnabled="false"
-                              ItemTemplate="{StaticResource CustomerOtherAddressDarkTemplate}">
+                              ItemTemplateSelector="{StaticResource SeeMoreOtherAddressDataTemplateSelector}">
+                        <interactivity:Interaction.Behaviors>
+                            <core:EventTriggerBehavior EventName="ItemClick">
+                                <core:CallMethodAction MethodName="GridViewOtherAddresstItemClick" TargetObject="{Binding Mode=OneWay}" />
+                            </core:EventTriggerBehavior>
+                        </interactivity:Interaction.Behaviors>
                         <!--<GridView.ItemsPanel>
                         <ItemsPanelTemplate>
                             <ItemsWrapGrid ItemWidth="400"/>
@@ -387,8 +391,7 @@
                       Style="{StaticResource GridViewProgressRingStyle}"/>-->
                     <Button Grid.Row="0" Foreground="{ThemeResource ApplicationHeaderForegroundThemeBrush}"
                             AutomationProperties.Name="Group Title"
-                            Style="{StaticResource TextBlockButtonStyle}"
-                            Command="{Binding ContactsNavigationCommand}">
+                            Style="{StaticResource TextBlockButtonStyle}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Contacts" Style="{StaticResource SubHeaderStyle}" />
                             <TextBlock Text="{StaticResource ChevronGlyph}"
@@ -406,8 +409,15 @@
                               ItemsSource="{Binding Source={StaticResource customerContactsViewSource}}"
                               SelectionMode="None"
                               IsSwipeEnabled="false"
-                              IsItemClickEnabled="false"
-                              ItemTemplate="{StaticResource CustomerContactsDashBoardDarkTemplate}" />
+                              IsItemClickEnabled="True"
+                              ItemTemplateSelector="{StaticResource SeeMoreContactsDataTemplateSelector}">
+                     
+                        <interactivity:Interaction.Behaviors>
+                            <core:EventTriggerBehavior EventName="ItemClick">
+                                <core:CallMethodAction MethodName="GridViewContactItemClick" TargetObject="{Binding Mode=OneWay}" />
+                            </core:EventTriggerBehavior>
+                        </interactivity:Interaction.Behaviors>
+                    </GridView>
                 </Grid>
 
 

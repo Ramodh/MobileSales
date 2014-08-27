@@ -60,9 +60,7 @@ namespace SageMobileSales.DataAccess.Repositories
             try
             {
                 FrequentlyPurchasedItemList =
-                    await _sageSalesDB.QueryAsync<FrequentlyPurchasedItem>("Select * from FrequentlyPurchasedItem where CustomerId=?", customerId);
-
-                FrequentlyPurchasedItemList.Add(new FrequentlyPurchasedItem() { ItemDescription = "See More" });
+                    await _sageSalesDB.QueryAsync<FrequentlyPurchasedItem>("Select * from FrequentlyPurchasedItem where CustomerId=?", customerId);           
             }
             catch (SQLiteException ex)
             {

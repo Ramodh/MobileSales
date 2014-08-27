@@ -144,7 +144,7 @@ namespace SageMobileSales.UILogic.ViewModels
                         //Company Settings
                         await _tenantService.SyncTenant();
                         //SalesTeamMember
-                        await _salesRepService.UpdateSalesRep();
+                        //await _salesRepService.UpdateSalesRep();
                         //});
                         //PageUtils.asyncActionSalesRep = asyncAction;
 

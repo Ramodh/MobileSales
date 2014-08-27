@@ -140,15 +140,12 @@ namespace SageMobileSales.UILogic.ViewModels
                         if ((_quote.QuoteId.Contains(PageUtils.Pending)))
                         {
                             // Confirm before posting quote
-                            Quote quote = await _quoteService.PostDraftQuote(_quote);
-                            if (quote != null)
-                                await _quoteService.UpdateQuoteShippingAddress(quote, _address);
+                           _quote = await _quoteService.PostDraftQuote(_quote);
+                            //if (quote != null)
+                            //    await _quoteService.UpdateQuoteShippingAddress(quote, _address);
                             //await _quoteService.PostQuoteShippingAddress(_quote, _address);
-                        }
-                        else
-                        {
-                            await _quoteService.UpdateQuoteShippingAddress(_quote, _address);
-                        }
+                        }                        
+                            await _quoteService.UpdateQuoteShippingAddress(_quote, _address);                                   
                     }
                     _navigationService.Navigate("QuoteDetails", _quoteId);
                 }
