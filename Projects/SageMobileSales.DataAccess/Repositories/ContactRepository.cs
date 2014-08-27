@@ -136,6 +136,7 @@ namespace SageMobileSales.DataAccess.Repositories
             {
                 contacts =
                     await _sageSalesDB.QueryAsync<Contact>("SELECT * FROM Contact where CustomerId=?", customerId);
+              
             }
             catch (SQLiteException ex)
             {

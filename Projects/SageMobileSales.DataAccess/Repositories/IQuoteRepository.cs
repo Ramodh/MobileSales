@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Windows.Data.Json;
 using SageMobileSales.DataAccess.Entities;
 using SageMobileSales.DataAccess.Model;
+using System.Collections.ObjectModel;
 
 namespace SageMobileSales.DataAccess.Repositories
 {

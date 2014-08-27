@@ -393,7 +393,7 @@ namespace SageMobileSales.ServiceAgents.Services
             if (quoteLineItem != null)
             {
                 detail = new EditDetail();
-                detail.Id = quoteLineItem.QuoteLineItemId;
+                detail.key = quoteLineItem.QuoteLineItemId;
                 detail.InventoryItemId = quoteLineItem.ProductId;
                 detail.Price = quoteLineItem.Price;
                 detail.Quantity = quoteLineItem.Quantity;

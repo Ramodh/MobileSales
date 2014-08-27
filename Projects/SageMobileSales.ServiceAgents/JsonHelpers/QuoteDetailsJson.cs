@@ -23,7 +23,7 @@ namespace SageMobileSales.ServiceAgents.JsonHelpers
         public decimal Quantity { get; set; }
         public string InventoryItemId { get; set; }
         public bool IsDeleted { get; set; }
-        public string Id { get; set; }
+        public string key { get; set; }
     }
 
     public class EditQuoteDetailsJson

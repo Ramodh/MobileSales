@@ -469,6 +469,7 @@ namespace SageMobileSales.UILogic.ViewModels
             }
             else
             {
+              
                 OrdersList = await _orderRepository.GetOrdersForCustomerAsync(_customerId);
             }
             if (OrdersList.Count == 0)
