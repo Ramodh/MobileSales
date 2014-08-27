@@ -114,11 +114,12 @@ namespace SageMobileSales.DataAccess.Repositories
             try
             {
                 IJsonValue value;
+                List<Customer> customerList = null;
+
                 if (sDataCustomer.TryGetValue("$key", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        List<Customer> customerList;
                         customerList =
                             await
                                 _sageSalesDB.QueryAsync<Customer>("SELECT * FROM Customer where CustomerId=?",
@@ -129,6 +130,41 @@ namespace SageMobileSales.DataAccess.Repositories
                             return await UpdateCustomerJsonToDbAsync(sDataCustomer, customerList.FirstOrDefault());
                         }
                         return await AddCustomerJsonToDbAsync(sDataCustomer);
+                    }
+                }
+
+                if (sDataCustomer.TryGetValue("PeriodToDateSales", out value))
+                {
+                    if (value.ValueType.ToString() != DataAccessUtils.Null)
+                    {
+                        JsonObject sDataPeriodToDateSales = sDataCustomer.GetNamedObject("PeriodToDateSales");
+                        if (sDataPeriodToDateSales.GetNamedValue("CustomerId").ValueType.ToString() != DataAccessUtils.Null)
+                        {
+                            customerList =
+                                await
+                                    _sageSalesDB.QueryAsync<Customer>("SELECT * FROM Customer where CustomerId=?",
+                                        sDataPeriodToDateSales.GetNamedString("$key"));
+
+                            if (customerList.FirstOrDefault() != null)
+                            {
+                                customerList.FirstOrDefault().YearToDate = Convert.ToDecimal(sDataPeriodToDateSales.GetNamedNumber("YearToDate"));
+                                customerList.FirstOrDefault().MonthToDate = Convert.ToDecimal(sDataPeriodToDateSales.GetNamedNumber("MonthToDate"));
+
+                                return await UpdateCustomerJsonToDbAsync(sDataCustomer, customerList.FirstOrDefault());
+                            }
+
+                            Customer customer = new Customer()
+                            {
+                                CustomerId = sDataPeriodToDateSales.GetNamedString("$key"),
+                                YearToDate = Convert.ToDecimal(sDataPeriodToDateSales.GetNamedNumber("YearToDate")),
+                                MonthToDate = Convert.ToDecimal(sDataPeriodToDateSales.GetNamedNumber("MonthToDate"))
+                            };
+
+                            await _sageSalesDB.InsertAsync(customer);
+
+                            return await UpdateCustomerJsonToDbAsync(sDataCustomer, customer);
+                            //return await AddCustomerJsonToDbAsync(sDataCustomer);
+                        }
                     }
                 }
             }
