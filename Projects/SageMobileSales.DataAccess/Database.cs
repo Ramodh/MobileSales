@@ -28,7 +28,7 @@ namespace SageMobileSales.DataAccess
                     <SalesRep, LocalSyncDigest, ProductCategory, ProductCategoryLink, ProductRelatedItem>();
             await _dbConnection.CreateTablesAsync<Product, ProductAssociatedBlob, Customer, Address, Contact>();
             await _dbConnection.CreateTablesAsync<Quote, QuoteLineItem, Orders, OrderLineItem, Tenant>();
-            await _dbConnection.CreateTableAsync<FrequentlyPurchasedItem>();
+            await _dbConnection.CreateTablesAsync<FrequentlyPurchasedItem,SalesHistory>();
         }
 
         public SQLiteAsyncConnection GetAsyncConnection()

@@ -5,6 +5,8 @@ using SageMobileSales.DataAccess.Entities;
 using SageMobileSales.DataAccess.Model;
 using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.UILogic.Common;
+using SageMobileSales.ServiceAgents.Common;
+using SageMobileSales.ServiceAgents.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,9 +19,11 @@ using Windows.UI.Xaml.Navigation;
 
 namespace SageMobileSales.UILogic.ViewModels
 {
-   internal class RecentOrdersPageViewModel: ViewModel
+    internal class RecentOrdersPageViewModel : ViewModel
     {
               
+        private readonly ISalesHistoryService _salesHistoryService;
+        private readonly IServiceAgent _serviceAgent;
        private QuoteLineItemViewModel _lineItemDetail;
        private List<RecentOrders> _productRecentOrders;
        private readonly INavigationService _navigationService;
@@ -44,6 +48,19 @@ namespace SageMobileSales.UILogic.ViewModels
        public ICommand SortRecentOrdersCommand { get; set; }
        public ICommand SortByAscendingCommand { get; set; }
        public ICommand SortByDescendingCommand { get; set; }
+
+       public RecentOrdersPageViewModel(ISalesHistoryService salesHistoryService, IServiceAgent serviceAgent, 
+           INavigationService navigationService, IProductAssociatedBlobsRepository productAssociatedBlobsRepository)
+        {
+            _navigationService = navigationService;
+            _productAssociatedBlobsRepository = productAssociatedBlobsRepository;
+            SortRecentOrdersCommand = new DelegateCommand<object>(SortRecentOrders);
+            SortByAscendingCommand = new DelegateCommand<object>(SortByAscending);
+            SortByDescendingCommand = new DelegateCommand<object>(SortByDescending);
+            _salesHistoryService = salesHistoryService;
+            _serviceAgent = serviceAgent;
+        }
+
        public QuoteLineItemViewModel LineItemDetail
        {
            get { return _lineItemDetail; }
@@ -157,14 +174,14 @@ namespace SageMobileSales.UILogic.ViewModels
            private set { SetProperty(ref _productImage, value); }
        }
 
-       public RecentOrdersPageViewModel(INavigationService navigationService, IProductAssociatedBlobsRepository productAssociatedBlobsRepository)
-        {
-            _navigationService = navigationService;
-            _productAssociatedBlobsRepository = productAssociatedBlobsRepository;
-            SortRecentOrdersCommand = new DelegateCommand<object>(SortRecentOrders);
-            SortByAscendingCommand = new DelegateCommand<object>(SortByAscending);
-            SortByDescendingCommand = new DelegateCommand<object>(SortByDescending);
-        }
+       //public RecentOrdersPageViewModel(INavigationService navigationService, IProductAssociatedBlobsRepository productAssociatedBlobsRepository)        
+       //{
+       //     _navigationService = navigationService;
+       //     _productAssociatedBlobsRepository = productAssociatedBlobsRepository;
+       //     SortRecentOrdersCommand = new DelegateCommand<object>(SortRecentOrders);
+       //     SortByAscendingCommand = new DelegateCommand<object>(SortByAscending);
+       //     SortByDescendingCommand = new DelegateCommand<object>(SortByDescending);
+       // }
        public async override void OnNavigatedTo(object navigationParameter, Windows.UI.Xaml.Navigation.NavigationMode navigationMode, Dictionary<string, object> viewModelState)
        {
            var rootFrame = Window.Current.Content as Frame;
@@ -187,7 +204,7 @@ namespace SageMobileSales.UILogic.ViewModels
                ImageUri = ProductDetail.PhotoUrl;
            }
            else if (navigationParameter != null && pageStack.SourcePageType.Name == PageUtils.QuoteDetailsPage)
-           {           
+           {
                LineItemDetail = navigationParameter as QuoteLineItemViewModel;
                ProductQuantity = LineItemDetail.LineItemQuantity;
                ProductName = LineItemDetail.ProductName;
@@ -195,21 +212,25 @@ namespace SageMobileSales.UILogic.ViewModels
                ProductSku = LineItemDetail.ProductSku;
                ImageUri = LineItemDetail.ImageUri;
            }
+
+            await _salesHistoryService.SyncSalesHistory("2e6c2472-19ca-4772-a076-9071d25a388a", "a4944a26-05fd-41d3-877e-13d69b522cca");
            //TODO
            // Need to be replaced with real data once Recent Orders service calls are done
-           ProductRecentOrders = new List<RecentOrders>();
-           for (int i = 0; i < 10; i++)
-           {
-               RecentOrders recentOrder = new RecentOrders();
-               recentOrder.Date = Convert.ToDateTime("05/09/2014");
-               recentOrder.Invoice = "#1234567";
-               recentOrder.Quantity = 9;
-               recentOrder.UnitPrice = Convert.ToDecimal("369.89");
-               recentOrder.Total = Convert.ToDecimal("3329.01");
-               ProductRecentOrders.Add(recentOrder);
-           }
-           CustomerName = "Actwin Co. Ltd";
-         
+            //ProductRecentOrders = new List<RecentOrders>();
+            //for (int i = 0; i < 4; i++)
+            //{
+            //    RecentOrders recentOrder = new RecentOrders();
+            //    recentOrder.Date = Convert.ToDateTime("05/09/2014");
+            //    recentOrder.Invoice = "#1234567";
+            //    recentOrder.Quantity = 9;
+            //    recentOrder.UnitPrice = Convert.ToDecimal("369.89");
+            //    recentOrder.Total = Convert.ToDecimal("3329.01");
+            //    ProductRecentOrders.Add(recentOrder);
+            //}
+            //CustomerName = "Actwin Co. Ltd";
+
+
+
            IsDescending = true;
            Sort(PageUtils.Date, IsAscending);
 

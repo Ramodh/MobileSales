@@ -115,7 +115,7 @@ namespace SageMobileSales.DataAccess.Repositories
             try
             {
                 IJsonValue value;
-                JsonObject sDataTenant = null;
+                JsonObject sDataTenantDetails = null;
 
                 List<Tenant> tenantList;
                 tenantList =
@@ -128,13 +128,13 @@ namespace SageMobileSales.DataAccess.Repositories
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
                         JsonArray sDataTenantArray = sDataTenants.GetNamedArray("$resources");
-                        foreach(var tenant in sDataTenantArray)
-                        sDataTenant = tenant.GetObject();
+                        foreach (var tenant in sDataTenantArray)
+                            sDataTenantDetails = tenant.GetObject();
                         //_tenantRepository.SaveTenantAsync(sDataTenants, salesRepDBObj.RepId);
                     }
                 }
 
-                await UpdateTenantJsonToDbAsync(sDataTenant, tenantList.FirstOrDefault());
+                await UpdateTenantJsonToDbAsync(sDataTenantDetails, tenantList.FirstOrDefault());
 
             }
             catch (SQLiteException ex)
@@ -227,11 +227,20 @@ namespace SageMobileSales.DataAccess.Repositories
             return tenantObj;
         }
 
-        private async Task<Tenant> UpdateTenantJsonToDbAsync(JsonObject sDataTenant, Tenant tenantObj)
+        private async Task<Tenant> UpdateTenantJsonToDbAsync(JsonObject sDataTenantDetails, Tenant tenantObj)
         {
             try
             {
-                tenantObj = ExtractTenantDtlsFromJsonAsync(sDataTenant, tenantObj);
+                IJsonValue value;
+                if (sDataTenantDetails.TryGetValue("CompanySettings", out value))
+                {
+                    if (value.ValueType.ToString() != DataAccessUtils.Null)
+                    {
+                        sDataTenantDetails = sDataTenantDetails.GetNamedObject("CompanySettings");
+                    }
+                }
+
+                tenantObj = ExtractTenantDtlsFromJsonAsync(sDataTenantDetails, tenantObj);
                 await _sageSalesDB.UpdateAsync(tenantObj);
             }
             catch (SQLiteException ex)
@@ -443,7 +452,7 @@ namespace SageMobileSales.DataAccess.Repositories
                     tenant.PostalCode = sDataTenant.GetNamedString("PostalCode");
                 }
             }
-             
+
             return tenant;
         }
 

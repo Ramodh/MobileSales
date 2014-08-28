@@ -45,7 +45,7 @@ namespace SageMobileSales.Behaviors
                 else
                     return GridItemsTemplate;
             }
-                else  if (item.GetType().Name == "Address")
+                else if (item.GetType().Name == "Address")
             {
                 address = item as Address;
                 if (address.PostalCode == PageUtils.SeeMore)
@@ -53,7 +53,7 @@ namespace SageMobileSales.Behaviors
                 else
                     return GridItemsTemplate;
             }
-                else     if (item.GetType().Name == "Contact")
+                else if (item.GetType().Name == "Contact")
             {
                 contact = item as Contact;
                 if (contact.EmailPersonal == PageUtils.SeeMore)
@@ -61,7 +61,7 @@ namespace SageMobileSales.Behaviors
                 else
                     return GridItemsTemplate;
             }
-        else    if (item.GetType().Name == "FrequentlyPurchaseItem")
+                else if (item.GetType().Name == "FrequentlyPurchaseItem")
             {
                 frequentlyPurchasedItem = item as FrequentlyPurchasedItem;
                 if (frequentlyPurchasedItem.ItemDescription == PageUtils.SeeMore)

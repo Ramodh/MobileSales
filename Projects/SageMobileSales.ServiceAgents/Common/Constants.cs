@@ -31,6 +31,7 @@ namespace SageMobileSales.ServiceAgents.Common
 
         public static string TenantId = string.Empty;
         public static string CurrentUserEnitty = "-/CurrentUser";
+        public static string AppSalesUser = "AppSalesUser";
         public static string CompanySettings = "CompanySettings";
         public static string UpdateUserEntity = "SalesTeamMembers";
         public static string GetSalesSettingsEntity = "Users";
@@ -53,6 +54,7 @@ namespace SageMobileSales.ServiceAgents.Common
         public static string Address = "Addresses";
         public static string FrequentlyPurchasedItem = "FrequentlyPurchasedByCustomers";
         public static string QuoteToOrder = "QuoteToOrderRequests";
+        public static string CustomerSalesHistory = "CustomerSalesHistory";
 
 
         public static string Scope = String.Empty;

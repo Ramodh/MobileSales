@@ -15,5 +15,7 @@ namespace SageMobileSales.DataAccess.Model
         public Decimal CreditAvailable { get; set; }
         public Decimal CreditLimit { get; set; }
         public string PaymentTerms { get; set; }
+        public decimal YearToDate { get; set; }
+        public decimal MonthToDate { get; set; }
     }
 }

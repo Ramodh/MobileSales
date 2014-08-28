@@ -73,14 +73,42 @@ namespace SageMobileSales.DataAccess.Repositories
         /// </summary>
         /// <param name="sDataSalesRepSettings"></param>
         /// <returns></returns>
-        public async Task UpdateSalesRepDtlsAsync(JsonObject sDataSalesRepSettings)
+        public async Task UpdateSalesRepDtlsAsync(JsonObject sDataSalesTeamMembers)
         {
             try
             {
+                IJsonValue value;
+                JsonObject sDataSalesTeamMember = null;
+                JsonObject sDataSalesTeamMemberDetails = null;
+
                 SalesRep _salesRepDtls = await _sageSalesDB.Table<SalesRep>().FirstOrDefaultAsync();
 
-                //decimal maxDiscountPercentage = Convert.ToDecimal(sDataSalesRepSettings.GetNamedNumber("MaximumDiscountPercent"));
-                _salesRepDtls.MaximumDiscountPercent = Convert.ToDecimal(sDataSalesRepSettings.GetNamedNumber("SalesRepMaxDiscPct"));
+                if (sDataSalesTeamMembers.TryGetValue("$resources", out value))
+                {
+                    if (value.ValueType.ToString() != DataAccessUtils.Null)
+                    {
+                        JsonArray sDataSalesTeamMemberArray = sDataSalesTeamMembers.GetNamedArray("$resources");
+                        foreach (var salesRep in sDataSalesTeamMemberArray)
+                            sDataSalesTeamMember = salesRep.GetObject();
+                    }
+                }
+
+                if (sDataSalesTeamMember.TryGetValue("SalesTeamMember", out value))
+                {
+                    if (value.ValueType.ToString() != DataAccessUtils.Null)
+                    {
+                        sDataSalesTeamMemberDetails = sDataSalesTeamMember.GetNamedObject("SalesTeamMember");
+                    }
+                }
+
+                if (sDataSalesTeamMemberDetails.TryGetValue("SalesRepMaxDiscPct", out value))
+                {
+                    if (value.ValueType.ToString() != DataAccessUtils.Null)
+                    {
+                        _salesRepDtls.MaximumDiscountPercent = Convert.ToDecimal(sDataSalesTeamMemberDetails.GetNamedNumber("SalesRepMaxDiscPct"));
+                    }
+                }
+
                 // Updates SalesRep data into SalesRep table       
                 await _sageSalesDB.UpdateAsync(_salesRepDtls);
             }
