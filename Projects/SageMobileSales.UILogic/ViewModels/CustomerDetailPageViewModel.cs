@@ -47,8 +47,8 @@ namespace SageMobileSales.UILogic.ViewModels
         private List<Address> _otherAddresses;
         private string _phone;
         private ISalesRepRepository _salesRepRepository;
-        private string _salesThisMonth;
-        private string _salesYTD;
+        private decimal _salesThisMonth;
+        private decimal _salesYTD;
         private Visibility _isFrequentlyPurchasedItemsVisible;
 
         public CustomerDetails CustomerDtls
@@ -88,13 +88,13 @@ namespace SageMobileSales.UILogic.ViewModels
             private set { SetProperty(ref _customerDetailPageTitle, value); }
         }
 
-        public string SalesThisMonth
+        public decimal SalesThisMonth
         {
             get { return _salesThisMonth; }
             private set { SetProperty(ref _salesThisMonth, value); }
         }
 
-        public string SalesYTD
+        public decimal SalesYTD
         {
             get { return _salesYTD; }
             private set { SetProperty(ref _salesYTD, value); }
@@ -243,6 +243,12 @@ namespace SageMobileSales.UILogic.ViewModels
 
                     //FrequentlyPurchasedItems
                     await _frequentlyPurchasedItemService.SyncFrequentlyPurchasedItems(CustomerDtls.CustomerId);
+                }
+                Customer customer =await _customerRepository.GetCustomerDataAsync(CustomerDtls.CustomerId);
+                if (customer != null)
+                {
+                    SalesThisMonth = customer.MonthToDate;
+                    SalesYTD = customer.YearToDate;
                 }
 
                List<Contact> customerContactList = await _contactRepository.GetContactDetailsAsync(CustomerDtls.CustomerId);
