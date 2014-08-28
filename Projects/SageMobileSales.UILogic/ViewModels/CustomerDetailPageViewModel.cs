@@ -231,8 +231,9 @@ namespace SageMobileSales.UILogic.ViewModels
               {
                   otherAddresses = otherAddresses.GetRange(0, 7);
                   otherAddresses.Add(new Address() { PostalCode = DataAccessUtils.SeeMore });
-                  OtherAddresses = otherAddresses;
+            
               }
+              OtherAddresses = otherAddresses;
                
 
                 if (Constants.ConnectedToInternet())
@@ -253,8 +254,9 @@ namespace SageMobileSales.UILogic.ViewModels
                {
                    customerContactList = customerContactList.GetRange(0, 7);
                    customerContactList.Add(new Contact() { EmailPersonal = DataAccessUtils.SeeMore });
-                   CustomerContactList = customerContactList;
+                  
                }
+               CustomerContactList = customerContactList;
                List<FrequentlyPurchasedItem> frequentlyPurchasedItems = await _frequentlyPurchasedItemRepository.GetFrequentlyPurchasedItems(CustomerDtls.CustomerId);
                if (frequentlyPurchasedItems.Count <= 0)
                 {
@@ -264,8 +266,9 @@ namespace SageMobileSales.UILogic.ViewModels
                {
                    frequentlyPurchasedItems = frequentlyPurchasedItems.GetRange(0, 7);
                    frequentlyPurchasedItems.Add(new FrequentlyPurchasedItem() { ItemDescription = DataAccessUtils.SeeMore });
-                   FrequentlyPurchasedItems = frequentlyPurchasedItems;
+                  
                }
+               FrequentlyPurchasedItems = frequentlyPurchasedItems;
 
                // CustomerQuotes = new List<QuoteDetails>();
                 List<QuoteDetails> customerQuotes = await _quoteRepository.GetQuotesForCustomerAsync(CustomerDtls.CustomerId);
@@ -277,9 +280,9 @@ namespace SageMobileSales.UILogic.ViewModels
                 {
                     customerQuotes = customerQuotes.GetRange(0, 7);
                     customerQuotes.Add(new QuoteDetails() { QuoteStatus = DataAccessUtils.SeeMore });
-                    CustomerQuotes = customerQuotes;
-                 
-                }                
+                }
+                CustomerQuotes = customerQuotes;
+
                List<OrderDetails> customerOrders = new List<OrderDetails>();
                 customerOrders = await _orderRepository.GetOrdersForCustomerAsync(CustomerDtls.CustomerId);
                 if (customerOrders.Count <= 0)
@@ -290,8 +293,9 @@ namespace SageMobileSales.UILogic.ViewModels
                 {
                     customerOrders = customerOrders.GetRange(0, 7);
                     customerOrders.Add(new OrderDetails() { OrderDescription = DataAccessUtils.SeeMore });
-                    CustomerOrders = customerOrders;
+                  
                 }
+                CustomerOrders = customerOrders;
              
                 PageUtils.ResetLocalVariables();
                 InProgress = false;                

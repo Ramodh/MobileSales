@@ -309,7 +309,7 @@
                       Style="{StaticResource GridViewProgressRingStyle}"/>-->
                     <Button Grid.Row="0" Foreground="{ThemeResource ApplicationHeaderForegroundThemeBrush}"
                             AutomationProperties.Name="Group Title"
-                            Style="{StaticResource TextBlockButtonStyle}" Command="{Binding QuotesNavigationCommand}">
+                            Style="{StaticResource TextBlockButtonStyle}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock x:Uid="recentQuotes" Text="" Style="{StaticResource SubHeaderStyle}" />
                             <TextBlock Text="{StaticResource ChevronGlyph}"

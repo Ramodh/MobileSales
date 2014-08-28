@@ -28,6 +28,55 @@
             <views:TopAppBarUserControl />
         </AppBar>
     </prism:VisualStateAwarePage.TopAppBar>
+    <Page.BottomAppBar>
+        <AppBar>
+            <Grid x:Name="appbarGrid" Style="{StaticResource BottomAppbarStyle}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50*" />
+                    <ColumnDefinition Width="50*" />
+                </Grid.ColumnDefinitions>
+                <StackPanel x:Name="RightPanel" Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right">
+                    <AppBarButton x:Name="appbtnSortQuotes" x:Uid="appbtnSortQuotes" Icon="Sort" Label="">
+                        <AppBarButton.Flyout>
+
+                            <MenuFlyout x:Name="sortMenuFlyout">
+                                <ToggleMenuFlyoutItem x:Name="orderInvoice" x:Uid="orderInvoice" Text=""
+                                                      Command="{Binding SortRecentOrdersCommand}"
+                                                      CommandParameter="{Binding ElementName=orderInvoice,UpdateSourceTrigger=PropertyChanged}"
+                                                      IsChecked="{Binding}" />
+                                <ToggleMenuFlyoutItem x:Name="date" x:Uid="date" Text=""
+                                                      Command="{Binding SortRecentOrdersCommand}"
+                                                      CommandParameter="{Binding ElementName=date,UpdateSourceTrigger=PropertyChanged}"
+                                                      IsChecked="{Binding SelectedColumn}" />
+                                <ToggleMenuFlyoutItem Text="" x:Name="orderQuantity" x:Uid="orderQuantity"
+                                                      Command="{Binding SortRecentOrdersCommand}"
+                                                      CommandParameter="{Binding ElementName=orderQuantity,UpdateSourceTrigger=PropertyChanged}"
+                                                      IsChecked="{Binding}" />
+                                <ToggleMenuFlyoutItem Text="" x:Name="orderUnitPrice" x:Uid="orderUnitPrice"
+                                                      Command="{Binding SortRecentOrdersCommand}"
+                                                      CommandParameter="{Binding ElementName=orderUnitPrice,UpdateSourceTrigger=PropertyChanged}"
+                                                      IsChecked="{Binding}" />
+                                <ToggleMenuFlyoutItem Text="" x:Name="orderTotalAmount" x:Uid="orderTotalAmount"
+                                                      Command="{Binding SortRecentOrdersCommand}"
+                                                      CommandParameter="{Binding ElementName=orderTotalAmount,UpdateSourceTrigger=PropertyChanged}"
+                                                      IsChecked="{Binding}" />
+                                <MenuFlyoutSeparator />
+                                <ToggleMenuFlyoutItem x:Name="sortByAscending" x:Uid="sortByAscending" Text=""
+                                                      IsChecked="{Binding IsAscending, Mode=TwoWay}"
+                                                      Command="{Binding SortByAscendingCommand}"
+                                                      CommandParameter="{Binding ElementName=sortByAscending,UpdateSourceTrigger=PropertyChanged}" />
+                                <ToggleMenuFlyoutItem x:Name="sortByDescending" x:Uid="sortByDescending" Text=""
+                                                      IsChecked="{Binding IsDescending, Mode=TwoWay}"
+                                                      Command="{Binding SortByDescendingCommand}"
+                                                      CommandParameter="{Binding ElementName=sortByDescending,UpdateSourceTrigger=PropertyChanged}" />
+                            </MenuFlyout>
+                        </AppBarButton.Flyout>
+                    </AppBarButton>
+                </StackPanel>
+            </Grid>
+        </AppBar>
+    </Page.BottomAppBar>
+
     <!--
         This grid acts as a root panel for the page that defines two rows:
         * Row 0 contains the back button and page title
@@ -67,13 +116,13 @@
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <StackPanel Grid.Row="0">
-                        <Border Background="{StaticResource ListViewItemPlaceholderBackgroundThemeBrush}" Height="390" Width="350">
+                        <Border Background="{StaticResource ListViewItemPlaceholderBackgroundThemeBrush}" Height="390" Width="400" BorderBrush="Black" BorderThickness="2">
                             <!--<Image Source="{Binding Url}" Stretch="UniformToFill" Height="100" Width="100"/>-->
                             <views:ImageplaceHolderUserControl Placeholder="/Assets/imagePlaceholder_100x100.png"
-                                                      Source="{Binding LineItemDetail.ImageUri}" Height="390" Width="350" />
+                                                      Source="{Binding ImageUri}" Height="390" Width="400" />
                         </Border>
                     </StackPanel>
-                    <Grid Grid.Row="2" Margin="2" Background="Gainsboro" Height="120" Width="350">
+                    <Grid Grid.Row="2" Margin="2" Background="Gainsboro" Height="120" Width="400">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
@@ -84,14 +133,14 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.ColumnSpan="2" Margin="5" Grid.Row="0" Text="{Binding LineItemDetail.ProductName}" Style="{StaticResource SubheaderTextBlockStyle}"
-                           TextWrapping="NoWrap"  FontWeight="Bold" Foreground="Black"/>
+                        <TextBlock Grid.ColumnSpan="2" Margin="5" Grid.Row="0" Text="{Binding ProductName}" Style="{StaticResource ProductTextblockTextStyle}"
+                           TextWrapping="Wrap"  FontWeight="SemiBold" Foreground="Black"/>
                         <TextBlock x:Uid="RecentOrderProductSku" Grid.Column="0" Grid.Row="1" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" Foreground="Black"/>
-                        <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding LineItemDetail.ProductSku}" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" Foreground="Black"/>
+                        <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding ProductSku}" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" Foreground="Black"/>
                         <TextBlock x:Uid="RecentOrderUnitPrice" Grid.Column="0" Grid.Row="2" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" Foreground="Black"/>
-                        <TextBlock Grid.Column="1" Grid.Row="2" Text="{Binding LineItemDetail.LineItemPrice,Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:C}'}" Style="{StaticResource AddressTextStyle}" MaxHeight="60" Foreground="Black"/>
+                        <TextBlock Grid.Column="1" Grid.Row="2" Text="{Binding LineItemPrice,Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:C}'}" Style="{StaticResource AddressTextStyle}" MaxHeight="60" Foreground="Black"/>
                         <TextBlock x:Uid="RecentOrderStockInHand" Grid.Column="0" Grid.Row="3" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" Foreground="Black"/>
-                        <TextBlock Grid.Column="1" Grid.Row="3" Text="{Binding LineItemDetail.ProductQuantity}" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" Foreground="Black"/>
+                        <TextBlock Grid.Column="1" Grid.Row="3" Text="{Binding ProductQuantity}" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" Foreground="Black"/>
                     </Grid>
                 </Grid>
 
