@@ -320,12 +320,12 @@
                                 Width="300" />
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock x:Uid="Total" Text="Total:" FontWeight="Bold"
+                            <TextBlock x:Uid="Total" Text="Total:"
                                        Style="{StaticResource DetailsPageTextblockTextStyle}"
                                        VerticalAlignment="Bottom" />
                             <TextBlock
                                 Text="{Binding Total,Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:C}'}"
-                                Style="{StaticResource DetailsPageTextblockTextStyle}" FontWeight="Bold"
+                                Style="{StaticResource DetailsPageTextblockTextStyle}"
                                 VerticalAlignment="Bottom" Width="300" />
                         </StackPanel>
                     </StackPanel>

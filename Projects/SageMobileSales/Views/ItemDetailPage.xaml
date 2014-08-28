@@ -122,7 +122,7 @@
                     </Grid.RowDefinitions>
 
                     <TextBlock x:Name="productName" Grid.Row="0" Text="{Binding ProductName}"
-                               Style="{StaticResource SubHeaderTextStyle}" VerticalAlignment="Bottom" />
+                               Style="{StaticResource SubHeaderTextStyle}" VerticalAlignment="Bottom" TextWrapping="NoWrap" TextTrimming="WordEllipsis"/>
                     <StackPanel Grid.Row="1">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock x:Name="price" x:Uid="priceTb"
@@ -172,19 +172,19 @@
 
                 <Grid x:Name="recentOrdersGrid" Grid.RowSpan="3" Grid.Column="4" Visibility="{Binding IsRecentOrdersVisible}">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="210" />
+                        <RowDefinition Height="225" />
                         <RowDefinition Height="*" />
                         <RowDefinition Height="95" />
                     </Grid.RowDefinitions>
-                    <Button Grid.Row="0" Foreground="{ThemeResource ApplicationHeaderForegroundThemeBrush}"
+                    <Button Grid.Row="0"
                             AutomationProperties.Name="Group Title"
                             Style="{StaticResource TextBlockButtonStyle}" VerticalAlignment="Bottom">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock x:Uid="ItemdetailRecentOrders" Style="{StaticResource SubHeaderStyle}" />
+                            <TextBlock x:Uid="ItemdetailRecentOrders" Style="{StaticResource SubHeaderTextStyle}" FontWeight="Normal" VerticalAlignment="Bottom"/>
                             <TextBlock x:Uid="DividerSymbol" Style="{StaticResource SubHeaderStyle}" />
-                            <TextBlock x:Uid="recentOrdersCustomerName" Text="Actwin.Co.Ltd" Style="{StaticResource SubHeaderStyle}" FontSize="30"/>
+                            <TextBlock x:Uid="recentOrdersCustomerName" Text="{Binding CustomerName}" Style="{StaticResource SubHeaderStyle}" FontSize="30"/>
                             <TextBlock Text="{StaticResource ChevronGlyph}"
-                                       Style="{StaticResource SubHeaderGlyphStyle}" />
+                                       Style="{StaticResource SubHeaderGlyphStyle}"/>
                         </StackPanel>
                     </Button>
                     <GridView Grid.Row="1"
@@ -197,9 +197,15 @@
                               ItemsSource="{Binding Source={StaticResource itemsViewSourceRecentOrders}}"
                               SelectionMode="None"
                               IsSwipeEnabled="false"
-                              IsItemClickEnabled="True"
-                              ItemTemplate="{StaticResource recentOrdersTemplate}">
+                              IsItemClickEnabled="True"                             
+                        ItemTemplateSelector="{StaticResource SeeMoreRecentOrdersDataTemplateSelector}">
 
+                        <interactivity:Interaction.Behaviors>
+                            <core:EventTriggerBehavior EventName="ItemClick">
+                                <core:CallMethodAction MethodName="GridViewSeeMoreItemClick"
+                                                       TargetObject="{Binding Mode=OneWay}" />
+                            </core:EventTriggerBehavior>
+                        </interactivity:Interaction.Behaviors>
                         <!--<interactivity:Interaction.Behaviors>
                             <core:EventTriggerBehavior EventName="ItemClick">
                                 <core:CallMethodAction MethodName="GridViewRecentOrderItemClick"

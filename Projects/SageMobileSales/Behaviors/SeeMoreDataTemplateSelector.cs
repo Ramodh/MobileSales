@@ -20,6 +20,7 @@ namespace SageMobileSales.Behaviors
         Contact contact;
         FrequentlyPurchasedItem frequentlyPurchasedItem;
         Address address;
+        RecentOrders recentOrders;
         protected override DataTemplate SelectTemplateCore(object item,
                                                            DependencyObject container)
         {
@@ -37,33 +38,41 @@ namespace SageMobileSales.Behaviors
                         return GridItemsTemplate;
                 }
                 else if (item.GetType().Name == "OrderDetails")
-                {
-                    orderDetails = item as OrderDetails;
-                    if (orderDetails.OrderDescription == PageUtils.SeeMore)
-                        return ImageTemplate;
-                    else
-                        return GridItemsTemplate;
-                }
+            {
+                orderDetails = item as OrderDetails;
+                if (orderDetails.OrderDescription == PageUtils.SeeMore)
+                    return ImageTemplate;
+                else
+                    return GridItemsTemplate;
+            }
                 else if (item.GetType().Name == "Address")
-                {
-                    address = item as Address;
-                    if (address.PostalCode == PageUtils.SeeMore)
-                        return ImageTemplate;
-                    else
-                        return GridItemsTemplate;
-                }
+            {
+                address = item as Address;
+                if (address.PostalCode == PageUtils.SeeMore)
+                    return ImageTemplate;
+                else
+                    return GridItemsTemplate;
+            }
                 else if (item.GetType().Name == "Contact")
-                {
-                    contact = item as Contact;
-                    if (contact.EmailPersonal == PageUtils.SeeMore)
-                        return ImageTemplate;
-                    else
-                        return GridItemsTemplate;
-                }
+            {
+                contact = item as Contact;
+                if (contact.EmailPersonal == PageUtils.SeeMore)
+                    return ImageTemplate;
+                else
+                    return GridItemsTemplate;
+            }
                 else if (item.GetType().Name == "FrequentlyPurchaseItem")
+            {
+                frequentlyPurchasedItem = item as FrequentlyPurchasedItem;
+                if (frequentlyPurchasedItem.ItemDescription == PageUtils.SeeMore)
+                    return ImageTemplate;
+                else
+                    return GridItemsTemplate;
+            }
+                else if (item.GetType().Name == "RecentOrders")
                 {
-                    frequentlyPurchasedItem = item as FrequentlyPurchasedItem;
-                    if (frequentlyPurchasedItem.ItemDescription == PageUtils.SeeMore)
+                    recentOrders = item as RecentOrders;
+                    if (recentOrders.Invoice == PageUtils.SeeMore)
                         return ImageTemplate;
                     else
                         return GridItemsTemplate;

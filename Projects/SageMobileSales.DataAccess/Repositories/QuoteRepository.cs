@@ -9,7 +9,6 @@ using SageMobileSales.DataAccess.Entities;
 using SageMobileSales.DataAccess.Events;
 using SageMobileSales.DataAccess.Model;
 using SQLite;
-using System.Collections.ObjectModel;
 
 namespace SageMobileSales.DataAccess.Repositories
 {
@@ -345,8 +344,8 @@ namespace SageMobileSales.DataAccess.Repositories
                 quote =
                     await
                         _sageSalesDB.QueryAsync<QuoteDetails>(
-                            "SELECT distinct customer.customerName, quote.Id, quote.CustomerId, quote.QuoteId, quote.CreatedOn, quote.amount, quote.quoteStatus,quote.QuoteDescription, SalesRep.RepName FROM customer, quote left Join SalesRep On SalesRep.RepId=Quote.RepId where Quote.QuoteStatus!='IsOrder'  And Quote.QuoteStatus!='Temporary' and customer.customerId=quote.customerId and quote.customerId=? order by quote.createdOn desc",
-                            customerId);             
+                            "SELECT distinct customer.customerName, quote.Id, quote.CustomerId, quote.QuoteId, quote.CreatedOn, quote.amount, quote.quoteStatus,quote.QuoteDescription, SalesRep.RepName FROM customer, quote left Join SalesRep On SalesRep.RepId=Quote.RepId where Quote.QuoteStatus!='IsOrder'  And Quote.QuoteStatus!='Temporary' And Quote.IsDeleted!=1 and customer.customerId=quote.customerId and quote.customerId=? order by quote.createdOn desc",
+                            customerId);
             }
             catch (SQLiteException ex)
             {
