@@ -8,6 +8,6 @@ namespace SageMobileSales.ServiceAgents.Services
 {
     public interface ISalesHistoryService
     {
-        Task SyncSalesHistory();
+        Task SyncSalesHistory(string customerId, string itemId);
     }
 }

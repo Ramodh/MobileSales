@@ -172,13 +172,13 @@
                     <StackPanel Grid.Row="2">
                         <TextBlock x:Uid="SalesThisMonth" Style="{StaticResource SubHeaderCustomerDashBoardTextStyle}"
                                    VerticalAlignment="Bottom" />
-                        <TextBlock Text="{Binding SalesThisMonth}"
+                        <TextBlock Text="{Binding MonthToDate}"
                                    Style="{StaticResource DetailsPageTextblockTextStyle}" VerticalAlignment="Bottom" />
                     </StackPanel>
                     <StackPanel Grid.Row="4">
                         <TextBlock x:Uid="SalesYTD" Style="{StaticResource SubHeaderCustomerDashBoardTextStyle}"
                                    VerticalAlignment="Bottom" />
-                        <TextBlock Text="{Binding SalesYTD}" Style="{StaticResource DetailsPageTextblockTextStyle}"
+                        <TextBlock Text="{Binding YearToDate}" Style="{StaticResource DetailsPageTextblockTextStyle}"
                                    VerticalAlignment="Bottom" />
                     </StackPanel>
                     <StackPanel Grid.Row="6">

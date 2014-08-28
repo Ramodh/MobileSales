@@ -13,7 +13,7 @@ namespace SageMobileSales.ServiceAgents.Services
     {
         private readonly ISalesHistoryRepository _salesHistoryRepository;
         private readonly IServiceAgent _serviceAgent;
-        //private Dictionary<string, string> parameters = null;
+        private Dictionary<string, string> parameters = null;
 
 
         public SalesHistoryService(IServiceAgent serviceAgent, ISalesHistoryRepository salesHistoryRepository)
@@ -23,19 +23,24 @@ namespace SageMobileSales.ServiceAgents.Services
         }
 
         #region public methods
-        public async Task SyncSalesHistory()
+        public async Task SyncSalesHistory(string customerId, string itemId)
         {
-            //parameters = new Dictionary<string, string>();
-            //parameters.Add("include", "Addresses,Contacts");
+            parameters = new Dictionary<string, string>();
+            parameters.Add("Count", "50");
+            parameters.Add("startindex", "1");
+
+            string customerQuery = "CustomerId eq guid'" + customerId + "' and ";
+            string itemQuery = "ItemId eq guid'" + itemId + "'";
+            parameters.Add("where", customerQuery + itemQuery);
 
             //string customerEntityId = Constants.CustomerDetailEntity + "('" + customerId + "')";
             HttpResponseMessage salesHistoryResponse = null;
             salesHistoryResponse =
-                await _serviceAgent.BuildAndSendRequest(Constants.TenantId, Constants.CustomerSalesHistory, null, null, Constants.AccessToken, null);
+                await _serviceAgent.BuildAndSendRequest(Constants.TenantId, Constants.CustomerSalesHistory, null, null, Constants.AccessToken, parameters);
             if (salesHistoryResponse != null && salesHistoryResponse.IsSuccessStatusCode)
             {
                 var sDataSalesHistory = await _serviceAgent.ConvertTosDataObject(salesHistoryResponse);
-                //await _salesHistoryRepository.SaveSalesHistoryAsync(sDataSalesHistory);
+                await _salesHistoryRepository.SaveSalesHistoryAsync(sDataSalesHistory);
             }
 
         }

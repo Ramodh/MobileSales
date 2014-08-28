@@ -133,40 +133,40 @@ namespace SageMobileSales.DataAccess.Repositories
                     }
                 }
 
-                if (sDataCustomer.TryGetValue("PeriodToDateSales", out value))
-                {
-                    if (value.ValueType.ToString() != DataAccessUtils.Null)
-                    {
-                        JsonObject sDataPeriodToDateSales = sDataCustomer.GetNamedObject("PeriodToDateSales");
-                        if (sDataPeriodToDateSales.GetNamedValue("CustomerId").ValueType.ToString() != DataAccessUtils.Null)
-                        {
-                            customerList =
-                                await
-                                    _sageSalesDB.QueryAsync<Customer>("SELECT * FROM Customer where CustomerId=?",
-                                        sDataPeriodToDateSales.GetNamedString("$key"));
+                //if (sDataCustomer.TryGetValue("PeriodToDateSales", out value))
+                //{
+                //    if (value.ValueType.ToString() != DataAccessUtils.Null)
+                //    {
+                //        JsonObject sDataPeriodToDateSales = sDataCustomer.GetNamedObject("PeriodToDateSales");
+                //        if (sDataPeriodToDateSales.GetNamedValue("CustomerId").ValueType.ToString() != DataAccessUtils.Null)
+                //        {
+                //            customerList =
+                //                await
+                //                    _sageSalesDB.QueryAsync<Customer>("SELECT * FROM Customer where CustomerId=?",
+                //                        sDataPeriodToDateSales.GetNamedString("$key"));
 
-                            if (customerList.FirstOrDefault() != null)
-                            {
-                                customerList.FirstOrDefault().YearToDate = Convert.ToDecimal(sDataPeriodToDateSales.GetNamedNumber("YearToDate"));
-                                customerList.FirstOrDefault().MonthToDate = Convert.ToDecimal(sDataPeriodToDateSales.GetNamedNumber("MonthToDate"));
+                //            if (customerList.FirstOrDefault() != null)
+                //            {
+                //                customerList.FirstOrDefault().YearToDate = Convert.ToDecimal(sDataPeriodToDateSales.GetNamedNumber("YearToDate"));
+                //                customerList.FirstOrDefault().MonthToDate = Convert.ToDecimal(sDataPeriodToDateSales.GetNamedNumber("MonthToDate"));
 
-                                return await UpdateCustomerJsonToDbAsync(sDataCustomer, customerList.FirstOrDefault());
-                            }
+                //                return await UpdateCustomerJsonToDbAsync(sDataCustomer, customerList.FirstOrDefault());
+                //            }
 
-                            Customer customer = new Customer()
-                            {
-                                CustomerId = sDataPeriodToDateSales.GetNamedString("$key"),
-                                YearToDate = Convert.ToDecimal(sDataPeriodToDateSales.GetNamedNumber("YearToDate")),
-                                MonthToDate = Convert.ToDecimal(sDataPeriodToDateSales.GetNamedNumber("MonthToDate"))
-                            };
+                //            Customer customer = new Customer()
+                //            {
+                //                CustomerId = sDataPeriodToDateSales.GetNamedString("$key"),
+                //                YearToDate = Convert.ToDecimal(sDataPeriodToDateSales.GetNamedNumber("YearToDate")),
+                //                MonthToDate = Convert.ToDecimal(sDataPeriodToDateSales.GetNamedNumber("MonthToDate"))
+                //            };
 
-                            await _sageSalesDB.InsertAsync(customer);
+                //            await _sageSalesDB.InsertAsync(customer);
 
-                            return await UpdateCustomerJsonToDbAsync(sDataCustomer, customer);
-                            //return await AddCustomerJsonToDbAsync(sDataCustomer);
-                        }
-                    }
-                }
+                //            return await UpdateCustomerJsonToDbAsync(sDataCustomer, customer);
+                //            //return await AddCustomerJsonToDbAsync(sDataCustomer);
+                //        }
+                //    }
+                //}
             }
             catch (Exception ex)
             {
@@ -454,6 +454,30 @@ namespace SageMobileSales.DataAccess.Repositories
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
                         customer.EntityStatus = sDataCustomer.GetNamedString("EntityStatus");
+                    }
+                }
+                if (sDataCustomer.TryGetValue("PeriodToDateSales", out value))
+                {
+                    if (value.ValueType.ToString() != DataAccessUtils.Null)
+                    {
+                        JsonObject sDataPeriodToDateSales = sDataCustomer.GetNamedObject("PeriodToDateSales");
+
+
+                        if (sDataPeriodToDateSales.TryGetValue("YearToDate", out value))
+                        {
+                            if (value.ValueType.ToString() != DataAccessUtils.Null)
+                            {
+                                customer.YearToDate = Convert.ToDecimal(sDataPeriodToDateSales.GetNamedNumber("YearToDate"));
+                            }
+                        }
+
+                        if (sDataPeriodToDateSales.TryGetValue("MonthToDate", out value))
+                        {
+                            if (value.ValueType.ToString() != DataAccessUtils.Null)
+                            {
+                                customer.MonthToDate = Convert.ToDecimal(sDataPeriodToDateSales.GetNamedNumber("MonthToDate"));
+                            }
+                        }
                     }
                 }
             }

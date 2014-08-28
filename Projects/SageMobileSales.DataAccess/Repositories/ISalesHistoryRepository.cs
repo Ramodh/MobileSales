@@ -9,6 +9,6 @@ namespace SageMobileSales.DataAccess.Repositories
 {
     public interface ISalesHistoryRepository
     {
-        Task SaveSalesHistoryAsync(JsonObject sDataSalesHistory, string customerId);
+        Task SaveSalesHistoryAsync(JsonObject sDataSalesHistory);
     }
 }

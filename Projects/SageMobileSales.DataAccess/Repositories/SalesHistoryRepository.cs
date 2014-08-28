@@ -23,25 +23,24 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         #region public methods
-        public async Task SaveSalesHistoryAsync(JsonObject sDataSalesHistory, string customerId)
+        public async Task SaveSalesHistoryAsync(JsonObject sDataSalesHistory)
         {
             try
             {
-                if (!string.IsNullOrEmpty(customerId))
+
+                IJsonValue value;
+                if (sDataSalesHistory.TryGetValue("$resources", out value))
                 {
-                    IJsonValue value;
-                    if (sDataSalesHistory.TryGetValue("$resources", out value))
+                    if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        if (value.ValueType.ToString() != DataAccessUtils.Null)
+                        JsonArray sDataSalesHistoryArray = sDataSalesHistory.GetNamedArray("$resources");
+                        if (sDataSalesHistoryArray.Count > 0)
                         {
-                            JsonArray sDataSalesHistoryArray = sDataSalesHistory.GetNamedArray("$resources");
-                            if (sDataSalesHistoryArray.Count > 0)
-                            {
-                                await SaveSalesHistoryDetailsAsync(sDataSalesHistoryArray, customerId);
-                            }
+                            await SaveSalesHistoryDetailsAsync(sDataSalesHistoryArray);
                         }
                     }
                 }
+
             }
             catch (SQLiteException ex)
             {
@@ -58,7 +57,7 @@ namespace SageMobileSales.DataAccess.Repositories
         #endregion
 
         #region private methods
-        private async Task SaveSalesHistoryDetailsAsync(JsonArray sDataSalesHistoryArray, string customerId)
+        private async Task SaveSalesHistoryDetailsAsync(JsonArray sDataSalesHistoryArray)
         {
             // Delete - Need confirmation
             //await DeleteSalesHistoryFromDbAsync(sDataSalesHistoryArray, customerId);
@@ -66,11 +65,11 @@ namespace SageMobileSales.DataAccess.Repositories
             foreach (IJsonValue salesHistory in sDataSalesHistoryArray)
             {
                 JsonObject sDataSalesHistory = salesHistory.GetObject();
-                await AddOrUpdatesalesHistoryJsonToDbAsync(sDataSalesHistory, customerId);
+                await AddOrUpdatesalesHistoryJsonToDbAsync(sDataSalesHistory);
             }
         }
 
-        public async Task<SalesHistory> AddOrUpdatesalesHistoryJsonToDbAsync(JsonObject sDataSalesHistory, string customerId)
+        public async Task<SalesHistory> AddOrUpdatesalesHistoryJsonToDbAsync(JsonObject sDataSalesHistory)
         {
             try
             {
@@ -89,7 +88,7 @@ namespace SageMobileSales.DataAccess.Repositories
                         {
                             return await UpdateSalesHistoryJsonToDbAsync(sDataSalesHistory, salesHistoryList.FirstOrDefault());
                         }
-                        return await AddSalesHistoryJsonToDbAsync(sDataSalesHistory, customerId);
+                        return await AddSalesHistoryJsonToDbAsync(sDataSalesHistory);
                     }
                 }
             }
@@ -123,12 +122,12 @@ namespace SageMobileSales.DataAccess.Repositories
             return salesHistoryDbObj;
         }
 
-        private async Task<SalesHistory> AddSalesHistoryJsonToDbAsync(JsonObject sDataSalesHistory, string customerId)
+        private async Task<SalesHistory> AddSalesHistoryJsonToDbAsync(JsonObject sDataSalesHistory)
         {
             var salesHistoryObj = new SalesHistory();
             try
             {
-                salesHistoryObj.CustomerId = customerId;
+                //salesHistoryObj.CustomerId = customerId;
                 salesHistoryObj.SalesHistoryId = sDataSalesHistory.GetNamedString("$key");
 
                 salesHistoryObj = ExtractSalesHistoryFromJsonAsync(sDataSalesHistory, salesHistoryObj);
@@ -202,14 +201,14 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        salesHistory.Price = Convert.ToDecimal(sDataSalesHistory.GetNamedString("Price"));
+                        salesHistory.Price = Convert.ToDecimal(sDataSalesHistory.GetNamedNumber("Price"));
                     }
                 }
                 if (sDataSalesHistory.TryGetValue("Total", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        salesHistory.Total = Convert.ToDecimal(sDataSalesHistory.GetNamedString("Total"));
+                        salesHistory.Total = Convert.ToDecimal(sDataSalesHistory.GetNamedNumber("Total"));
                     }
                 }
                 if (sDataSalesHistory.TryGetValue("UnitOfMeasure", out value))
