@@ -719,4 +719,24 @@
   <data name="quotesPageTitle.Text" xml:space="preserve">
     <value>Quotes</value>
   </data>
+  <data name="date.Text" xml:space="preserve">
+    <value>Date</value>
+    <comment>Menu Item  text for sort by date</comment>
+  </data>
+  <data name="orderInvoice.Text" xml:space="preserve">
+    <value>Invoice</value>
+    <comment>Menu Item  text for sort by Invoice </comment>
+  </data>
+  <data name="orderQuantity.Text" xml:space="preserve">
+    <value>Quantity</value>
+    <comment>Menu Item  text for sort by recent order quantity</comment>
+  </data>
+  <data name="orderTotalAmount.Text" xml:space="preserve">
+    <value>Total Amount</value>
+    <comment>Menu Item  text for sort by recent order Total Amount</comment>
+  </data>
+  <data name="orderUnitPrice.Text" xml:space="preserve">
+    <value>UnitPrice</value>
+    <comment>Menu Item  text for sort by recent order unit price</comment>
+  </data>
 </root>
