@@ -134,7 +134,7 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.ColumnSpan="2" Margin="5" Grid.Row="0" Text="{Binding ProductName}" Style="{StaticResource ProductTextblockTextStyle}"
-                           TextWrapping="Wrap"  FontWeight="SemiBold" Foreground="Black"/>
+                           TextWrapping="Wrap"  FontWeight="SemiBold" Foreground="Black" LineHeight="22"/>
                         <TextBlock x:Uid="RecentOrderProductSku" Grid.Column="0" Grid.Row="1" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" Foreground="Black"/>
                         <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding ProductSku}" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" Foreground="Black"/>
                         <TextBlock x:Uid="RecentOrderUnitPrice" Grid.Column="0" Grid.Row="2" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" Foreground="Black"/>

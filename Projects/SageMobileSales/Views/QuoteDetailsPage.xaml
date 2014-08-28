@@ -325,7 +325,7 @@
                                        VerticalAlignment="Bottom" />
                             <TextBlock
                                 Text="{Binding Total,Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:C}'}"
-                                Style="{StaticResource DetailsPageTextblockTextStyle}"
+                                Style="{StaticResource DetailsPageTextblockTextStyle}" FontWeight="Bold"
                                 VerticalAlignment="Bottom" Width="300" />
                         </StackPanel>
                     </StackPanel>
