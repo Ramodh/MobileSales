@@ -197,9 +197,15 @@
                               ItemsSource="{Binding Source={StaticResource itemsViewSourceRecentOrders}}"
                               SelectionMode="None"
                               IsSwipeEnabled="false"
-                              IsItemClickEnabled="True"
-                              ItemTemplate="{StaticResource recentOrdersTemplate}">
+                              IsItemClickEnabled="True"                             
+                        ItemTemplateSelector="{StaticResource SeeMoreRecentOrdersDataTemplateSelector}">
 
+                        <interactivity:Interaction.Behaviors>
+                            <core:EventTriggerBehavior EventName="ItemClick">
+                                <core:CallMethodAction MethodName="GridViewSeeMoreItemClick"
+                                                       TargetObject="{Binding Mode=OneWay}" />
+                            </core:EventTriggerBehavior>
+                        </interactivity:Interaction.Behaviors>
                         <!--<interactivity:Interaction.Behaviors>
                             <core:EventTriggerBehavior EventName="ItemClick">
                                 <core:CallMethodAction MethodName="GridViewRecentOrderItemClick"

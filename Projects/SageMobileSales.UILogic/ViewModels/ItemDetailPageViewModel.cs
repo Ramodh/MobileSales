@@ -198,7 +198,7 @@ namespace SageMobileSales.UILogic.ViewModels
             //TODO
             // Need to be replaced with real data once RecentOrders Service call is done
             RecentOrders = new List<RecentOrders>();
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 10; i++)
             {
                 RecentOrders recentOrder = new RecentOrders();
                 recentOrder.Date = Convert.ToDateTime("05/09/2014");
@@ -207,7 +207,12 @@ namespace SageMobileSales.UILogic.ViewModels
                 recentOrder.UnitPrice = Convert.ToDecimal("369.89");
                 recentOrder.Total = Convert.ToDecimal("3329.01");
                 RecentOrders.Add(recentOrder);
-            }            
+            }
+            if (RecentOrders.Count > 7)
+            {
+                RecentOrders = RecentOrders.GetRange(0, 7);
+                RecentOrders.Add(new RecentOrders() { Invoice = DataAccessUtils.SeeMore });
+            }
             IsRecentOrdersVisible = Visibility.Visible;
             // Making Service request to get complete details- images, product, other products
             await _productDetailsService.SyncProductDetails(_productId);
@@ -396,6 +401,23 @@ namespace SageMobileSales.UILogic.ViewModels
             {
                 _log = AppEventSource.Log.WriteLine(ex);
                 AppEventSource.Log.Error(_log);
+            }
+        }
+        /// <summary>
+        ///     Grid View Item Click
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="parameter"></param>
+        public void GridViewSeeMoreItemClick(object sender, object parameter)
+        {
+            var arg = (parameter as ItemClickEventArgs).ClickedItem as RecentOrders;
+
+            if (arg != null)
+            {
+                if (arg.Invoice == DataAccessUtils.SeeMore)
+                {
+                    _navigationService.Navigate("RecentOrders", _productDetail);
+                }
             }
         }
 

@@ -21,6 +21,11 @@ namespace SageMobileSales.UILogic.Common
         public static string Status = "Status";
         public static string Amount = "Amount";
         public static string Scratch = "Scratch";
+        public static string UnitPrice = "UnitPrice";
+        public static string Quantity = "Quantity";
+        public static string Invoice = "Invoice";
+        public static string QuoteDetailsPage = "QuoteDetailsPage";
+        public static string ItemDetailPage = "ItemDetailPage";
         public static string PreviousOrder = "Previous order";
         public static string PreviousPurchasedItems = "Previously purchased items";
         public static string ScratchText = "Create the quote from scratch";

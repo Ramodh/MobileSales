@@ -463,14 +463,14 @@
                 <ColumnDefinition Width="90" />
                 <ColumnDefinition Width="Auto" />               
             </Grid.ColumnDefinitions>
-            <TextBlock x:Uid="RecentOrderDate" Grid.Row="0" Text="Date:" Style="{StaticResource AddressTextStyle}"
+            <TextBlock x:Uid="RecentOrderDate" Grid.Row="1" Text="Date:" Style="{StaticResource AddressTextStyle}"
                       TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="0" />
-            <TextBlock Grid.Row="0" Text="{Binding Date,Converter={StaticResource StringFormatConverter},ConverterParameter='{}{0:MM/dd/yyyy}'}" Style="{StaticResource AddressTextStyle}"
+            <TextBlock Grid.Row="1" Text="{Binding Date,Converter={StaticResource StringFormatConverter},ConverterParameter='{}{0:MM/dd/yyyy}'}" Style="{StaticResource AddressTextStyle}"
                        TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="1"/>
 
-            <TextBlock x:Uid="RecentOrderInvoice" Grid.Row="1" Text="Invoice:" Style="{StaticResource AddressTextStyle}"
+            <TextBlock x:Uid="RecentOrderInvoice" Grid.Row="0" Text="Invoice:" Style="{StaticResource AddressTextStyle}"
                        TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="0" />
-            <TextBlock Grid.Row="1"
+            <TextBlock Grid.Row="0"
                        Text="{Binding Invoice}"
                        Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis"
                        Grid.Column="1"/>
@@ -567,5 +567,9 @@
         GridItemsTemplate="{StaticResource CustomerContactsDashBoardDarkTemplate}"
         ImageTemplate="{StaticResource ImageDataTemplate}">
     </behaviors:SeeMoreDataTemplateSelector>
-
+    <behaviors:SeeMoreDataTemplateSelector x:Key="SeeMoreRecentOrdersDataTemplateSelector"
+        GridItemsTemplate="{StaticResource recentOrdersTemplate}"
+        ImageTemplate="{StaticResource ImageDataTemplate}">
+    </behaviors:SeeMoreDataTemplateSelector>
+    
 </ResourceDictionary>
