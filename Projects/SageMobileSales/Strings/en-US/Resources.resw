@@ -645,8 +645,8 @@
     <value>No Quotes present</value>
     <comment>Empty string which we display when no quotes available</comment>
   </data>
-  <data name="DividerSymbol" xml:space="preserve">
-    <value>|  </value>
+  <data name="DividerSymbol.Text" xml:space="preserve">
+    <value> |  </value>
     <comment>Recent Orders Grid divider symbol between header and customer name</comment>
   </data>
   <data name="ItemdetailRecentOrders.Text" xml:space="preserve">

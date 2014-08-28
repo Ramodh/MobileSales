@@ -299,10 +299,12 @@
                     <ColumnDefinition Width="290" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <Image Source="{Binding Url}"
-                       Grid.Column="0"
-                       Height="120" Width="120"
-                       Margin="10" />
+                <Border Background="{StaticResource ListViewItemPlaceholderBackgroundThemeBrush}" Grid.Column="0"
+                       Height="120" Width="120"  Margin="10" >
+                    <!--<Image Source="{Binding Url}" Stretch="UniformToFill" Height="100" Width="100"/>-->
+                    <controls:ImageplaceHolderUserControl Placeholder="/Assets/imagePlaceholder_100x100.png"
+                                                      Source="{Binding Url}" Height="110" Width="110"/>
+                </Border>                                               
                 <Grid Grid.Column="1">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />

@@ -35,6 +35,7 @@ namespace SageMobileSales.UILogic.ViewModels
         private List<ProductAssociatedBlob> _productImage;
         private List<RecentOrders> _recentOrders;
         private Visibility _isRecentOrdersVisible;
+        private string _customerName;
 
         public ItemDetailPageViewModel(INavigationService navigationService, IProductRepository productRepository,
             IProductAssociatedBlobsRepository productAssociatedBlobsRepository,
@@ -177,6 +178,12 @@ namespace SageMobileSales.UILogic.ViewModels
             get { return _isRecentOrdersVisible; }
             private set { SetProperty(ref _isRecentOrdersVisible, value); }
         }
+
+        public string CustomerName
+        {
+            get { return _customerName; }
+            private set { SetProperty(ref _customerName, value); }
+        }
         #endregion
 
         public override async void OnNavigatedTo(object navigationParameter, NavigationMode navigationMode,
@@ -195,7 +202,8 @@ namespace SageMobileSales.UILogic.ViewModels
             }
             //Display data from LocalDB
             DisplayProductDetails(_productId);
-            //TODO
+
+            // TODO
             // Need to be replaced with real data once RecentOrders Service call is done
             RecentOrders = new List<RecentOrders>();
             for (int i = 0; i < 10; i++)
@@ -213,6 +221,9 @@ namespace SageMobileSales.UILogic.ViewModels
                 RecentOrders = RecentOrders.GetRange(0, 7);
                 RecentOrders.Add(new RecentOrders() { Invoice = DataAccessUtils.SeeMore });
             }
+            // TODO
+            // Need to be replaced with real data.
+            CustomerName = "Actwin.Co.Ltd";
             IsRecentOrdersVisible = Visibility.Visible;
             // Making Service request to get complete details- images, product, other products
             await _productDetailsService.SyncProductDetails(_productId);
