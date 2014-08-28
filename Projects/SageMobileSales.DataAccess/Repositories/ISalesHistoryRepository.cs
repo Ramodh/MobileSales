@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SageMobileSales.DataAccess.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,5 +11,6 @@ namespace SageMobileSales.DataAccess.Repositories
     public interface ISalesHistoryRepository
     {
         Task SaveSalesHistoryAsync(JsonObject sDataSalesHistory);
+        Task<List<SalesHistory>> GetCustomerProductSalesHistory(string CustomerId, string ProductId);
     }
 }

@@ -96,7 +96,7 @@ namespace SageMobileSales.UILogic.ViewModels
             EditQuoteCommand = DelegateCommand.FromAsyncHandler(ChangeQuoteStatus);
             ShippingAndHandlingTextChangedCommand = new DelegateCommand<object>(ShippingAndHandlingTextChanged);
             DiscountTextChangedCommand = new DelegateCommand<object>(DiscountPercentageTextChanged);
-            //RecentOrdersCommand = new DelegateCommand(NavigateToRecentOrders);
+            RecentOrdersCommand = new DelegateCommand(NavigateToRecentOrders);
 
             ////IsBottomAppBarOpened = false;
             //IsItemSelected = Visibility.Collapsed;
@@ -408,7 +408,7 @@ namespace SageMobileSales.UILogic.ViewModels
             PageUtils.CamefromQuoteDetails = true;
             if (!_isCancelled)
             {
-                _navigationService.Navigate("CategoryLevelOne", null);
+                _navigationService.Navigate("CategoryLevelOne", QuoteDetails);
             }
             _isCancelled = false;
         }
@@ -789,7 +789,10 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             try
             {
-
+                //SalesHistory salesHistory=new SalesHistory();
+                //salesHistory.CustomerId=CustomerDetails.CustomerName;
+                //salesHistory.ProductId=
+                //_navigationService.Navigate("",);
             }
             catch (Exception ex)
             {

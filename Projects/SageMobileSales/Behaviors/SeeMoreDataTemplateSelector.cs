@@ -20,7 +20,7 @@ namespace SageMobileSales.Behaviors
         Contact contact;
         FrequentlyPurchasedItem frequentlyPurchasedItem;
         Address address;
-        RecentOrders recentOrders;
+        SalesHistory recentOrders;
         protected override DataTemplate SelectTemplateCore(object item,
                                                            DependencyObject container)
         {
@@ -69,10 +69,10 @@ namespace SageMobileSales.Behaviors
                 else
                     return GridItemsTemplate;
             }
-                else if (item.GetType().Name == "RecentOrders")
+                else if (item.GetType().Name == "SalesHistory")
                 {
-                    recentOrders = item as RecentOrders;
-                    if (recentOrders.Invoice == PageUtils.SeeMore)
+                    recentOrders = item as SalesHistory;
+                    if (recentOrders.InvoiceNumber == PageUtils.SeeMore)
                         return ImageTemplate;
                     else
                         return GridItemsTemplate;
