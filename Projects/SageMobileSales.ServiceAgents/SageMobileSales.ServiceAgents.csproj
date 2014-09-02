@@ -146,8 +146,6 @@
     <Compile Include="Services\ProductAssociatedBlobService.cs" />
     <Compile Include="Services\ProductDetailsService.cs" />
     <Compile Include="Services\ProductService.cs" />
-    <Compile Include="Services\CatalogSyncProcessService.cs" />
-    <Compile Include="Services\CategorySyncProcessService.cs" />
     <Compile Include="Services\IProductService.cs" />
     <Compile Include="Services\ProductCategoryService.cs" />
     <Compile Include="Services\IProductCategoryService.cs" />

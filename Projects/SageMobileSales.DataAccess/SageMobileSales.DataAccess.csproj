@@ -148,7 +148,6 @@
     <Compile Include="IDatabase.cs" />
     <Compile Include="IDataContext.cs" />
     <Compile Include="Model\CustomerDetails.cs" />
-    <Compile Include="Model\FrequentlyPurchasedItems.cs" />
     <Compile Include="Model\OrderDetails.cs" />
     <Compile Include="Model\ProductDetails.cs" />
     <Compile Include="Model\QuoteDetails.cs" />
