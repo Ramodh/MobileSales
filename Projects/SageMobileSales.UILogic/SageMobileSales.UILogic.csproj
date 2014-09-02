@@ -130,7 +130,6 @@
     <Compile Include="ViewModels\ItemDetailPageViewModel.cs" />
     <Compile Include="ViewModels\ItemsPageViewModel.cs" />
     <Compile Include="ViewModels\MailViewModel.cs" />
-    <Compile Include="ViewModels\MainMenuPageViewModel.cs" />
     <Compile Include="ViewModels\OrderDetailsPageViewModel.cs" />
     <Compile Include="ViewModels\OrdersPageViewModel.cs" />
     <Compile Include="ViewModels\OtherAddressesPageViewModel.cs" />
@@ -142,7 +141,6 @@
     <Compile Include="ViewModels\SearchResultsPageViewModel.cs" />
     <Compile Include="ViewModels\SearchUserControlViewModel.cs" />
     <Compile Include="ViewModels\SigninPageViewModel.cs" />
-    <Compile Include="ViewModels\TestPageViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Practices.Prism.PubSubEvents">

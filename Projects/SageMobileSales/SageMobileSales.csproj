@@ -121,7 +121,6 @@
     <Compile Include="Behaviors\NumericTextBoxBehavior.cs" />
     <Compile Include="Behaviors\SeeMoreDataTemplateSelector.cs" />
     <Compile Include="Converters\ErrorConverter.cs" />
-    <Compile Include="Converters\SeeMoreVisibilityConverter.cs" />
     <Compile Include="Converters\StringFormatConverter.cs" />
     <Compile Include="Converters\TextHeaderVisibilityConverter.cs" />
     <Compile Include="Converters\TextNegationVisibilityConverter.cs" />
@@ -132,9 +131,6 @@
     <Compile Include="Common\SuspensionManager.cs" />
     <Compile Include="Converters\InProgessVisibilityConverter.cs" />
     <Compile Include="Converters\InProgressNegationVisibilityConverter.cs" />
-    <Compile Include="MainPage.xaml.cs">
-      <DependentUpon>MainPage.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Views\AboutSettingsFlyout.xaml.cs">
       <DependentUpon>AboutSettingsFlyout.xaml</DependentUpon>
@@ -196,9 +192,6 @@
     <Compile Include="Views\OtherAddressesPage.xaml.cs">
       <DependentUpon>OtherAddressesPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\PasscodePage.xaml.cs">
-      <DependentUpon>PasscodePage.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\PlaceOrderPage.xaml.cs">
       <DependentUpon>PlaceOrderPage.xaml</DependentUpon>
     </Compile>
@@ -222,9 +215,6 @@
     </Compile>
     <Compile Include="Views\SigninPage.xaml.cs">
       <DependentUpon>SigninPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\MainMenuPage.xaml.cs">
-      <DependentUpon>MainMenuPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\TopAppBarUserControl.xaml.cs">
       <DependentUpon>TopAppBarUserControl.xaml</DependentUpon>
@@ -272,10 +262,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="MainPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Themes\DataTemplates.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -364,10 +350,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\PasscodePage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Views\PlaceOrderPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -397,10 +379,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\SigninPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\MainMenuPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
