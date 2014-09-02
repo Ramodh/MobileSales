@@ -20,7 +20,7 @@
         <x:String x:Key="AppName">My Application</x:String>
         <CollectionViewSource
             x:Name="itemsViewSourceRecentOrders"
-            Source="{Binding ProductRecentOrders}" />
+            Source="{Binding SalesHistoryList}" />
     </prism:VisualStateAwarePage.Resources>
     
     <prism:VisualStateAwarePage.TopAppBar>

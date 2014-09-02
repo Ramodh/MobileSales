@@ -140,8 +140,8 @@ namespace SageMobileSales.UILogic.ViewModels
                         //                           {
                         // Sync SalesRep(Loggedin User) data
                         await _salesRepService.SyncSalesRep();
-                        Constants.TenantId = "F200AC19-1BE6-48C5-B604-2D322020F48E";
-                        //Constants.TenantId = await _tenantRepository.GetTenantId();
+                        //Constants.TenantId = "F200AC19-1BE6-48C5-B604-2D322020F48E";
+                        Constants.TenantId = await _tenantRepository.GetTenantId();
                         //Company Settings
                         await _tenantService.SyncTenant();
                         //SalesTeamMember
@@ -168,8 +168,8 @@ namespace SageMobileSales.UILogic.ViewModels
 
                 if (string.IsNullOrEmpty(Constants.TenantId))
                 {
-                    Constants.TenantId = "F200AC19-1BE6-48C5-B604-2D322020F48E";
-                    //Constants.TenantId = await _tenantRepository.GetTenantId();
+                    //Constants.TenantId = "F200AC19-1BE6-48C5-B604-2D322020F48E";
+                    Constants.TenantId = await _tenantRepository.GetTenantId();
                     string test = await _tenantRepository.GetTenantId();
                     Debug.WriteLine("" + test + " " + Constants.TenantId);
                 }

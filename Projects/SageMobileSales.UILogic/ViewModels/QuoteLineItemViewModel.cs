@@ -13,12 +13,12 @@ namespace SageMobileSales.UILogic.ViewModels
         private readonly string _lineItemId;
         private readonly decimal _lineItemPrice;
         private readonly INavigationService _navigationService;
+        private readonly string _productId;
         private readonly string _productName;
         private readonly int _productQuantity;
         private readonly string _productSku;
         private readonly string _quoteId;
         private int _lineItemQuantity;
-        private string _productId;
 
 
         public QuoteLineItemViewModel(INavigationService navigationService, LineItemDetails quoteLineItemDetails)
@@ -37,12 +37,15 @@ namespace SageMobileSales.UILogic.ViewModels
             _productQuantity = quoteLineItemDetails.ProductQuantity;
             _productSku = quoteLineItemDetails.ProductSku;
             _quoteId = quoteLineItemDetails.LineId;
+            _productId = quoteLineItemDetails.ProductId;
         }
 
         public string QuoteId
         {
             get { return _quoteId; }
         }
+
+        public string CustomerId { get; set; }
 
         public string ProductId
         {
@@ -121,10 +124,11 @@ namespace SageMobileSales.UILogic.ViewModels
         /// <param name="parameter"></param>
         public async void GridViewRecentOrderItemClick(object sender, object parameter)
         {
-            var arg = sender as QuoteLineItemViewModel;
-
-            if (arg != null)
-                _navigationService.Navigate("RecentOrders", arg);
+            var lineItemDtls = sender as QuoteLineItemViewModel;
+            if (lineItemDtls != null)
+            {
+                _navigationService.Navigate("RecentOrders", lineItemDtls);
+            }
         }
     }
 }

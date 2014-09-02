@@ -27,8 +27,9 @@ namespace SageMobileSales.UILogic.ViewModels
         private readonly IQuoteLineItemService _quoteLineItemService;
         private readonly IQuoteRepository _quoteRepository;
         private readonly IQuoteService _quoteService;
+        private readonly SalesHistoryRepository _salesHistoryRepository;
+        private readonly SalesHistoryService _salesHistoryService;
         private IContactRepository _contactRepository;
-
         private List<Customer> _customerList;
         private string _customerName;
         private bool _emptyText;
@@ -36,12 +37,14 @@ namespace SageMobileSales.UILogic.ViewModels
         private List<ProductDetails> _otherProduct;
         private List<ProductAssociatedBlob> _productImage;
         private List<RecentOrders> _recentOrders;
+        private List<SalesHistory> _salesHistoryList;
 
         public ItemDetailPageViewModel(INavigationService navigationService, IProductRepository productRepository,
             IProductAssociatedBlobsRepository productAssociatedBlobsRepository,
             IProductDetailsService productDetailsService,
             IContactRepository contactRepository, ICustomerRepository customerRepository, IQuoteService quoteService,
             IQuoteLineItemRepository quoteLineItemRepository, IQuoteRepository quoteRepository,
+            SalesHistoryRepository salesHistoryRepository, SalesHistoryService salesHistoryService,
             IQuoteLineItemService quoteLineItemService)
         {
             _navigationService = navigationService;
@@ -54,6 +57,8 @@ namespace SageMobileSales.UILogic.ViewModels
             _quoteLineItemService = quoteLineItemService;
             _quoteLineItemRepository = quoteLineItemRepository;
             _quoteRepository = quoteRepository;
+            _salesHistoryService = salesHistoryService;
+            _salesHistoryRepository = salesHistoryRepository;
             TextChangedCommand = new DelegateCommand<object>(TextBoxTextChanged);
             IncrementCountCommand = DelegateCommand.FromAsyncHandler(IncrementCount);
             DecrementCountCommand = DelegateCommand.FromAsyncHandler(DecrementCount);
@@ -77,6 +82,7 @@ namespace SageMobileSales.UILogic.ViewModels
         private string _productPrice;
         private string _productSKU;
         private string _productStock;
+        private QuoteDetails _quoteDetails;
         private string _unitOfMeasure;
 
         /// <summary>
@@ -187,12 +193,19 @@ namespace SageMobileSales.UILogic.ViewModels
             private set { SetProperty(ref _customerName, value); }
         }
 
+        public List<SalesHistory> SalesHistoryList
+        {
+            get { return _salesHistoryList; }
+            private set { SetProperty(ref _salesHistoryList, value); }
+        }
+
         #endregion
 
         public override async void OnNavigatedTo(object navigationParameter, NavigationMode navigationMode,
             Dictionary<string, object> viewModelState)
         {
             _productId = navigationParameter as string;
+
             if (PageUtils.CamefromQuoteDetails)
             {
                 CamefromCreateQuote = Visibility.Visible;
@@ -203,31 +216,50 @@ namespace SageMobileSales.UILogic.ViewModels
                 CamefromCreateQuote = Visibility.Collapsed;
                 CamefromCatalog = Visibility.Visible;
             }
+            InProgress = true;
             //Display data from LocalDB
             DisplayProductDetails(_productId);
 
-            // TODO
-            // Need to be replaced with real data once RecentOrders Service call is done
-            RecentOrders = new List<RecentOrders>();
-            for (int i = 0; i < 10; i++)
+            //TODO
+            // Need to Change Code 
+            if (!string.IsNullOrEmpty(PageUtils.SelectedQuoteId))
             {
-                var recentOrder = new RecentOrders();
-                recentOrder.Date = Convert.ToDateTime("05/09/2014");
-                recentOrder.Invoice = "#1234567";
-                recentOrder.Quantity = 9;
-                recentOrder.UnitPrice = Convert.ToDecimal("369.89");
-                recentOrder.Total = Convert.ToDecimal("3329.01");
-                RecentOrders.Add(recentOrder);
+                _quoteDetails = await _quoteRepository.GetQuoteDetailsAsync(PageUtils.SelectedQuoteId);
+                await _salesHistoryService.SyncSalesHistory(_quoteDetails.CustomerId, _productId);
+                SalesHistoryList =
+                    await _salesHistoryRepository.GetCustomerProductSalesHistory(_quoteDetails.CustomerId, _productId);
+                if (SalesHistoryList != null)
+                {
+                    IsRecentOrdersVisible = Visibility.Visible;
+                    if (SalesHistoryList.Count > 7)
+                    {
+                        SalesHistoryList = SalesHistoryList.GetRange(0, 7);
+                        SalesHistoryList.Add(new SalesHistory {InvoiceNumber = DataAccessUtils.SeeMore});
+                    }
+                }
+                Customer customer = await _customerRepository.GetCustomerDataAsync(_quoteDetails.CustomerId);
+                if (customer != null)
+                {
+                    CustomerName = customer.CustomerName;
+                }
             }
-            if (RecentOrders.Count > 7)
+
+            if (SalesHistoryList != null)
             {
-                RecentOrders = RecentOrders.GetRange(0, 7);
-                RecentOrders.Add(new RecentOrders {Invoice = DataAccessUtils.SeeMore});
+                if (SalesHistoryList.Count > 0)
+                {
+                    IsRecentOrdersVisible = Visibility.Visible;
+                }
+                else
+                {
+                    IsRecentOrdersVisible = Visibility.Collapsed;
+                }
             }
-            // TODO
-            // Need to be replaced with real data.
-            CustomerName = "Actwin.Co.Ltd";
-            IsRecentOrdersVisible = Visibility.Visible;
+            else
+            {
+                IsRecentOrdersVisible = Visibility.Collapsed;
+            }
+
             // Making Service request to get complete details- images, product, other products
             await _productDetailsService.SyncProductDetails(_productId);
 
@@ -239,7 +271,7 @@ namespace SageMobileSales.UILogic.ViewModels
             PageUtils.ResetLocalVariables();
             PageUtils.SelectedProduct = null;
 
-
+            InProgress = false;
             base.OnNavigatedTo(navigationParameter, navigationMode, viewModelState);
         }
 
