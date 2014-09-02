@@ -15,6 +15,7 @@ namespace SageMobileSales.DataAccess.Model
         public string ProductSku { get; set; }
         public string CustomerName { get; set; }
         public string ProductId { get; set; }
+
         public decimal Amount
         {
             get { return Math.Round(LineItemQuantity*LineItemPrice, 2); }

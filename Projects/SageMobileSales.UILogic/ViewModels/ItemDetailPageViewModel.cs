@@ -8,11 +8,11 @@ using Microsoft.Practices.Prism.StoreApps;
 using Microsoft.Practices.Prism.StoreApps.Interfaces;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Entities;
+using SageMobileSales.DataAccess.Model;
 using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
 using SageMobileSales.ServiceAgents.Services;
 using SageMobileSales.UILogic.Common;
-using SageMobileSales.DataAccess.Model;
 
 namespace SageMobileSales.UILogic.ViewModels
 {
@@ -27,23 +27,24 @@ namespace SageMobileSales.UILogic.ViewModels
         private readonly IQuoteLineItemService _quoteLineItemService;
         private readonly IQuoteRepository _quoteRepository;
         private readonly IQuoteService _quoteService;
+        private readonly SalesHistoryRepository _salesHistoryRepository;
+        private readonly SalesHistoryService _salesHistoryService;
         private IContactRepository _contactRepository;
-        private SalesHistoryRepository _salesHistoryRepository;
-        private SalesHistoryService _salesHistoryService;
         private List<Customer> _customerList;
+        private string _customerName;
         private bool _emptyText;
+        private Visibility _isRecentOrdersVisible;
         private List<ProductDetails> _otherProduct;
         private List<ProductAssociatedBlob> _productImage;
         private List<RecentOrders> _recentOrders;
-        private Visibility _isRecentOrdersVisible;
-        private string _customerName;
         private List<SalesHistory> _salesHistoryList;
 
         public ItemDetailPageViewModel(INavigationService navigationService, IProductRepository productRepository,
             IProductAssociatedBlobsRepository productAssociatedBlobsRepository,
             IProductDetailsService productDetailsService,
             IContactRepository contactRepository, ICustomerRepository customerRepository, IQuoteService quoteService,
-            IQuoteLineItemRepository quoteLineItemRepository, IQuoteRepository quoteRepository, SalesHistoryRepository salesHistoryRepository,SalesHistoryService salesHistoryService,
+            IQuoteLineItemRepository quoteLineItemRepository, IQuoteRepository quoteRepository,
+            SalesHistoryRepository salesHistoryRepository, SalesHistoryService salesHistoryService,
             IQuoteLineItemService quoteLineItemService)
         {
             _navigationService = navigationService;
@@ -81,8 +82,8 @@ namespace SageMobileSales.UILogic.ViewModels
         private string _productPrice;
         private string _productSKU;
         private string _productStock;
-        private string _unitOfMeasure;
         private QuoteDetails _quoteDetails;
+        private string _unitOfMeasure;
 
         /// <summary>
         ///     Data loading indicator
@@ -173,11 +174,13 @@ namespace SageMobileSales.UILogic.ViewModels
             get { return _enteredQuantity; }
             private set { SetProperty(ref _enteredQuantity, value); }
         }
+
         public List<RecentOrders> RecentOrders
         {
             get { return _recentOrders; }
             private set { SetProperty(ref _recentOrders, value); }
         }
+
         public Visibility IsRecentOrdersVisible
         {
             get { return _isRecentOrdersVisible; }
@@ -195,6 +198,7 @@ namespace SageMobileSales.UILogic.ViewModels
             get { return _salesHistoryList; }
             private set { SetProperty(ref _salesHistoryList, value); }
         }
+
         #endregion
 
         public override async void OnNavigatedTo(object navigationParameter, NavigationMode navigationMode,
@@ -203,13 +207,12 @@ namespace SageMobileSales.UILogic.ViewModels
             _productId = navigationParameter as string;
 
             if (PageUtils.CamefromQuoteDetails)
-            {                
+            {
                 CamefromCreateQuote = Visibility.Visible;
                 CamefromCatalog = Visibility.Collapsed;
             }
             else
             {
-            
                 CamefromCreateQuote = Visibility.Collapsed;
                 CamefromCatalog = Visibility.Visible;
             }
@@ -223,22 +226,22 @@ namespace SageMobileSales.UILogic.ViewModels
             {
                 _quoteDetails = await _quoteRepository.GetQuoteDetailsAsync(PageUtils.SelectedQuoteId);
                 await _salesHistoryService.SyncSalesHistory(_quoteDetails.CustomerId, _productId);
-                SalesHistoryList = await _salesHistoryRepository.GetCustomerProductSalesHistory(_quoteDetails.CustomerId, _productId);
-                if (SalesHistoryList!=null)
+                SalesHistoryList =
+                    await _salesHistoryRepository.GetCustomerProductSalesHistory(_quoteDetails.CustomerId, _productId);
+                if (SalesHistoryList != null)
                 {
-                    
                     IsRecentOrdersVisible = Visibility.Visible;
                     if (SalesHistoryList.Count > 7)
                     {
                         SalesHistoryList = SalesHistoryList.GetRange(0, 7);
-                        SalesHistoryList.Add(new SalesHistory() { InvoiceNumber = DataAccessUtils.SeeMore });
+                        SalesHistoryList.Add(new SalesHistory {InvoiceNumber = DataAccessUtils.SeeMore});
                     }
-                }             
+                }
                 Customer customer = await _customerRepository.GetCustomerDataAsync(_quoteDetails.CustomerId);
                 if (customer != null)
                 {
                     CustomerName = customer.CustomerName;
-                }                
+                }
             }
 
             if (SalesHistoryList != null)
@@ -256,7 +259,7 @@ namespace SageMobileSales.UILogic.ViewModels
             {
                 IsRecentOrdersVisible = Visibility.Collapsed;
             }
-            
+
             // Making Service request to get complete details- images, product, other products
             await _productDetailsService.SyncProductDetails(_productId);
 
@@ -368,7 +371,7 @@ namespace SageMobileSales.UILogic.ViewModels
                     await _quoteLineItemRepository.UpdateQuoteLineItemToDbAsync(quoteLineItemExists);
 
                     quote.Amount = quote.Amount +
-                                   Math.Round((quoteLineItemExists.Price * quoteLineItemExists.Quantity), 2);
+                                   Math.Round((quoteLineItemExists.Price*quoteLineItemExists.Quantity), 2);
                     await _quoteRepository.UpdateQuoteToDbAsync(quote);
 
                     if (quote.QuoteId.Contains(PageUtils.Pending))
@@ -404,7 +407,7 @@ namespace SageMobileSales.UILogic.ViewModels
 
                     await _quoteLineItemRepository.AddQuoteLineItemToDbAsync(quoteLineItem);
 
-                    quote.Amount = quote.Amount + Math.Round((quoteLineItem.Price * quoteLineItem.Quantity), 2);
+                    quote.Amount = quote.Amount + Math.Round((quoteLineItem.Price*quoteLineItem.Quantity), 2);
                     await _quoteRepository.UpdateQuoteToDbAsync(quote);
 
                     if (quote.QuoteId.Contains(PageUtils.Pending))
@@ -446,6 +449,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 AppEventSource.Log.Error(_log);
             }
         }
+
         /// <summary>
         ///     Grid View Item Click
         /// </summary>
@@ -483,9 +487,9 @@ namespace SageMobileSales.UILogic.ViewModels
         private void TextBoxTextChanged(object args)
         {
             EmptyText = false;
-            if (((TextBox)args).Text != null && ((TextBox)args).Text != string.Empty)
+            if (((TextBox) args).Text != null && ((TextBox) args).Text != string.Empty)
             {
-                EnteredQuantity = Convert.ToInt32(((TextBox)args).Text.Trim());
+                EnteredQuantity = Convert.ToInt32(((TextBox) args).Text.Trim());
                 ProductDetails.Quantity = EnteredQuantity;
             }
         }

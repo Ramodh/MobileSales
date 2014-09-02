@@ -1,12 +1,11 @@
-﻿using SageMobileSales.DataAccess.Common;
-using SageMobileSales.DataAccess.Entities;
-using SQLite;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Windows.Data.Json;
+using SageMobileSales.DataAccess.Common;
+using SageMobileSales.DataAccess.Entities;
+using SQLite;
 
 namespace SageMobileSales.DataAccess.Repositories
 {
@@ -33,7 +32,8 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        JsonArray sDataFrequentlyPurchasedItemArray = sDataFrequentlyPurchasedItem.GetNamedArray("$resources");
+                        JsonArray sDataFrequentlyPurchasedItemArray =
+                            sDataFrequentlyPurchasedItem.GetNamedArray("$resources");
                         if (sDataFrequentlyPurchasedItemArray.Count > 0)
                         {
                             await SaveFrequentlyPurchasedItemDetailsAsync(sDataFrequentlyPurchasedItemArray);
@@ -60,7 +60,9 @@ namespace SageMobileSales.DataAccess.Repositories
             try
             {
                 FrequentlyPurchasedItemList =
-                    await _sageSalesDB.QueryAsync<FrequentlyPurchasedItem>("Select * from FrequentlyPurchasedItem where CustomerId=?", customerId);           
+                    await
+                        _sageSalesDB.QueryAsync<FrequentlyPurchasedItem>(
+                            "Select * from FrequentlyPurchasedItem where CustomerId=?", customerId);
             }
             catch (SQLiteException ex)
             {
@@ -90,7 +92,6 @@ namespace SageMobileSales.DataAccess.Repositories
                 JsonObject sDataFrequentlyPurchasedItem = frequentlyPurchasedItem.GetObject();
                 await AddOrUpdateFrequentlyPurchasedItemJsonToDbAsync(sDataFrequentlyPurchasedItem);
             }
-
         }
 
         private async Task AddOrUpdateFrequentlyPurchasedItemJsonToDbAsync(JsonObject sDataFrequentlyPurchasedItem)
@@ -105,12 +106,15 @@ namespace SageMobileSales.DataAccess.Repositories
                         List<FrequentlyPurchasedItem> frequentlyPurchasedItemList;
                         frequentlyPurchasedItemList =
                             await
-                                _sageSalesDB.QueryAsync<FrequentlyPurchasedItem>("SELECT * FROM FrequentlyPurchasedItem where FrequentlyPurchasedItemId=?",
+                                _sageSalesDB.QueryAsync<FrequentlyPurchasedItem>(
+                                    "SELECT * FROM FrequentlyPurchasedItem where FrequentlyPurchasedItemId=?",
                                     sDataFrequentlyPurchasedItem.GetNamedString("$key"));
 
                         if (frequentlyPurchasedItemList.FirstOrDefault() != null)
                         {
-                            await UpdateFrequentlyPurchasedItemJsonToDbAsync(sDataFrequentlyPurchasedItem, frequentlyPurchasedItemList.FirstOrDefault());
+                            await
+                                UpdateFrequentlyPurchasedItemJsonToDbAsync(sDataFrequentlyPurchasedItem,
+                                    frequentlyPurchasedItemList.FirstOrDefault());
                         }
                         else
                         {
@@ -126,11 +130,13 @@ namespace SageMobileSales.DataAccess.Repositories
             }
         }
 
-        private async Task UpdateFrequentlyPurchasedItemJsonToDbAsync(JsonObject sDataFrequentlyPurchasedItem, FrequentlyPurchasedItem frequentlyPurchasedItemDbObj)
+        private async Task UpdateFrequentlyPurchasedItemJsonToDbAsync(JsonObject sDataFrequentlyPurchasedItem,
+            FrequentlyPurchasedItem frequentlyPurchasedItemDbObj)
         {
             try
             {
-                frequentlyPurchasedItemDbObj = ExtractFrequentlyPurchasedItemFromJsonAsync(sDataFrequentlyPurchasedItem, frequentlyPurchasedItemDbObj);
+                frequentlyPurchasedItemDbObj = ExtractFrequentlyPurchasedItemFromJsonAsync(
+                    sDataFrequentlyPurchasedItem, frequentlyPurchasedItemDbObj);
                 await _sageSalesDB.UpdateAsync(frequentlyPurchasedItemDbObj);
             }
             catch (SQLiteException ex)
@@ -151,9 +157,11 @@ namespace SageMobileSales.DataAccess.Repositories
             try
             {
                 //frequentlyPurchasedItemObj.CustomerId = customerId;
-                frequentlyPurchasedItemObj.FrequentlyPurchasedItemId = sDataFrequentlyPurchasedItem.GetNamedString("$key");
+                frequentlyPurchasedItemObj.FrequentlyPurchasedItemId =
+                    sDataFrequentlyPurchasedItem.GetNamedString("$key");
 
-                frequentlyPurchasedItemObj = ExtractFrequentlyPurchasedItemFromJsonAsync(sDataFrequentlyPurchasedItem, frequentlyPurchasedItemObj);
+                frequentlyPurchasedItemObj = ExtractFrequentlyPurchasedItemFromJsonAsync(sDataFrequentlyPurchasedItem,
+                    frequentlyPurchasedItemObj);
                 await _sageSalesDB.InsertAsync(frequentlyPurchasedItemObj);
             }
             catch (SQLiteException ex)
@@ -167,10 +175,10 @@ namespace SageMobileSales.DataAccess.Repositories
                 _log = AppEventSource.Log.WriteLine(ex);
                 AppEventSource.Log.Error(_log);
             }
-
         }
 
-        private FrequentlyPurchasedItem ExtractFrequentlyPurchasedItemFromJsonAsync(JsonObject sDataFrequentlyPurchasedItem, FrequentlyPurchasedItem frequentlyPurchasedItem)
+        private FrequentlyPurchasedItem ExtractFrequentlyPurchasedItemFromJsonAsync(
+            JsonObject sDataFrequentlyPurchasedItem, FrequentlyPurchasedItem frequentlyPurchasedItem)
         {
             try
             {
@@ -180,7 +188,8 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        frequentlyPurchasedItem.NumberOfInvoices = Convert.ToInt16(sDataFrequentlyPurchasedItem.GetNamedNumber("NumberOfInvoices"));
+                        frequentlyPurchasedItem.NumberOfInvoices =
+                            Convert.ToInt16(sDataFrequentlyPurchasedItem.GetNamedNumber("NumberOfInvoices"));
                     }
                 }
 
@@ -203,7 +212,8 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        frequentlyPurchasedItem.QuantityYtd = Convert.ToInt16(sDataFrequentlyPurchasedItem.GetNamedNumber("QuantityYtd"));
+                        frequentlyPurchasedItem.QuantityYtd =
+                            Convert.ToInt16(sDataFrequentlyPurchasedItem.GetNamedNumber("QuantityYtd"));
                     }
                 }
 
@@ -211,7 +221,8 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        frequentlyPurchasedItem.QuantityPriorYtd = Convert.ToInt16(sDataFrequentlyPurchasedItem.GetNamedNumber("QuantityPriorYtd"));
+                        frequentlyPurchasedItem.QuantityPriorYtd =
+                            Convert.ToInt16(sDataFrequentlyPurchasedItem.GetNamedNumber("QuantityPriorYtd"));
                     }
                 }
                 if (sDataFrequentlyPurchasedItem.TryGetValue("ItemNumber", out value))
@@ -225,14 +236,16 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        frequentlyPurchasedItem.ItemDescription = sDataFrequentlyPurchasedItem.GetNamedString("ItemDescription");
+                        frequentlyPurchasedItem.ItemDescription =
+                            sDataFrequentlyPurchasedItem.GetNamedString("ItemDescription");
                     }
                 }
                 if (sDataFrequentlyPurchasedItem.TryGetValue("EntityStatus", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        frequentlyPurchasedItem.EntityStatus = sDataFrequentlyPurchasedItem.GetNamedString("EntityStatus");
+                        frequentlyPurchasedItem.EntityStatus =
+                            sDataFrequentlyPurchasedItem.GetNamedString("EntityStatus");
                     }
                 }
                 if (sDataFrequentlyPurchasedItem.TryGetValue("IsDeleted", out value))

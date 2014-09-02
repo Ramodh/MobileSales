@@ -1,32 +1,29 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using Microsoft.Practices.Prism.StoreApps;
-using SageMobileSales.DataAccess.Model;
-using Windows.UI.Xaml.Controls;
 using Microsoft.Practices.Prism.StoreApps.Interfaces;
-using SageMobileSales.DataAccess.Repositories;
+using SageMobileSales.DataAccess.Model;
 
 namespace SageMobileSales.UILogic.ViewModels
 {
     [DataContract]
     public class QuoteLineItemViewModel : ViewModel
     {
-        private readonly INavigationService _navigationService;        
         private readonly string _imageUri;
         private readonly string _lineItemId;
         private readonly decimal _lineItemPrice;
+        private readonly INavigationService _navigationService;
+        private readonly string _productId;
         private readonly string _productName;
         private readonly int _productQuantity;
         private readonly string _productSku;
         private readonly string _quoteId;
         private int _lineItemQuantity;
-        private string _productId;
-        private string _customerId;
 
 
         public QuoteLineItemViewModel(INavigationService navigationService, LineItemDetails quoteLineItemDetails)
         {
-            _navigationService = navigationService;           
+            _navigationService = navigationService;
             if (quoteLineItemDetails == null)
             {
                 throw new ArgumentNullException("quoteLineItem", "quoteLineItem cannot be null");
@@ -45,17 +42,11 @@ namespace SageMobileSales.UILogic.ViewModels
 
         public string QuoteId
         {
-            get { return _quoteId; }           
+            get { return _quoteId; }
         }
 
-        public string CustomerId
-        {
-            get { return _customerId; }
-            set
-            {
-                _customerId = value;
-            }
-        }
+        public string CustomerId { get; set; }
+
         public string ProductId
         {
             get { return _productId; }
@@ -135,10 +126,9 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             var lineItemDtls = sender as QuoteLineItemViewModel;
             if (lineItemDtls != null)
-            {               
+            {
                 _navigationService.Navigate("RecentOrders", lineItemDtls);
             }
-          
         }
     }
 }

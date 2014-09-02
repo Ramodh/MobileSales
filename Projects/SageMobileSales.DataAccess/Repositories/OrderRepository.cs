@@ -178,7 +178,7 @@ namespace SageMobileSales.DataAccess.Repositories
                     await
                         _sageSalesDB.QueryAsync<OrderDetails>(
                             "SELECT distinct customer.customerName, orders.CustomerId, orders.AddressId, orders.TenantId, orders.OrderId, orders.CreatedOn, orders.amount, orders.DiscountPercent, orders.ShippingAndHandling, orders.Tax, orders.OrderStatus,orders.OrderDescription, SalesRep.RepName FROM customer, orders left Join SalesRep On SalesRep.RepId=Orders.RepId where Orders.OrderStatus!='IsOrder'  And Orders.OrderStatus!='Temporary' and customer.customerId=orders.customerId and orders.customerId=? order by orders.createdOn desc",
-                            customerId);           
+                            customerId);
                 //"SELECT distinct customer.customerName, quote.CustomerId, quote.QuoteId, quote.CreatedOn, quote.amount, quote.quoteStatus,quote.QuoteDescription, SalesRep.RepName FROM customer, quote left Join SalesRep On SalesRep.RepId=Quote.RepId where Quote.QuoteStatus!='IsOrder'  And Quote.QuoteStatus!='Temporary' and customer.customerId=quote.customerId and quote.customerId=? order by quote.createdOn desc", customerId);
             }
             catch (Exception ex)
@@ -256,7 +256,7 @@ namespace SageMobileSales.DataAccess.Repositories
                         {
                             return await UpdateOrderJsonToDbAsync(sDataOrder, orderList.FirstOrDefault());
                         }
-                        Orders order = new Orders() { OrderId = sDataOrder.GetNamedString("OrderId") };
+                        var order = new Orders {OrderId = sDataOrder.GetNamedString("OrderId")};
                         await _sageSalesDB.InsertAsync(order);
                         return await UpdateOrderJsonToDbAsync(sDataOrder, order);
                     }
@@ -440,7 +440,10 @@ namespace SageMobileSales.DataAccess.Repositories
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
                         //JsonObject sDataCustomer = sDataOrder.GetNamedObject("Customer");                        
-                        var customerDb = await _sageSalesDB.QueryAsync<Customer>("SELECT * FROM CUSTOMER WHERE CustomerId=?", sDataOrder.GetNamedString("CustomerId"));
+                        List<Customer> customerDb =
+                            await
+                                _sageSalesDB.QueryAsync<Customer>("SELECT * FROM CUSTOMER WHERE CustomerId=?",
+                                    sDataOrder.GetNamedString("CustomerId"));
                         //Customer customer = await _customerRepository.AddOrUpdateCustomerJsonToDbAsync(sDataCustomer);
                         //if (customer != null)
                         //{
@@ -452,7 +455,7 @@ namespace SageMobileSales.DataAccess.Repositories
                         }
                         else
                         {
-                            Customer customer = new Customer();
+                            var customer = new Customer();
                             customer.CustomerId = sDataOrder.GetNamedString("CustomerId");
 
                             order.CustomerId = customer.CustomerId;
@@ -470,7 +473,10 @@ namespace SageMobileSales.DataAccess.Repositories
 
                         if (!string.IsNullOrEmpty(order.CustomerId))
                         {
-                            var addressDb = await _sageSalesDB.QueryAsync<Address>("SELECT * FROM ADDRESS WHERE AddressId=?", sDataOrder.GetNamedString("ShippingAddressId"));
+                            List<Address> addressDb =
+                                await
+                                    _sageSalesDB.QueryAsync<Address>("SELECT * FROM ADDRESS WHERE AddressId=?",
+                                        sDataOrder.GetNamedString("ShippingAddressId"));
                             //Address address =
                             //    await
                             //        _addressRepository.AddOrUpdateAddressJsonToDbAsync(sDataShippingAdress,
@@ -485,7 +491,7 @@ namespace SageMobileSales.DataAccess.Repositories
                             }
                             else
                             {
-                                Address address = new Address();
+                                var address = new Address();
                                 address.CustomerId = order.OrderId;
                                 address.AddressId = sDataOrder.GetNamedString("ShippingAddressId");
 
@@ -539,13 +545,13 @@ namespace SageMobileSales.DataAccess.Repositories
                     hours = hours.Substring(0, hours.IndexOf(")"));
                     return
                         new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(Convert.ToInt64(milis))
-                            .AddHours(Convert.ToInt64(hours) / 100);
+                            .AddHours(Convert.ToInt64(hours)/100);
                 }
                 hours = "0";
                 milis = milis.Substring(0, milis.IndexOf(")"));
                 return
                     new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(Convert.ToInt64(milis))
-                        .AddHours(Convert.ToInt64(hours) / 100);
+                        .AddHours(Convert.ToInt64(hours)/100);
             }
 
             return DateTime.Now;

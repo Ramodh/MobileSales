@@ -2,23 +2,25 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Windows.Data.Json;
 using SageMobileSales.DataAccess.Common;
+using SageMobileSales.DataAccess.Entities;
 using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
 using SQLite;
-using SageMobileSales.DataAccess.Entities;
 
 namespace SageMobileSales.ServiceAgents.Services
 {
     public class OrderLineItemService : IOrderLineItemService
     {
-        private readonly IOrderRepository _orderRepository;
         private readonly IOrderLineItemRepository _orderLineItemRepository;
+        private readonly IOrderRepository _orderRepository;
         private readonly IServiceAgent _serviceAgent;
         private string _log = string.Empty;
-        private Dictionary<string, string> parameters = null;
+        private Dictionary<string, string> parameters;
 
-        public OrderLineItemService(IServiceAgent serviceAgent, IOrderRepository orderRepository, IOrderLineItemRepository orderLineItemRepository)
+        public OrderLineItemService(IServiceAgent serviceAgent, IOrderRepository orderRepository,
+            IOrderLineItemRepository orderLineItemRepository)
         {
             _serviceAgent = serviceAgent;
             _orderRepository = orderRepository;
@@ -48,16 +50,18 @@ namespace SageMobileSales.ServiceAgents.Services
                 }
                 else
                 {
-                    parameters.Add("include", "Details,ShippingAddress,Details/InventoryItem,Details/InventoryItem/Images");
+                    parameters.Add("include",
+                        "Details,ShippingAddress,Details/InventoryItem,Details/InventoryItem/Images");
                 }
 
                 HttpResponseMessage orderLineItemResponse = null;
                 orderLineItemResponse =
                     await
-                        _serviceAgent.BuildAndSendRequest(Constants.TenantId, orderEntityId, null, null, Constants.AccessToken, parameters);
+                        _serviceAgent.BuildAndSendRequest(Constants.TenantId, orderEntityId, null, null,
+                            Constants.AccessToken, parameters);
                 if (orderLineItemResponse != null && orderLineItemResponse.IsSuccessStatusCode)
                 {
-                    var sDataQuoteLineItem = await _serviceAgent.ConvertTosDataObject(orderLineItemResponse);
+                    JsonObject sDataQuoteLineItem = await _serviceAgent.ConvertTosDataObject(orderLineItemResponse);
                     //Saving or updating Order, OrderLineItem, Address table
                     await _orderRepository.SaveOrderAsync(sDataQuoteLineItem);
                 }

@@ -19,13 +19,16 @@ namespace SageMobileSales.UILogic.ViewModels
     public class OtherAddressesPageViewModel : ViewModel
     {
         private readonly IAddressRepository _addressRepository;
+        private readonly ICustomerRepository _customerRepository;
         private readonly INavigationService _navigationService;
         private readonly IQuoteRepository _quoteRepository;
         private readonly IQuoteService _quoteService;
         private Address _address;
         private Visibility _bottomAppbarVisible;
+        private Customer _customer;
         private List<Address> _customerAddresses;
         private string _customerId;
+        private string _customerName;
         private List<CustomerDetails> _customerOtherAddress;
         private string _emptyAddress;
         private bool _gridViewItemClickable;
@@ -34,9 +37,7 @@ namespace SageMobileSales.UILogic.ViewModels
         private List<Address> _otherAddresses;
         private Quote _quote;
         private QuoteDetails _quoteDetails;
-        private string _customerName;
-        private Customer _customer;
-        private ICustomerRepository _customerRepository;
+
         public OtherAddressesPageViewModel(INavigationService navigationService, IAddressRepository addressRepository,
             IQuoteRepository quoteRepository, IQuoteService quoteService, ICustomerRepository customerRepository)
         {
@@ -44,7 +45,7 @@ namespace SageMobileSales.UILogic.ViewModels
             _addressRepository = addressRepository;
             _quoteRepository = quoteRepository;
             _quoteService = quoteService;
-            _customerRepository= customerRepository;
+            _customerRepository = customerRepository;
             _address = new Address();
         }
 
@@ -115,6 +116,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 InProgress = false;
             }
         }
+
         /// <summary>
         ///     Holds Customer Name
         /// </summary>
@@ -147,7 +149,7 @@ namespace SageMobileSales.UILogic.ViewModels
                     GridViewItemClickable = true;
                     BottomAppbarVisible = Visibility.Visible;
                     CustomerAddresses = await _addressRepository.GetAddressesForCustomer(_quoteDetails.CustomerId);
-                  _customer = await _customerRepository.GetCustomerDataAsync(_quoteDetails.CustomerId);
+                    _customer = await _customerRepository.GetCustomerDataAsync(_quoteDetails.CustomerId);
                 }
                 else
                 {
@@ -158,8 +160,9 @@ namespace SageMobileSales.UILogic.ViewModels
                     _customer = await _customerRepository.GetCustomerDataAsync(_customerId);
                     //CustomerOtherAddress = await _addressRepository.GetOtherAddressesForCustomer(_customerId);
                 }
-              
-                CustomerName = ResourceLoader.GetForCurrentView("Resources").GetString("DividerSymbol") + _customer.CustomerName;
+
+                CustomerName = ResourceLoader.GetForCurrentView("Resources").GetString("DividerSymbol") +
+                               _customer.CustomerName;
 
                 if (!(CustomerAddresses.Count > 0))
                 {

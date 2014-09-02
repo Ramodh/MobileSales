@@ -18,7 +18,7 @@ namespace SageMobileSales.ServiceAgents.Services
         private readonly IProductAssociatedBlobsRepository _productAssociatedBlobsRepository;
         private readonly IServiceAgent _serviceAgent;
         private string _log = string.Empty;
-        private Dictionary<string, string> parameters = null;
+        private Dictionary<string, string> parameters;
 
         public ProductAssociatedBlobService(ILocalSyncDigestService localSyncDigestService, IServiceAgent serviceAgent,
             ILocalSyncDigestRepository localSyncDigestRepository,
@@ -81,11 +81,12 @@ namespace SageMobileSales.ServiceAgents.Services
                     parameters.Add("LocalTick", digest.localTick.ToString());
                     parameters.Add("LastRecordId", null);
                 }
-                parameters.Add("Count", "100");              
+                parameters.Add("Count", "100");
                 HttpResponseMessage productAssociatedBlobsResponse = null;
                 productAssociatedBlobsResponse =
                     await
-                        _serviceAgent.BuildAndSendRequest(Constants.TenantId, Constants.BlobsEntity, Constants.syncQueryEntity, null,
+                        _serviceAgent.BuildAndSendRequest(Constants.TenantId, Constants.BlobsEntity,
+                            Constants.syncQueryEntity, null,
                             Constants.AccessToken, parameters);
                 if (productAssociatedBlobsResponse != null && productAssociatedBlobsResponse.IsSuccessStatusCode)
                 {

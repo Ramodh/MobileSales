@@ -1,11 +1,9 @@
-﻿using SageMobileSales.DataAccess.Repositories;
-using SageMobileSales.ServiceAgents.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
+using Windows.Data.Json;
+using SageMobileSales.DataAccess.Repositories;
+using SageMobileSales.ServiceAgents.Common;
 
 namespace SageMobileSales.ServiceAgents.Services
 {
@@ -15,7 +13,8 @@ namespace SageMobileSales.ServiceAgents.Services
         private readonly IServiceAgent _serviceAgent;
         private Dictionary<string, string> parameters;
 
-        public FrequentlyPurchasedItemService(IFrequentlyPurchasedItemRepository frequentlyPurchasedItemRepository, IServiceAgent serviceAgent)
+        public FrequentlyPurchasedItemService(IFrequentlyPurchasedItemRepository frequentlyPurchasedItemRepository,
+            IServiceAgent serviceAgent)
         {
             _frequentlyPurchasedItemRepository = frequentlyPurchasedItemRepository;
             _serviceAgent = serviceAgent;
@@ -33,11 +32,14 @@ namespace SageMobileSales.ServiceAgents.Services
             HttpResponseMessage frequentlyPurchasedItemResponse = null;
 
             frequentlyPurchasedItemResponse =
-                await _serviceAgent.BuildAndSendRequest(Constants.TenantId, Constants.FrequentlyPurchasedItem, null, null, Constants.AccessToken, parameters);
+                await
+                    _serviceAgent.BuildAndSendRequest(Constants.TenantId, Constants.FrequentlyPurchasedItem, null, null,
+                        Constants.AccessToken, parameters);
 
             if (frequentlyPurchasedItemResponse != null && frequentlyPurchasedItemResponse.IsSuccessStatusCode)
             {
-                var sDataFrequentlyPurchasedItem = await _serviceAgent.ConvertTosDataObject(frequentlyPurchasedItemResponse);
+                JsonObject sDataFrequentlyPurchasedItem =
+                    await _serviceAgent.ConvertTosDataObject(frequentlyPurchasedItemResponse);
                 await _frequentlyPurchasedItemRepository.SaveFrequentlyPurchasedItemsAsync(sDataFrequentlyPurchasedItem);
             }
         }

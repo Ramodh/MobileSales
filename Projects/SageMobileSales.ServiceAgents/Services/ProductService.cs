@@ -18,7 +18,7 @@ namespace SageMobileSales.ServiceAgents.Services
         private readonly IProductRepository _productRepository;
         private readonly IServiceAgent _serviceAgent;
         private string _log = string.Empty;
-        private Dictionary<string, string> parameters = null;
+        private Dictionary<string, string> parameters;
 
         public ProductService(ILocalSyncDigestService localSyncDigestService, IServiceAgent serviceAgent,
             ILocalSyncDigestRepository localSyncDigestRepository, IProductRepository productRepository)
@@ -73,7 +73,8 @@ namespace SageMobileSales.ServiceAgents.Services
                 HttpResponseMessage productsResponse = null;
                 productsResponse =
                     await
-                        _serviceAgent.BuildAndSendRequest(Constants.TenantId, Constants.ItemsEntity, Constants.syncQueryEntity, null,
+                        _serviceAgent.BuildAndSendRequest(Constants.TenantId, Constants.ItemsEntity,
+                            Constants.syncQueryEntity, null,
                             Constants.AccessToken, parameters);
                 if (productsResponse != null && productsResponse.IsSuccessStatusCode)
                 {

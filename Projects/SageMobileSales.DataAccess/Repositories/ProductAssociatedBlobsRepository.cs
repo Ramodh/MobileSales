@@ -170,8 +170,8 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-
-                        _productAssociatedBlob.ProductAssociatedBlobId = sDataProductAssociatedBlob.GetNamedString("$key").ToLower();
+                        _productAssociatedBlob.ProductAssociatedBlobId =
+                            sDataProductAssociatedBlob.GetNamedString("$key").ToLower();
                     }
                 }
                 if (sDataProductAssociatedBlob.TryGetValue("Name", out value))
@@ -180,7 +180,7 @@ namespace SageMobileSales.DataAccess.Repositories
                     {
                         _productAssociatedBlob.Name = sDataProductAssociatedBlob.GetNamedString("Name");
                     }
-                }               
+                }
                 if (sDataProductAssociatedBlob.TryGetValue("Description", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
@@ -222,7 +222,8 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        _productAssociatedBlob.ProductId = sDataProductAssociatedBlob.GetNamedString("ParentEntityId").ToLower();
+                        _productAssociatedBlob.ProductId =
+                            sDataProductAssociatedBlob.GetNamedString("ParentEntityId").ToLower();
                     }
                 }
                 if (sDataProductAssociatedBlob.TryGetValue("Type", out value))

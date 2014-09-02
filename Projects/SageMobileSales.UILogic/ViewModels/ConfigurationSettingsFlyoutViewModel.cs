@@ -271,7 +271,7 @@ namespace SageMobileSales.UILogic.ViewModels
             if (selected.SelectedItem.ToString() == "Local Machine 1")
             {
                 ClientId = @"FhVDZU7p11pFRItTweZsh8XSGdEeFZ0g";
-                Url = "http://172.29.59.122:8080/sdata/api/msales/1.0/";                
+                Url = "http://172.29.59.122:8080/sdata/api/msales/1.0/";
                 Scope = @"kipgf40h();";
                 IsSageIdProduction = false;
                 SelectedType = "Local Machine 1";
@@ -309,7 +309,6 @@ namespace SageMobileSales.UILogic.ViewModels
                 RedirectUrl = "https://signon.sso.staging.services.sage.com/oauth/native";
                 SetConfigurationValues();
             }
-
         }
 
         private async Task LogoutHandler()

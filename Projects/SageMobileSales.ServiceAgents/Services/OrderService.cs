@@ -17,14 +17,14 @@ namespace SageMobileSales.ServiceAgents.Services
     public class OrderService : IOrderService
     {
         private readonly IEventAggregator _eventAggregator;
-        private ILocalSyncDigestRepository _localSyncDigestRepository;
-        private ILocalSyncDigestService _localSyncDigestService;
+        private readonly ILocalSyncDigestRepository _localSyncDigestRepository;
+        private readonly ILocalSyncDigestService _localSyncDigestService;
+        private readonly IOrderRepository _orderRepository;
+        private readonly IQuoteRepository _quoteRepository;
+        private readonly ISalesRepRepository _salesRepRepository;
+        private readonly IServiceAgent _serviceAgent;
         private string _log = string.Empty;
-        private IOrderRepository _orderRepository;
-        private IQuoteRepository _quoteRepository;
-        private ISalesRepRepository _salesRepRepository;
-        private IServiceAgent _serviceAgent;
-        private Dictionary<string, string> parameters = null;
+        private Dictionary<string, string> parameters;
 
         public OrderService(ILocalSyncDigestService localSyncDigestService, IServiceAgent serviceAgent,
             IQuoteRepository quoteRepository,
@@ -80,7 +80,7 @@ namespace SageMobileSales.ServiceAgents.Services
                             Constants.AccessToken, null, obj);
                 if (quoteResponse != null && quoteResponse.IsSuccessStatusCode)
                 {
-                    var sDataQuote = await _serviceAgent.ConvertTosDataObject(quoteResponse);
+                    JsonObject sDataQuote = await _serviceAgent.ConvertTosDataObject(quoteResponse);
                     //TO DO 
                     // Need to confirm as what needs to be done here after posting order(with the response).
                     quote.QuoteStatus = "IsOrder";
@@ -162,7 +162,8 @@ namespace SageMobileSales.ServiceAgents.Services
 
                     ordersResponse =
                         await
-                            _serviceAgent.BuildAndSendRequest(Constants.TenantId, Constants.OrderEntity, Constants.syncQueryEntity, null,
+                            _serviceAgent.BuildAndSendRequest(Constants.TenantId, Constants.OrderEntity,
+                                Constants.syncQueryEntity, null,
                                 Constants.AccessToken, parameters);
                     if (ordersResponse != null && ordersResponse.IsSuccessStatusCode)
                     {

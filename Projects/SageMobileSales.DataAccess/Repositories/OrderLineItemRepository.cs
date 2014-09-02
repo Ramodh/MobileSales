@@ -314,7 +314,10 @@ namespace SageMobileSales.DataAccess.Repositories
                     {
                         //JsonObject sDataProduct = sDataOrderLineItem.GetNamedString("InventoryItemId");
                         //JsonObject sDataCustomer = sDataOrder.GetNamedObject("Customer");                        
-                        var productDb = await _sageSalesDB.QueryAsync<Product>("SELECT * FROM Product WHERE ProductId=?", sDataOrderLineItem.GetNamedString("InventoryItemId"));
+                        List<Product> productDb =
+                            await
+                                _sageSalesDB.QueryAsync<Product>("SELECT * FROM Product WHERE ProductId=?",
+                                    sDataOrderLineItem.GetNamedString("InventoryItemId"));
                         //Customer customer = await _customerRepository.AddOrUpdateCustomerJsonToDbAsync(sDataCustomer);
                         //if (customer != null)
                         //{
@@ -326,7 +329,7 @@ namespace SageMobileSales.DataAccess.Repositories
                         }
                         else
                         {
-                            Product product = new Product();
+                            var product = new Product();
                             product.ProductId = sDataOrderLineItem.GetNamedString("InventoryItemId");
 
                             orderLineItem.ProductId = product.ProductId;

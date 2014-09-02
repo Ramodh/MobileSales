@@ -47,10 +47,12 @@ namespace SageMobileSales.UILogic.ViewModels
         private bool _isCancelled;
         private Visibility _isChangeAddressVisible;
         private Visibility _isDeleteQuoteVisible;
+        private bool _isDiscountEnabled;
         private Visibility _isEditQuoteLineItemVisible;
         private Visibility _isEditQuoteVisible;
         private Visibility _isPlaceOrderVisible;
         private Visibility _isSendmailVisible;
+        private bool _isShippingAndHandlingEnabled;
         private Visibility _isSubmitQuoteVisible;
         private bool _itemNotSelected;
         private string _log = string.Empty;
@@ -64,8 +66,6 @@ namespace SageMobileSales.UILogic.ViewModels
         private ShippingAddressDetails _shippingAddressDetails;
         private decimal _shippingAndHandling;
         private Tenant _tenant;
-        private bool _isShippingAndHandlingEnabled;
-        private bool _isDiscountEnabled;
         private DataTransferManager dataTransferManager;
 
         public QuoteDetailsPageViewModel(INavigationService navigationService, IEventAggregator eventAggregator,
@@ -261,19 +261,13 @@ namespace SageMobileSales.UILogic.ViewModels
         public bool IsShippingAndHandlingEnabled
         {
             get { return _isShippingAndHandlingEnabled; }
-            private set
-            {
-                SetProperty(ref _isShippingAndHandlingEnabled, value);
-            }
+            private set { SetProperty(ref _isShippingAndHandlingEnabled, value); }
         }
 
         public bool IsDiscountEnabled
         {
             get { return _isDiscountEnabled; }
-            private set
-            {
-                SetProperty(ref _isDiscountEnabled, value);
-            }
+            private set { SetProperty(ref _isDiscountEnabled, value); }
         }
 
         public DelegateCommand IncrementCountCommand { get; private set; }
@@ -417,7 +411,7 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             try
             {
-               // await _tenantService.SyncTenant();
+                // await _tenantService.SyncTenant();
                 _tenant = await _tenantRepository.GetTenantDtlsAsync(Constants.TenantId);
                 DataTransferManager.ShowShareUI();
             }
@@ -648,7 +642,7 @@ namespace SageMobileSales.UILogic.ViewModels
             bool succeeded = false;
             var objMail = new MailViewModel();
             QuoteDetails.ShippingAndHandling = ShippingAndHandling;
-            QuoteDetails.DiscountPercent = DiscountPercent;            
+            QuoteDetails.DiscountPercent = DiscountPercent;
             string HtmlContentString = objMail.BuildQuoteEmailContent(_tenant, CustomerDetails, QuoteDetails,
                 QuoteLineItemsList, SubTotal.ToString(), Total.ToString());
             if (!String.IsNullOrEmpty(HtmlContentString))
@@ -1020,7 +1014,7 @@ namespace SageMobileSales.UILogic.ViewModels
                     _quote.QuoteStatus = quoteStatus;
                 }
                 _quote.Amount = Total;
-                _quote.SubTotal = SubTotal;                
+                _quote.SubTotal = SubTotal;
                 _quote.ShippingAndHandling = ShippingAndHandling;
                 _quote.DiscountPercent = DiscountPercent;
                 _quote = await _quoteRepository.UpdateQuoteToDbAsync(_quote);
@@ -1222,6 +1216,6 @@ namespace SageMobileSales.UILogic.ViewModels
             await _quoteLineItemService.SyncOfflineQuoteLineItems();
             await _quoteService.SyncOfflineShippingAddress();
             await _quoteLineItemService.SyncOfflineQuoteLineItems();
-        }        
+        }
     }
 }

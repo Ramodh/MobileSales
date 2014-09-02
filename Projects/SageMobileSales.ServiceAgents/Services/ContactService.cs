@@ -14,7 +14,7 @@ namespace SageMobileSales.ServiceAgents.Services
         private readonly IContactRepository _contactRepository;
         private readonly ICustomerRepository _customerRepository;
         private readonly IServiceAgent _serviceAgent;
-        private Dictionary<string, string> parameters = null;
+        private Dictionary<string, string> parameters;
 
 
         public ContactService(IServiceAgent serviceAgent, IContactRepository contactRepository,
@@ -38,10 +38,12 @@ namespace SageMobileSales.ServiceAgents.Services
             string customerEntityId = Constants.CustomerDetailEntity + "('" + customerId + "')";
             HttpResponseMessage contactResponse = null;
             contactResponse =
-                await _serviceAgent.BuildAndSendRequest(Constants.TenantId, customerEntityId, null, null, Constants.AccessToken, parameters);
+                await
+                    _serviceAgent.BuildAndSendRequest(Constants.TenantId, customerEntityId, null, null,
+                        Constants.AccessToken, parameters);
             if (contactResponse != null && contactResponse.IsSuccessStatusCode)
             {
-                var sDataCustomer = await _serviceAgent.ConvertTosDataObject(contactResponse);
+                JsonObject sDataCustomer = await _serviceAgent.ConvertTosDataObject(contactResponse);
                 await _customerRepository.SaveCustomerAsync(sDataCustomer);
             }
         }
@@ -59,7 +61,7 @@ namespace SageMobileSales.ServiceAgents.Services
             {
                 conatctJsonObject = new ContactJson();
 
-                conatctJsonObject.Customer = new CustomerContactKeyJson { key = contact.CustomerId };
+                conatctJsonObject.Customer = new CustomerContactKeyJson {key = contact.CustomerId};
                 conatctJsonObject.EmailPersonal = contact.EmailPersonal == null ? "" : contact.EmailPersonal;
                 conatctJsonObject.EmailWork = contact.EmailWork == null ? "" : contact.EmailWork;
                 conatctJsonObject.FirstName = contact.FirstName;
@@ -73,7 +75,8 @@ namespace SageMobileSales.ServiceAgents.Services
                 HttpResponseMessage contactResponse = null;
                 contactResponse =
                     await
-                        _serviceAgent.BuildAndPostObjectRequest(Constants.TenantId, Constants.ContactEntity, null, Constants.AccessToken,
+                        _serviceAgent.BuildAndPostObjectRequest(Constants.TenantId, Constants.ContactEntity, null,
+                            Constants.AccessToken,
                             null, conatctJsonObject);
                 if (contactResponse != null && contactResponse.IsSuccessStatusCode)
                 {
@@ -83,7 +86,7 @@ namespace SageMobileSales.ServiceAgents.Services
                     //Customer customer =
                     //    await _customerRepository.GetCustomerDataAsync(customerObj.GetNamedString("$key"));
                     //if (customer != null)
-                        await _contactRepository.SavePostedContactJSonToDbAsync(sDataContact, contact.CustomerId, contact);
+                    await _contactRepository.SavePostedContactJSonToDbAsync(sDataContact, contact.CustomerId, contact);
                 }
             }
             catch
