@@ -54,6 +54,25 @@ namespace SageMobileSales.DataAccess.Repositories
                 AppEventSource.Log.Error(_log);
             }
         }
+
+        public async Task<List<SalesHistory>> GetCustomerProductSalesHistory(string CustomerId, string ProductId)
+        {
+            List<SalesHistory> salesHistoryList = null;
+            try
+            {
+                salesHistoryList =
+                   await
+                       _sageSalesDB.QueryAsync<SalesHistory>(
+                           "Select * from SalesHistory where SalesHistory.CustomerId=? and SalesHistory.ProductId=?", CustomerId,ProductId);
+                
+            }
+            catch (Exception ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+            return salesHistoryList;
+        }
         #endregion
 
         #region private methods

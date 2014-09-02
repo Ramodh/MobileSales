@@ -181,7 +181,7 @@ namespace SageMobileSales.DataAccess.Repositories
                 quoteLineItemList =
                     await
                         _sageSalesDB.QueryAsync<LineItemDetails>(
-                            "SELECT distinct Product.ProductId, QuoteLT.QuoteLineItemId as LineItemId, QuoteLT.QuoteId as LineId, QuoteLT.Price as LineItemPrice,QuoteLT.Quantity as LineItemQuantity, Product.ProductName, Product.Quantity as ProductQuantity, Product.Sku as ProductSku, (select PAB.url from  ProductAssociatedBlob as PAB where Product.ProductId=PAB.ProductId And PAB.IsPrimary=1) as Url  from QuoteLineItem as QuoteLT Join Product  on QuoteLT.ProductId=Product.ProductId where QuoteLT.QuoteId=? and QuoteLT.IsDeleted='0'",
+                            "SELECT distinct Product.ProductId, QuoteLT.QuoteLineItemId as LineItemId, QuoteLT.ProductId as ProductId, QuoteLT.QuoteId as LineId, QuoteLT.Price as LineItemPrice,QuoteLT.Quantity as LineItemQuantity, Product.ProductName, Product.Quantity as ProductQuantity, Product.Sku as ProductSku, (select PAB.url from  ProductAssociatedBlob as PAB where Product.ProductId=PAB.ProductId And PAB.IsPrimary=1) as Url  from QuoteLineItem as QuoteLT Join Product  on QuoteLT.ProductId=Product.ProductId where QuoteLT.QuoteId=? and QuoteLT.IsDeleted='0'",
                             quoteId);
             }
             catch (SQLiteException ex)

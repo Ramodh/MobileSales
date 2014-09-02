@@ -23,11 +23,16 @@ namespace SageMobileSales.UILogic.ViewModels
     {
               
         private readonly ISalesHistoryService _salesHistoryService;
+        private readonly INavigationService _navigationService;
         private readonly IServiceAgent _serviceAgent;
+        private readonly SalesHistoryRepository _salesHistoryRepository;          
+       private readonly IProductAssociatedBlobsRepository _productAssociatedBlobsRepository;
+       private readonly QuoteRepository _quoteRepository;
+       private readonly CustomerRepository _customerRepository;
+
+       private List<SalesHistory> _salesHistoryList;
        private QuoteLineItemViewModel _lineItemDetail;
        private List<RecentOrders> _productRecentOrders;
-       private readonly INavigationService _navigationService;
-       private readonly IProductAssociatedBlobsRepository _productAssociatedBlobsRepository;
        private string _customerName;
        private bool _selectedColumn;
        private string _selectedItem;
@@ -43,23 +48,34 @@ namespace SageMobileSales.UILogic.ViewModels
        private decimal _lineItemPrice;
        private int _productQuantity;
        private List<ProductAssociatedBlob> _productImage;
+       private QuoteDetails _quoteDetails;
        private Product _productDetail;
        private string _log = string.Empty;
        public ICommand SortRecentOrdersCommand { get; set; }
        public ICommand SortByAscendingCommand { get; set; }
        public ICommand SortByDescendingCommand { get; set; }
 
-       public RecentOrdersPageViewModel(ISalesHistoryService salesHistoryService, IServiceAgent serviceAgent, 
-           INavigationService navigationService, IProductAssociatedBlobsRepository productAssociatedBlobsRepository)
+       public RecentOrdersPageViewModel(ISalesHistoryService salesHistoryService, IServiceAgent serviceAgent,QuoteRepository quoteRepository,CustomerRepository customerRepository,
+           INavigationService navigationService, IProductAssociatedBlobsRepository productAssociatedBlobsRepository, SalesHistoryRepository salesHistoryRepository)
         {
             _navigationService = navigationService;
+            _salesHistoryService = salesHistoryService;
+            _serviceAgent = serviceAgent;
+            _salesHistoryRepository = salesHistoryRepository;
             _productAssociatedBlobsRepository = productAssociatedBlobsRepository;
+            _quoteRepository = quoteRepository;
+            _customerRepository = customerRepository;
             SortRecentOrdersCommand = new DelegateCommand<object>(SortRecentOrders);
             SortByAscendingCommand = new DelegateCommand<object>(SortByAscending);
             SortByDescendingCommand = new DelegateCommand<object>(SortByDescending);
-            _salesHistoryService = salesHistoryService;
-            _serviceAgent = serviceAgent;
+       
         }
+
+       public List<SalesHistory> SalesHistoryList
+       {
+           get { return _salesHistoryList; }
+           private set { SetProperty(ref _salesHistoryList, value); }
+       }
 
        public QuoteLineItemViewModel LineItemDetail
        {
@@ -187,6 +203,8 @@ namespace SageMobileSales.UILogic.ViewModels
            var rootFrame = Window.Current.Content as Frame;
            List<PageStackEntry> navigationHistory = rootFrame.BackStack.ToList();
            PageStackEntry pageStack = navigationHistory.LastOrDefault();
+
+           InProgress = true;
            if (navigationParameter != null && pageStack.SourcePageType.Name == PageUtils.ItemDetailPage)
            {
                ProductDetail = navigationParameter as Product;
@@ -202,6 +220,13 @@ namespace SageMobileSales.UILogic.ViewModels
                LineItemPrice = ProductDetail.PriceStd;
                ProductSku = ProductDetail.Sku;
                ImageUri = ProductDetail.PhotoUrl;
+               if (!string.IsNullOrEmpty(PageUtils.SelectedQuoteId))
+               {
+                   _quoteDetails = await _quoteRepository.GetQuoteDetailsAsync(PageUtils.SelectedQuoteId);
+                   //await _salesHistoryService.SyncSalesHistory(_quoteDetails.CustomerId, ProductDetail.ProductId);
+                   SalesHistoryList = await _salesHistoryRepository.GetCustomerProductSalesHistory(_quoteDetails.CustomerId, ProductDetail.ProductId);
+               }
+
            }
            else if (navigationParameter != null && pageStack.SourcePageType.Name == PageUtils.QuoteDetailsPage)
            {
@@ -210,10 +235,21 @@ namespace SageMobileSales.UILogic.ViewModels
                ProductName = LineItemDetail.ProductName;
                LineItemPrice = LineItemDetail.LineItemPrice;
                ProductSku = LineItemDetail.ProductSku;
-               ImageUri = LineItemDetail.ImageUri;
+               ImageUri = LineItemDetail.ImageUri;              
            }
+           if (LineItemDetail != null)
+           {
+             
+               QuoteDetails quoteDetails = await _quoteRepository.GetQuoteDetailsAsync(LineItemDetail.QuoteId);
+               LineItemDetail.CustomerId = quoteDetails.CustomerId;
+               await _salesHistoryService.SyncSalesHistory(LineItemDetail.CustomerId, LineItemDetail.ProductId);
+               Customer customer= await _customerRepository.GetCustomerDataAsync(quoteDetails.CustomerId);
+               CustomerName = customer.CustomerName;
+           }
+        
+           SalesHistoryList = await _salesHistoryRepository.GetCustomerProductSalesHistory(LineItemDetail.CustomerId,LineItemDetail.ProductId);
+           InProgress = false;
 
-            await _salesHistoryService.SyncSalesHistory("2e6c2472-19ca-4772-a076-9071d25a388a", "a4944a26-05fd-41d3-877e-13d69b522cca");
            //TODO
            // Need to be replaced with real data once Recent Orders service calls are done
             //ProductRecentOrders = new List<RecentOrders>();

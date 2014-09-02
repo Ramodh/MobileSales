@@ -467,13 +467,13 @@
             </Grid.ColumnDefinitions>
             <TextBlock x:Uid="RecentOrderDate" Grid.Row="1" Text="Date:" Style="{StaticResource AddressTextStyle}"
                       TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="0" />
-            <TextBlock Grid.Row="1" Text="{Binding Date,Converter={StaticResource StringFormatConverter},ConverterParameter='{}{0:MM/dd/yyyy}'}" Style="{StaticResource AddressTextStyle}"
+            <TextBlock Grid.Row="1" Text="{Binding InvoiceDate,Converter={StaticResource StringFormatConverter},ConverterParameter='{}{0:MM/dd/yyyy}'}" Style="{StaticResource AddressTextStyle}"
                        TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="1"/>
 
             <TextBlock x:Uid="RecentOrderInvoice" Grid.Row="0" Text="Invoice:" Style="{StaticResource AddressTextStyle}"
                        TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="0" />
             <TextBlock Grid.Row="0"
-                       Text="{Binding Invoice}"
+                       Text="{Binding InvoiceNumber}"
                        Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis"
                        Grid.Column="1"/>
             <TextBlock x:Uid="RecentOrderQty" Grid.Row="2" Style="{StaticResource AddressTextStyle}"
@@ -484,7 +484,7 @@
                        Grid.Column="1" />
             <TextBlock x:Uid="RecentOrderUnitPrice" Grid.Row="3" Style="{StaticResource AddressTextStyle}"
                        TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="0" />
-            <TextBlock Grid.Row="3" Text="{Binding UnitPrice,Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:C}'}" Style="{StaticResource AddressTextStyle}"
+            <TextBlock Grid.Row="3" Text="{Binding Price,Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:C}'}" Style="{StaticResource AddressTextStyle}"
                        TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="1" />
             <TextBlock x:Uid="RecentOrderTotal" Grid.Row="4" Style="{StaticResource AddressTextStyle}"
                        TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="0" />

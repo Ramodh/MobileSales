@@ -4,13 +4,14 @@ using Microsoft.Practices.Prism.StoreApps;
 using SageMobileSales.DataAccess.Model;
 using Windows.UI.Xaml.Controls;
 using Microsoft.Practices.Prism.StoreApps.Interfaces;
+using SageMobileSales.DataAccess.Repositories;
 
 namespace SageMobileSales.UILogic.ViewModels
 {
     [DataContract]
     public class QuoteLineItemViewModel : ViewModel
     {
-        private readonly INavigationService _navigationService;
+        private readonly INavigationService _navigationService;        
         private readonly string _imageUri;
         private readonly string _lineItemId;
         private readonly decimal _lineItemPrice;
@@ -20,11 +21,12 @@ namespace SageMobileSales.UILogic.ViewModels
         private readonly string _quoteId;
         private int _lineItemQuantity;
         private string _productId;
+        private string _customerId;
 
 
         public QuoteLineItemViewModel(INavigationService navigationService, LineItemDetails quoteLineItemDetails)
         {
-            _navigationService = navigationService;
+            _navigationService = navigationService;           
             if (quoteLineItemDetails == null)
             {
                 throw new ArgumentNullException("quoteLineItem", "quoteLineItem cannot be null");
@@ -38,13 +40,22 @@ namespace SageMobileSales.UILogic.ViewModels
             _productQuantity = quoteLineItemDetails.ProductQuantity;
             _productSku = quoteLineItemDetails.ProductSku;
             _quoteId = quoteLineItemDetails.LineId;
+            _productId = quoteLineItemDetails.ProductId;
         }
 
         public string QuoteId
         {
-            get { return _quoteId; }
+            get { return _quoteId; }           
         }
 
+        public string CustomerId
+        {
+            get { return _customerId; }
+            set
+            {
+                _customerId = value;
+            }
+        }
         public string ProductId
         {
             get { return _productId; }
@@ -122,10 +133,12 @@ namespace SageMobileSales.UILogic.ViewModels
         /// <param name="parameter"></param>
         public async void GridViewRecentOrderItemClick(object sender, object parameter)
         {
-            var arg = sender as QuoteLineItemViewModel;
-
-            if (arg != null)
-                _navigationService.Navigate("RecentOrders", arg);
+            var lineItemDtls = sender as QuoteLineItemViewModel;
+            if (lineItemDtls != null)
+            {               
+                _navigationService.Navigate("RecentOrders", lineItemDtls);
+            }
+          
         }
     }
 }

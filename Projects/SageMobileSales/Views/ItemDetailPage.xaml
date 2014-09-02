@@ -24,7 +24,7 @@
 
         <CollectionViewSource
             x:Name="itemsViewSourceRecentOrders"
-            Source="{Binding RecentOrders}" />
+            Source="{Binding SalesHistoryList}" />
 
         <CollectionViewSource
             x:Name="itemsViewSource"
