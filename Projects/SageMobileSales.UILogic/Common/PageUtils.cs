@@ -54,7 +54,7 @@ namespace SageMobileSales.UILogic.Common
         public static IAsyncAction asyncActionQuotes;
         public static IAsyncAction asyncActionOrders;
         public static IAsyncAction asyncActionSalesRep;
-        public static IAsyncAction asyncActionProducts;        
+        public static IAsyncAction asyncActionProducts;
 
         # endregion
 

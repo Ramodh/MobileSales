@@ -1,23 +1,25 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Windows.Data.Json;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
 using SQLite;
-using System.Collections.Generic;
 
 namespace SageMobileSales.ServiceAgents.Services
 {
     public class TenantService : ITenantService
     {
-        private string _log = string.Empty;
+        private readonly ISalesRepRepository _salesRepRepository;
         private readonly IServiceAgent _serviceAgent;
         private readonly ITenantRepository _tenantRepository;
-        private readonly ISalesRepRepository _salesRepRepository;
-        Dictionary<string, string> parameters = null;
+        private string _log = string.Empty;
+        private Dictionary<string, string> parameters;
 
-        public TenantService(IServiceAgent serviceAgent, ITenantRepository tenantRepository, ISalesRepRepository salesRepRepository)
+        public TenantService(IServiceAgent serviceAgent, ITenantRepository tenantRepository,
+            ISalesRepRepository salesRepRepository)
         {
             _serviceAgent = serviceAgent;
             _tenantRepository = tenantRepository;
@@ -33,17 +35,17 @@ namespace SageMobileSales.ServiceAgents.Services
         {
             try
             {
-
                 parameters = new Dictionary<string, string>();
                 parameters.Add("include", "CompanySettings,SalesTeamMember");
 
                 HttpResponseMessage tenantResponse =
                     await
-                        _serviceAgent.BuildAndSendRequest(Constants.TenantId, Constants.AppSalesUser, null, null, Constants.AccessToken,
+                        _serviceAgent.BuildAndSendRequest(Constants.TenantId, Constants.AppSalesUser, null, null,
+                            Constants.AccessToken,
                             parameters);
                 if (tenantResponse.IsSuccessStatusCode)
                 {
-                    var sDataTenantSalesTeamMemberDtls = await _serviceAgent.ConvertTosDataObject(tenantResponse);
+                    JsonObject sDataTenantSalesTeamMemberDtls = await _serviceAgent.ConvertTosDataObject(tenantResponse);
                     //Changed by ramodh for pegausus
                     await _tenantRepository.UpdateTenantAsync(sDataTenantSalesTeamMemberDtls, Constants.TenantId);
                     await _salesRepRepository.UpdateSalesRepDtlsAsync(sDataTenantSalesTeamMemberDtls);

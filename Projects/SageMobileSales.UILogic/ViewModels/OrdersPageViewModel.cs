@@ -211,13 +211,14 @@ namespace SageMobileSales.UILogic.ViewModels
                     Customer customer = await _customerRepository.GetCustomerDataAsync(_customerId);
                     OrdersList = new List<OrderDetails>();
                     OrdersList = await _orderRepository.GetOrdersForCustomerAsync(customer.CustomerId);
-                    CustomerName = ResourceLoader.GetForCurrentView("Resources").GetString("DividerSymbol") + customer.CustomerName;
+                    CustomerName = ResourceLoader.GetForCurrentView("Resources").GetString("DividerSymbol") +
+                                   customer.CustomerName;
                 }
                 else
                 {
                     OrdersPageTitle = "Orders";
                     OrdersList = await _orderRepository.GetOrdersListAsync(await _salesRepRepository.GetSalesRepId());
-                }                
+                }
 
                 IsDescending = true;
                 Sort(PageUtils.Date, IsAscending);
@@ -469,7 +470,6 @@ namespace SageMobileSales.UILogic.ViewModels
             }
             else
             {
-              
                 OrdersList = await _orderRepository.GetOrdersForCustomerAsync(_customerId);
             }
             if (OrdersList.Count == 0)

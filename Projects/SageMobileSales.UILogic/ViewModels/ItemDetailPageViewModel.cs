@@ -8,11 +8,11 @@ using Microsoft.Practices.Prism.StoreApps;
 using Microsoft.Practices.Prism.StoreApps.Interfaces;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Entities;
+using SageMobileSales.DataAccess.Model;
 using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
 using SageMobileSales.ServiceAgents.Services;
 using SageMobileSales.UILogic.Common;
-using SageMobileSales.DataAccess.Model;
 
 namespace SageMobileSales.UILogic.ViewModels
 {
@@ -30,12 +30,12 @@ namespace SageMobileSales.UILogic.ViewModels
         private IContactRepository _contactRepository;
 
         private List<Customer> _customerList;
+        private string _customerName;
         private bool _emptyText;
+        private Visibility _isRecentOrdersVisible;
         private List<ProductDetails> _otherProduct;
         private List<ProductAssociatedBlob> _productImage;
         private List<RecentOrders> _recentOrders;
-        private Visibility _isRecentOrdersVisible;
-        private string _customerName;
 
         public ItemDetailPageViewModel(INavigationService navigationService, IProductRepository productRepository,
             IProductAssociatedBlobsRepository productAssociatedBlobsRepository,
@@ -168,11 +168,13 @@ namespace SageMobileSales.UILogic.ViewModels
             get { return _enteredQuantity; }
             private set { SetProperty(ref _enteredQuantity, value); }
         }
+
         public List<RecentOrders> RecentOrders
         {
             get { return _recentOrders; }
             private set { SetProperty(ref _recentOrders, value); }
         }
+
         public Visibility IsRecentOrdersVisible
         {
             get { return _isRecentOrdersVisible; }
@@ -184,6 +186,7 @@ namespace SageMobileSales.UILogic.ViewModels
             get { return _customerName; }
             private set { SetProperty(ref _customerName, value); }
         }
+
         #endregion
 
         public override async void OnNavigatedTo(object navigationParameter, NavigationMode navigationMode,
@@ -208,7 +211,7 @@ namespace SageMobileSales.UILogic.ViewModels
             RecentOrders = new List<RecentOrders>();
             for (int i = 0; i < 10; i++)
             {
-                RecentOrders recentOrder = new RecentOrders();
+                var recentOrder = new RecentOrders();
                 recentOrder.Date = Convert.ToDateTime("05/09/2014");
                 recentOrder.Invoice = "#1234567";
                 recentOrder.Quantity = 9;
@@ -219,7 +222,7 @@ namespace SageMobileSales.UILogic.ViewModels
             if (RecentOrders.Count > 7)
             {
                 RecentOrders = RecentOrders.GetRange(0, 7);
-                RecentOrders.Add(new RecentOrders() { Invoice = DataAccessUtils.SeeMore });
+                RecentOrders.Add(new RecentOrders {Invoice = DataAccessUtils.SeeMore});
             }
             // TODO
             // Need to be replaced with real data.
@@ -336,7 +339,7 @@ namespace SageMobileSales.UILogic.ViewModels
                     await _quoteLineItemRepository.UpdateQuoteLineItemToDbAsync(quoteLineItemExists);
 
                     quote.Amount = quote.Amount +
-                                   Math.Round((quoteLineItemExists.Price * quoteLineItemExists.Quantity), 2);
+                                   Math.Round((quoteLineItemExists.Price*quoteLineItemExists.Quantity), 2);
                     await _quoteRepository.UpdateQuoteToDbAsync(quote);
 
                     if (quote.QuoteId.Contains(PageUtils.Pending))
@@ -372,7 +375,7 @@ namespace SageMobileSales.UILogic.ViewModels
 
                     await _quoteLineItemRepository.AddQuoteLineItemToDbAsync(quoteLineItem);
 
-                    quote.Amount = quote.Amount + Math.Round((quoteLineItem.Price * quoteLineItem.Quantity), 2);
+                    quote.Amount = quote.Amount + Math.Round((quoteLineItem.Price*quoteLineItem.Quantity), 2);
                     await _quoteRepository.UpdateQuoteToDbAsync(quote);
 
                     if (quote.QuoteId.Contains(PageUtils.Pending))
@@ -414,6 +417,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 AppEventSource.Log.Error(_log);
             }
         }
+
         /// <summary>
         ///     Grid View Item Click
         /// </summary>
@@ -451,9 +455,9 @@ namespace SageMobileSales.UILogic.ViewModels
         private void TextBoxTextChanged(object args)
         {
             EmptyText = false;
-            if (((TextBox)args).Text != null && ((TextBox)args).Text != string.Empty)
+            if (((TextBox) args).Text != null && ((TextBox) args).Text != string.Empty)
             {
-                EnteredQuantity = Convert.ToInt32(((TextBox)args).Text.Trim());
+                EnteredQuantity = Convert.ToInt32(((TextBox) args).Text.Trim());
                 ProductDetails.Quantity = EnteredQuantity;
             }
         }

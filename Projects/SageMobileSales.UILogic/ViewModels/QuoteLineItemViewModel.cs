@@ -1,19 +1,18 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using Microsoft.Practices.Prism.StoreApps;
-using SageMobileSales.DataAccess.Model;
-using Windows.UI.Xaml.Controls;
 using Microsoft.Practices.Prism.StoreApps.Interfaces;
+using SageMobileSales.DataAccess.Model;
 
 namespace SageMobileSales.UILogic.ViewModels
 {
     [DataContract]
     public class QuoteLineItemViewModel : ViewModel
     {
-        private readonly INavigationService _navigationService;
         private readonly string _imageUri;
         private readonly string _lineItemId;
         private readonly decimal _lineItemPrice;
+        private readonly INavigationService _navigationService;
         private readonly string _productName;
         private readonly int _productQuantity;
         private readonly string _productSku;

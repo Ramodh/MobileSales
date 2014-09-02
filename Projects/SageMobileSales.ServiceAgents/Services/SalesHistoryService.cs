@@ -1,11 +1,9 @@
-﻿using SageMobileSales.DataAccess.Repositories;
-using SageMobileSales.ServiceAgents.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
+using Windows.Data.Json;
+using SageMobileSales.DataAccess.Repositories;
+using SageMobileSales.ServiceAgents.Common;
 
 namespace SageMobileSales.ServiceAgents.Services
 {
@@ -13,7 +11,7 @@ namespace SageMobileSales.ServiceAgents.Services
     {
         private readonly ISalesHistoryRepository _salesHistoryRepository;
         private readonly IServiceAgent _serviceAgent;
-        private Dictionary<string, string> parameters = null;
+        private Dictionary<string, string> parameters;
 
 
         public SalesHistoryService(IServiceAgent serviceAgent, ISalesHistoryRepository salesHistoryRepository)
@@ -23,6 +21,7 @@ namespace SageMobileSales.ServiceAgents.Services
         }
 
         #region public methods
+
         public async Task SyncSalesHistory(string customerId, string itemId)
         {
             parameters = new Dictionary<string, string>();
@@ -36,17 +35,20 @@ namespace SageMobileSales.ServiceAgents.Services
             //string customerEntityId = Constants.CustomerDetailEntity + "('" + customerId + "')";
             HttpResponseMessage salesHistoryResponse = null;
             salesHistoryResponse =
-                await _serviceAgent.BuildAndSendRequest(Constants.TenantId, Constants.CustomerSalesHistory, null, null, Constants.AccessToken, parameters);
+                await
+                    _serviceAgent.BuildAndSendRequest(Constants.TenantId, Constants.CustomerSalesHistory, null, null,
+                        Constants.AccessToken, parameters);
             if (salesHistoryResponse != null && salesHistoryResponse.IsSuccessStatusCode)
             {
-                var sDataSalesHistory = await _serviceAgent.ConvertTosDataObject(salesHistoryResponse);
+                JsonObject sDataSalesHistory = await _serviceAgent.ConvertTosDataObject(salesHistoryResponse);
                 await _salesHistoryRepository.SaveSalesHistoryAsync(sDataSalesHistory);
             }
-
         }
+
         #endregion
 
         #region private methods
+
         #endregion
     }
 }

@@ -209,7 +209,7 @@ namespace SageMobileSales.DataAccess.Repositories
                 customerAddressList =
                     await
                         _sageSalesDB.QueryAsync<CustomerDetails>(
-                        "SELECT distinct customer.CustomerId, customer.CustomerName, customer.CreditAvailable, customer.CreditLimit, customer.PaymentTerms, address.AddressName, address.Street1, address.City, address.StateProvince, address.PostalCode, address.Phone FROM Customer  as customer Join Address  as address on customer.CustomerId = address.customerId and addresstype='Mailing' and Customer.EntityStatus= 'Active'");
+                            "SELECT distinct customer.CustomerId, customer.CustomerName, customer.CreditAvailable, customer.CreditLimit, customer.PaymentTerms, address.AddressName, address.Street1, address.City, address.StateProvince, address.PostalCode, address.Phone FROM Customer  as customer Join Address  as address on customer.CustomerId = address.customerId and addresstype='Billing' and Customer.EntityStatus= 'Active'");
 
                 //"SELECT * FROM Customer where Customer.EntityStatus= 'Active' order by customerName asc "
             }
@@ -467,7 +467,8 @@ namespace SageMobileSales.DataAccess.Repositories
                         {
                             if (value.ValueType.ToString() != DataAccessUtils.Null)
                             {
-                                customer.YearToDate = Convert.ToDecimal(sDataPeriodToDateSales.GetNamedNumber("YearToDate"));
+                                customer.YearToDate =
+                                    Convert.ToDecimal(sDataPeriodToDateSales.GetNamedNumber("YearToDate"));
                             }
                         }
 
@@ -475,7 +476,8 @@ namespace SageMobileSales.DataAccess.Repositories
                         {
                             if (value.ValueType.ToString() != DataAccessUtils.Null)
                             {
-                                customer.MonthToDate = Convert.ToDecimal(sDataPeriodToDateSales.GetNamedNumber("MonthToDate"));
+                                customer.MonthToDate =
+                                    Convert.ToDecimal(sDataPeriodToDateSales.GetNamedNumber("MonthToDate"));
                             }
                         }
                     }

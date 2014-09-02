@@ -149,7 +149,8 @@ namespace SageMobileSales.ServiceAgents.Common
         /// <param name="accessToken"></param>
         /// <param name="parameters"></param>
         /// <returns>HttpResponse which in turn service returns</returns>
-        public async Task<bool> BuildAndPostRequest(string tenantId, string entity, string queryEntity, string accessToken,
+        public async Task<bool> BuildAndPostRequest(string tenantId, string entity, string queryEntity,
+            string accessToken,
             Dictionary<string, string> parameters)
         {
             _requestUrl = Constants.Url;
@@ -229,7 +230,8 @@ namespace SageMobileSales.ServiceAgents.Common
         /// <param name="parameters"></param>
         /// <param name="obj"></param>
         /// <returns>HttpResponse which in turn service returns</returns>
-        public async Task<HttpResponseMessage> BuildAndPostObjectRequest(string tenantId, string entity, string queryEntity,
+        public async Task<HttpResponseMessage> BuildAndPostObjectRequest(string tenantId, string entity,
+            string queryEntity,
             string accessToken, Dictionary<string, string> parameters, object obj)
         {
             _requestUrl = Constants.Url;
@@ -406,7 +408,8 @@ namespace SageMobileSales.ServiceAgents.Common
         }
 
 
-        public async Task<HttpResponseMessage> BuildAndPatchObjectRequest(string tenantId, string entity, string queryEntity,
+        public async Task<HttpResponseMessage> BuildAndPatchObjectRequest(string tenantId, string entity,
+            string queryEntity,
             string accessToken, Dictionary<string, string> parameters, object obj)
         {
             _requestUrl = Constants.Url;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Resources;
@@ -19,7 +20,6 @@ using SageMobileSales.ServiceAgents.Common;
 using SageMobileSales.ServiceAgents.Services;
 using SageMobileSales.UILogic.Common;
 using SageMobileSales.UILogic.Model;
-using System.Diagnostics;
 
 namespace SageMobileSales.UILogic.ViewModels
 {
@@ -31,8 +31,8 @@ namespace SageMobileSales.UILogic.ViewModels
         private readonly ISalesRepService _salesRepService;
         //private CustomerCollection _customerCollection;
         private readonly ISyncCoordinatorService _syncCoordinatorService;
-        private readonly ITenantService _tenantService;
         private readonly ITenantRepository _tenantRepository;
+        private readonly ITenantService _tenantService;
         private string _emptyCustomers;
         private List<CustomerGroupByAlphabet> _groupedCustomerList;
         private bool _inProgress;
@@ -140,7 +140,8 @@ namespace SageMobileSales.UILogic.ViewModels
                         //                           {
                         // Sync SalesRep(Loggedin User) data
                         await _salesRepService.SyncSalesRep();
-                        Constants.TenantId = await _tenantRepository.GetTenantId();
+                        Constants.TenantId = "F200AC19-1BE6-48C5-B604-2D322020F48E";
+                        //Constants.TenantId = await _tenantRepository.GetTenantId();
                         //Company Settings
                         await _tenantService.SyncTenant();
                         //SalesTeamMember
@@ -167,7 +168,8 @@ namespace SageMobileSales.UILogic.ViewModels
 
                 if (string.IsNullOrEmpty(Constants.TenantId))
                 {
-                    Constants.TenantId = await _tenantRepository.GetTenantId();
+                    Constants.TenantId = "F200AC19-1BE6-48C5-B604-2D322020F48E";
+                    //Constants.TenantId = await _tenantRepository.GetTenantId();
                     string test = await _tenantRepository.GetTenantId();
                     Debug.WriteLine("" + test + " " + Constants.TenantId);
                 }
@@ -202,7 +204,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 List<CustomerGroupByAlphabet> sortedCustomerAdressList = CustomerAdressList
                     .GroupBy(alphabet => alphabet.CustomerName[0])
                     .OrderBy(g => g.Key)
-                    .Select(g => new CustomerGroupByAlphabet { GroupName = g.Key, CustomerAddressList = g.ToList() })
+                    .Select(g => new CustomerGroupByAlphabet {GroupName = g.Key, CustomerAddressList = g.ToList()})
                     .ToList();
 
                 GroupedCustomerList = sortedCustomerAdressList;
@@ -268,7 +270,7 @@ namespace SageMobileSales.UILogic.ViewModels
             List<CustomerGroupByAlphabet> sortedCustomerAdressList = CustomerAdressList
                 .GroupBy(alphabet => alphabet.CustomerName[0])
                 .OrderBy(g => g.Key)
-                .Select(g => new CustomerGroupByAlphabet { GroupName = g.Key, CustomerAddressList = g.ToList() })
+                .Select(g => new CustomerGroupByAlphabet {GroupName = g.Key, CustomerAddressList = g.ToList()})
                 .ToList();
 
             GroupedCustomerList = sortedCustomerAdressList;

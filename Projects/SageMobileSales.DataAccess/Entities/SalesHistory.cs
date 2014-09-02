@@ -1,16 +1,12 @@
-﻿using SQLite;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
+using SQLite;
 
 namespace SageMobileSales.DataAccess.Entities
 {
     [Table("SalesHistory")]
     public class SalesHistory
     {
-        [PrimaryKey,AutoIncrement, NotNull]
+        [PrimaryKey, AutoIncrement, NotNull]
         public int Id { get; set; }
 
         public string SalesHistoryId { get; set; }

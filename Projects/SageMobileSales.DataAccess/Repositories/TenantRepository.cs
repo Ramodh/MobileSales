@@ -128,14 +128,13 @@ namespace SageMobileSales.DataAccess.Repositories
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
                         JsonArray sDataTenantArray = sDataTenants.GetNamedArray("$resources");
-                        foreach (var tenant in sDataTenantArray)
+                        foreach (IJsonValue tenant in sDataTenantArray)
                             sDataTenantDetails = tenant.GetObject();
                         //_tenantRepository.SaveTenantAsync(sDataTenants, salesRepDBObj.RepId);
                     }
                 }
 
                 await UpdateTenantJsonToDbAsync(sDataTenantDetails, tenantList.FirstOrDefault());
-
             }
             catch (SQLiteException ex)
             {
@@ -148,7 +147,6 @@ namespace SageMobileSales.DataAccess.Repositories
                 _log = AppEventSource.Log.WriteLine(ex);
                 AppEventSource.Log.Error(_log);
             }
-
         }
 
         # endregion
@@ -157,7 +155,7 @@ namespace SageMobileSales.DataAccess.Repositories
 
         private async Task SaveTenantDetailsAsync(JsonArray sDataTenantArray, string repId)
         {
-            foreach (var tenant in sDataTenantArray)
+            foreach (IJsonValue tenant in sDataTenantArray)
             {
                 JsonObject sDataTenant = tenant.GetObject();
                 await AddOrUpdateTenantJsonToDbAsync(sDataTenant, repId);

@@ -26,7 +26,7 @@ namespace SageMobileSales.ServiceAgents.Services
         private readonly ISalesRepRepository _salesRepRepository;
         private readonly IServiceAgent _serviceAgent;
         private string _log = string.Empty;
-        private Dictionary<string, string> parameters = null;
+        private Dictionary<string, string> parameters;
 
         public QuoteService(IServiceAgent serviceAgent, ILocalSyncDigestService localSyncDigestService,
             ILocalSyncDigestRepository localSyncDigestRepository,
@@ -91,11 +91,12 @@ namespace SageMobileSales.ServiceAgents.Services
 
                 quoteResponse =
                     await
-                        _serviceAgent.BuildAndPostObjectRequest(Constants.TenantId, Constants.DraftQuotes, null, Constants.AccessToken,
+                        _serviceAgent.BuildAndPostObjectRequest(Constants.TenantId, Constants.DraftQuotes, null,
+                            Constants.AccessToken,
                             null, obj);
                 if (quoteResponse != null && quoteResponse.IsSuccessStatusCode)
                 {
-                    var sDataQuote = await _serviceAgent.ConvertTosDataObject(quoteResponse);
+                    JsonObject sDataQuote = await _serviceAgent.ConvertTosDataObject(quoteResponse);
                     return await _quoteRepository.SavePostedQuoteToDbAsync(sDataQuote, quote, null, null);
                 }
             }
@@ -106,8 +107,9 @@ namespace SageMobileSales.ServiceAgents.Services
             }
             return null;
         }
+
         /// <summary>
-        /// Patch draft quote
+        ///     Patch draft quote
         /// </summary>
         /// <param name="quote"></param>
         /// <returns></returns>
@@ -135,11 +137,12 @@ namespace SageMobileSales.ServiceAgents.Services
                 //            null, obj);
 
                 quoteResponse = await
-                    _serviceAgent.BuildAndPatchObjectRequest(Constants.TenantId, quoteEntityId, null, Constants.AccessToken,
+                    _serviceAgent.BuildAndPatchObjectRequest(Constants.TenantId, quoteEntityId, null,
+                        Constants.AccessToken,
                         null, obj);
                 if (quoteResponse != null && quoteResponse.IsSuccessStatusCode)
                 {
-                    var sDataQuote = await _serviceAgent.ConvertTosDataObject(quoteResponse);
+                    JsonObject sDataQuote = await _serviceAgent.ConvertTosDataObject(quoteResponse);
                     return await _quoteRepository.SavePostedQuoteToDbAsync(sDataQuote, quote, null, null);
                 }
             }
@@ -176,49 +179,6 @@ namespace SageMobileSales.ServiceAgents.Services
         //    catch (Exception e) { throw (e); }
         //}
 
-
-        public async Task<Quote> PostSubmitQuote(Quote quote, IEnumerable<QuoteLineItem> result)
-        {
-
-            Object obj = ConvertQuoteWithShippingAddressKeyToJsonFormattedObject(quote, result.ToList());
-
-            HttpResponseMessage quoteResponse = null;
-            //string quoteEntityId;
-
-            //quoteEntityId = Constants.SubmitQuoteEntity;
-
-            quoteResponse =
-                await
-                    _serviceAgent.BuildAndPostObjectRequest(Constants.TenantId, Constants.SubmitQuoteEntity, null, Constants.AccessToken, null, obj);
-            if (quoteResponse != null && quoteResponse.IsSuccessStatusCode)
-            {
-                JsonObject sDataQuote = await _serviceAgent.ConvertTosDataObject(quoteResponse);
-                quote = await _quoteRepository.SavePostedQuoteToDbAsync(sDataQuote, quote, null, null);
-            }
-            return quote;
-
-        }
-
-        public async Task<Quote> PatchSubmitQuote(Quote quote, IEnumerable<QuoteLineItem> result)
-        {
-            Object obj = ConvertSubmitQuoteToJsonFormattedObject(quote, result.ToList());
-
-            HttpResponseMessage quoteResponse = null;
-            string quoteEntityId;
-
-            quoteEntityId = Constants.SubmitQuoteEntity + "('" + quote.QuoteId + "')";
-
-            quoteResponse =
-                await
-                    _serviceAgent.BuildAndPatchObjectRequest(Constants.TenantId, quoteEntityId, null, Constants.AccessToken, null, obj);
-            if (quoteResponse != null && quoteResponse.IsSuccessStatusCode)
-            {
-                JsonObject sDataQuote = await _serviceAgent.ConvertTosDataObject(quoteResponse);
-                quote = await _quoteRepository.SavePostedQuoteToDbAsync(sDataQuote, quote, null, null);
-            }
-            return quote;
-
-        }
 
         /// <summary>
         ///     Submit quote via service using put http method
@@ -263,14 +223,10 @@ namespace SageMobileSales.ServiceAgents.Services
                 }
                 return quote;
             }
-            else
-            {
-                quote =await PatchSubmitQuote(quote, result);
-            }
+            quote = await PatchSubmitQuote(quote, result);
             //TO DO : As per info saved quoteLineItems are submitted without pending prefix and ispending=true.
 
             //List<QuoteLineItem> quoteLineItemList = await _quoteLineItemRepository.GetQuoteLineItemsForQuote(quote.QuoteId);
-
 
 
             //obj = ConvertSubmitQuoteToJsonFormattedObject(quote, result.ToList());
@@ -315,10 +271,11 @@ namespace SageMobileSales.ServiceAgents.Services
 
             quoteResponse =
                 await
-                    _serviceAgent.BuildAndPatchObjectRequest(Constants.TenantId, quoteEntityId, null, Constants.AccessToken, parameters, obj);
+                    _serviceAgent.BuildAndPatchObjectRequest(Constants.TenantId, quoteEntityId, null,
+                        Constants.AccessToken, parameters, obj);
             if (quoteResponse != null && quoteResponse.IsSuccessStatusCode)
             {
-                var sDataQuote = await _serviceAgent.ConvertTosDataObject(quoteResponse);
+                JsonObject sDataQuote = await _serviceAgent.ConvertTosDataObject(quoteResponse);
                 await _quoteRepository.SavePostedQuoteToDbAsync(sDataQuote, quote, null, null);
             }
 
@@ -379,11 +336,12 @@ namespace SageMobileSales.ServiceAgents.Services
 
             quoteResponse =
                 await
-                _serviceAgent.BuildAndPatchObjectRequest(Constants.TenantId, quoteEntityId, null, Constants.AccessToken,
-                    null, obj);
+                    _serviceAgent.BuildAndPatchObjectRequest(Constants.TenantId, quoteEntityId, null,
+                        Constants.AccessToken,
+                        null, obj);
             if (quoteResponse != null && quoteResponse.IsSuccessStatusCode)
             {
-                var sDataQuote = await _serviceAgent.ConvertTosDataObject(quoteResponse);
+                JsonObject sDataQuote = await _serviceAgent.ConvertTosDataObject(quoteResponse);
                 await _quoteRepository.SavePostedQuoteToDbAsync(sDataQuote, quote, null, null);
             }
         }
@@ -410,15 +368,16 @@ namespace SageMobileSales.ServiceAgents.Services
 
             quoteResponse =
                 await
-                    _serviceAgent.BuildAndPostObjectRequest(Constants.TenantId, Constants.Address, null, Constants.AccessToken, null, obj);
+                    _serviceAgent.BuildAndPostObjectRequest(Constants.TenantId, Constants.Address, null,
+                        Constants.AccessToken, null, obj);
             if (quoteResponse != null && quoteResponse.IsSuccessStatusCode)
             {
-                var sDataQuote = await _serviceAgent.ConvertTosDataObject(quoteResponse);
+                JsonObject sDataQuote = await _serviceAgent.ConvertTosDataObject(quoteResponse);
                 //TODO
                 // Temporary Fix to update shipping Address to Quote
                 // Saving the Patch response into Quote Table
                 quote.AddressId = sDataQuote.GetNamedString("$key");
-                quote= await PatchDraftQuote(quote);
+                quote = await PatchDraftQuote(quote);
                 await _quoteRepository.SavePostedQuoteToDbAsync(sDataQuote, quote, address, null);
             }
         }
@@ -445,10 +404,11 @@ namespace SageMobileSales.ServiceAgents.Services
 
             quoteResponse =
                 await
-                    _serviceAgent.BuildAndPatchObjectRequest(Constants.TenantId, quoteEntityId, null, Constants.AccessToken, parameters, obj);
+                    _serviceAgent.BuildAndPatchObjectRequest(Constants.TenantId, quoteEntityId, null,
+                        Constants.AccessToken, parameters, obj);
             if (quoteResponse != null && quoteResponse.IsSuccessStatusCode)
             {
-                var sDataQuote = await _serviceAgent.ConvertTosDataObject(quoteResponse);
+                JsonObject sDataQuote = await _serviceAgent.ConvertTosDataObject(quoteResponse);
                 //TODO
                 // Temporary Fix to update shipping Address to Quote
                 // Saving the Patch response into Quote Table
@@ -471,7 +431,9 @@ namespace SageMobileSales.ServiceAgents.Services
             EntityId = Constants.DraftQuotes + "('" + quoteId + "')";
 
             quoteResponse =
-                await _serviceAgent.BuildAndDeleteRequest(Constants.TenantId, EntityId, null, Constants.AccessToken, parameters);
+                await
+                    _serviceAgent.BuildAndDeleteRequest(Constants.TenantId, EntityId, null, Constants.AccessToken,
+                        parameters);
             if (quoteResponse != null && quoteResponse.IsSuccessStatusCode)
             {
                 await _quoteRepository.DeleteQuoteFromDbAsync(quoteId);
@@ -500,7 +462,7 @@ namespace SageMobileSales.ServiceAgents.Services
                             Constants.AccessToken, parameters);
                 if (quoteResponse != null && quoteResponse.IsSuccessStatusCode)
                 {
-                    var sDataQuote = await _serviceAgent.ConvertTosDataObject(quoteResponse);
+                    JsonObject sDataQuote = await _serviceAgent.ConvertTosDataObject(quoteResponse);
                     //return await _quoteRepository.SavePostedQuoteToDbAsync(sDataQuote);
                 }
             }
@@ -603,6 +565,48 @@ namespace SageMobileSales.ServiceAgents.Services
             }
         }
 
+        public async Task<Quote> PostSubmitQuote(Quote quote, IEnumerable<QuoteLineItem> result)
+        {
+            Object obj = ConvertQuoteWithShippingAddressKeyToJsonFormattedObject(quote, result.ToList());
+
+            HttpResponseMessage quoteResponse = null;
+            //string quoteEntityId;
+
+            //quoteEntityId = Constants.SubmitQuoteEntity;
+
+            quoteResponse =
+                await
+                    _serviceAgent.BuildAndPostObjectRequest(Constants.TenantId, Constants.SubmitQuoteEntity, null,
+                        Constants.AccessToken, null, obj);
+            if (quoteResponse != null && quoteResponse.IsSuccessStatusCode)
+            {
+                JsonObject sDataQuote = await _serviceAgent.ConvertTosDataObject(quoteResponse);
+                quote = await _quoteRepository.SavePostedQuoteToDbAsync(sDataQuote, quote, null, null);
+            }
+            return quote;
+        }
+
+        public async Task<Quote> PatchSubmitQuote(Quote quote, IEnumerable<QuoteLineItem> result)
+        {
+            Object obj = ConvertSubmitQuoteToJsonFormattedObject(quote, result.ToList());
+
+            HttpResponseMessage quoteResponse = null;
+            string quoteEntityId;
+
+            quoteEntityId = Constants.SubmitQuoteEntity + "('" + quote.QuoteId + "')";
+
+            quoteResponse =
+                await
+                    _serviceAgent.BuildAndPatchObjectRequest(Constants.TenantId, quoteEntityId, null,
+                        Constants.AccessToken, null, obj);
+            if (quoteResponse != null && quoteResponse.IsSuccessStatusCode)
+            {
+                JsonObject sDataQuote = await _serviceAgent.ConvertTosDataObject(quoteResponse);
+                quote = await _quoteRepository.SavePostedQuoteToDbAsync(sDataQuote, quote, null, null);
+            }
+            return quote;
+        }
+
         /// <summary>
         ///     Makes call to BuildAndSendRequest method to make service call to get quotes data.
         ///     Once we get the response converts it into JsonObject.
@@ -639,7 +643,8 @@ namespace SageMobileSales.ServiceAgents.Services
 
                 quotesResponse =
                     await
-                        _serviceAgent.BuildAndSendRequest(Constants.TenantId, Constants.QuoteEntity, Constants.syncQueryEntity, null,
+                        _serviceAgent.BuildAndSendRequest(Constants.TenantId, Constants.QuoteEntity,
+                            Constants.syncQueryEntity, null,
                             Constants.AccessToken, parameters);
                 if (quotesResponse != null && quotesResponse.IsSuccessStatusCode)
                 {
@@ -742,7 +747,7 @@ namespace SageMobileSales.ServiceAgents.Services
             quoteJsonObject.ShippingAddress.Street4 = address.Street4 == null ? "" : address.Street4;
             //quoteJsonObject.ShippingAddress.Type = address.AddressType == null ? "" : address.AddressType;
             //quoteJsonObject.ShippingAddress.URL = address.Url == null ? "" : address.Url;
-            quoteJsonObject.ShippingAddress.Customer = new CustomerId { key = quote.CustomerId };
+            quoteJsonObject.ShippingAddress.Customer = new CustomerId {key = quote.CustomerId};
             return quoteJsonObject;
         }
 
@@ -795,7 +800,7 @@ namespace SageMobileSales.ServiceAgents.Services
 
         private ShippingAddressJson GetAddressObj(string customerId, Address address)
         {
-            ShippingAddressJson ShippingAddress = new ShippingAddressJson();
+            var ShippingAddress = new ShippingAddressJson();
             //Address address = await _addressRepository.GetPendingShippingAddress(quote.CustomerId);
 
 
@@ -812,10 +817,9 @@ namespace SageMobileSales.ServiceAgents.Services
             ShippingAddress.Street4 = address.Street4 == null ? "" : address.Street4;
             ShippingAddress.Type = address.AddressType == null ? "" : address.AddressType;
             //quoteJsonObject.ShippingAddress.URL = address.Url == null ? "" : address.Url;
-            ShippingAddress.Customer = new CustomerId { key = customerId };
+            ShippingAddress.Customer = new CustomerId {key = customerId};
 
             return ShippingAddress;
-
         }
 
         /// <summary>
@@ -864,6 +868,7 @@ namespace SageMobileSales.ServiceAgents.Services
             }
             return quoteJsonObject;
         }
+
         #endregion
     }
 }

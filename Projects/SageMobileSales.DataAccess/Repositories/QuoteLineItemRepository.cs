@@ -43,7 +43,6 @@ namespace SageMobileSales.DataAccess.Repositories
                         await SaveQuoteLineItemDetailsAsync(sDataQuoteLineItemsArray, quoteId);
                     }
                 }
-
             }
             catch (SQLiteException ex)
             {
@@ -624,7 +623,8 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        quoteLineItem.Quantity = Convert.ToInt32(Convert.ToDecimal(sDataQuoteLineItem.GetNamedNumber("Quantity")));
+                        quoteLineItem.Quantity =
+                            Convert.ToInt32(Convert.ToDecimal(sDataQuoteLineItem.GetNamedNumber("Quantity")));
                     }
                 }
                 if (sDataQuoteLineItem.TryGetValue("$key", out value))
@@ -650,7 +650,10 @@ namespace SageMobileSales.DataAccess.Repositories
                     {
                         quoteLineItem.ProductId = sDataQuoteLineItem.GetNamedString("InventoryItemId");
 
-                        var productDb = await _sageSalesDB.QueryAsync<Product>("SELECT * FROM Product WHERE ProductId=?", sDataQuoteLineItem.GetNamedString("InventoryItemId"));
+                        List<Product> productDb =
+                            await
+                                _sageSalesDB.QueryAsync<Product>("SELECT * FROM Product WHERE ProductId=?",
+                                    sDataQuoteLineItem.GetNamedString("InventoryItemId"));
 
                         if (productDb.FirstOrDefault() != null)
                         {
@@ -658,7 +661,7 @@ namespace SageMobileSales.DataAccess.Repositories
                         }
                         else
                         {
-                            Product product = new Product();
+                            var product = new Product();
                             product.ProductId = sDataQuoteLineItem.GetNamedString("InventoryItemId");
                             quoteLineItem.ProductId = product.ProductId;
 

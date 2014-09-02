@@ -88,7 +88,7 @@ namespace SageMobileSales.DataAccess.Repositories
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
                         JsonArray sDataSalesTeamMemberArray = sDataSalesTeamMembers.GetNamedArray("$resources");
-                        foreach (var salesRep in sDataSalesTeamMemberArray)
+                        foreach (IJsonValue salesRep in sDataSalesTeamMemberArray)
                             sDataSalesTeamMember = salesRep.GetObject();
                     }
                 }
@@ -105,7 +105,8 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        _salesRepDtls.MaximumDiscountPercent = Convert.ToDecimal(sDataSalesTeamMemberDetails.GetNamedNumber("SalesRepMaxDiscPct"));
+                        _salesRepDtls.MaximumDiscountPercent =
+                            Convert.ToDecimal(sDataSalesTeamMemberDetails.GetNamedNumber("SalesRepMaxDiscPct"));
                     }
                 }
 

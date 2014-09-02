@@ -1,41 +1,38 @@
-﻿using Microsoft.Practices.Prism.PubSubEvents;
+﻿using System;
+using System.Collections.Generic;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
+using Microsoft.Practices.Prism.PubSubEvents;
 using Microsoft.Practices.Prism.StoreApps;
 using Microsoft.Practices.Prism.StoreApps.Interfaces;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Entities;
-using SageMobileSales.DataAccess.Model;
 using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.ApplicationModel.Resources;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Navigation;
 
 namespace SageMobileSales.UILogic.ViewModels
 {
-    class FrequentlyPurchasedItemsPageViewModel : ViewModel
+    internal class FrequentlyPurchasedItemsPageViewModel : ViewModel
     {
         private readonly ICustomerRepository _customerRepository;
         private readonly IEventAggregator _eventAggregator;
+        private readonly IFrequentlyPurchasedItemRepository _frequentlyPurchasedItemRepository;
         private readonly INavigationService _navigationService;
         private readonly ISalesRepService _salesRepService;
         private readonly ISyncCoordinatorService _syncCoordinatorService;
         private readonly ITenantRepository _tenantRepository;
-        private readonly IFrequentlyPurchasedItemRepository _frequentlyPurchasedItemRepository;
-        private List<FrequentlyPurchasedItem> _frequentlyPurchasedItems;
-     
+
         private string _customerId;
         private string _customerName;
-        private string _log = string.Empty;
+        private List<FrequentlyPurchasedItem> _frequentlyPurchasedItems;
         private string _frequentlyPurchasedItemsPageTitle = string.Empty;
+        private string _log = string.Empty;
 
-        public FrequentlyPurchasedItemsPageViewModel(INavigationService navigationService, ICustomerRepository customerRepository,
+        public FrequentlyPurchasedItemsPageViewModel(INavigationService navigationService,
+            ICustomerRepository customerRepository,
             ISyncCoordinatorService syncCoordinatorService, IEventAggregator eventAggregator,
-            ISalesRepService salesRepService, ITenantRepository tenantRepository, IFrequentlyPurchasedItemRepository frequentlyPurchasedItemRepository)
+            ISalesRepService salesRepService, ITenantRepository tenantRepository,
+            IFrequentlyPurchasedItemRepository frequentlyPurchasedItemRepository)
         {
             _navigationService = navigationService;
             _customerRepository = customerRepository;
@@ -52,9 +49,10 @@ namespace SageMobileSales.UILogic.ViewModels
             private set
             {
                 SetProperty(ref _frequentlyPurchasedItems, value);
-                  OnPropertyChanged("FrequentlyPurchasedItems");           
+                OnPropertyChanged("FrequentlyPurchasedItems");
             }
         }
+
         /// <summary>
         ///     Holds Customer Name
         /// </summary>
@@ -63,6 +61,7 @@ namespace SageMobileSales.UILogic.ViewModels
             get { return _customerName; }
             private set { SetProperty(ref _customerName, value); }
         }
+
         /// <summary>
         ///     Holds Customer Name
         /// </summary>
@@ -73,15 +72,15 @@ namespace SageMobileSales.UILogic.ViewModels
         }
 
 
-        public async override void OnNavigatedTo(object navigationParameter, NavigationMode navigationMode,
-          Dictionary<string, object> viewModelState)
+        public override async void OnNavigatedTo(object navigationParameter, NavigationMode navigationMode,
+            Dictionary<string, object> viewModelState)
         {
             try
             {
-
                 _customerId = navigationParameter as string;
-                FrequentlyPurchasedItems = await _frequentlyPurchasedItemRepository.GetFrequentlyPurchasedItems(_customerId);
-               // GetFrequentlyPurchasedItems();
+                FrequentlyPurchasedItems =
+                    await _frequentlyPurchasedItemRepository.GetFrequentlyPurchasedItems(_customerId);
+                // GetFrequentlyPurchasedItems();
 
                 Customer customer = await _customerRepository.GetCustomerDataAsync(_customerId);
                 CustomerName = customer.CustomerName;
@@ -95,9 +94,9 @@ namespace SageMobileSales.UILogic.ViewModels
         }
 
         /// <summary>
-        ///Navigate to Item Detail page on grid view item click
-        ///TODO 
-        ///To be replaced by real data(productId)
+        ///     Navigate to Item Detail page on grid view item click
+        ///     TODO
+        ///     To be replaced by real data(productId)
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="parameter"></param>
@@ -115,6 +114,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 AppEventSource.Log.Error(_log);
             }
         }
+
         public void CatalogButton_Click(object sender, object parameter)
         {
             _navigationService.ClearHistory();
@@ -157,5 +157,4 @@ namespace SageMobileSales.UILogic.ViewModels
         //    OnPropertyChanged("FrequentlyPurchasedItems");
         //}
     }
-
 }

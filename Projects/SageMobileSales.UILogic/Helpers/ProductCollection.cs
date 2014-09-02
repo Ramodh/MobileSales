@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI.Xaml.Data;
 using SageMobileSales.DataAccess.Model;
- 
+
 namespace SageMobileSales.UILogic.Helpers
 {
     internal class ProductCollection : ObservableCollection<ProductDetails>, ISupportIncrementalLoading

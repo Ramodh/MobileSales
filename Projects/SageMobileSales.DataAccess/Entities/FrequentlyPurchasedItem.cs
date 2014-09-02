@@ -1,9 +1,4 @@
 ﻿using SQLite;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SageMobileSales.DataAccess.Entities
 {
@@ -12,6 +7,7 @@ namespace SageMobileSales.DataAccess.Entities
     {
         [PrimaryKey, AutoIncrement, NotNull]
         public int Id { get; set; }
+
         public string FrequentlyPurchasedItemId { get; set; }
         public string CustomerId { get; set; }
 

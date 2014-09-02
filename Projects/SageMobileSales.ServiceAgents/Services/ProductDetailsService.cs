@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Windows.Data.Json;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
@@ -14,7 +15,7 @@ namespace SageMobileSales.ServiceAgents.Services
         private readonly IProductRepository _productRepository;
         private readonly IServiceAgent _serviceAgent;
         private string _log = string.Empty;
-        private Dictionary<string, string> parameters = null;
+        private Dictionary<string, string> parameters;
 
         public ProductDetailsService(IServiceAgent serviceAgent, IProductRepository productRepository)
         {
@@ -42,11 +43,12 @@ namespace SageMobileSales.ServiceAgents.Services
                 HttpResponseMessage productDetailsResponse = null;
                 productDetailsResponse =
                     await
-                        _serviceAgent.BuildAndSendRequest(Constants.TenantId, null, syncQueryEntity, Constants.AssociatedBlobs,
+                        _serviceAgent.BuildAndSendRequest(Constants.TenantId, null, syncQueryEntity,
+                            Constants.AssociatedBlobs,
                             Constants.AccessToken, parameters);
                 if (productDetailsResponse != null && productDetailsResponse.IsSuccessStatusCode)
                 {
-                    var sDataProductDetails = await _serviceAgent.ConvertTosDataObject(productDetailsResponse);
+                    JsonObject sDataProductDetails = await _serviceAgent.ConvertTosDataObject(productDetailsResponse);
 
                     // Saves ProductDetails data into LocalDB
                     await _productRepository.UpdatProductsAsync(sDataProductDetails);

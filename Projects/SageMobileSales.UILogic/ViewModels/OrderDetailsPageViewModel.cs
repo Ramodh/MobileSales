@@ -21,9 +21,9 @@ namespace SageMobileSales.UILogic.ViewModels
         private readonly INavigationService _navigationService;
         private readonly IOrderLineItemRepository _orderLineItemRepository;
         private readonly IOrderLineItemService _orderLineItemService;
+        private readonly IOrderRepository _orderRepository;
         private readonly ITenantRepository _tenantRepository;
         private readonly ITenantService _tenantService;
-        private readonly IOrderRepository _orderRepository;
 
         private CustomerDetails _customerDtls;
         private bool _inProgress;
@@ -139,7 +139,6 @@ namespace SageMobileSales.UILogic.ViewModels
 
         private async void DisplayOrderDtls()
         {
-            
             InProgress = true;
             if (Constants.ConnectedToInternet())
             {
@@ -166,7 +165,7 @@ namespace SageMobileSales.UILogic.ViewModels
             {
                 foreach (LineItemDetails orderlineItem in OrderLineItemsList)
                 {
-                    SubTotal += Math.Round((orderlineItem.LineItemPrice * orderlineItem.LineItemQuantity), 2);
+                    SubTotal += Math.Round((orderlineItem.LineItemPrice*orderlineItem.LineItemQuantity), 2);
                 }
             }
             return SubTotal;
@@ -180,7 +179,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 if (OrderDtls.DiscountPercent != 0 && SubTotal != 0)
                 {
                     // discountPercentage = Math.Round(((1 - ((SubTotal - DiscountPercentageValue) / SubTotal)) * 100), 2);
-                    discountPercentage = Math.Round(((OrderDtls.DiscountPercent / 100) * SubTotal), 2);
+                    discountPercentage = Math.Round(((OrderDtls.DiscountPercent/100)*SubTotal), 2);
                 }
             }
             return discountPercentage;

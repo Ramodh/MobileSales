@@ -1,12 +1,11 @@
-﻿using SageMobileSales.DataAccess.Common;
-using SageMobileSales.DataAccess.Entities;
-using SQLite;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Windows.Data.Json;
+using SageMobileSales.DataAccess.Common;
+using SageMobileSales.DataAccess.Entities;
+using SQLite;
 
 namespace SageMobileSales.DataAccess.Repositories
 {
@@ -23,11 +22,11 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         #region public methods
+
         public async Task SaveSalesHistoryAsync(JsonObject sDataSalesHistory)
         {
             try
             {
-
                 IJsonValue value;
                 if (sDataSalesHistory.TryGetValue("$resources", out value))
                 {
@@ -40,7 +39,6 @@ namespace SageMobileSales.DataAccess.Repositories
                         }
                     }
                 }
-
             }
             catch (SQLiteException ex)
             {
@@ -54,9 +52,11 @@ namespace SageMobileSales.DataAccess.Repositories
                 AppEventSource.Log.Error(_log);
             }
         }
+
         #endregion
 
         #region private methods
+
         private async Task SaveSalesHistoryDetailsAsync(JsonArray sDataSalesHistoryArray)
         {
             // Delete - Need confirmation
@@ -81,12 +81,15 @@ namespace SageMobileSales.DataAccess.Repositories
                         List<SalesHistory> salesHistoryList;
                         salesHistoryList =
                             await
-                                _sageSalesDB.QueryAsync<SalesHistory>("SELECT * FROM SalesHistory where SalesHistoryId=?",
+                                _sageSalesDB.QueryAsync<SalesHistory>(
+                                    "SELECT * FROM SalesHistory where SalesHistoryId=?",
                                     sDataSalesHistory.GetNamedString("$key"));
 
                         if (salesHistoryList.FirstOrDefault() != null)
                         {
-                            return await UpdateSalesHistoryJsonToDbAsync(sDataSalesHistory, salesHistoryList.FirstOrDefault());
+                            return
+                                await
+                                    UpdateSalesHistoryJsonToDbAsync(sDataSalesHistory, salesHistoryList.FirstOrDefault());
                         }
                         return await AddSalesHistoryJsonToDbAsync(sDataSalesHistory);
                     }
@@ -101,7 +104,8 @@ namespace SageMobileSales.DataAccess.Repositories
             return null;
         }
 
-        private async Task<SalesHistory> UpdateSalesHistoryJsonToDbAsync(JsonObject sDataSalesHistory, SalesHistory salesHistoryDbObj)
+        private async Task<SalesHistory> UpdateSalesHistoryJsonToDbAsync(JsonObject sDataSalesHistory,
+            SalesHistory salesHistoryDbObj)
         {
             try
             {
@@ -230,7 +234,8 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        salesHistory.InvoiceDate = ConvertJsonStringToDateTime(sDataSalesHistory.GetNamedString("InvoiceDate"));
+                        salesHistory.InvoiceDate =
+                            ConvertJsonStringToDateTime(sDataSalesHistory.GetNamedString("InvoiceDate"));
                     }
                 }
             }
@@ -263,13 +268,13 @@ namespace SageMobileSales.DataAccess.Repositories
                     hours = hours.Substring(0, hours.IndexOf(")"));
                     return
                         new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(Convert.ToInt64(milis))
-                            .AddHours(Convert.ToInt64(hours) / 100);
+                            .AddHours(Convert.ToInt64(hours)/100);
                 }
                 hours = "0";
                 milis = milis.Substring(0, milis.IndexOf(")"));
                 return
                     new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(Convert.ToInt64(milis))
-                        .AddHours(Convert.ToInt64(hours) / 100);
+                        .AddHours(Convert.ToInt64(hours)/100);
             }
 
             return DateTime.Now;

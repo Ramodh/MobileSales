@@ -15,7 +15,7 @@ namespace SageMobileSales.ServiceAgents.Services
     {
         private readonly ILocalSyncDigestRepository _localSyncDigestRepository;
         private readonly IServiceAgent _serviceAgent;
-        private bool _isSyncAvailable = false;
+        private bool _isSyncAvailable;
         private LocalSyncDigest _localDigest;
         private string _log = string.Empty;
 
@@ -36,11 +36,13 @@ namespace SageMobileSales.ServiceAgents.Services
             try
             {
                 HttpResponseMessage localDigestResponse =
-                    await _serviceAgent.BuildAndSendRequest(Constants.TenantId, entity, queryEntity, null, Constants.AccessToken, null);
+                    await
+                        _serviceAgent.BuildAndSendRequest(Constants.TenantId, entity, queryEntity, null,
+                            Constants.AccessToken, null);
                 if (localDigestResponse != null && localDigestResponse.StatusCode == HttpStatusCode.OK)
                 {
                     // Make's call to ConvertToJsonObject and inturn we will get JsonObject
-                    var sDataLocalDigest = await _serviceAgent.ConvertTosDataObject(localDigestResponse);
+                    JsonObject sDataLocalDigest = await _serviceAgent.ConvertTosDataObject(localDigestResponse);
 
                     // Check's whether Sync is available or not to go forward
                     _isSyncAvailable = await CheckSyncAvailable(sDataLocalDigest);
@@ -96,7 +98,10 @@ namespace SageMobileSales.ServiceAgents.Services
                 _log = AppEventSource.Log.WriteLine(ex);
                 AppEventSource.Log.Error(_log);
             }
-            return await _serviceAgent.BuildAndPostRequest(Constants.TenantId, entity, queryEntity, Constants.AccessToken, parameters);
+            return
+                await
+                    _serviceAgent.BuildAndPostRequest(Constants.TenantId, entity, queryEntity, Constants.AccessToken,
+                        parameters);
         }
 
         /// <summary>

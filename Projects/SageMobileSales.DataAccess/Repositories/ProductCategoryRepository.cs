@@ -291,7 +291,7 @@ namespace SageMobileSales.DataAccess.Repositories
                 IJsonValue value;
                 //ProductCategory productCategory = new ProductCategory();
                 productCategory.CategoryId = sDataProductCategory.GetNamedString("$key");
-                
+
                 if (sDataProductCategory.TryGetValue("Name", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
@@ -299,7 +299,7 @@ namespace SageMobileSales.DataAccess.Repositories
                         productCategory.CategoryName = sDataProductCategory.GetNamedString("Name");
                     }
                 }
-              //  productCategory.TenantId = sDataProductCategory.GetNamedString("TenantId");
+                //  productCategory.TenantId = sDataProductCategory.GetNamedString("TenantId");
 
                 //if ((Convert.ToInt32(sDataCategory.GetNamedNumber("SyncEndpointTick")) > localSyncDigest.localTick))
                 //    localSyncDigest.localTick = Convert.ToInt32(sDataCategory.GetNamedNumber("SyncEndpointTick"));
@@ -311,24 +311,24 @@ namespace SageMobileSales.DataAccess.Repositories
                         JsonObject sDataParentIds = sDataProductCategory.GetNamedObject("Parent");
                         productCategory.ParentId = sDataParentIds.GetNamedString("$key");
                     }
-                }              
-               // JsonObject sDataAssociatedItems = sDataProductCategory.GetNamedObject("AssociatedItems");
+                }
+                // JsonObject sDataAssociatedItems = sDataProductCategory.GetNamedObject("AssociatedItems");
                 JsonArray sDataAssociatedItemsArray = sDataProductCategory.GetNamedArray("AssociatedItems");
-               
-                    if (sDataAssociatedItemsArray.Count > 0)
-                    {
-                        var lstProductCategoryLink = new List<ProductCategoryLink>();
 
-                        foreach (IJsonValue associatedItem in sDataAssociatedItemsArray)
-                        {
-                            JsonObject sDataAssociatedItem = associatedItem.GetObject();
-                            var productCategoryLink = new ProductCategoryLink();
-                            productCategoryLink.CategoryId = productCategory.CategoryId;
-                            productCategoryLink.ProductId = sDataAssociatedItem.GetNamedString("$key");
-                            lstProductCategoryLink.Add(productCategoryLink);
-                        }
-                        await _sageSalesDB.InsertAllAsync(lstProductCategoryLink);
-                    }                
+                if (sDataAssociatedItemsArray.Count > 0)
+                {
+                    var lstProductCategoryLink = new List<ProductCategoryLink>();
+
+                    foreach (IJsonValue associatedItem in sDataAssociatedItemsArray)
+                    {
+                        JsonObject sDataAssociatedItem = associatedItem.GetObject();
+                        var productCategoryLink = new ProductCategoryLink();
+                        productCategoryLink.CategoryId = productCategory.CategoryId;
+                        productCategoryLink.ProductId = sDataAssociatedItem.GetNamedString("$key");
+                        lstProductCategoryLink.Add(productCategoryLink);
+                    }
+                    await _sageSalesDB.InsertAllAsync(lstProductCategoryLink);
+                }
             }
             catch (Exception ex)
             {
