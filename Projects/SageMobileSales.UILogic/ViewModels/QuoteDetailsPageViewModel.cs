@@ -820,7 +820,7 @@ namespace SageMobileSales.UILogic.ViewModels
             QuoteDetails = await _quoteRepository.GetQuoteDetailsAsync(_quoteId);
 
 
-            ShippingAddressDetails = await _addressRepository.GetShippingAddress(QuoteDetails.AddressId);
+            ShippingAddressDetails = await _addressRepository.GetShippingAddressDetails(QuoteDetails.AddressId);
             InProgress = true;
             await DisplayQuotedetails();
 
@@ -1195,7 +1195,7 @@ namespace SageMobileSales.UILogic.ViewModels
                     if (quote != null)
                         await
                             _quoteService.UpdateQuoteShippingAddress(quote,
-                                await _addressRepository.GetQuoteShippingAddress(quote.AddressId));
+                                await _addressRepository.GetShippingAddress(quote.AddressId));
                 }
                 else
                 {

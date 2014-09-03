@@ -215,7 +215,7 @@ namespace SageMobileSales.ServiceAgents.Services
                     quote = await PostSubmitQuote(quote, result);
                     await
                         UpdateQuoteShippingAddress(quote,
-                            await _addressRepository.GetQuoteShippingAddress(quote.AddressId));
+                            await _addressRepository.GetShippingAddress(quote.AddressId));
                 }
                 else
                 {
@@ -491,7 +491,7 @@ namespace SageMobileSales.ServiceAgents.Services
                         if (_quote != null)
                             await
                                 UpdateQuoteShippingAddress(quote,
-                                    await _addressRepository.GetQuoteShippingAddress(_quote.AddressId));
+                                    await _addressRepository.GetShippingAddress(_quote.AddressId));
                     }
                     else
                     {
@@ -542,7 +542,7 @@ namespace SageMobileSales.ServiceAgents.Services
                         if (quote != null)
                             await
                                 UpdateQuoteShippingAddress(quote,
-                                    await _addressRepository.GetQuoteShippingAddress(shippingAddress.AddressId));
+                                    await _addressRepository.GetShippingAddress(shippingAddress.AddressId));
                     }
                     else
                     {
@@ -550,7 +550,7 @@ namespace SageMobileSales.ServiceAgents.Services
                             await
                                 UpdateQuoteShippingAddress(
                                     await _quoteRepository.GetQuoteAsync(shippingAddress.QuoteId),
-                                    await _addressRepository.GetQuoteShippingAddress(shippingAddress.AddressId));
+                                    await _addressRepository.GetShippingAddress(shippingAddress.AddressId));
                         else
                             await
                                 UpdateQuoteShippingAddressKey(
