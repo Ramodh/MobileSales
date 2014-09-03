@@ -198,7 +198,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Returns pending shipping address
+        ///     Returns shipping address
         /// </summary>
         /// <param name="addressId"></param>
         /// <returns></returns>
