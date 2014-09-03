@@ -149,7 +149,7 @@ namespace SageMobileSales.UILogic.ViewModels
 
             OrderDetailsPageTitle = "Order " + OrderDtls.OrderNumber;
             CustomerDtls = new CustomerDetails();
-            ShippingAddress = await _addressRepostiory.GetShippingAddress(OrderDtls.AddressId);
+            ShippingAddress = await _addressRepostiory.GetShippingAddressDetails(OrderDtls.AddressId);
             CustomerDtls = await _customerRepository.GetCustomerDtlsForOrder(OrderDtls);
             OrderLineItemsList = await _orderLineItemRepository.GetOrderLineItemDetailsAsync(OrderDtls.OrderId);
             OnPropertyChanged("SubTotal");

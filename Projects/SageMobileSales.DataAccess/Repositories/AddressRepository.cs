@@ -25,7 +25,7 @@ namespace SageMobileSales.DataAccess.Repositories
         #region public methods
 
         /// <summary>
-        ///     Extracts address Json Response for that customer
+        ///     Extracts address json and saves it in local dB for that customerId
         /// </summary>
         /// <param name="sDataCustomer"></param>
         /// <param name="customerId"></param>
@@ -73,7 +73,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Adds or updates address json response to dB
+        ///     Adds or updates address json response to local dB
         /// </summary>
         /// <param name="sDataAddress"></param>
         /// <param name="customerId"></param>
@@ -112,7 +112,7 @@ namespace SageMobileSales.DataAccess.Repositories
 
 
         /// <summary>
-        ///     Gets other Addresses data from LocalDB
+        ///     Gets other addresses data from LocalDB
         /// </summary>
         /// <param name="customerId"></param>
         /// <returns></returns>
@@ -127,20 +127,18 @@ namespace SageMobileSales.DataAccess.Repositories
                 if (otherAddress != null && otherAddress.Count > 0)
                 {
                     otherAddress.RemoveAt(0);
-                    return otherAddress;
                 }
-                return null;
             }
             catch (Exception ex)
             {
                 _log = AppEventSource.Log.WriteLine(ex);
                 AppEventSource.Log.Error(_log);
             }
-            return null;
+            return otherAddress;
         }
 
         /// <summary>
-        ///     Returns mailing address or the first address in the Address table for the customer
+        ///     Gets mailing address or the first address in the Address table for that customerId
         /// </summary>
         /// Shipping Address is same as Address
         /// <param name="customerId"></param>
@@ -171,11 +169,11 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Returns shipping address details
+        ///     Gets shipping address details
         /// </summary>
         /// <param name="addressId"></param>
         /// <returns></returns>
-        public async Task<ShippingAddressDetails> GetShippingAddress(string addressId)
+        public async Task<ShippingAddressDetails> GetShippingAddressDetails(string addressId)
         {
             List<ShippingAddressDetails> shippingAddressList = null;
             try
@@ -200,16 +198,15 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Returns pending shipping address which is not synced
+        ///     Returns pending shipping address
         /// </summary>
-        /// <param name="customerId"></param>
+        /// <param name="addressId"></param>
         /// <returns></returns>
-        public async Task<Address> GetQuoteShippingAddress(string addressId)
+        public async Task<Address> GetShippingAddress(string addressId)
         {
             List<Address> shippingAddress = null;
             try
             {
-                // Check for valid address if exists then return addresstype 'mailing' or return first object in the table
                 shippingAddress =
                     await _sageSalesDB.QueryAsync<Address>("Select * from Address where Address.AddressId=?", addressId);
             }
@@ -227,62 +224,40 @@ namespace SageMobileSales.DataAccess.Repositories
             return shippingAddress.FirstOrDefault();
         }
 
-
         ///// <summary>
-        ///// Returns pending shipping address which is not synced
+        /////     Returns shipping address for quote
         ///// </summary>
-        ///// <param name="customerId"></param>
+        ///// <param name="quoteId"></param>
         ///// <returns></returns>
-        //public async Task<List<Address>> GetPendingShippingAddress(string customerId)
+        //public async Task<Address> GetShippingAddressForQuote(string quoteId)
         //{
+        //    List<Address> shippingAddress = null;
         //    try
         //    {
-        //        List<Address> shippingAddress;
         //        // Check for valid address if exists then return addresstype 'mailing' or return first object in the table
-        //        shippingAddress = await _sageSalesDB.QueryAsync<Address>("Select * from Address where Address.CustomerId=? and Address.IsSynced='0'", customerId);
-
-        //        return shippingAddress;
+        //        shippingAddress =
+        //            await
+        //                _sageSalesDB.QueryAsync<Address>(
+        //                    "Select Address.AddressName,Address.AddressId,Address.CustomerId,Address.Street1,Address.Street2,Address.Street3,Address.Street4,Address.City,Address.StateProvince,Address.PostalCode,Address.Country from Address INNER JOIN Quote ON quote.AddressId = Address.AddressId and Quote.QuoteId=?",
+        //                    quoteId);
+        //        //   ("SELECT distinct customer.customerName, quote.CustomerId, quote.QuoteId, quote.CreatedOn, quote.amount, quote.quoteStatus,quote.QuoteDescription, SalesRep.RepName FROM quote INNER JOIN customer ON customer.customerID = quote.customerId Inner Join SalesRep On Quote.RepId=? And Quote.QuoteStatus!='" + DataAccessUtils.IsOrderQuoteStatus + "' And Quote.QuoteStatus!='" + DataAccessUtils.TemporaryQuoteStatus + "'", salesRepId);
         //    }
-        //    catch (Exception e)
+        //    catch (SQLiteException ex)
         //    {
-        //        throw (e);
+        //        _log = AppEventSource.Log.WriteLine(ex);
+        //        AppEventSource.Log.Error(_log);
         //    }
+
+        //    catch (Exception ex)
+        //    {
+        //        _log = AppEventSource.Log.WriteLine(ex);
+        //        AppEventSource.Log.Error(_log);
+        //    }
+        //    return shippingAddress.FirstOrDefault();
         //}
 
         /// <summary>
-        ///     Returns shipping address for quote
-        /// </summary>
-        /// <param name="quoteId"></param>
-        /// <returns></returns>
-        public async Task<Address> GetShippingAddressForQuote(string quoteId)
-        {
-            List<Address> shippingAddress = null;
-            try
-            {
-                // Check for valid address if exists then return addresstype 'mailing' or return first object in the table
-                shippingAddress =
-                    await
-                        _sageSalesDB.QueryAsync<Address>(
-                            "Select Address.AddressName,Address.AddressId,Address.CustomerId,Address.Street1,Address.Street2,Address.Street3,Address.Street4,Address.City,Address.StateProvince,Address.PostalCode,Address.Country from Address INNER JOIN Quote ON quote.AddressId = Address.AddressId and Quote.QuoteId=?",
-                            quoteId);
-                //   ("SELECT distinct customer.customerName, quote.CustomerId, quote.QuoteId, quote.CreatedOn, quote.amount, quote.quoteStatus,quote.QuoteDescription, SalesRep.RepName FROM quote INNER JOIN customer ON customer.customerID = quote.customerId Inner Join SalesRep On Quote.RepId=? And Quote.QuoteStatus!='" + DataAccessUtils.IsOrderQuoteStatus + "' And Quote.QuoteStatus!='" + DataAccessUtils.TemporaryQuoteStatus + "'", salesRepId);
-            }
-            catch (SQLiteException ex)
-            {
-                _log = AppEventSource.Log.WriteLine(ex);
-                AppEventSource.Log.Error(_log);
-            }
-
-            catch (Exception ex)
-            {
-                _log = AppEventSource.Log.WriteLine(ex);
-                AppEventSource.Log.Error(_log);
-            }
-            return shippingAddress.FirstOrDefault();
-        }
-
-        /// <summary>
-        ///     Gets Addresses data from LocalDB
+        ///     Gets addresses from LocalDB for that customerId
         /// </summary>
         /// <param name="customerId"></param>
         /// <returns></returns>
@@ -292,44 +267,7 @@ namespace SageMobileSales.DataAccess.Repositories
             try
             {
                 customerAddresses =
-                    await _sageSalesDB.QueryAsync<Address>("Select * from Address where CustomerId=?", customerId);
-                if (customerAddresses != null && customerAddresses.Count > 0)
-                {
-                    return customerAddresses;
-                }
-                return null;
-            }
-            catch (SQLiteException ex)
-            {
-                _log = AppEventSource.Log.WriteLine(ex);
-                AppEventSource.Log.Error(_log);
-            }
-
-            catch (Exception ex)
-            {
-                _log = AppEventSource.Log.WriteLine(ex);
-                AppEventSource.Log.Error(_log);
-            }
-            return null;
-        }
-
-        /// <summary>
-        ///     Gets other Addresses data from LocalDB
-        /// </summary>
-        /// <param name="customerId"></param>
-        /// <returns></returns>
-        public async Task<List<Address>> GetOtherAddressesForCustomers(string customerId)
-        {
-            List<Address> customerAddresses = null;
-            try
-            {
-                customerAddresses =
-                    await
-                        _sageSalesDB.QueryAsync<Address>(
-                            "Select * from Address where CustomerId=? and AddressType='Other'", customerId);
-
-                //if (customerAddresses != null && customerAddresses.Count > 0)
-                //{
+                    await _sageSalesDB.QueryAsync<Address>("Select * from Address where CustomerId=?", customerId);                                                                    
             }
             catch (SQLiteException ex)
             {
@@ -345,7 +283,36 @@ namespace SageMobileSales.DataAccess.Repositories
             return customerAddresses;
         }
 
-        /// Adding address to localDb to support offline capability
+        /// <summary>
+        ///     Gets other address data from local dB for that customerId
+        /// </summary>
+        /// <param name="customerId"></param>
+        /// <returns></returns>
+        public async Task<List<Address>> GetOtherAddresses(string customerId)
+        {
+            List<Address> customerAddresses = null;
+            try
+            {
+                customerAddresses =
+                    await
+                        _sageSalesDB.QueryAsync<Address>(
+                            "Select * from Address where CustomerId=? and AddressType='Other'", customerId);
+            }
+            catch (SQLiteException ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+
+            catch (Exception ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+            return customerAddresses;
+        }
+
+        /// Add address to local dB(offline capability)
         /// </summary>
         /// <param name="contact"></param>
         /// <returns></returns>
@@ -355,7 +322,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
 
-        /// Updating address to localDb
+        /// Update address to localDb
         /// </summary>
         /// <param name="contact"></param>
         /// <returns></returns>
@@ -365,7 +332,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Returns shipping address for order
+        ///     Gets shipping address for order
         /// </summary>
         /// <param name="addressId"></param>
         /// <returns></returns>
@@ -382,7 +349,6 @@ namespace SageMobileSales.DataAccess.Repositories
                 _log = AppEventSource.Log.WriteLine(ex);
                 AppEventSource.Log.Error(_log);
             }
-
             catch (Exception ex)
             {
                 _log = AppEventSource.Log.WriteLine(ex);
@@ -471,7 +437,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Extracts address json response to dB
+        ///     Extracts address json response
         /// </summary>
         /// <param name="sDataAddress"></param>
         /// <param name="address"></param>
@@ -630,8 +596,7 @@ namespace SageMobileSales.DataAccess.Repositories
                 addressRemoveList = new List<Address>();
                 addressIdDbList =
                     await _sageSalesDB.QueryAsync<Address>("SELECT * FROM Address where customerId=?", customerId);
-
-                // Requires enhancement
+                
                 for (int i = 0; i < addressIdDbList.Count; i++)
                 {
                     idExists = false;
@@ -652,8 +617,6 @@ namespace SageMobileSales.DataAccess.Repositories
                         addressRemoveList.Add(addressIdDbList[i]);
                 }
 
-                //if (addressIdDbList != null)
-                //{
                 //addressRemoveList = addressIdJsonList.Except(addressIdDbList, new AddressIdComparer()).ToList();
                 if (addressRemoveList.Count() > 0)
                 {
@@ -662,7 +625,6 @@ namespace SageMobileSales.DataAccess.Repositories
                         await _sageSalesDB.DeleteAsync(addressRemove);
                     }
                 }
-                //}
             }
             catch (SQLiteException ex)
             {

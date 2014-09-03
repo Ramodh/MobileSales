@@ -142,7 +142,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 _quoteLineItemsList = await _quoteLineItemRepository.GetQuoteLineItemDetailsAsync(QuoteDtls.QuoteId);
                 CustomerDtls =
                     await _customerRepository.GetCustomerDtlsForQuote(QuoteDtls.CustomerId, QuoteDtls.AddressId);
-                ShippingAddressDtls = await _addressRepository.GetShippingAddress(QuoteDtls.AddressId);
+                ShippingAddressDtls = await _addressRepository.GetShippingAddressDetails(QuoteDtls.AddressId);
 
                 OnPropertyChanged("SubTotal");
                 OnPropertyChanged("DiscountPercentageValue");
