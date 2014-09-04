@@ -86,7 +86,7 @@ namespace SageMobileSales.ServiceAgents.Services
                     //Customer customer =
                     //    await _customerRepository.GetCustomerDataAsync(customerObj.GetNamedString("$key"));
                     //if (customer != null)
-                    await _contactRepository.SavePostedContactJSonToDbAsync(sDataContact, contact.CustomerId, contact);
+                    await _contactRepository.SavePostedContactJsonToDbAsync(sDataContact, contact.CustomerId, contact);
                 }
             }
             catch
