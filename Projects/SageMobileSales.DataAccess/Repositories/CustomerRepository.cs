@@ -279,7 +279,7 @@ namespace SageMobileSales.DataAccess.Repositories
 
         # region Private Methods
         /// <summary>
-        ///     Extracts customer from Json and updates the same
+        ///     Extracts customer from Json, update the same
         /// </summary>        
         /// <param name="sDataCustomer"></param>
         /// <returns></returns>
