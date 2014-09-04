@@ -8,7 +8,7 @@ namespace SageMobileSales.DataAccess.Repositories
     {
         Task<LocalSyncDigest> SaveLocalSyncDigestDtlsAsync(JsonObject localSyncDigestDtlsJson);
         Task<LocalSyncDigest> UpdateLocalSyncDigestDtlsAsync(LocalSyncDigest localSyncDigest);
-        Task DeleteLocalSyncDigestDtlsAsync(LocalSyncDigest localSyncDigest);
+        //Task DeleteLocalSyncDigestDtlsAsync(LocalSyncDigest localSyncDigest);
         Task<LocalSyncDigest> GetLocalSyncDigestDtlsAsync(string sDataEntity);
     }
 }
