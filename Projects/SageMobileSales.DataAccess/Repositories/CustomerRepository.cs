@@ -36,11 +36,10 @@ namespace SageMobileSales.DataAccess.Repositories
         # region Public Methods
 
         /// <summary>
-        ///     Extracts customer data from Json repsonse and updates LocalSyncDigest(local tick) in LocalDB
+        ///     Extracts customer data from json, save and update LocalSyncDigest(local tick) in Local dB
         /// </summary>
-        /// <param name="sDataProducts"></param>
-        /// <param name="localSyncDigest"></param>
-        /// s
+        /// <param name="sDataCustomers"></param>
+        /// <param name="localSyncDigest"></param> 
         /// <returns></returns>
         public async Task SaveCustomersAsync(JsonObject sDataCustomers, LocalSyncDigest localSyncDigest)
         {
@@ -49,7 +48,6 @@ namespace SageMobileSales.DataAccess.Repositories
                 JsonArray sDataCustomersArray = sDataCustomers.GetNamedArray("$resources");
                 DataAccessUtils.CustomerReturnedCount += sDataCustomersArray.Count;
 
-                //List<Customer> lstCustomers = new List<Customer>();
                 for (int customer = 0; customer < sDataCustomersArray.Count; customer++)
                 {
                     JsonObject sDataCustomer = sDataCustomersArray[customer].GetObject();
@@ -68,7 +66,7 @@ namespace SageMobileSales.DataAccess.Repositories
 
                     if (customer == (sDataCustomersArray.Count - 1) && localSyncDigest != null)
                     {
-                        //Fires an event to update UI/publish
+                        //Fires an event to update UI
                         _eventAggregator.GetEvent<CustomerDataChangedEvent>().Publish(true);
 
                         if (DataAccessUtils.CustomerTotalCount == DataAccessUtils.CustomerReturnedCount)
@@ -92,7 +90,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Extracts data from response and updates customer, addresses and contacts
+        ///     Extracts data from json, updates customer, addresses and contacts
         /// </summary>
         /// <param name="sDataCustomer"></param>
         /// <returns></returns>
@@ -100,14 +98,13 @@ namespace SageMobileSales.DataAccess.Repositories
         {
             Customer customer = await SaveCustomerDetailsAsync(sDataCustomer);
             await _addressRepository.SaveAddressesAsync(sDataCustomer, customer.CustomerId);
-
             await _contactRepository.SaveContactsAsync(sDataCustomer, customer.CustomerId);
         }
 
         /// <summary>
-        ///     Adds or updates customer json response to dB
+        ///     Add or update customer json to dB
         /// </summary>
-        /// <param name="customer"></param>
+        /// <param name="sDataCustomer"></param>
         /// <returns></returns>
         public async Task<Customer> AddOrUpdateCustomerJsonToDbAsync(JsonObject sDataCustomer)
         {
@@ -132,41 +129,6 @@ namespace SageMobileSales.DataAccess.Repositories
                         return await AddCustomerJsonToDbAsync(sDataCustomer);
                     }
                 }
-
-                //if (sDataCustomer.TryGetValue("PeriodToDateSales", out value))
-                //{
-                //    if (value.ValueType.ToString() != DataAccessUtils.Null)
-                //    {
-                //        JsonObject sDataPeriodToDateSales = sDataCustomer.GetNamedObject("PeriodToDateSales");
-                //        if (sDataPeriodToDateSales.GetNamedValue("CustomerId").ValueType.ToString() != DataAccessUtils.Null)
-                //        {
-                //            customerList =
-                //                await
-                //                    _sageSalesDB.QueryAsync<Customer>("SELECT * FROM Customer where CustomerId=?",
-                //                        sDataPeriodToDateSales.GetNamedString("$key"));
-
-                //            if (customerList.FirstOrDefault() != null)
-                //            {
-                //                customerList.FirstOrDefault().YearToDate = Convert.ToDecimal(sDataPeriodToDateSales.GetNamedNumber("YearToDate"));
-                //                customerList.FirstOrDefault().MonthToDate = Convert.ToDecimal(sDataPeriodToDateSales.GetNamedNumber("MonthToDate"));
-
-                //                return await UpdateCustomerJsonToDbAsync(sDataCustomer, customerList.FirstOrDefault());
-                //            }
-
-                //            Customer customer = new Customer()
-                //            {
-                //                CustomerId = sDataPeriodToDateSales.GetNamedString("$key"),
-                //                YearToDate = Convert.ToDecimal(sDataPeriodToDateSales.GetNamedNumber("YearToDate")),
-                //                MonthToDate = Convert.ToDecimal(sDataPeriodToDateSales.GetNamedNumber("MonthToDate"))
-                //            };
-
-                //            await _sageSalesDB.InsertAsync(customer);
-
-                //            return await UpdateCustomerJsonToDbAsync(sDataCustomer, customer);
-                //            //return await AddCustomerJsonToDbAsync(sDataCustomer);
-                //        }
-                //    }
-                //}
             }
             catch (Exception ex)
             {
@@ -177,7 +139,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Returns list of all customers
+        ///     Gets list of all customers
         /// </summary>
         /// <returns></returns>
         public async Task<List<Customer>> GetCustomerList()
@@ -198,7 +160,7 @@ namespace SageMobileSales.DataAccess.Repositories
 
 
         /// <summary>
-        ///     Gets list of customers from LocalDB
+        ///     Gets list of customerAddress from LocalDB
         /// </summary>
         /// <returns></returns>
         public async Task<List<CustomerDetails>> GetCustomerListDtlsAsync()
@@ -270,7 +232,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Get Customer list for that order
+        ///     Gets Customer list for that order
         /// </summary>
         /// <param name="quote"></param>
         /// <returns></returns>
@@ -294,7 +256,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Get Customer data from LocalDB
+        ///     Get customer data from LocalDB
         /// </summary>
         /// <returns></returns>
         public async Task<Customer> GetCustomerDataAsync(string customerId)
@@ -313,10 +275,12 @@ namespace SageMobileSales.DataAccess.Repositories
             return customer.FirstOrDefault();
         }
 
+        #endregion
+
+        # region Private Methods
         /// <summary>
         ///     Extracts customer from Json and updates the same
-        /// </summary>
-        /// Can implement delete functionality for customers here
+        /// </summary>        
         /// <param name="sDataCustomer"></param>
         /// <returns></returns>
         private async Task<Customer> SaveCustomerDetailsAsync(JsonObject sDataCustomer)
@@ -332,13 +296,10 @@ namespace SageMobileSales.DataAccess.Repositories
             }
             return null;
         }
-
-        # endregion
-
-        # region Private Methods
+        
 
         /// <summary>
-        ///     Add customer json response to dB
+        ///     Add customer json to dB
         /// </summary>
         /// <param name="sDataCustomer"></param>
         /// <returns></returns>
@@ -362,7 +323,7 @@ namespace SageMobileSales.DataAccess.Repositories
 
 
         /// <summary>
-        ///     Update customer json response to dB
+        ///     Update customer json to dB
         /// </summary>
         /// <param name="sDataCustomer"></param>
         /// <param name="customerDbObj"></param>
@@ -400,15 +361,6 @@ namespace SageMobileSales.DataAccess.Repositories
                         customer.CustomerName = sDataCustomer.GetNamedString("Name");
                     }
                 }
-
-                //if (sDataCustomer.TryGetValue("PaymentMethod", out value))
-                //{
-                //    if (value.ValueType.ToString() != DataAccessUtils.Null)
-                //    {
-                //        customer.PaymentMethod = sDataCustomer.GetNamedString("PaymentMethod");
-                //    }
-                //}
-
                 if (sDataCustomer.TryGetValue("IsOnCreditHold", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
@@ -416,7 +368,6 @@ namespace SageMobileSales.DataAccess.Repositories
                         customer.IsOnCreditHold = sDataCustomer.GetNamedBoolean("IsOnCreditHold");
                     }
                 }
-
                 if (sDataCustomer.TryGetValue("CreditLimit", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
@@ -424,7 +375,6 @@ namespace SageMobileSales.DataAccess.Repositories
                         customer.CreditLimit = Convert.ToDecimal(sDataCustomer.GetNamedNumber("CreditLimit"));
                     }
                 }
-
                 if (sDataCustomer.TryGetValue("IsCreditLimitUsed", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
@@ -432,7 +382,6 @@ namespace SageMobileSales.DataAccess.Repositories
                         customer.IsCreditLimitUsed = sDataCustomer.GetNamedBoolean("IsCreditLimitUsed");
                     }
                 }
-
                 if (sDataCustomer.TryGetValue("CreditAvailable", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
@@ -440,7 +389,6 @@ namespace SageMobileSales.DataAccess.Repositories
                         customer.CreditAvailable = Convert.ToDecimal(sDataCustomer.GetNamedNumber("CreditAvailable"));
                     }
                 }
-
                 if (sDataCustomer.TryGetValue("PaymentTerms", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
@@ -448,7 +396,6 @@ namespace SageMobileSales.DataAccess.Repositories
                         customer.PaymentTerms = sDataCustomer.GetNamedString("PaymentTerms");
                     }
                 }
-
                 if (sDataCustomer.TryGetValue("EntityStatus", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
@@ -456,13 +403,12 @@ namespace SageMobileSales.DataAccess.Repositories
                         customer.EntityStatus = sDataCustomer.GetNamedString("EntityStatus");
                     }
                 }
+
                 if (sDataCustomer.TryGetValue("PeriodToDateSales", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
                         JsonObject sDataPeriodToDateSales = sDataCustomer.GetNamedObject("PeriodToDateSales");
-
-
                         if (sDataPeriodToDateSales.TryGetValue("YearToDate", out value))
                         {
                             if (value.ValueType.ToString() != DataAccessUtils.Null)
