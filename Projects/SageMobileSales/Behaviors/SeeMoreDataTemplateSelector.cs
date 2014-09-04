@@ -61,7 +61,7 @@ namespace SageMobileSales.Behaviors
                 else
                     return GridItemsTemplate;
             }
-                else if (item.GetType().Name == "FrequentlyPurchaseItem")
+                else if (item.GetType().Name == "FrequentlyPurchasedItem")
             {
                 frequentlyPurchasedItem = item as FrequentlyPurchasedItem;
                 if (frequentlyPurchasedItem.ItemDescription == PageUtils.SeeMore)

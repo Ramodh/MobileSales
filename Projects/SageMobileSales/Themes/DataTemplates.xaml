@@ -518,7 +518,7 @@
             <TextBlock x:Uid="ItemNo" Grid.Row="1" Style="{StaticResource AddressTextStyle}"
                        TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="0" />
             <TextBlock Grid.Row="1"
-                       Text="{Binding ItemId}"
+                       Text="{Binding ItemNumber}"
                        Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis"
                        Grid.Column="1"/>
             <TextBlock x:Uid="QuantityYTD" Grid.Row="2" Style="{StaticResource AddressTextStyle}"

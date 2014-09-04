@@ -36,7 +36,6 @@ namespace SageMobileSales.UILogic.ViewModels
         private Visibility _isRecentOrdersVisible;
         private List<ProductDetails> _otherProduct;
         private List<ProductAssociatedBlob> _productImage;
-        private List<RecentOrders> _recentOrders;
         private List<SalesHistory> _salesHistoryList;
 
         public ItemDetailPageViewModel(INavigationService navigationService, IProductRepository productRepository,
@@ -174,13 +173,6 @@ namespace SageMobileSales.UILogic.ViewModels
             get { return _enteredQuantity; }
             private set { SetProperty(ref _enteredQuantity, value); }
         }
-
-        public List<RecentOrders> RecentOrders
-        {
-            get { return _recentOrders; }
-            private set { SetProperty(ref _recentOrders, value); }
-        }
-
         public Visibility IsRecentOrdersVisible
         {
             get { return _isRecentOrdersVisible; }
@@ -457,15 +449,15 @@ namespace SageMobileSales.UILogic.ViewModels
         /// <param name="parameter"></param>
         public void GridViewSeeMoreItemClick(object sender, object parameter)
         {
-            var arg = (parameter as ItemClickEventArgs).ClickedItem as RecentOrders;
+              var arg = (parameter as ItemClickEventArgs).ClickedItem as SalesHistory;
 
-            if (arg != null)
-            {
-                if (arg.Invoice == DataAccessUtils.SeeMore)
-                {
-                    _navigationService.Navigate("RecentOrders", _productDetail);
-                }
-            }
+              if (arg != null)
+              {
+                  if (arg.InvoiceNumber == DataAccessUtils.SeeMore)
+                  {
+                      _navigationService.Navigate("RecentOrders", _productDetail);
+                  }
+              }
         }
 
         ///// <summary>

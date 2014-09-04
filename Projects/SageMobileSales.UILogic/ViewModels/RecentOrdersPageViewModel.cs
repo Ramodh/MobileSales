@@ -37,8 +37,7 @@ namespace SageMobileSales.UILogic.ViewModels
         private Product _productDetail;
         private List<ProductAssociatedBlob> _productImage;
         private string _productName = string.Empty;
-        private int _productQuantity;
-        private List<RecentOrders> _productRecentOrders;
+        private int _productQuantity;  
         private string _productSku = string.Empty;
         private QuoteDetails _quoteDetails;
         private List<SalesHistory> _salesHistoryList;
@@ -139,13 +138,6 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             get { return _imageUri; }
             private set { SetProperty(ref _imageUri, value); }
-        }
-
-
-        public List<RecentOrders> ProductRecentOrders
-        {
-            get { return _productRecentOrders; }
-            private set { SetProperty(ref _productRecentOrders, value); }
         }
 
         /// <summary>
@@ -306,7 +298,7 @@ namespace SageMobileSales.UILogic.ViewModels
         }
 
         /// <summary>
-        ///     Sorts quotes by selected column name and order
+        ///     Sorts recent orders by selected column name and order
         /// </summary>
         /// <param name="sender"></param>
         private void Sort(string selectedItem, bool orderby)
@@ -317,15 +309,15 @@ namespace SageMobileSales.UILogic.ViewModels
                 {
                     if (IsAscending)
                     {
-                        List<RecentOrders> sortedQuoteDetails =
-                            ProductRecentOrders.OrderBy(sortby => sortby.Invoice).ToList();
-                        ProductRecentOrders = sortedQuoteDetails;
+                        List<SalesHistory> sortedRecentOrders =
+                            SalesHistoryList.OrderBy(sortby => sortby.InvoiceNumber).ToList();
+                        SalesHistoryList = sortedRecentOrders;
                     }
                     else
                     {
-                        List<RecentOrders> sortedQuoteDetails =
-                            ProductRecentOrders.OrderByDescending(sortby => sortby.Invoice).ToList();
-                        ProductRecentOrders = sortedQuoteDetails;
+                        List<SalesHistory> sortedRecentOrders =
+                            SalesHistoryList.OrderByDescending(sortby => sortby.InvoiceNumber).ToList();
+                        SalesHistoryList = sortedRecentOrders;
                     }
                     _selectedItem = selectedItem;
                     SelectedColumn = false;
@@ -334,15 +326,15 @@ namespace SageMobileSales.UILogic.ViewModels
                 {
                     if (IsAscending)
                     {
-                        List<RecentOrders> sortedQuoteDetails =
-                            ProductRecentOrders.OrderBy(sortby => sortby.Date).ToList();
-                        ProductRecentOrders = sortedQuoteDetails;
+                        List<SalesHistory> sortedRecentOrders =
+                            SalesHistoryList.OrderBy(sortby => sortby.InvoiceDate).ToList();
+                        SalesHistoryList = sortedRecentOrders;
                     }
                     else
                     {
-                        List<RecentOrders> sortedQuoteDetails =
-                            ProductRecentOrders.OrderByDescending(sortby => sortby.Date).ToList();
-                        ProductRecentOrders = sortedQuoteDetails;
+                        List<SalesHistory> sortedRecentOrders =
+                            SalesHistoryList.OrderByDescending(sortby => sortby.InvoiceDate).ToList();
+                        SalesHistoryList = sortedRecentOrders;
                     }
                     _selectedItem = selectedItem;
                     SelectedColumn = true;
@@ -351,15 +343,15 @@ namespace SageMobileSales.UILogic.ViewModels
                 {
                     if (IsAscending)
                     {
-                        List<RecentOrders> sortedQuoteDetails =
-                            ProductRecentOrders.OrderBy(sortby => sortby.Quantity).ToList();
-                        ProductRecentOrders = sortedQuoteDetails;
+                        List<SalesHistory> sortedRecentOrders =
+                            SalesHistoryList.OrderBy(sortby => sortby.Quantity).ToList();
+                        SalesHistoryList = sortedRecentOrders;
                     }
                     else
                     {
-                        List<RecentOrders> sortedQuoteDetails =
-                            ProductRecentOrders.OrderByDescending(sortby => sortby.Quantity).ToList();
-                        ProductRecentOrders = sortedQuoteDetails;
+                        List<SalesHistory> sortedRecentOrders =
+                            SalesHistoryList.OrderByDescending(sortby => sortby.Quantity).ToList();
+                        SalesHistoryList = sortedRecentOrders;
                     }
                     _selectedItem = selectedItem;
                     SelectedColumn = false;
@@ -368,15 +360,15 @@ namespace SageMobileSales.UILogic.ViewModels
                 {
                     if (IsAscending)
                     {
-                        List<RecentOrders> sortedQuoteDetails =
-                            ProductRecentOrders.OrderBy(sortby => sortby.Total).ToList();
-                        ProductRecentOrders = sortedQuoteDetails;
+                        List<SalesHistory> sortedRecentOrders =
+                            SalesHistoryList.OrderBy(sortby => sortby.Total).ToList();
+                        SalesHistoryList = sortedRecentOrders;
                     }
                     else
                     {
-                        List<RecentOrders> sortedQuoteDetails =
-                            ProductRecentOrders.OrderByDescending(sortby => sortby.Total).ToList();
-                        ProductRecentOrders = sortedQuoteDetails;
+                        List<SalesHistory> sortedRecentOrders =
+                            SalesHistoryList.OrderByDescending(sortby => sortby.Total).ToList();
+                        SalesHistoryList = sortedRecentOrders;
                         SelectedColumn = false;
                     }
                     _selectedItem = selectedItem;
@@ -385,15 +377,15 @@ namespace SageMobileSales.UILogic.ViewModels
                 {
                     if (IsAscending)
                     {
-                        List<RecentOrders> sortedQuoteDetails =
-                            ProductRecentOrders.OrderBy(sortby => sortby.UnitPrice).ToList();
-                        ProductRecentOrders = sortedQuoteDetails;
+                        List<SalesHistory> sortedRecentOrders =
+                            SalesHistoryList.OrderBy(sortby => sortby.Price).ToList();
+                        SalesHistoryList = sortedRecentOrders;
                     }
                     else
                     {
-                        List<RecentOrders> sortedQuoteDetails =
-                            ProductRecentOrders.OrderByDescending(sortby => sortby.UnitPrice).ToList();
-                        ProductRecentOrders = sortedQuoteDetails;
+                        List<SalesHistory> sortedRecentOrders =
+                            SalesHistoryList.OrderByDescending(sortby => sortby.Price).ToList();
+                        SalesHistoryList = sortedRecentOrders;
                     }
                     _selectedItem = selectedItem;
                     SelectedColumn = false;
