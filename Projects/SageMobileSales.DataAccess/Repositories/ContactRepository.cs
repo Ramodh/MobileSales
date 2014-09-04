@@ -59,7 +59,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Adding contact to localDb to support offline capability
+        ///     Add contact to localDb(offline capability)
         /// </summary>
         /// <param name="contact"></param>
         /// <returns></returns>
@@ -74,7 +74,7 @@ namespace SageMobileSales.DataAccess.Repositories
         /// </summary>
         /// <param name="sDataContact"></param>
         /// <returns></returns>
-        public async Task SavePostedContactJSonToDbAsync(JsonObject sDataContact, string customerId,
+        public async Task SavePostedContactJsonToDbAsync(JsonObject sDataContact, string customerId,
             Contact contactPending)
         {
             var contactResponse = new Contact();
@@ -95,7 +95,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Get unsynced contact data from local dB
+        ///     Gets unsynced contact data from local dB
         /// </summary>
         /// <param name="customerId"></param>
         /// <returns></returns>
@@ -125,7 +125,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Returns list of contacts for that customer
+        ///     Gets list of contacts for that customerId
         /// </summary>
         /// <param name="customerId"></param>
         /// <returns></returns>
@@ -152,7 +152,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Adds or updates contact json response to dB
+        ///     Add or update contact json response to dB
         /// </summary>
         /// <param name="sDataContact"></param>
         /// <param name="customerId"></param>
@@ -216,7 +216,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Adds contact json response to dB
+        ///     Add contact json to dB
         /// </summary>
         /// <param name="sDataContact"></param>
         /// <param name="customerId"></param>
@@ -247,7 +247,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Updates contact json response to dB
+        ///     Update contact response to dB
         /// </summary>
         /// <param name="sDataContact"></param>
         /// <param name="contactDbObj"></param>
@@ -313,7 +313,6 @@ namespace SageMobileSales.DataAccess.Repositories
                         contact.LastName = sDataContact.GetNamedString("LastName");
                     }
                 }
-
                 if (sDataContact.TryGetValue("PhoneHome", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
@@ -383,7 +382,7 @@ namespace SageMobileSales.DataAccess.Repositories
 
             try
             {
-                // Retrieve list of addressId from Json
+                // Retrieve list of contactId from Json
                 contactIdJsonList = new List<Contact>();
                 foreach (IJsonValue contact in sDataContactArray)
                 {
@@ -399,14 +398,13 @@ namespace SageMobileSales.DataAccess.Repositories
                     contactIdJsonList.Add(contactJsonObj);
                 }
 
-                //Retrieve list of addressId from dB
+                //Retrieve list of contactId from dB
                 contactIdDbList = new List<Contact>();
                 contactRemoveList = new List<Contact>();
                 contactIdDbList =
                     await _sageSalesDB.QueryAsync<Contact>("SELECT * FROM Contact where customerId=?", customerId);
 
 
-                // Requires enhancement
                 for (int i = 0; i < contactIdDbList.Count; i++)
                 {
                     idExists = false;
@@ -427,9 +425,6 @@ namespace SageMobileSales.DataAccess.Repositories
                         contactRemoveList.Add(contactIdDbList[i]);
                 }
 
-                //if (contactIdDbList != null)
-                //{
-                //var addressRemoveList = contactIdDbList.Except(contactIdJsonList, new ContactIdComparer()).ToList();
                 if (contactRemoveList.Count() > 0)
                 {
                     foreach (Contact contactRemove in contactRemoveList)
@@ -437,7 +432,6 @@ namespace SageMobileSales.DataAccess.Repositories
                         await _sageSalesDB.DeleteAsync(contactRemove);
                     }
                 }
-                //}
             }
             catch (SQLiteException ex)
             {
@@ -454,7 +448,7 @@ namespace SageMobileSales.DataAccess.Repositories
 
 
         /// <summary>
-        ///     Checks for pending contacts which has not synced and updates
+        ///     Check for pending contacts and updates
         /// </summary>
         /// <param name="contactResponse"></param>
         /// <param name="contactPending"></param>
