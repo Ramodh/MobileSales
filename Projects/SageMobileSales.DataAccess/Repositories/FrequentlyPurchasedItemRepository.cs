@@ -23,6 +23,11 @@ namespace SageMobileSales.DataAccess.Repositories
 
         # region public metods
 
+        /// <summary>
+        /// Extracts frequently purchased item data from json, save in local dB
+        /// </summary>
+        /// <param name="sDataFrequentlyPurchasedItem"></param>
+        /// <returns></returns>
         public async Task SaveFrequentlyPurchasedItemsAsync(JsonObject sDataFrequentlyPurchasedItem)
         {
             try
@@ -54,6 +59,11 @@ namespace SageMobileSales.DataAccess.Repositories
             }
         }
 
+        /// <summary>
+        /// Gets list of frequently purchased items
+        /// </summary>
+        /// <param name="customerId"></param>
+        /// <returns></returns>
         public async Task<List<FrequentlyPurchasedItem>> GetFrequentlyPurchasedItems(string customerId)
         {
             List<FrequentlyPurchasedItem> FrequentlyPurchasedItemList = null;
@@ -82,11 +92,13 @@ namespace SageMobileSales.DataAccess.Repositories
 
         #region private methods
 
+        /// <summary>
+        /// Extracts frequentlyPurchasedItem from Json, update the same
+        /// </summary>
+        /// <param name="sDataFrequentlyPurchasedItemArray"></param>
+        /// <returns></returns>
         private async Task SaveFrequentlyPurchasedItemDetailsAsync(JsonArray sDataFrequentlyPurchasedItemArray)
         {
-            //Need to confirm whether deletion need to be handled
-
-
             foreach (IJsonValue frequentlyPurchasedItem in sDataFrequentlyPurchasedItemArray)
             {
                 JsonObject sDataFrequentlyPurchasedItem = frequentlyPurchasedItem.GetObject();
@@ -94,6 +106,11 @@ namespace SageMobileSales.DataAccess.Repositories
             }
         }
 
+        /// <summary>
+        /// Add or update extracted json to local dB
+        /// </summary>
+        /// <param name="sDataFrequentlyPurchasedItem"></param>
+        /// <returns></returns>
         private async Task AddOrUpdateFrequentlyPurchasedItemJsonToDbAsync(JsonObject sDataFrequentlyPurchasedItem)
         {
             try
@@ -130,6 +147,12 @@ namespace SageMobileSales.DataAccess.Repositories
             }
         }
 
+        /// <summary>
+        /// Update frequntlyPurchasedItem in local dB
+        /// </summary>
+        /// <param name="sDataFrequentlyPurchasedItem"></param>
+        /// <param name="frequentlyPurchasedItemDbObj"></param>
+        /// <returns></returns>
         private async Task UpdateFrequentlyPurchasedItemJsonToDbAsync(JsonObject sDataFrequentlyPurchasedItem,
             FrequentlyPurchasedItem frequentlyPurchasedItemDbObj)
         {
@@ -151,6 +174,11 @@ namespace SageMobileSales.DataAccess.Repositories
             }
         }
 
+        /// <summary>
+        /// Add frequntlyPurchasedItem in local dB
+        /// </summary>
+        /// <param name="sDataFrequentlyPurchasedItem"></param>
+        /// <returns></returns>
         private async Task AddFrequentlyPurchasedItemJsonToDbAsync(JsonObject sDataFrequentlyPurchasedItem)
         {
             var frequentlyPurchasedItemObj = new FrequentlyPurchasedItem();
@@ -177,6 +205,12 @@ namespace SageMobileSales.DataAccess.Repositories
             }
         }
 
+        /// <summary>
+        /// Extract frequntlyPurchasedItem from json
+        /// </summary>
+        /// <param name="sDataFrequentlyPurchasedItem"></param>
+        /// <param name="frequentlyPurchasedItem"></param>
+        /// <returns></returns>
         private FrequentlyPurchasedItem ExtractFrequentlyPurchasedItemFromJsonAsync(
             JsonObject sDataFrequentlyPurchasedItem, FrequentlyPurchasedItem frequentlyPurchasedItem)
         {
@@ -200,7 +234,6 @@ namespace SageMobileSales.DataAccess.Repositories
                         frequentlyPurchasedItem.ItemId = sDataFrequentlyPurchasedItem.GetNamedString("ItemId");
                     }
                 }
-
                 if (sDataFrequentlyPurchasedItem.TryGetValue("CustomerId", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
@@ -216,7 +249,6 @@ namespace SageMobileSales.DataAccess.Repositories
                             Convert.ToInt16(sDataFrequentlyPurchasedItem.GetNamedNumber("QuantityYtd"));
                     }
                 }
-
                 if (sDataFrequentlyPurchasedItem.TryGetValue("QuantityPriorYtd", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)

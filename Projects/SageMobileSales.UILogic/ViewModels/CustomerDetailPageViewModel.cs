@@ -222,7 +222,7 @@ namespace SageMobileSales.UILogic.ViewModels
             {
                 InProgress = true;
                 List<Address> otherAddresses =
-                    await _addressRepository.GetOtherAddressesForCustomers(CustomerDtls.CustomerId);
+                    await _addressRepository.GetOtherAddresses(CustomerDtls.CustomerId);
                 if (otherAddresses.Count <= 0)
                 {
                     IsOtherAddressesVisible = Visibility.Collapsed;
