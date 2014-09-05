@@ -135,7 +135,7 @@ namespace SageMobileSales.DataAccess.Repositories
                 productsList =
                     await
                         _sageSalesDB.QueryAsync<ProductDetails>(
-                            "select distinct PRD.ProductId, PRD.ProductName, PRD.Sku, PRD.PriceStd, (select Url from ProductAssociatedBlob as PAB where PAB.ProductId = PRD.ProductId AND PAB.IsPrimary='1') as Url from Product as PRD join ProductCategoryLink as PCL on PRD.ProductId = PCL.ProductId and PRD.EntityStatus='Active' where PCL.CategoryId = ? order by Url desc",
+                            "select distinct PRD.ProductId, PRD.ProductName, PRD.Sku, PRD.PriceStd, (select Url from ProductAssociatedBlob as PAB where PAB.ProductId = PRD.ProductId AND (PAB.IsPrimary='1' OR PAB.IsPrimary='0')) as Url from Product as PRD join ProductCategoryLink as PCL on PRD.ProductId = PCL.ProductId and PRD.EntityStatus='Active' where PCL.CategoryId = ? order by Url desc",
                             categoryId);
             }
             catch (SQLiteException ex)
@@ -204,7 +204,7 @@ namespace SageMobileSales.DataAccess.Repositories
                 productsList =
                     await
                         _sageSalesDB.QueryAsync<ProductDetails>(
-                            "select distinct PRD.ProductId, PRD.ProductName, (select Url from ProductAssociatedBlob as PAB where PAB.ProductId = PRD.ProductId AND PAB.IsPrimary='1') as Url from ProductRelatedItem as PRI join Product as PRD on PRD.ProductId = PRI.RelatedItemId and PRD.EntityStatus='Active' where PRI.ProductId = ?",
+                            "select distinct PRD.ProductId, PRD.ProductName, (select Url from ProductAssociatedBlob as PAB where PAB.ProductId = PRD.ProductId AND (PAB.IsPrimary=1 OR PAB.IsPrimary=0)) as Url from ProductRelatedItem as PRI join Product as PRD on PRD.ProductId = PRI.RelatedItemId and PRD.EntityStatus='Active' where PRI.ProductId = ?",
                             productId);
                 if (productsList != null)
                 {
@@ -476,7 +476,7 @@ namespace SageMobileSales.DataAccess.Repositories
                             {
                                 JsonObject sDataAssociatedBlob = associatedBlob.GetObject();
                                 await
-                                    _productAssociatedBlobsRepository.UpdatProductAssociatedBlobAsync(
+                                    _productAssociatedBlobsRepository.AddOrUpdateProductAssociatedBlobJsonToDbAsync(
                                         sDataAssociatedBlob);
                             }
                         }
