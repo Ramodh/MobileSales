@@ -21,8 +21,9 @@ namespace SageMobileSales.DataAccess.Repositories
             _sageSalesDB = _database.GetAsyncConnection();
         }
 
+        # region public methods
         /// <summary>
-        ///     Extracts required data from SData(JsonObject) and then save's that data into LocalDB
+        ///     Extracts localSyncDigest data from json, save in local dB
         /// </summary>
         /// <param name="sDataLocalDigest"></param>
         /// <returns></returns>
@@ -45,7 +46,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Update LocalSyncDigest data into LocalDB
+        ///     Update LocalSyncDigest data into local dB
         /// </summary>
         /// <param name="localSyncDigest"></param>
         /// <returns></returns>
@@ -79,10 +80,10 @@ namespace SageMobileSales.DataAccess.Repositories
         /// </summary>
         /// <param name="localSyncDigest"></param>
         /// <returns></returns>
-        public async Task DeleteLocalSyncDigestDtlsAsync(LocalSyncDigest localSyncDigest)
-        {
-            throw new NotImplementedException();
-        }
+        //public async Task DeleteLocalSyncDigestDtlsAsync(LocalSyncDigest localSyncDigest)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
         /// <summary>
         ///     Gets LocalSyncDigest data from LocalDB
@@ -107,5 +108,7 @@ namespace SageMobileSales.DataAccess.Repositories
             }
             return null;
         }
+
+        #endregion
     }
 }

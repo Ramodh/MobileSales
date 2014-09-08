@@ -265,24 +265,29 @@ namespace SageMobileSales.UILogic.ViewModels
 
         public async Task UpdateCustomerListInfo()
         {
-            List<CustomerDetails> CustomerAdressList = await _customerRepository.GetCustomerListDtlsAsync();
-
-            List<CustomerGroupByAlphabet> sortedCustomerAdressList = CustomerAdressList
-                .GroupBy(alphabet => alphabet.CustomerName[0])
-                .OrderBy(g => g.Key)
-                .Select(g => new CustomerGroupByAlphabet {GroupName = g.Key, CustomerAddressList = g.ToList()})
-                .ToList();
-
-            GroupedCustomerList = sortedCustomerAdressList;
-            if (GroupedCustomerList.Count == 0)
+            try
             {
-                InProgress = false;
-                EmptyCustomers = ResourceLoader.GetForCurrentView("Resources").GetString("CustomersEmptyText");
+                List<CustomerDetails> CustomerAdressList = await _customerRepository.GetCustomerListDtlsAsync();
+
+                List<CustomerGroupByAlphabet> sortedCustomerAdressList = CustomerAdressList
+                    .GroupBy(alphabet => alphabet.CustomerName[0])
+                    .OrderBy(g => g.Key)
+                    .Select(g => new CustomerGroupByAlphabet { GroupName = g.Key, CustomerAddressList = g.ToList() })
+                    .ToList();
+
+                GroupedCustomerList = sortedCustomerAdressList;
+                if (GroupedCustomerList.Count == 0)
+                {
+                    InProgress = false;
+                    EmptyCustomers = ResourceLoader.GetForCurrentView("Resources").GetString("CustomersEmptyText");
+                }
+                else
+                {
+                    EmptyCustomers = string.Empty;
+                }
             }
-            else
-            {
-                EmptyCustomers = string.Empty;
-            }
+            catch (Exception e)
+            { }
         }
 
         public void CustomersSyncIndicator(bool sync)
