@@ -140,7 +140,7 @@ namespace SageMobileSales.UILogic.ViewModels
             ApplicationDataContainer configSettings = ApplicationData.Current.LocalSettings;
             configSettings.CreateContainer("ConfigurationSettingsContainer", ApplicationDataCreateDisposition.Always);
 
-            var selected = ((ComboBox) args);
+            var selected = ((ComboBox)args);
 
             if (selected.SelectedItem.ToString() == "Master")
             {
@@ -302,8 +302,10 @@ namespace SageMobileSales.UILogic.ViewModels
             if (selected.SelectedItem.ToString() == "Elm")
             {
                 ClientId = @"Wt8uPEZAcc7x2XqdnLX1VwcU49FNklhN";
+                //ClientId = @"qSBg7VSGtMBjzl8DlYnIKqI5PHsINkmE";
                 Url = "http://elmmsales.sagedatacloud.com/sdata/api/msales/1.0/";
                 Scope = @"elcv5viz();";
+                //Scope = @"gvb7lu14();";
                 IsSageIdProduction = false;
                 SelectedType = "Elm";
                 RedirectUrl = "https://signon.sso.staging.services.sage.com/oauth/native";

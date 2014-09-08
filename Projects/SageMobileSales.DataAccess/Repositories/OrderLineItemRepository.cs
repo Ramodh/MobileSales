@@ -302,7 +302,8 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        await _productRepository.AddOrUpdateProductJsonToDbAsync(sDataOrderLineItem);
+                        var sDataInventoryItem = sDataOrderLineItem.GetNamedObject("InventoryItem");
+                        await _productRepository.AddOrUpdateProductJsonToDbAsync(sDataInventoryItem);
                     }
                 }
 
@@ -310,17 +311,10 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        //JsonObject sDataProduct = sDataOrderLineItem.GetNamedString("InventoryItemId");
-                        //JsonObject sDataCustomer = sDataOrder.GetNamedObject("Customer");                        
                         List<Product> productDb =
                             await
                                 _sageSalesDB.QueryAsync<Product>("SELECT * FROM Product WHERE ProductId=?",
                                     sDataOrderLineItem.GetNamedString("InventoryItemId"));
-                        //Customer customer = await _customerRepository.AddOrUpdateCustomerJsonToDbAsync(sDataCustomer);
-                        //if (customer != null)
-                        //{
-                        //    order.CustomerId = customer.CustomerId;
-                        //}
                         if (productDb.FirstOrDefault() != null)
                         {
                             orderLineItem.ProductId = productDb.FirstOrDefault().ProductId;
@@ -329,15 +323,9 @@ namespace SageMobileSales.DataAccess.Repositories
                         {
                             var product = new Product();
                             product.ProductId = sDataOrderLineItem.GetNamedString("InventoryItemId");
-
                             orderLineItem.ProductId = product.ProductId;
-
                             await _sageSalesDB.InsertAsync(product);
                         }
-
-                        //Product product = await _productRepository.AddOrUpdateProductJsonToDbAsync(sDataProduct);
-
-                        //orderLineItem.ProductId = product.ProductId;
                     }
                 }
             }
