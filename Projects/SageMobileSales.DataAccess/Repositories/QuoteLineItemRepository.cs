@@ -27,7 +27,7 @@ namespace SageMobileSales.DataAccess.Repositories
         #region public methods
 
         /// <summary>
-        ///     Extracts QuoteLineItem from json response for that quote
+        ///     Extract QuoteLineItem from json for that quoteId
         /// </summary>
         /// <param name="sDataProduct"></param>
         /// <returns>Product</returns>
@@ -56,11 +56,19 @@ namespace SageMobileSales.DataAccess.Repositories
             }
         }
 
+        /// <summary>
+        /// Posted quote, line item is saved to local dB
+        /// </summary>
+        /// <param name="sDataQuoteLineItems"></param>
+        /// <param name="quoteId"></param>
+        /// <param name="pendingQuoteLineItem"></param>
+        /// <returns></returns>
         public async Task SavePostedQuoteLineItemsAsync(JsonObject sDataQuoteLineItems, string quoteId,
             QuoteLineItem pendingQuoteLineItem)
         {
             try
             {
+                //TO DO : Optimize
                 //JsonObject sDataQuoteLineItems = sDataQuote.GetNamedObject("Details");
                 if (sDataQuoteLineItems.ContainsKey("Details"))
                 {
@@ -168,7 +176,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Gets QuoteLineItems List along with Product(Product Details), ProductAssociatedBlob(Url)
+        ///     Gets QuoteLineItem list along with Product(Product Details), ProductAssociatedBlob(Url)
         /// </summary>
         /// <param name="quoteId"></param>
         /// <returns></returns>
@@ -225,7 +233,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Returns quoteLineItems for the quote
+        ///     Gets quoteLineItems for the quote
         /// </summary>
         /// <param name="quoteId"></param>
         /// <returns></returns>
@@ -274,7 +282,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Updates quoteLineItem in local dB
+        ///     Update quoteLineItem in local dB
         /// </summary>
         /// <param name="quoteLineItem"></param>
         /// <returns></returns>
@@ -297,7 +305,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Returns quoteLineItem if already exists for the quote
+        ///     Gets quoteLineItem if already exists for the quote
         /// </summary>
         /// <param name="quoteId"></param>
         /// <param name="productId"></param>
@@ -332,7 +340,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Returns pending quoteLineItems which are not synced
+        ///     Gets pending quoteLineItems, yet to sync
         /// </summary>
         /// <returns></returns>
         public async Task<List<QuoteLineItem>> GetPendingQuoteLineItems()
@@ -359,7 +367,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Returns deleted quoteLineItems which are not synced
+        ///     Gets deleted quoteLineItems which are not synced
         /// </summary>
         /// <returns></returns>
         public async Task<List<QuoteLineItem>> GetDeletedQuoteLineItems()
@@ -384,7 +392,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Mark quoteLineItems for the as deleted to support offline capability
+        ///     Mark quoteLineItems as deleted to support offline capability
         /// </summary>
         /// <param name="quoteId"></param>
         /// <returns></returns>
@@ -434,7 +442,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Deletes quoteLineItems for the quote from local dB
+        ///     Deletes quoteLineItems for that quoteId from local dB
         /// </summary>
         /// <param name="quoteId"></param>
         /// <returns></returns>
@@ -492,7 +500,7 @@ namespace SageMobileSales.DataAccess.Repositories
         #region private methods
 
         /// <summary>
-        ///     Compares list of quoteLineItems with the Json response and local Db to delete, add or update
+        ///     Compares list of quoteLineItems with the json and local dB to delete, add or update
         /// </summary>
         /// <param name="sDataAddressArray"></param>
         /// <param name="customerId"></param>
@@ -600,7 +608,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Extracts quoteLineItem json response
+        ///     Extract quoteLineItem json response
         /// </summary>
         /// <param name="sDataQuoteLineItem"></param>
         /// <param name="quoteLineItem"></param>
@@ -639,7 +647,9 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        await _productRepository.AddOrUpdateProductJsonToDbAsync(sDataQuoteLineItem);
+                        var sDataInventoryItem = sDataQuoteLineItem.GetNamedObject("InventoryItem");
+                        await _productRepository.AddOrUpdateProductJsonToDbAsync(sDataInventoryItem);
+                        //await _productRepository.AddOrUpdateProductJsonToDbAsync(sDataQuoteLineItem);
                     }
                 }
 
@@ -722,7 +732,6 @@ namespace SageMobileSales.DataAccess.Repositories
                 quoteLineItemIdDbList =
                     await _sageSalesDB.QueryAsync<QuoteLineItem>("SELECT * FROM QuoteLineItem where quoteId=?", quoteId);
 
-                // Requires enhancement
                 for (int i = 0; i < quoteLineItemIdDbList.Count; i++)
                 {
                     idExists = false;
@@ -743,9 +752,6 @@ namespace SageMobileSales.DataAccess.Repositories
                         quoteLineItemRemoveList.Add(quoteLineItemIdDbList[i]);
                 }
 
-                //if (quoteLineItemIdDbList != null)
-                //{
-                //    var quoteLineItemRemoveList = quoteLineItemIdDbList.Except(quoteLineItemIdJsonList, new QuoteLineItemIdComparer()).ToList();
                 if (quoteLineItemRemoveList.Count() > 0)
                 {
                     foreach (QuoteLineItem quoteLineItemRemove in quoteLineItemRemoveList)
@@ -753,7 +759,6 @@ namespace SageMobileSales.DataAccess.Repositories
                         await _sageSalesDB.DeleteAsync(quoteLineItemRemove);
                     }
                 }
-                //}
             }
 
             catch (Exception ex)
