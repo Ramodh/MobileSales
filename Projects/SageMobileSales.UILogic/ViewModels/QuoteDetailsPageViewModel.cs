@@ -85,8 +85,8 @@ namespace SageMobileSales.UILogic.ViewModels
             _salesRepRepository = salesRepRepository;
             _addressRepository = addressRepository;
 
-            IncrementCountCommand = DelegateCommand.FromAsyncHandler(IncrementCount);
-            DecrementCountCommand = DelegateCommand.FromAsyncHandler(DecrementCount, CanDecrementCount);
+            //IncrementCountCommand = DelegateCommand.FromAsyncHandler(IncrementCount);
+            //DecrementCountCommand = DelegateCommand.FromAsyncHandler(DecrementCount, CanDecrementCount);
             AddItemCommand = DelegateCommand.FromAsyncHandler(NavigateToCatalogPage);
             SendMailCommand = DelegateCommand.FromAsyncHandler(SendQuoteDetailsMail);
             SubmitQuoteCommand = DelegateCommand.FromAsyncHandler(SubmitQuote);
@@ -98,6 +98,8 @@ namespace SageMobileSales.UILogic.ViewModels
             DiscountTextChangedCommand = new DelegateCommand<object>(DiscountPercentageTextChanged);
             RecentOrdersCommand = new DelegateCommand(NavigateToRecentOrders);
 
+            //IncrementCountCommand = DelegateCommand.FromAsyncHandler(IncrementCount);
+            //DecrementCountCommand = DelegateCommand.FromAsyncHandler(DecrementCount);
             ////IsBottomAppBarOpened = false;
             //IsItemSelected = Visibility.Collapsed;
             //IsItemNotSelected = Visibility.Visible;
@@ -162,7 +164,10 @@ namespace SageMobileSales.UILogic.ViewModels
 
         public decimal SubTotal
         {
-            get { return Math.Round(CalculateSubTotal(), 2); }
+            get
+            {
+                return Math.Round(CalculateSubTotal(), 2);
+            }
         }
 
         public bool IsBottomAppBarOpened
@@ -309,9 +314,6 @@ namespace SageMobileSales.UILogic.ViewModels
                         // Display the AppBar 
                         IsBottomAppBarOpened = true;
                         _itemNotSelected = false;
-
-                        IncrementCountCommand.RaiseCanExecuteChanged();
-                        DecrementCountCommand.RaiseCanExecuteChanged();
                     }
                     else
                     {
@@ -336,6 +338,8 @@ namespace SageMobileSales.UILogic.ViewModels
             return false;
         }
 
+        # region Increment, Decrement Quote LineItems Code using Flyout
+        /*
         private async Task DecrementCount()
         {
             try
@@ -395,6 +399,9 @@ namespace SageMobileSales.UILogic.ViewModels
                 AppEventSource.Log.Error(_log);
             }
         }
+        */
+
+        # endregion
 
         private async Task NavigateToCatalogPage()
         {
@@ -450,6 +457,7 @@ namespace SageMobileSales.UILogic.ViewModels
 
                     _itemNotSelected = true;
                     ChangeVisibility();
+                    await DisplayQuotedetails();
                     msgDialog =
                         new MessageDialog(
                             ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogSubmittedQuoteText"),
@@ -550,9 +558,9 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             try
             {
-                if (((TextBox) args).Text != null && ((TextBox) args).Text != string.Empty)
+                if (((TextBox)args).Text != null && ((TextBox)args).Text != string.Empty)
                 {
-                    _shippingAndHandling = Convert.ToDecimal(((TextBox) args).Text);
+                    _shippingAndHandling = Convert.ToDecimal(((TextBox)args).Text);
                 }
                 else
                 {
@@ -577,11 +585,11 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             try
             {
-                if (((TextBox) args).Text != null && ((TextBox) args).Text != string.Empty)
+                if (((TextBox)args).Text != null && ((TextBox)args).Text != string.Empty)
                 {
                     SalesRep salesRep = (await _salesRepRepository.GetSalesRepDtlsAsync()).FirstOrDefault();
 
-                    DiscountPercent = Convert.ToDecimal(((TextBox) args).Text);
+                    DiscountPercent = Convert.ToDecimal(((TextBox)args).Text);
 
                     if (DiscountPercent < 100)
                     {
@@ -886,7 +894,19 @@ namespace SageMobileSales.UILogic.ViewModels
                     QuoteLineItemViewModels = new ObservableCollection<QuoteLineItemViewModel>();
                     foreach (LineItemDetails lineitem in QuoteLineItemsList)
                     {
-                        var quoteLineItemViewModel = new QuoteLineItemViewModel(_navigationService, lineitem);
+                        var quoteLineItemViewModel = new QuoteLineItemViewModel(_navigationService, lineitem, _quoteService, _quoteRepository, _quoteLineItemService, _quoteLineItemRepository);
+                        if (_quote == null)
+                        {
+                            _quote = await _quoteRepository.GetQuoteAsync(_quoteId);
+                        }
+                        if (_quote.QuoteStatus == DataAccessUtils.DraftQuote)
+                        {
+                            quoteLineItemViewModel.IsEnabled = true;
+                        }
+                        else
+                        {
+                            quoteLineItemViewModel.IsEnabled = false;
+                        }
                         quoteLineItemViewModel.PropertyChanged += quoteLineItemViewModel_PropertyChanged;
                         QuoteLineItemViewModels.Add(quoteLineItemViewModel);
                     }
@@ -939,7 +959,7 @@ namespace SageMobileSales.UILogic.ViewModels
             }
         }
 
-        private void quoteLineItemViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private async void quoteLineItemViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "LineItemQuantity")
             {
@@ -947,6 +967,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 OnPropertyChanged("SubTotal");
                 OnPropertyChanged("Total");
             }
+            //await UpdateQuote(string.Empty);    
         }
 
         public async void UpdateQuoteDetailsAsync(object notUsed)
@@ -999,7 +1020,7 @@ namespace SageMobileSales.UILogic.ViewModels
             if (DiscountPercent != 0)
             {
                 // discountPercentage = Math.Round(((1 - ((SubTotal - DiscountPercentageValue) / SubTotal)) * 100), 2);
-                discountPercentage = Math.Round(((DiscountPercent/100)*SubTotal), 2);
+                discountPercentage = Math.Round(((DiscountPercent / 100) * SubTotal), 2);
             }
             return discountPercentage;
         }
@@ -1026,6 +1047,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 //{
                 //    await _quoteService.UpdateDiscountOrShippingAndHandling(_quote);
                 //}
+                await _quoteService.UpdateDiscountOrShippingAndHandling(_quote);
             }
             catch (Exception ex)
             {
@@ -1144,6 +1166,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 OnPropertyChanged("IsPlaceOrderVisible");
                 OnPropertyChanged("IsShippingAndHandlingEnabled");
                 OnPropertyChanged("IsDiscountEnabled");
+                
             }
             catch (Exception ex)
             {
@@ -1217,5 +1240,6 @@ namespace SageMobileSales.UILogic.ViewModels
             await _quoteService.SyncOfflineShippingAddress();
             await _quoteLineItemService.SyncOfflineQuoteLineItems();
         }
+
     }
 }

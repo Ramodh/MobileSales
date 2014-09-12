@@ -73,8 +73,7 @@
                               AutomationProperties.AutomationId="MailAppBarButton"
                               Label="Mail"
                               Icon="MailForward"
-                              Command="{Binding SendMailCommand}"
-                              Visibility="{Binding IsSendmailVisible,Mode=TwoWay}"
+                              Command="{Binding SendMailCommand}"                            
                               Margin="0,1,0,-1" />
                 <AppBarButton x:Name="EditAppBarButton"
                               x:Uid="EditAppBarButton"
@@ -92,7 +91,7 @@
                               Command="{Binding DeleteQuoteCommand}"
                               Visibility="{Binding IsDeleteQuoteVisible, Mode=TwoWay}"
                               Margin="0,1,0,-1" />
-                <AppBarButton x:Name="EditAmountAppBarButton"
+                <!--<AppBarButton x:Name="EditAmountAppBarButton"
                               x:Uid="EditAmountAppBarButton"
                               AutomationProperties.AutomationId="EditAmountAppBarButton"
                               Label="Edit"
@@ -171,7 +170,7 @@
                             </Grid>
                         </Flyout>
                     </AppBarButton.Flyout>
-                </AppBarButton>
+                </AppBarButton>-->
                 <AppBarButton x:Name="RemoveAppBarButton"
                               x:Uid="RemoveAppBarButton"
                               AutomationProperties.AutomationId="RemoveAppBarButton"
@@ -390,15 +389,15 @@
                               TabIndex="1"
                               Grid.RowSpan="2"
                               Padding="0,0,116,36"
-                              ItemsSource="{Binding Source={StaticResource QuoteLineItemsViewSource}}"
-                              SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
-                              ItemTemplate="{StaticResource QuoteItemsTemplate}">
-                        <!--<interactivity:Interaction.Behaviors>
+                              ItemsSource="{Binding Source={StaticResource QuoteLineItemsViewSource}}"                          
+                              ItemTemplate="{StaticResource QuoteItemsTemplate}"
+                              SelectedItem="{Binding SelectedItem, Mode=TwoWay}">                         
+                        <interactivity:Interaction.Behaviors>
                             <core:EventTriggerBehavior EventName="ItemClick">
                                 <core:CallMethodAction MethodName="GridViewItemClick"
                 TargetObject="{Binding Mode=OneWay}" />
                             </core:EventTriggerBehavior>
-                        </interactivity:Interaction.Behaviors>-->
+                        </interactivity:Interaction.Behaviors>
                     </GridView>
                 </Grid>
             </Grid>

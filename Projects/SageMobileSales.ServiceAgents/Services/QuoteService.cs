@@ -400,7 +400,7 @@ namespace SageMobileSales.ServiceAgents.Services
             HttpResponseMessage quoteResponse = null;
             string quoteEntityId;
 
-            quoteEntityId = Constants.SubmitQuoteEntity + "('" + quote.QuoteId + "')";
+            quoteEntityId = Constants.DraftQuotes + "('" + quote.QuoteId + "')";
 
             quoteResponse =
                 await
@@ -412,8 +412,8 @@ namespace SageMobileSales.ServiceAgents.Services
                 //TODO
                 // Temporary Fix to update shipping Address to Quote
                 // Saving the Patch response into Quote Table
-                quote.AddressId = sDataQuote.GetNamedString("$key");
-                quote = await PatchDraftQuote(quote);
+                //quote.AddressId = sDataQuote.GetNamedString("$key");
+                //quote = await PatchDraftQuote(quote);
                 await _quoteRepository.SavePostedQuoteToDbAsync(sDataQuote, quote, null, null);
             }
         }
@@ -762,7 +762,7 @@ namespace SageMobileSales.ServiceAgents.Services
         {
             var quoteJsonObject = new QuoteDetailsShippingAddressKeyJson();
             quoteJsonObject.Description = quote.QuoteDescription == null ? "" : quote.QuoteDescription;
-            //quoteJsonObject.DiscountPercent = quote.DiscountPercent;
+            quoteJsonObject.DiscountPercent = quote.DiscountPercent;
             quoteJsonObject.QuoteTotal = quote.Amount;
             quoteJsonObject.SubTotal = quote.SubTotal;
             quoteJsonObject.SandH = quote.ShippingAndHandling;
