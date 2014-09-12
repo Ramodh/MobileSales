@@ -8,7 +8,7 @@ namespace SageMobileSales.DataAccess.Repositories
     public interface IProductAssociatedBlobsRepository
     {
         Task SaveProductAssociatedBlobsAsync(JsonObject sDataProductAssociatedBlobs, LocalSyncDigest localSyncDigest);
-        Task UpdatProductAssociatedBlobAsync(JsonObject productAssociatedBlobJsonObject);
+        Task<ProductAssociatedBlob> AddOrUpdateProductAssociatedBlobJsonToDbAsync(JsonObject sDataProductAssociatedBlob);
         Task<List<ProductAssociatedBlob>> GetProductAssociatedBlobsAsync(string productId);
     }
 }

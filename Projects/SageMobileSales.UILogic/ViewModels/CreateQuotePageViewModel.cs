@@ -193,8 +193,11 @@ namespace SageMobileSales.UILogic.ViewModels
                     {
                         foreach (Customer customer in CustomerList)
                         {
-                            suggestionCollection.AppendResultSuggestion(customer.CustomerName, string.Empty,
-                                customer.CustomerId, obj, string.Empty);
+                            if (!string.IsNullOrEmpty(customer.CustomerName))
+                            {
+                                suggestionCollection.AppendResultSuggestion(customer.CustomerName, string.Empty,
+                                    customer.CustomerId, obj, string.Empty);
+                            }
                         }
                     }
                 }
