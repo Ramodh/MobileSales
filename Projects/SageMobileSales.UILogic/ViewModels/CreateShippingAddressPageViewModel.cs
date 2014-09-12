@@ -137,15 +137,28 @@ namespace SageMobileSales.UILogic.ViewModels
 
                     if (Constants.ConnectedToInternet())
                     {
+                        Address address = await _quoteService.UpdateQuoteShippingAddress(_quote, _address.AddressId);
+
                         if ((_quote.QuoteId.Contains(PageUtils.Pending)))
                         {
-                            // Confirm before posting quote
-                            _quote = await _quoteService.PostDraftQuote(_quote);
+                            if (address != null)
+                            {
+                                _quote.AddressId = address.AddressId;
+                                _quote = await _quoteService.PostDraftQuote(_quote);
+                            }
+
                             //if (quote != null)
                             //    await _quoteService.UpdateQuoteShippingAddress(quote, _address);
                             //await _quoteService.PostQuoteShippingAddress(_quote, _address);
                         }
-                        await _quoteService.UpdateQuoteShippingAddress(_quote, _address);
+                        else
+                        {
+                            if (address != null)
+                            {
+                                _quote.AddressId = address.AddressId;
+                                await _quoteService.UpdateQuoteShippingAddressKey(_quote);
+                            }
+                        }
                     }
                     _navigationService.Navigate("QuoteDetails", _quoteId);
                 }

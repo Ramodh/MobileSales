@@ -25,8 +25,9 @@ namespace SageMobileSales.DataAccess.Repositories
             _tenantRepository = tenantRepository;
         }
 
+        #region public methods
         /// <summary>
-        ///     Extract and saves LoginUserdetails(SalesRep) into LocalDB
+        ///     Extract and saves LoginUserdetails(SalesRep) into local dB
         /// </summary>
         /// <param name="sDataSalesRepDtls"></param>
         /// <returns>LoginUserId(RepId)</returns>
@@ -69,7 +70,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Updates LoginUserdetails(SalesRep) into LocalDB
+        ///     Update Logged in user details(SalesRep-MaxDiscPerct) into LocalDB
         /// </summary>
         /// <param name="sDataSalesRepSettings"></param>
         /// <returns></returns>
@@ -98,15 +99,15 @@ namespace SageMobileSales.DataAccess.Repositories
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
                         sDataSalesTeamMemberDetails = sDataSalesTeamMember.GetNamedObject("SalesTeamMember");
-                    }
-                }
 
-                if (sDataSalesTeamMemberDetails.TryGetValue("SalesRepMaxDiscPct", out value))
-                {
-                    if (value.ValueType.ToString() != DataAccessUtils.Null)
-                    {
-                        _salesRepDtls.MaximumDiscountPercent =
-                            Convert.ToDecimal(sDataSalesTeamMemberDetails.GetNamedNumber("SalesRepMaxDiscPct"));
+                        if (sDataSalesTeamMemberDetails.TryGetValue("SalesRepMaxDiscPct", out value))
+                        {
+                            if (value.ValueType.ToString() != DataAccessUtils.Null)
+                            {
+                                _salesRepDtls.MaximumDiscountPercent =
+                                    Convert.ToDecimal(sDataSalesTeamMemberDetails.GetNamedNumber("SalesRepMaxDiscPct"));
+                            }
+                        }
                     }
                 }
 
@@ -130,26 +131,26 @@ namespace SageMobileSales.DataAccess.Repositories
         /// </summary>
         /// <param name="salesRep"></param>
         /// <returns></returns>
-        public async Task DeleteSalesRepDtlsAsync(SalesRep salesRep)
-        {
-            try
-            {
-                await _sageSalesDB.DeleteAsync(salesRep);
-            }
-            catch (SQLiteException ex)
-            {
-                _log = AppEventSource.Log.WriteLine(ex);
-                AppEventSource.Log.Error(_log);
-            }
-            catch (Exception ex)
-            {
-                _log = AppEventSource.Log.WriteLine(ex);
-                AppEventSource.Log.Error(_log);
-            }
-        }
+        //public async Task DeleteSalesRepDtlsAsync(SalesRep salesRep)
+        //{
+        //    try
+        //    {
+        //        await _sageSalesDB.DeleteAsync(salesRep);
+        //    }
+        //    catch (SQLiteException ex)
+        //    {
+        //        _log = AppEventSource.Log.WriteLine(ex);
+        //        AppEventSource.Log.Error(_log);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _log = AppEventSource.Log.WriteLine(ex);
+        //        AppEventSource.Log.Error(_log);
+        //    }
+        //}
 
         /// <summary>
-        ///     Returns LoginUserdetails(SalesRep) from LocalDB
+        ///     Gets LoginUserdetails(SalesRep) from LocalDB
         /// </summary>
         /// <returns></returns>
         public async Task<List<SalesRep>> GetSalesRepDtlsAsync()
@@ -173,7 +174,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Returns Sales Rep Id
+        ///     Gets Sales Rep Id
         /// </summary>
         /// <returns></returns>
         public async Task<string> GetSalesRepId()
@@ -197,7 +198,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Adds or updates Salesrep json response to dB
+        ///     Add or update salesrep json to local dB
         /// </summary>
         /// <param name="sDataSalesRep"></param>
         /// <returns></returns>
@@ -297,6 +298,9 @@ namespace SageMobileSales.DataAccess.Repositories
             return isSameUser;
         }
 
+        #endregion
+
+        #region private methods
         /// <summary>
         ///     Get Sales Rep data from json
         /// </summary>
@@ -371,6 +375,11 @@ namespace SageMobileSales.DataAccess.Repositories
             return salesRepDBObj;
         }
 
+        /// <summary>
+        /// Add salesRep to local dB
+        /// </summary>
+        /// <param name="sDataSalesRep"></param>
+        /// <returns></returns>
         private async Task<SalesRep> AddSalesRepJsonToDbAsync(JsonObject sDataSalesRep)
         {
             var salesRep = new SalesRep();
@@ -392,6 +401,12 @@ namespace SageMobileSales.DataAccess.Repositories
             return salesRep;
         }
 
+        /// <summary>
+        /// Update sales rep to local dB
+        /// </summary>
+        /// <param name="sDataSalesRep"></param>
+        /// <param name="salesRep"></param>
+        /// <returns></returns>
         private async Task<SalesRep> UpdateSalesRepJsonToDbAsync(JsonObject sDataSalesRep, SalesRep salesRep)
         {
             try
@@ -411,5 +426,7 @@ namespace SageMobileSales.DataAccess.Repositories
             }
             return salesRep;
         }
+
+        #endregion
     }
 }

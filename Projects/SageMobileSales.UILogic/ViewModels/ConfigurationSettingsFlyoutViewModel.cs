@@ -55,7 +55,7 @@ namespace SageMobileSales.UILogic.ViewModels
             Servers.Add("Ash");
             Servers.Add("Local Machine 1");
             Servers.Add("Local Machine 2");
-            Servers.Add("Local Machine 3");
+            Servers.Add("Willow");
             Servers.Add("Elm");
 
             SelectedType = Constants.SelectedType;
@@ -190,9 +190,9 @@ namespace SageMobileSales.UILogic.ViewModels
 
             if (selected.SelectedItem.ToString() == "Production")
             {
-                ClientId = @"7XtkBANAnzQ9a1aRqspNlHR5UtSRUP0J";
+                ClientId = @"fRt7TgcUAzq9y0b3BLCTUM4Y0wwcWC51";
                 Url = "https://mobilesales.na.sage.com/sdata/api/dynamic/-/";
-                Scope = @"hrixtfgl();";
+                Scope = @"kmt6bhzz();";
                 RedirectUrl = "https://signon.sso.services.sage.com/oauth/native";
                 IsSageIdProduction = true;
                 SelectedType = "Production";
@@ -259,7 +259,8 @@ namespace SageMobileSales.UILogic.ViewModels
             }
             if (selected.SelectedItem.ToString() == "Ash")
             {
-                ClientId = @"xeQaIFwQvbDjKZvwzb92kFOLzDCd9CCc";
+                //ClientId = @"xeQaIFwQvbDjKZvwzb92kFOLzDCd9CCc";
+                ClientId = @"HObO8ZbQtT6yt6c8YRmDHBBu2GCQ7U6p";
                 Url = "http://ashmsalessdcweb.cloudapp.net/sdata/api/msales/1.0/";
                 Scope = @"k1mcudfb();";
                 IsSageIdProduction = false;
@@ -288,21 +289,21 @@ namespace SageMobileSales.UILogic.ViewModels
                 RedirectUrl = "https://signon.sso.staging.services.sage.com/oauth/native";
                 SetConfigurationValues();
             }
-            if (selected.SelectedItem.ToString() == "Local Machine 3")
+            if (selected.SelectedItem.ToString() == "Willow")
             {
-                ClientId = @"FhVDZU7p11pFRItTweZsh8XSGdEeFZ0g";
+                ClientId = @"BmQhbGdK1YO5AQ0fsdndlR1GUlfP7EH3";
                 Url = "http://127.255.0.2:85/sdata/api/msales/1.0/";
                 //Url = "http://127.255.0.1:83/sdata/api/sales/1.0/";
-                Scope = @"kipgf40h();";
+                Scope = @"ie1nah68();";
                 IsSageIdProduction = false;
-                SelectedType = "Local Machine 3";
+                SelectedType = "Willow";
                 RedirectUrl = "https://signon.sso.staging.services.sage.com/oauth/native";
                 SetConfigurationValues();
             }
             if (selected.SelectedItem.ToString() == "Elm")
             {
-                ClientId = @"Wt8uPEZAcc7x2XqdnLX1VwcU49FNklhN";
-                //ClientId = @"qSBg7VSGtMBjzl8DlYnIKqI5PHsINkmE";
+                //ClientId = @"Wt8uPEZAcc7x2XqdnLX1VwcU49FNklhN";
+                ClientId = @"98tyCStiJrMC2Wlu05waxy1HvFM3C2Qj";
                 Url = "http://elmmsales.sagedatacloud.com/sdata/api/msales/1.0/";
                 Scope = @"elcv5viz();";
                 //Scope = @"gvb7lu14();";

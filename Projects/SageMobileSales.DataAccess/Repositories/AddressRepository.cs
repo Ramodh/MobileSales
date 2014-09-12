@@ -73,6 +73,33 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
+        /// Save posted address to local dB
+        /// </summary>
+        /// <param name="sDataAddress"></param>
+        /// <param name="customerId"></param>
+        /// <param name="addressPending"></param>
+        /// <returns></returns>
+        public async Task<Address> SavePostedAddressToDbAsync(JsonObject sDataAddress, string customerId, string addressPendingId)
+        {
+            var addressResponse = new Address();
+            addressResponse.CustomerId = customerId;
+
+            IJsonValue value;
+            if (sDataAddress.TryGetValue("$key", out value))
+            {
+                if (value.ValueType.ToString() != DataAccessUtils.Null)
+                {
+                    addressResponse.AddressId = sDataAddress.GetNamedString("$key");
+                }
+            }
+
+            addressResponse = ExtractAddressFromJsonAsync(sDataAddress, addressResponse);
+            addressResponse = await AddOrUpdatePendingAddress(addressResponse, addressPendingId);
+
+            return addressResponse;
+        }
+
+        /// <summary>
         ///     Adds or updates address json response to local dB
         /// </summary>
         /// <param name="sDataAddress"></param>
@@ -267,7 +294,7 @@ namespace SageMobileSales.DataAccess.Repositories
             try
             {
                 customerAddresses =
-                    await _sageSalesDB.QueryAsync<Address>("Select * from Address where CustomerId=?", customerId);                                                                    
+                    await _sageSalesDB.QueryAsync<Address>("Select * from Address where CustomerId=?", customerId);
             }
             catch (SQLiteException ex)
             {
@@ -437,6 +464,46 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
+        /// Add or update pending contact
+        /// </summary>
+        /// <param name="addressResponse"></param>
+        /// <param name="addressPending"></param>
+        /// <returns></returns>
+        private async Task<Address> AddOrUpdatePendingAddress(Address addressResponse, string addressPendingId)
+        {
+            try
+            {
+                List<Address> addressList =
+                    await
+                        _sageSalesDB.QueryAsync<Address>("Select * from Address where AddressId=? and IsPending='1'",
+                            addressPendingId);
+
+                if (addressList.FirstOrDefault() != null)
+                {
+                    addressResponse.Id = addressList.FirstOrDefault().Id;
+                    await _sageSalesDB.UpdateAsync(addressResponse);
+                }
+                else
+                {
+                    await _sageSalesDB.InsertAsync(addressResponse);
+                }
+            }
+            catch (SQLiteException ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+
+            catch (Exception ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+
+            return addressResponse;
+        }
+
+        /// <summary>
         ///     Extracts address json response
         /// </summary>
         /// <param name="sDataAddress"></param>
@@ -596,7 +663,7 @@ namespace SageMobileSales.DataAccess.Repositories
                 addressRemoveList = new List<Address>();
                 addressIdDbList =
                     await _sageSalesDB.QueryAsync<Address>("SELECT * FROM Address where customerId=?", customerId);
-                
+
                 for (int i = 0; i < addressIdDbList.Count; i++)
                 {
                     idExists = false;
