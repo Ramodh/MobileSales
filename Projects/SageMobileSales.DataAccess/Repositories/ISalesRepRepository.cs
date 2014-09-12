@@ -9,7 +9,7 @@ namespace SageMobileSales.DataAccess.Repositories
     {
         Task<string> SaveSalesRepDtlsAsync(JsonObject salesRepDtlsJson);
         Task UpdateSalesRepDtlsAsync(JsonObject userSettingsDtlsJson);
-        Task DeleteSalesRepDtlsAsync(SalesRep salesRep);
+        //Task DeleteSalesRepDtlsAsync(SalesRep salesRep);
         Task<List<SalesRep>> GetSalesRepDtlsAsync();
         Task<string> GetSalesRepId();
         Task<SalesRep> AddOrUpdateSalesRepJsonToDbAsync(JsonObject sDataSalesRep);

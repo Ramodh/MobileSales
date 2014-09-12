@@ -550,9 +550,9 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             try
             {
-                if (((TextBox) args).Text != null && ((TextBox) args).Text != string.Empty)
+                if (((TextBox)args).Text != null && ((TextBox)args).Text != string.Empty)
                 {
-                    _shippingAndHandling = Convert.ToDecimal(((TextBox) args).Text);
+                    _shippingAndHandling = Convert.ToDecimal(((TextBox)args).Text);
                 }
                 else
                 {
@@ -577,11 +577,11 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             try
             {
-                if (((TextBox) args).Text != null && ((TextBox) args).Text != string.Empty)
+                if (((TextBox)args).Text != null && ((TextBox)args).Text != string.Empty)
                 {
                     SalesRep salesRep = (await _salesRepRepository.GetSalesRepDtlsAsync()).FirstOrDefault();
 
-                    DiscountPercent = Convert.ToDecimal(((TextBox) args).Text);
+                    DiscountPercent = Convert.ToDecimal(((TextBox)args).Text);
 
                     if (DiscountPercent < 100)
                     {
@@ -999,7 +999,7 @@ namespace SageMobileSales.UILogic.ViewModels
             if (DiscountPercent != 0)
             {
                 // discountPercentage = Math.Round(((1 - ((SubTotal - DiscountPercentageValue) / SubTotal)) * 100), 2);
-                discountPercentage = Math.Round(((DiscountPercent/100)*SubTotal), 2);
+                discountPercentage = Math.Round(((DiscountPercent / 100) * SubTotal), 2);
             }
             return discountPercentage;
         }
@@ -1189,13 +1189,18 @@ namespace SageMobileSales.UILogic.ViewModels
 
                 if (quote.AddressId.Contains(Constants.Pending))
                 {
-                    // Confirm before posting quote whether it has Valid QuoteId                        
-                    quote = await _quoteService.PostDraftQuote(quote);
-
-                    if (quote != null)
-                        await
-                            _quoteService.UpdateQuoteShippingAddress(quote,
-                                await _addressRepository.GetShippingAddress(quote.AddressId));
+                    // Confirm before posting quote whether it has Valid QuoteId
+                    //quote = await _quoteService.PostDraftQuote(quote);
+                    //if (quote != null)
+                    //    await
+                    //        _quoteService.UpdateQuoteShippingAddress(quote,
+                    //            await _addressRepository.GetShippingAddress(quote.AddressId));
+                    Address address = await _quoteService.UpdateQuoteShippingAddress(quote, quote.AddressId);
+                    if (address != null)
+                    {
+                        quote.AddressId = address.AddressId;
+                        await _quoteService.PostDraftQuote(quote);
+                    }
                 }
                 else
                 {

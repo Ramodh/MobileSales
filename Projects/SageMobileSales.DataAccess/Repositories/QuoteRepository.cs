@@ -45,7 +45,7 @@ namespace SageMobileSales.DataAccess.Repositories
         #region public methods
 
         /// <summary>
-        ///     Extracts quote data from Json repsonse and updates LocalSyncDigest(local tick) in LocalDB
+        ///     Extracts quote data from json, updates LocalSyncDigest(local tick) in local dB
         /// </summary>
         /// <param name="sDataQuotes"></param>
         /// <param name="localSyncDigest"></param>
@@ -89,7 +89,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Get quotes list along with customerName, salesRepName
+        ///     Gets quote list
         /// </summary>
         /// <param name="salesRepId"></param>
         /// <returns></returns>
@@ -128,7 +128,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Extracts data from response and updates quotes, addresses and quoteLineItems
+        ///     Extract data from response and updates quotes, addresses and quoteLineItems
         /// </summary>
         /// <param name="sDataCustomer"></param>
         /// <returns></returns>
@@ -196,31 +196,33 @@ namespace SageMobileSales.DataAccess.Repositories
             //    await _sageSalesDB.QueryAsync<QuoteLineItem>("Delete From QuoteLineItem Where QuoteLineItemId=?", pendingQuoteLineItemId);
             //}
 
-            if (address != null)
-            {
-                if (sDataQuote.TryGetValue("$key", out value))
-                {
-                    if (value.ValueType.ToString() != DataAccessUtils.Null)
-                    {
-                        //JsonObject sDataShippingAdress = sDataQuote.GetNamedObject("ShippingAddress");
 
-                        await
-                            _sageSalesDB.QueryAsync<Address>("Update Address Set AddressId=? where AddressId=?",
-                                sDataQuote.GetNamedString("$key"), address.AddressId);
-                        //if (!string.IsNullOrEmpty(quote.CustomerId))
-                        //{
-                        Address addressObj =
-                            await _addressRepository.AddOrUpdateAddressJsonToDbAsync(sDataQuote, address.CustomerId);
-                        if (addressObj != null)
-                        {
-                            await
-                                _sageSalesDB.QueryAsync<Quote>("Update Quote Set AddressId=? where AddressId=?",
-                                    sDataQuote.GetNamedString("$key"), address.AddressId);
-                        }
-                        //}
-                    }
-                }
-            }
+            //Code was used for adding address json/ Now replaced by SavePostedAddressToDbAsync
+            //if (address != null)
+            //{
+            //    if (sDataQuote.TryGetValue("$key", out value))
+            //    {
+            //        if (value.ValueType.ToString() != DataAccessUtils.Null)
+            //        {
+            //            //JsonObject sDataShippingAdress = sDataQuote.GetNamedObject("ShippingAddress");
+
+            //            await
+            //                _sageSalesDB.QueryAsync<Address>("Update Address Set AddressId=? where AddressId=?",
+            //                    sDataQuote.GetNamedString("$key"), address.AddressId);
+            //            //if (!string.IsNullOrEmpty(quote.CustomerId))
+            //            //{
+            //            Address addressObj =
+            //                await _addressRepository.AddOrUpdateAddressJsonToDbAsync(sDataQuote, address.CustomerId);
+            //            if (addressObj != null)
+            //            {
+            //                await
+            //                    _sageSalesDB.QueryAsync<Quote>("Update Quote Set AddressId=? where AddressId=?",
+            //                        sDataQuote.GetNamedString("$key"), address.AddressId);
+            //            }
+            //            //}
+            //        }
+            //    }
+            //}
 
             Quote quote = await SaveQuoteDetailsAsync(sDataQuote);
 
@@ -725,7 +727,7 @@ namespace SageMobileSales.DataAccess.Repositories
         private decimal CalculateAmount(int quantity, decimal price)
         {
             decimal amount;
-            amount = Convert.ToDecimal(quantity*price);
+            amount = Convert.ToDecimal(quantity * price);
             return amount;
         }
 
@@ -812,7 +814,8 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        quote.CreatedOn = ConvertJsonStringToDateTime(sDataQuote.GetNamedString("CreatedOn"));
+                        //quote.CreatedOn = ConvertJsonStringToDateTime(sDataQuote.GetNamedString("CreatedOn"));
+                        quote.CreatedOn = DateTime.Parse(sDataQuote.GetNamedString("CreatedOn"));
                     }
                 }
 
@@ -820,7 +823,8 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        quote.SubmittedDate = ConvertJsonStringToDateTime(sDataQuote.GetNamedString("SubmittedDate"));
+                        //quote.SubmittedDate = ConvertJsonStringToDateTime(sDataQuote.GetNamedString("SubmittedDate"));
+                        quote.SubmittedDate = DateTime.Parse(sDataQuote.GetNamedString("SubmittedDate"));
                     }
                 }
                 if (sDataQuote.TryGetValue("Status", out value))
@@ -849,7 +853,8 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        quote.ExpiryDate = ConvertJsonStringToDateTime(sDataQuote.GetNamedString("ExpiryDate"));
+                        //quote.ExpiryDate = ConvertJsonStringToDateTime(sDataQuote.GetNamedString("ExpiryDate"));
+                        quote.ExpiryDate = DateTime.Parse(sDataQuote.GetNamedString("ExpiryDate"));
                     }
                 }
                 if (sDataQuote.TryGetValue("QuoteTotal", out value))
@@ -953,32 +958,32 @@ namespace SageMobileSales.DataAccess.Repositories
         /// </summary>
         /// <param name="jsonTime"></param>
         /// <returns></returns>
-        private DateTime ConvertJsonStringToDateTime(string jsonTime)
-        {
-            if (!string.IsNullOrEmpty(jsonTime) && jsonTime.IndexOf("Date") > -1)
-            {
-                string milis = jsonTime.Substring(jsonTime.IndexOf("(") + 1);
-                string sign = milis.IndexOf("+") > -1 ? "+" : "-";
-                string hours = "";
-                // Need to change based on GMT........ To be Confirmed
-                if (milis.IndexOf(sign) > -1)
-                {
-                    hours = milis.Substring(milis.IndexOf(sign));
-                    milis = milis.Substring(0, milis.IndexOf(sign));
-                    hours = hours.Substring(0, hours.IndexOf(")"));
-                    return
-                        new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(Convert.ToInt64(milis))
-                            .AddHours(Convert.ToInt64(hours)/100);
-                }
-                hours = "0";
-                milis = milis.Substring(0, milis.IndexOf(")"));
-                return
-                    new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(Convert.ToInt64(milis))
-                        .AddHours(Convert.ToInt64(hours)/100);
-            }
+        //private DateTime ConvertJsonStringToDateTime(string jsonTime)
+        //{
+        //    if (!string.IsNullOrEmpty(jsonTime) && jsonTime.IndexOf("Date") > -1)
+        //    {
+        //        string milis = jsonTime.Substring(jsonTime.IndexOf("(") + 1);
+        //        string sign = milis.IndexOf("+") > -1 ? "+" : "-";
+        //        string hours = "";
+        //        // Need to change based on GMT........ To be Confirmed
+        //        if (milis.IndexOf(sign) > -1)
+        //        {
+        //            hours = milis.Substring(milis.IndexOf(sign));
+        //            milis = milis.Substring(0, milis.IndexOf(sign));
+        //            hours = hours.Substring(0, hours.IndexOf(")"));
+        //            return
+        //                new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(Convert.ToInt64(milis))
+        //                    .AddHours(Convert.ToInt64(hours) / 100);
+        //        }
+        //        hours = "0";
+        //        milis = milis.Substring(0, milis.IndexOf(")"));
+        //        return
+        //            new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(Convert.ToInt64(milis))
+        //                .AddHours(Convert.ToInt64(hours) / 100);
+        //    }
 
-            return DateTime.Now;
-        }
+        //    return DateTime.Now;
+        //}
 
         #endregion
     }

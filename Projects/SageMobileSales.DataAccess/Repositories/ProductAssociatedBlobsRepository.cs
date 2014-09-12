@@ -28,7 +28,7 @@ namespace SageMobileSales.DataAccess.Repositories
         # region Public Methods
 
         /// <summary>
-        ///     Extracts data from sData(jsonObject) and then saves data into ProductAssociatedBlobs & LocalSyncDigest tables in
+        ///     Extract data from json, saves data into ProductAssociatedBlobs & LocalSyncDigest tables in
         ///     LocalDB
         /// </summary>
         /// <param name="sDataProductAssociatedBlobs"></param>
@@ -85,7 +85,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Updates Prodcut data into LocalDb
+        ///     Update prodcut data into local dB
         /// </summary>
         /// <param name="sDataProduct"></param>
         /// <returns></returns>
@@ -116,7 +116,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Gets ProductAssociatedBlobs data from LocalDB
+        ///     Gets productAssociatedBlobs data from local dB
         /// </summary>
         /// <returns></returns>
         public async Task<List<ProductAssociatedBlob>> GetProductAssociatedBlobsAsync(string productId)
@@ -155,7 +155,7 @@ namespace SageMobileSales.DataAccess.Repositories
         # region Private Methods
 
         /// <summary>
-        ///     Extracts ProductAssociatedBlobs sData(JsonResponse) Response.
+        ///     Extract ProductAssociatedBlobs json Response.
         /// </summary>
         /// <param name="sDataProductAssociatedBlob"></param>
         /// <returns>Product</returns>

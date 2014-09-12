@@ -91,7 +91,7 @@ namespace SageMobileSales.DataAccess.Repositories
 
             contactResponse = ExtractContactFromJsonAsync(sDataContact, contactResponse);
 
-            await AddOrUpdatePendingContacts(contactResponse, contactPending);
+            await AddOrUpdatePendingContact(contactResponse, contactPending);
         }
 
         /// <summary>
@@ -453,7 +453,7 @@ namespace SageMobileSales.DataAccess.Repositories
         /// <param name="contactResponse"></param>
         /// <param name="contactPending"></param>
         /// <returns></returns>
-        private async Task AddOrUpdatePendingContacts(Contact contactResponse, Contact contactPending)
+        private async Task AddOrUpdatePendingContact(Contact contactResponse, Contact contactPending)
         {
             try
             {

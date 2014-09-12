@@ -23,6 +23,11 @@ namespace SageMobileSales.DataAccess.Repositories
 
         #region public methods
 
+        /// <summary>
+        /// Extract salesHistory, save to local dB
+        /// </summary>
+        /// <param name="sDataSalesHistory"></param>
+        /// <returns></returns>
         public async Task SaveSalesHistoryAsync(JsonObject sDataSalesHistory)
         {
             try
@@ -53,6 +58,12 @@ namespace SageMobileSales.DataAccess.Repositories
             }
         }
 
+        /// <summary>
+        /// Gets sales history for that customerId, productId
+        /// </summary>
+        /// <param name="CustomerId"></param>
+        /// <param name="ProductId"></param>
+        /// <returns></returns>
         public async Task<List<SalesHistory>> GetCustomerProductSalesHistory(string CustomerId, string ProductId)
         {
             List<SalesHistory> salesHistoryList = null;
@@ -76,6 +87,11 @@ namespace SageMobileSales.DataAccess.Repositories
 
         #region private methods
 
+        /// <summary>
+        /// Save sDataSaleHistory json to salesHistory table
+        /// </summary>
+        /// <param name="sDataSalesHistoryArray"></param>
+        /// <returns></returns>
         private async Task SaveSalesHistoryDetailsAsync(JsonArray sDataSalesHistoryArray)
         {
             // Delete - Need confirmation
@@ -87,7 +103,11 @@ namespace SageMobileSales.DataAccess.Repositories
                 await AddOrUpdatesalesHistoryJsonToDbAsync(sDataSalesHistory);
             }
         }
-
+        /// <summary>
+        /// Add or update salesHistory to local dB
+        /// </summary>
+        /// <param name="sDataSalesHistory"></param>
+        /// <returns></returns>
         public async Task<SalesHistory> AddOrUpdatesalesHistoryJsonToDbAsync(JsonObject sDataSalesHistory)
         {
             try
@@ -123,6 +143,12 @@ namespace SageMobileSales.DataAccess.Repositories
             return null;
         }
 
+        /// <summary>
+        /// Update salesHistory to local dB
+        /// </summary>
+        /// <param name="sDataSalesHistory"></param>
+        /// <param name="salesHistoryDbObj"></param>
+        /// <returns></returns>
         private async Task<SalesHistory> UpdateSalesHistoryJsonToDbAsync(JsonObject sDataSalesHistory,
             SalesHistory salesHistoryDbObj)
         {
@@ -145,6 +171,11 @@ namespace SageMobileSales.DataAccess.Repositories
             return salesHistoryDbObj;
         }
 
+        /// <summary>
+        /// Add salesHistory to local dB
+        /// </summary>
+        /// <param name="sDataSalesHistory"></param>
+        /// <returns></returns>
         private async Task<SalesHistory> AddSalesHistoryJsonToDbAsync(JsonObject sDataSalesHistory)
         {
             var salesHistoryObj = new SalesHistory();
@@ -170,6 +201,12 @@ namespace SageMobileSales.DataAccess.Repositories
             return salesHistoryObj;
         }
 
+        /// <summary>
+        /// Extract salesHistory from json
+        /// </summary>
+        /// <param name="sDataSalesHistory"></param>
+        /// <param name="salesHistory"></param>
+        /// <returns></returns>
         private SalesHistory ExtractSalesHistoryFromJsonAsync(JsonObject sDataSalesHistory, SalesHistory salesHistory)
         {
             try
@@ -253,8 +290,10 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
+                        //salesHistory.InvoiceDate =
+                        //    ConvertJsonStringToDateTime(sDataSalesHistory.GetNamedString("InvoiceDate"));
                         salesHistory.InvoiceDate =
-                            ConvertJsonStringToDateTime(sDataSalesHistory.GetNamedString("InvoiceDate"));
+                            DateTime.Parse(sDataSalesHistory.GetNamedString("InvoiceDate"));
                     }
                 }
             }
@@ -272,32 +311,32 @@ namespace SageMobileSales.DataAccess.Repositories
             return salesHistory;
         }
 
-        private DateTime ConvertJsonStringToDateTime(string jsonTime)
-        {
-            if (!string.IsNullOrEmpty(jsonTime) && jsonTime.IndexOf("Date") > -1)
-            {
-                string milis = jsonTime.Substring(jsonTime.IndexOf("(") + 1);
-                string sign = milis.IndexOf("+") > -1 ? "+" : "-";
-                string hours = "";
-                // Need to change based on GMT........ To be Confirmed
-                if (milis.IndexOf(sign) > -1)
-                {
-                    hours = milis.Substring(milis.IndexOf(sign));
-                    milis = milis.Substring(0, milis.IndexOf(sign));
-                    hours = hours.Substring(0, hours.IndexOf(")"));
-                    return
-                        new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(Convert.ToInt64(milis))
-                            .AddHours(Convert.ToInt64(hours)/100);
-                }
-                hours = "0";
-                milis = milis.Substring(0, milis.IndexOf(")"));
-                return
-                    new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(Convert.ToInt64(milis))
-                        .AddHours(Convert.ToInt64(hours)/100);
-            }
+        //private DateTime ConvertJsonStringToDateTime(string jsonTime)
+        //{
+        //    if (!string.IsNullOrEmpty(jsonTime) && jsonTime.IndexOf("Date") > -1)
+        //    {
+        //        string milis = jsonTime.Substring(jsonTime.IndexOf("(") + 1);
+        //        string sign = milis.IndexOf("+") > -1 ? "+" : "-";
+        //        string hours = "";
+        //        // Need to change based on GMT........ To be Confirmed
+        //        if (milis.IndexOf(sign) > -1)
+        //        {
+        //            hours = milis.Substring(milis.IndexOf(sign));
+        //            milis = milis.Substring(0, milis.IndexOf(sign));
+        //            hours = hours.Substring(0, hours.IndexOf(")"));
+        //            return
+        //                new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(Convert.ToInt64(milis))
+        //                    .AddHours(Convert.ToInt64(hours)/100);
+        //        }
+        //        hours = "0";
+        //        milis = milis.Substring(0, milis.IndexOf(")"));
+        //        return
+        //            new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(Convert.ToInt64(milis))
+        //                .AddHours(Convert.ToInt64(hours)/100);
+        //    }
 
-            return DateTime.Now;
-        }
+        //    return DateTime.Now;
+        //}
 
         #endregion
     }
