@@ -11,10 +11,10 @@ namespace SageMobileSales.ServiceAgents.Services
         Task<Quote> SubmitQuote(Quote quote);
         Task DeleteQuote(string quoteId);
         Task UpdateQuoteShippingAddressKey(Quote quote);
-        Task UpdateQuoteShippingAddress(Quote quote, Address address);
+        Task<Address> UpdateQuoteShippingAddress(Quote quote, string addressId);
         //Task<Quote> PostQuoteShippingAddress(Quote quote, Address address);
         Task UpdateDiscountOrShippingAndHandling(Quote quote);
-        Task CalculateSalesTaxForQuote(Quote quote);
+        //Task CalculateSalesTaxForQuote(Quote quote);
         Task RevertSubmittedQuoteToDraft(Quote quote);
         Task SyncOfflineQuotes();
         Task SyncOfflineDeletedQuotes();

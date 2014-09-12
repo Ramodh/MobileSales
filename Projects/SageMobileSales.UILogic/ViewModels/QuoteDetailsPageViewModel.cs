@@ -167,7 +167,7 @@ namespace SageMobileSales.UILogic.ViewModels
             get
             {
                 return Math.Round(CalculateSubTotal(), 2);
-            }
+        }
         }
 
         public bool IsBottomAppBarOpened
@@ -1213,12 +1213,17 @@ namespace SageMobileSales.UILogic.ViewModels
                 if (quote.AddressId.Contains(Constants.Pending))
                 {
                     // Confirm before posting quote whether it has Valid QuoteId                        
-                    quote = await _quoteService.PostDraftQuote(quote);
-
-                    if (quote != null)
-                        await
-                            _quoteService.UpdateQuoteShippingAddress(quote,
-                                await _addressRepository.GetShippingAddress(quote.AddressId));
+                    //quote = await _quoteService.PostDraftQuote(quote);
+                    //if (quote != null)
+                    //    await
+                    //        _quoteService.UpdateQuoteShippingAddress(quote,
+                    //            await _addressRepository.GetShippingAddress(quote.AddressId));
+                    Address address = await _quoteService.UpdateQuoteShippingAddress(quote, quote.AddressId);
+                    if (address != null)
+                    {
+                        quote.AddressId = address.AddressId;
+                        await _quoteService.PostDraftQuote(quote);
+                    }
                 }
                 else
                 {

@@ -27,7 +27,7 @@ namespace SageMobileSales.DataAccess.Repositories
         # region public methods
 
         /// <summary>
-        ///     Extracts orderLineItem from Json Response for that order
+        ///     Extracts orderLineItem from json response, save in local dB
         /// </summary>
         /// <param name="sDataOrder"></param>
         /// <param name="orderId"></param>
@@ -49,7 +49,6 @@ namespace SageMobileSales.DataAccess.Repositories
                     }
                 }
             }
-
             catch (Exception ex)
             {
                 _log = AppEventSource.Log.WriteLine(ex);
@@ -58,7 +57,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Gets OrderLineItems List along with Product(Product Details), ProductAssociatedBlob(Url)
+        ///     Gets orderLineItem list along with Product(Product Details), ProductAssociatedBlob(Url)
         /// </summary>
         /// <param name="orderId"></param>
         /// <returns></returns>
@@ -88,7 +87,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Returns list of previously purchased products for the customer
+        ///     Gets list of previously purchased products for that customerId
         /// </summary>
         /// <param name="customerId"></param>
         /// <returns></returns>
@@ -118,7 +117,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Returns list of orderlineitems for the order
+        ///     Gets list of orderlineitems for that orderId
         /// </summary>
         /// <param name="orderId"></param>
         /// <returns></returns>
@@ -144,7 +143,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Adds or updates OrderLineItem json response to dB
+        ///     Add or update orderLineItem json to dB
         /// </summary>
         /// <param name="sDataOrderLineItem"></param>
         /// <param name="orderId"></param>
@@ -195,15 +194,14 @@ namespace SageMobileSales.DataAccess.Repositories
         #region private methods
 
         /// <summary>
-        ///     Compares list of orderLineItems with the Json response and local Db to delete, add or update
+        ///     Extracts orderLineItem from Json, update the same
         /// </summary>
         /// <param name="sDataOrderLineItemArray"></param>
         /// <param name="orderId"></param>
         /// <returns></returns>
         private async Task SaveOrderLineItemDetailsAsync(JsonArray sDataOrderLineItemArray, string orderId)
         {
-            // Delete if any address exists in dB but not in Json by comparing addressId
-            await DeleteOrderLineItemsFromDbAsync(sDataOrderLineItemArray, orderId);
+            //await DeleteOrderLineItemsFromDbAsync(sDataOrderLineItemArray, orderId);
 
             foreach (IJsonValue orderLineItem in sDataOrderLineItemArray)
             {
@@ -213,7 +211,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Adds orderLineItem json response to dB
+        ///     Add orderLineItem json to local dB
         /// </summary>
         /// <param name="sDataOrderLineItem"></param>
         /// <param name="orderId"></param>
@@ -245,7 +243,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Updates orerLineItem json response to dB
+        ///     Update orerLineItem json to local dB
         /// </summary>
         /// <param name="sDataOrderLineItem"></param>
         /// <param name="orderLineItemDbObj"></param>
@@ -304,7 +302,8 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        await _productRepository.AddOrUpdateProductJsonToDbAsync(sDataOrderLineItem);
+                        var sDataInventoryItem = sDataOrderLineItem.GetNamedObject("InventoryItem");
+                        await _productRepository.AddOrUpdateProductJsonToDbAsync(sDataInventoryItem);
                     }
                 }
 
@@ -312,17 +311,10 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        //JsonObject sDataProduct = sDataOrderLineItem.GetNamedString("InventoryItemId");
-                        //JsonObject sDataCustomer = sDataOrder.GetNamedObject("Customer");                        
                         List<Product> productDb =
                             await
                                 _sageSalesDB.QueryAsync<Product>("SELECT * FROM Product WHERE ProductId=?",
                                     sDataOrderLineItem.GetNamedString("InventoryItemId"));
-                        //Customer customer = await _customerRepository.AddOrUpdateCustomerJsonToDbAsync(sDataCustomer);
-                        //if (customer != null)
-                        //{
-                        //    order.CustomerId = customer.CustomerId;
-                        //}
                         if (productDb.FirstOrDefault() != null)
                         {
                             orderLineItem.ProductId = productDb.FirstOrDefault().ProductId;
@@ -331,15 +323,9 @@ namespace SageMobileSales.DataAccess.Repositories
                         {
                             var product = new Product();
                             product.ProductId = sDataOrderLineItem.GetNamedString("InventoryItemId");
-
                             orderLineItem.ProductId = product.ProductId;
-
                             await _sageSalesDB.InsertAsync(product);
                         }
-
-                        //Product product = await _productRepository.AddOrUpdateProductJsonToDbAsync(sDataProduct);
-
-                        //orderLineItem.ProductId = product.ProductId;
                     }
                 }
             }
@@ -362,82 +348,77 @@ namespace SageMobileSales.DataAccess.Repositories
         /// <param name="sDataOrderLineItemArray"></param>
         /// <param name="orderId"></param>
         /// <returns></returns>
-        private async Task DeleteOrderLineItemsFromDbAsync(JsonArray sDataOrderLineItemArray, string orderId)
-        {
-            IJsonValue value;
-            List<OrderLineItem> orderLineItemIdJsonList;
-            List<OrderLineItem> orderLineItemIdDbList;
-            List<OrderLineItem> orderLineItemRemoveList;
-            bool idExists = false;
+        //private async Task DeleteOrderLineItemsFromDbAsync(JsonArray sDataOrderLineItemArray, string orderId)
+        //{
+        //    IJsonValue value;
+        //    List<OrderLineItem> orderLineItemIdJsonList;
+        //    List<OrderLineItem> orderLineItemIdDbList;
+        //    List<OrderLineItem> orderLineItemRemoveList;
+        //    bool idExists = false;
 
-            try
-            {
-                // Retrieve list of addressId from Json
-                orderLineItemIdJsonList = new List<OrderLineItem>();
-                foreach (IJsonValue orderLineItem in sDataOrderLineItemArray)
-                {
-                    JsonObject sDataOrderLineItem = orderLineItem.GetObject();
-                    var orderLineItemJsonObj = new OrderLineItem();
-                    if (sDataOrderLineItem.TryGetValue("$key", out value))
-                    {
-                        if (value.ValueType.ToString() != DataAccessUtils.Null)
-                        {
-                            orderLineItemJsonObj.OrderLineItemId = sDataOrderLineItem.GetNamedString("$key");
-                        }
-                    }
-                    orderLineItemIdJsonList.Add(orderLineItemJsonObj);
-                }
+        //    try
+        //    {
+        //        // Retrieve list of orderLineItemId from Json
+        //        orderLineItemIdJsonList = new List<OrderLineItem>();
+        //        foreach (IJsonValue orderLineItem in sDataOrderLineItemArray)
+        //        {
+        //            JsonObject sDataOrderLineItem = orderLineItem.GetObject();
+        //            var orderLineItemJsonObj = new OrderLineItem();
+        //            if (sDataOrderLineItem.TryGetValue("$key", out value))
+        //            {
+        //                if (value.ValueType.ToString() != DataAccessUtils.Null)
+        //                {
+        //                    orderLineItemJsonObj.OrderLineItemId = sDataOrderLineItem.GetNamedString("$key");
+        //                }
+        //            }
+        //            orderLineItemIdJsonList.Add(orderLineItemJsonObj);
+        //        }
 
-                //Retrieve list of orderLineItemId from dB
-                orderLineItemIdDbList = new List<OrderLineItem>();
-                orderLineItemRemoveList = new List<OrderLineItem>();
-                orderLineItemIdDbList =
-                    await _sageSalesDB.QueryAsync<OrderLineItem>("SELECT * FROM OrderLineItem where OrderId=?", orderId);
+        //        //Retrieve list of orderLineItemId from dB
+        //        orderLineItemIdDbList = new List<OrderLineItem>();
+        //        orderLineItemRemoveList = new List<OrderLineItem>();
+        //        orderLineItemIdDbList =
+        //            await _sageSalesDB.QueryAsync<OrderLineItem>("SELECT * FROM OrderLineItem where OrderId=?", orderId);
 
-                // Requires enhancement
-                for (int i = 0; i < orderLineItemIdDbList.Count; i++)
-                {
-                    idExists = false;
-                    for (int j = 0; j < orderLineItemIdJsonList.Count; j++)
-                    {
-                        if (orderLineItemIdDbList[i].OrderLineItemId.Contains(DataAccessUtils.Pending))
-                        {
-                            idExists = true;
-                            break;
-                        }
-                        if (orderLineItemIdDbList[i].OrderLineItemId == orderLineItemIdJsonList[j].OrderLineItemId)
-                        {
-                            idExists = true;
-                            break;
-                        }
-                    }
-                    if (!idExists)
-                        orderLineItemRemoveList.Add(orderLineItemIdDbList[i]);
-                }
+        //        for (int i = 0; i < orderLineItemIdDbList.Count; i++)
+        //        {
+        //            idExists = false;
+        //            for (int j = 0; j < orderLineItemIdJsonList.Count; j++)
+        //            {
+        //                if (orderLineItemIdDbList[i].OrderLineItemId.Contains(DataAccessUtils.Pending))
+        //                {
+        //                    idExists = true;
+        //                    break;
+        //                }
+        //                if (orderLineItemIdDbList[i].OrderLineItemId == orderLineItemIdJsonList[j].OrderLineItemId)
+        //                {
+        //                    idExists = true;
+        //                    break;
+        //                }
+        //            }
+        //            if (!idExists)
+        //                orderLineItemRemoveList.Add(orderLineItemIdDbList[i]);
+        //        }
 
-                //if (orderLineItemIdDbList != null)
-                //{
-                //    var orderLineItemRemoveList = orderLineItemIdDbList.Except(orderLineItemIdJsonList, new OrderLineItemIdComparer()).ToList();
-                if (orderLineItemRemoveList.Count() > 0)
-                {
-                    foreach (OrderLineItem orderLineItemRemove in orderLineItemRemoveList)
-                    {
-                        await _sageSalesDB.DeleteAsync(orderLineItemRemove);
-                    }
-                }
-                //}
-            }
-            catch (SQLiteException ex)
-            {
-                _log = AppEventSource.Log.WriteLine(ex);
-                AppEventSource.Log.Error(_log);
-            }
-            catch (Exception ex)
-            {
-                _log = AppEventSource.Log.WriteLine(ex);
-                AppEventSource.Log.Error(_log);
-            }
-        }
+        //        if (orderLineItemRemoveList.Count() > 0)
+        //        {
+        //            foreach (OrderLineItem orderLineItemRemove in orderLineItemRemoveList)
+        //            {
+        //                await _sageSalesDB.DeleteAsync(orderLineItemRemove);
+        //            }
+        //        }
+        //    }
+        //    catch (SQLiteException ex)
+        //    {
+        //        _log = AppEventSource.Log.WriteLine(ex);
+        //        AppEventSource.Log.Error(_log);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _log = AppEventSource.Log.WriteLine(ex);
+        //        AppEventSource.Log.Error(_log);
+        //    }
+        //}
 
         #endregion
     }

@@ -28,7 +28,7 @@ namespace SageMobileSales.DataAccess.Repositories
         # region Public Methods
 
         /// <summary>
-        ///     Extracts data from sData(jsonObject) and then saves data into ProductAssociatedBlobs & LocalSyncDigest tables in
+        ///     Extract data from json, saves data into ProductAssociatedBlobs & LocalSyncDigest tables in
         ///     LocalDB
         /// </summary>
         /// <param name="sDataProductAssociatedBlobs"></param>
@@ -51,7 +51,6 @@ namespace SageMobileSales.DataAccess.Repositories
                         sDataProductAssociatedBlobsArray[productAssociatedBlob].GetObject();
                     // Adds or Updated ProductAssociatedBlob data from json to LocalDB
                     await AddOrUpdateProductAssociatedBlobJsonToDbAsync(sDataProductAssociatedBlob);
-                    //lstProductAssociatedBlobs.Add(GetProductAssociatedBlobDataFromJson(sDataProductAssociatedBlob));
 
                     if ((Convert.ToInt32(sDataProductAssociatedBlob.GetNamedNumber("SyncTick")) >
                          localSyncDigest.localTick))
@@ -71,8 +70,7 @@ namespace SageMobileSales.DataAccess.Repositories
                         }
                         await _localSyncDigestRepository.UpdateLocalSyncDigestDtlsAsync(localSyncDigest);
                     }
-                }
-                //await _sageSalesDB.InsertAllAsync(lstProductAssociatedBlobs);
+                }                
             }
             catch (SQLiteException ex)
             {
@@ -139,42 +137,10 @@ namespace SageMobileSales.DataAccess.Repositories
                 AppEventSource.Log.Error(_log);
             }
             return null;
-        }       
-    
+        }              
 
         /// <summary>
-        ///     Updates ProductAssociatedBlob data into LocalDb
-        /// </summary>
-        /// <param name="sDataProductAssociatedBlob"></param>
-        /// <returns></returns>
-        //public async Task UpdatProductAssociatedBlobAsync(JsonObject sDataProductAssociatedBlob)
-        //{
-        //    try
-        //    {
-        //        ProductAssociatedBlob latestProductAssociatedBlob =
-        //            ExtractProductAssociatedBlobFromJsonAsync(sDataProductAssociatedBlob,ProductAssociatedBlob productAssociatedBlobDBObj);
-        //        ProductAssociatedBlob oldProductAssociatedBlob =
-        //            await GetProductAssociatedBlobAsync(latestProductAssociatedBlob.ProductAssociatedBlobId);
-        //        if (oldProductAssociatedBlob != null)
-        //        {
-        //            await _sageSalesDB.DeleteAsync(oldProductAssociatedBlob);
-        //        }
-        //        await _sageSalesDB.InsertAsync(latestProductAssociatedBlob);
-        //    }
-        //    catch (SQLiteException ex)
-        //    {
-        //        _log = AppEventSource.Log.WriteLine(ex);
-        //        AppEventSource.Log.Error(_log);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _log = AppEventSource.Log.WriteLine(ex);
-        //        AppEventSource.Log.Error(_log);
-        //    }
-        //}
-
-        /// <summary>
-        ///     Gets ProductAssociatedBlobs data from LocalDB
+        ///     Gets productAssociatedBlobs data from local dB
         /// </summary>
         /// <returns></returns>
         public async Task<List<ProductAssociatedBlob>> GetProductAssociatedBlobsAsync(string productId)
@@ -257,16 +223,15 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Extracts ProductAssociatedBlobs sData(JsonResponse) Response.
+        ///     Extract ProductAssociatedBlobs json Response.
         /// </summary>
         /// <param name="sDataProductAssociatedBlob"></param>
-        /// /// <param name="productAssociatedBlobDbObj"></param>
         /// <returns>Product</returns>
         private ProductAssociatedBlob ExtractProductAssociatedBlobFromJsonAsync(JsonObject sDataProductAssociatedBlob, ProductAssociatedBlob productAssociatedBlobDbObj)
         {
             try
             {
-                IJsonValue value;              
+                IJsonValue value;
 
                 if (sDataProductAssociatedBlob.TryGetValue("$key", out value))
                 {
@@ -396,6 +361,7 @@ namespace SageMobileSales.DataAccess.Repositories
                 AppEventSource.Log.Error(_log);
             }
         }
+
 
         # endregion
     }

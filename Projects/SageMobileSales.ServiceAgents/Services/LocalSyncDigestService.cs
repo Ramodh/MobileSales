@@ -66,10 +66,8 @@ namespace SageMobileSales.ServiceAgents.Services
             }
             return _isSyncAvailable;
         }
+        
 
-        # region Private Methods
-
-        // Currently we are not using this function.
 
 
         /// <summary>
@@ -103,6 +101,9 @@ namespace SageMobileSales.ServiceAgents.Services
                     _serviceAgent.BuildAndPostRequest(Constants.TenantId, entity, queryEntity, Constants.AccessToken,
                         parameters);
         }
+
+
+        # region Private Methods
 
         /// <summary>
         ///     Makes call to save LocalSyncDigest data into LocalDB
