@@ -5,7 +5,7 @@ namespace SageMobileSales.ServiceAgents.JsonHelpers
     public class QuoteJson
     {
         public string Description { get; set; }
-        //public decimal DiscountPercent { get; set; }
+        public decimal DiscountPercent { get; set; }
         public decimal QuoteTotal { get; set; }
         public decimal SandH { get; set; }
         //public string Status { get; set; }

@@ -24,7 +24,7 @@ namespace SageMobileSales.DataAccess.Repositories
         #region public methods
 
         /// <summary>
-        ///     Calls ExtractTenantDtlsFromJsonAsync & AddOrUpdateTenantAsync Methods to save sDataTenant into  localDB
+        ///    Extract Tenants from json, save into  local dB
         /// </summary>
         /// <param name="sDataTenantDtls"></param>
         /// <returns></returns>
@@ -55,6 +55,10 @@ namespace SageMobileSales.DataAccess.Repositories
             }
         }
 
+        /// <summary>
+        /// Gets tenantId
+        /// </summary>
+        /// <returns></returns>
         public async Task<string> GetTenantId()
         {
             try
@@ -109,7 +113,12 @@ namespace SageMobileSales.DataAccess.Repositories
             return null;
         }
 
-
+        /// <summary>
+        /// Update tenant dtls to local dB
+        /// </summary>
+        /// <param name="sDataTenants"></param>
+        /// <param name="tenantGuid"></param>
+        /// <returns></returns>
         public async Task UpdateTenantAsync(JsonObject sDataTenants, string tenantGuid)
         {
             try
@@ -153,6 +162,12 @@ namespace SageMobileSales.DataAccess.Repositories
 
         # region private methods
 
+        /// <summary>
+        /// Save tenant details to local dB
+        /// </summary>
+        /// <param name="sDataTenantArray"></param>
+        /// <param name="repId"></param>
+        /// <returns></returns>
         private async Task SaveTenantDetailsAsync(JsonArray sDataTenantArray, string repId)
         {
             foreach (IJsonValue tenant in sDataTenantArray)
@@ -162,6 +177,12 @@ namespace SageMobileSales.DataAccess.Repositories
             }
         }
 
+        /// <summary>
+        /// Add or Update tenant to local dB
+        /// </summary>
+        /// <param name="sDataTenant"></param>
+        /// <param name="repId"></param>
+        /// <returns></returns>
         private async Task<Tenant> AddOrUpdateTenantJsonToDbAsync(JsonObject sDataTenant, string repId)
         {
             try
@@ -200,6 +221,12 @@ namespace SageMobileSales.DataAccess.Repositories
             return null;
         }
 
+        /// <summary>
+        /// Add tenant to local dB
+        /// </summary>
+        /// <param name="sDataTenant"></param>
+        /// <param name="repId"></param>
+        /// <returns></returns>
         private async Task<Tenant> AddTenantJsonToDbAsync(JsonObject sDataTenant, string repId)
         {
             var tenantObj = new Tenant();
@@ -225,6 +252,12 @@ namespace SageMobileSales.DataAccess.Repositories
             return tenantObj;
         }
 
+        /// <summary>
+        /// Update tenant to local dB
+        /// </summary>
+        /// <param name="sDataTenantDetails"></param>
+        /// <param name="tenantObj"></param>
+        /// <returns></returns>
         private async Task<Tenant> UpdateTenantJsonToDbAsync(JsonObject sDataTenantDetails, Tenant tenantObj)
         {
             try
@@ -286,6 +319,12 @@ namespace SageMobileSales.DataAccess.Repositories
         //    }
         //}
 
+        /// <summary>
+        /// Extract tenant from json
+        /// </summary>
+        /// <param name="sDataTenant"></param>
+        /// <param name="tenant"></param>
+        /// <returns></returns>
         private Tenant ExtractTenantDtlsFromJsonAsync(JsonObject sDataTenant, Tenant tenant)
         {
             IJsonValue value;

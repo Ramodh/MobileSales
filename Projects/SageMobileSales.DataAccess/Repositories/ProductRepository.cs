@@ -31,8 +31,8 @@ namespace SageMobileSales.DataAccess.Repositories
         # region Public Methods
 
         /// <summary>
-        ///     Extracts data from sData(jsonObject) and then saves data into Product, ProductRelatedItems & LocalSyncDigest tables
-        ///     in LocalDB
+        ///     Extract data from json, save data into Product, ProductRelatedItems & LocalSyncDigest tables
+        ///     in local dB
         /// </summary>
         /// <param name="sDataProducts"></param>
         /// <param name="localSyncDigest"></param>
@@ -84,7 +84,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Updates Prodcut data into LocalDb
+        ///     Update prodcut data into local dB
         /// </summary>
         /// <param name="sDataProduct"></param>
         /// <returns></returns>
@@ -92,14 +92,7 @@ namespace SageMobileSales.DataAccess.Repositories
         {
             try
             {
-                await AddOrUpdateProductJsonToDbAsync(sDataProduct);
-                //Product latestProduct = await GetProductDataFromJson(sDataProduct);
-                //Product oldProduct = await GetProductdetailsAsync(latestProduct.ProductId);
-                //if (oldProduct != null)
-                //{
-                //    await _sageSalesDB.DeleteAsync(oldProduct);
-                //}
-                //await _sageSalesDB.InsertAsync(latestProduct);
+                await AddOrUpdateProductJsonToDbAsync(sDataProduct);                
             }
             catch (SQLiteException ex)
             {
@@ -113,18 +106,18 @@ namespace SageMobileSales.DataAccess.Repositories
             }
         }
 
-        /// <summary>
-        ///     Deletes Product data from LocalDB
-        /// </summary>
-        /// <param name="product"></param>
-        /// <returns></returns>
-        public Task DeleteProductAsync(Product product)
-        {
-            throw new NotImplementedException();
-        }
+        ///// <summary>
+        /////     Deletes Product data from LocalDB
+        ///// </summary>
+        ///// <param name="product"></param>
+        ///// <returns></returns>
+        //public Task DeleteProductAsync(Product product)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
         /// <summary>
-        ///     Gets Products data from LocalDB
+        ///     Gets product list from LocalDB
         /// </summary>
         /// <returns></returns>
         public async Task<List<ProductDetails>> GetCategoryProductsAsync(string categoryId)
@@ -135,7 +128,7 @@ namespace SageMobileSales.DataAccess.Repositories
                 productsList =
                     await
                         _sageSalesDB.QueryAsync<ProductDetails>(
-                            "select distinct PRD.ProductId, PRD.ProductName, PRD.Sku, PRD.PriceStd, (select Url from ProductAssociatedBlob as PAB where PAB.ProductId = PRD.ProductId AND PAB.IsPrimary='1') as Url from Product as PRD join ProductCategoryLink as PCL on PRD.ProductId = PCL.ProductId and PRD.EntityStatus='Active' where PCL.CategoryId = ? order by Url desc",
+                            "select distinct PRD.ProductId, PRD.ProductName, PRD.Sku, PRD.PriceStd, (select Url from ProductAssociatedBlob as PAB where PAB.ProductId = PRD.ProductId AND (PAB.IsPrimary='1' OR PAB.IsPrimary='0')) as Url from Product as PRD join ProductCategoryLink as PCL on PRD.ProductId = PCL.ProductId and PRD.EntityStatus='Active' where PCL.CategoryId = ? order by Url desc",
                             categoryId);
             }
             catch (SQLiteException ex)
@@ -152,7 +145,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Gets particular Product Details based on ProductId
+        ///     Gets product details for that ProductId
         /// </summary>
         /// <param name="productId"></param>
         /// <returns></returns>
@@ -204,7 +197,7 @@ namespace SageMobileSales.DataAccess.Repositories
                 productsList =
                     await
                         _sageSalesDB.QueryAsync<ProductDetails>(
-                            "select distinct PRD.ProductId, PRD.ProductName, (select Url from ProductAssociatedBlob as PAB where PAB.ProductId = PRD.ProductId AND PAB.IsPrimary='1') as Url from ProductRelatedItem as PRI join Product as PRD on PRD.ProductId = PRI.RelatedItemId and PRD.EntityStatus='Active' where PRI.ProductId = ?",
+                            "select distinct PRD.ProductId, PRD.ProductName, (select Url from ProductAssociatedBlob as PAB where PAB.ProductId = PRD.ProductId AND (PAB.IsPrimary=1 OR PAB.IsPrimary=0)) as Url from ProductRelatedItem as PRI join Product as PRD on PRD.ProductId = PRI.RelatedItemId and PRD.EntityStatus='Active' where PRI.ProductId = ?",
                             productId);
                 if (productsList != null)
                 {
@@ -225,7 +218,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Gets Products from LocalDB respective to search term
+        ///     Gets Product from local dB respective to search term
         /// </summary>
         /// <returns></returns>
         public async Task<List<ProductDetails>> GetSearchSuggestionsAsync(string searchTerm)
@@ -254,7 +247,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Adds or updates product json response to dB
+        ///     Add or update product json to local dB
         /// </summary>
         /// <param name="sDataQuote"></param>
         /// <returns></returns>
@@ -294,65 +287,64 @@ namespace SageMobileSales.DataAccess.Repositories
             return null;
         }
 
-        /// <summary>
-        ///     Extracts product from Json response and adds or updates to product table
-        /// </summary>
-        /// Edited by Ramodh Needs to change
-        /// <param name="sDataProduct"></param>
-        /// <returns></returns>
-        public async Task<Product> AddOrUpdateProductFromOrderLineItem(JsonObject sDataProduct)
-        {
-            IJsonValue value;
-            var product = new Product();
-            if (sDataProduct.TryGetValue("$key", out value))
-            {
-                if (value.ValueType.ToString() != DataAccessUtils.Null)
-                {
-                    product.ProductId = sDataProduct.GetNamedString("$key").ToLower();
-                }
-            }
-            if (sDataProduct.TryGetValue("Sku", out value))
-            {
-                if (value.ValueType.ToString() != DataAccessUtils.Null)
-                {
-                    product.Sku = sDataProduct.GetNamedString("Sku");
-                }
-            }
-            if (sDataProduct.TryGetValue("Name", out value))
-            {
-                if (value.ValueType.ToString() != DataAccessUtils.Null)
-                {
-                    product.ProductName = sDataProduct.GetNamedString("Name");
-                }
-            }
+        ///// <summary>
+        /////     Extract product from Json, add or update to product table
+        ///// </summary>
+        ///// Edited by Ramodh Needs to change
+        ///// <param name="sDataProduct"></param>
+        ///// <returns></returns>
+        //public async Task<Product> AddOrUpdateProductFromOrderLineItem(JsonObject sDataProduct)
+        //{
+        //    IJsonValue value;
+        //    var product = new Product();
+        //    if (sDataProduct.TryGetValue("$key", out value))
+        //    {
+        //        if (value.ValueType.ToString() != DataAccessUtils.Null)
+        //        {
+        //            product.ProductId = sDataProduct.GetNamedString("$key").ToLower();
+        //        }
+        //    }
+        //    if (sDataProduct.TryGetValue("Sku", out value))
+        //    {
+        //        if (value.ValueType.ToString() != DataAccessUtils.Null)
+        //        {
+        //            product.Sku = sDataProduct.GetNamedString("Sku");
+        //        }
+        //    }
+        //    if (sDataProduct.TryGetValue("Name", out value))
+        //    {
+        //        if (value.ValueType.ToString() != DataAccessUtils.Null)
+        //        {
+        //            product.ProductName = sDataProduct.GetNamedString("Name");
+        //        }
+        //    }
 
-            List<Product> productList =
-                await _sageSalesDB.QueryAsync<Product>("Select * from Product where ProductId=?", product.ProductId);
-            if (productList.FirstOrDefault() != null)
-            {
-                if (!string.IsNullOrEmpty(product.Sku))
-                    productList.FirstOrDefault().Sku = product.Sku;
+        //    List<Product> productList =
+        //        await _sageSalesDB.QueryAsync<Product>("Select * from Product where ProductId=?", product.ProductId);
+        //    if (productList.FirstOrDefault() != null)
+        //    {
+        //        if (!string.IsNullOrEmpty(product.Sku))
+        //            productList.FirstOrDefault().Sku = product.Sku;
 
-                if (!string.IsNullOrEmpty(product.ProductName))
-                    productList.FirstOrDefault().ProductName = product.ProductName;
+        //        if (!string.IsNullOrEmpty(product.ProductName))
+        //            productList.FirstOrDefault().ProductName = product.ProductName;
 
-                await _sageSalesDB.UpdateAsync(productList.FirstOrDefault());
-            }
-            else
-            {
-                await _sageSalesDB.InsertAsync(product);
-            }
+        //        await _sageSalesDB.UpdateAsync(productList.FirstOrDefault());
+        //    }
+        //    else
+        //    {
+        //        await _sageSalesDB.InsertAsync(product);
+        //    }
 
-            return product;
-        }
+        //    return product;
+        //}
 
         # endregion
 
         # region Private Methods
 
         /// <summary>
-        ///     Extracts sData(JsonResponse) Response and inserts RelatedItems, AssociatedBlobs into ProductRelatedItems &
-        ///     ProductAssociatedBlobs Table.
+        ///     Extract product, product related items, blobs json        
         /// </summary>
         /// <param name="sDataProduct"></param>
         /// <returns>Product</returns>
@@ -442,6 +434,7 @@ namespace SageMobileSales.DataAccess.Repositories
                     }
                 }
 
+                // TO DO : Change the way it is implementd not to delete and insert
                 if (sDataProduct.TryGetValue("RelatedItems", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
@@ -464,7 +457,7 @@ namespace SageMobileSales.DataAccess.Repositories
                     }
                 }
 
-
+                // TO DO : Change the way it is implementd not to delete and insert
                 if (sDataProduct.TryGetValue("Images", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
@@ -476,7 +469,7 @@ namespace SageMobileSales.DataAccess.Repositories
                             {
                                 JsonObject sDataAssociatedBlob = associatedBlob.GetObject();
                                 await
-                                    _productAssociatedBlobsRepository.UpdatProductAssociatedBlobAsync(
+                                    _productAssociatedBlobsRepository.AddOrUpdateProductAssociatedBlobJsonToDbAsync(
                                         sDataAssociatedBlob);
                             }
                         }
@@ -497,7 +490,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Updated ProductRelatedItems(You may also like)
+        ///     Updat ProductRelatedItems
         /// </summary>
         /// <param name="productRelatesItems"></param>
         /// <param name="ProductId"></param>

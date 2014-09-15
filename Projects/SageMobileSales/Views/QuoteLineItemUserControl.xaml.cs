@@ -65,5 +65,6 @@ namespace SageMobileSales.Views
             //if (arg != null)
             //    _navigationService.Navigate("OrderDetails", arg);
         }
+        
     }
 }

@@ -10,7 +10,7 @@ namespace SageMobileSales.DataAccess.Entities
 
         public string FrequentlyPurchasedItemId { get; set; }
         public string CustomerId { get; set; }
-
+        public string Url { get; set; }
         public int NumberOfInvoices { get; set; }
         public string ItemId { get; set; }
         public int QuantityYtd { get; set; }

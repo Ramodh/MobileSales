@@ -18,33 +18,28 @@ namespace SageMobileSales.DataAccess.Repositories
         private readonly ICustomerRepository _customerRepository;
         private readonly IEventAggregator _eventAggregator;
         private readonly ILocalSyncDigestRepository _localSyncDigestRepository;
-        private readonly IOrderLineItemRepository _orderLineItemRepository;
-        private readonly IQuoteRepository _quoteRepository;
-        private readonly SQLiteAsyncConnection _sageSalesDB;
-        private readonly ISalesRepRepository _salesRepRepository;
+        private readonly IOrderLineItemRepository _orderLineItemRepository;        
+        private readonly SQLiteAsyncConnection _sageSalesDB;        
         private IDatabase _database;
         private string _log = string.Empty;
 
         public OrderRepository(IDatabase database, ILocalSyncDigestRepository localSyncDigestRepository,
-            ICustomerRepository customerRepository, ISalesRepRepository salesRepRepository,
-            IAddressRepository addressRepository, IOrderLineItemRepository orderLineItemRepository,
-            IQuoteRepository quoteRepository, IEventAggregator eventAggregator)
+            ICustomerRepository customerRepository, IAddressRepository addressRepository,
+            IOrderLineItemRepository orderLineItemRepository, IEventAggregator eventAggregator)
         {
             _database = database;
             _sageSalesDB = _database.GetAsyncConnection();
             _localSyncDigestRepository = localSyncDigestRepository;
             _customerRepository = customerRepository;
             _addressRepository = addressRepository;
-            _orderLineItemRepository = orderLineItemRepository;
-            _salesRepRepository = salesRepRepository;
-            _quoteRepository = quoteRepository;
+            _orderLineItemRepository = orderLineItemRepository;            
             _eventAggregator = eventAggregator;
         }
 
         #region public methods
 
         /// <summary>
-        ///     Extract json response(Order) and saves into local dB
+        ///     Extract order from json, save into local dB
         /// </summary>
         /// <param name="sDataOrders"></param>
         /// <param name="localSyncDigest"></param>
@@ -91,7 +86,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Extracts data from response and updates orders, addresses and orderLineItems
+        ///     Extract data from response and updates order, address and orderLineItem
         /// </summary>
         /// <param name="sDataOrder"></param>
         /// <returns></returns>
@@ -120,25 +115,13 @@ namespace SageMobileSales.DataAccess.Repositories
                 }
             }
 
-            //if (sDataOrder.TryGetValue("Customer", out value))
-            //{
-            //    if (value.ValueType.ToString() != DataAccessUtils.Null)
-            //    {
-            //        JsonObject sDataCustomer = sDataOrder.GetNamedObject("Customer");
-            //        Customer customer = await _customerRepository.AddOrUpdateCustomerJsonToDbAsync(sDataCustomer);
-            //        if (customer != null)
-            //        {
-            //            await _addressRepository.SaveAddressesAsync(sDataCustomer, customer.CustomerId);
-            //        }
-            //    }
-            //}
-
             await _orderLineItemRepository.SaveOrderLineItemsAsync(sDataOrder, order.OrderId);
+
             return order;
         }
 
         /// <summary>
-        ///     Get order details along with salesRepName
+        ///     Gets list of order details
         /// </summary>
         /// <param name="orderId"></param>
         /// <returns></returns>
@@ -148,7 +131,6 @@ namespace SageMobileSales.DataAccess.Repositories
             try
             {
                 //SELECT distinct Orders.OrderId, Orders.CreatedOn, Orders.OrderNumber, Orders.CustomerId, Orders.AddressId, Orders.TenantId, Orders.Amount, Orders.Tax, Orders.ShippingAndHandling, Orders.DiscountPercent, Orders.OrderStatus,Orders.OrderDescription, SalesRep.RepName FROM Orders  INNER JOIN SalesRep ON salesRep.RepId = Orders.RepId and Orders.OrderId=?
-
                 //SELECT distinct Orders.OrderId, Orders.CreatedOn, Orders.OrderNumber, Orders.CustomerId, Orders.AddressId, Orders.TenantId, Orders.Amount, Orders.Tax, Orders.ShippingAndHandling, Orders.DiscountPercent, Orders.OrderStatus,Orders.OrderDescription, SalesRep.RepName FROM Orders  INNER JOIN SalesRep ON Orders.OrderId=?"
                 order =
                     await
@@ -165,7 +147,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Get order details based on CustomerId
+        ///     Gets order details for that customerId
         /// </summary>
         /// <param name="orderId"></param>
         /// <returns></returns>
@@ -190,12 +172,14 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Get quotes list along with customerName, salesRepName
+        ///     Gets order list for that salesRepId
         /// </summary>
         /// <param name="salesRepId"></param>
         /// <returns></returns>
         public async Task<List<OrderDetails>> GetOrdersListAsync(string salesRepId)
         {
+
+            //salesRepId is not required, Check and remove
             List<OrderDetails> ordersList = null;
             try
             {
@@ -214,7 +198,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Adds or updates order json response to dB
+        ///     Add or update order json to local dB
         /// </summary>
         /// <param name="sDataOrder"></param>
         /// <returns></returns>
@@ -241,7 +225,8 @@ namespace SageMobileSales.DataAccess.Repositories
                     }
                 }
 
-                //Basically the convert quote to order returns orderId.
+                //Check and confirm
+                //Basically convert quote to order returns orderId.
                 if (sDataOrder.TryGetValue("OrderId", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
@@ -256,7 +241,7 @@ namespace SageMobileSales.DataAccess.Repositories
                         {
                             return await UpdateOrderJsonToDbAsync(sDataOrder, orderList.FirstOrDefault());
                         }
-                        var order = new Orders {OrderId = sDataOrder.GetNamedString("OrderId")};
+                        var order = new Orders { OrderId = sDataOrder.GetNamedString("OrderId") };
                         await _sageSalesDB.InsertAsync(order);
                         return await UpdateOrderJsonToDbAsync(sDataOrder, order);
                     }
@@ -280,7 +265,7 @@ namespace SageMobileSales.DataAccess.Repositories
         #region private methods
 
         /// <summary>
-        ///     Extracts order from Json and updates the same
+        ///     Extract order from Json, update the same
         /// </summary>
         /// <param name="sDataOrder"></param>
         /// <returns></returns>
@@ -290,7 +275,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Add order json response to dB
+        ///     Add order json to local dB
         /// </summary>
         /// <param name="sDataOrder"></param>
         /// <returns></returns>
@@ -313,7 +298,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Updates order json response to dB
+        ///     Update order json to local dB
         /// </summary>
         /// <param name="sDataOrder"></param>
         /// <param name="orderDbObj"></param>
@@ -334,7 +319,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Extracts order json response
+        ///     Extract order json response
         /// </summary>
         /// <param name="sDataOrder"></param>
         /// <param name="order"></param>
@@ -350,19 +335,13 @@ namespace SageMobileSales.DataAccess.Repositories
                     {
                         order.OrderDescription = sDataOrder.GetNamedString("Description");
                     }
-                }
-                //if (sDataOrder.TryGetValue("TenantId", out value))
-                //{
-                //    if (value.ValueType.ToString() != DataAccessUtils.Null)
-                //    {
-                //        order.TenantId = sDataOrder.GetNamedString("TenantId");
-                //    }
-                //}
+                }                
                 if (sDataOrder.TryGetValue("CreatedOn", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        order.CreatedOn = ConvertJsonStringToDateTime(sDataOrder.GetNamedString("CreatedOn"));
+                        order.CreatedOn = DateTime.Parse(sDataOrder.GetNamedString("CreatedOn"));
+                        //order.CreatedOn = ConvertJsonStringToDateTime(sDataOrder.GetNamedString("CreatedOn"));
                     }
                 }
                 //if (sDataOrder.TryGetValue("UpdatedOn", out value))
@@ -399,14 +378,7 @@ namespace SageMobileSales.DataAccess.Repositories
                     {
                         order.Amount = Convert.ToDecimal(sDataOrder.GetNamedNumber("OrderTotal"));
                     }
-                }
-                //if (sDataOrder.TryGetValue("ExternalReference", out value))
-                //{
-                //    if (value.ValueType.ToString() != DataAccessUtils.Null)
-                //    {
-                //        order.ExternalReferenceNumber = sDataOrder.GetNamedString("ExternalReference");
-                //    }
-                //}
+                }                
                 if (sDataOrder.TryGetValue("DiscountPercent", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
@@ -530,32 +502,32 @@ namespace SageMobileSales.DataAccess.Repositories
         /// </summary>
         /// <param name="jsonTime"></param>
         /// <returns></returns>
-        private DateTime ConvertJsonStringToDateTime(string jsonTime)
-        {
-            if (!string.IsNullOrEmpty(jsonTime) && jsonTime.IndexOf("Date") > -1)
-            {
-                string milis = jsonTime.Substring(jsonTime.IndexOf("(") + 1);
-                string sign = milis.IndexOf("+") > -1 ? "+" : "-";
-                string hours = "";
-                // Need to change based on GMT........ To be Confirmed
-                if (milis.IndexOf(sign) > -1)
-                {
-                    hours = milis.Substring(milis.IndexOf(sign));
-                    milis = milis.Substring(0, milis.IndexOf(sign));
-                    hours = hours.Substring(0, hours.IndexOf(")"));
-                    return
-                        new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(Convert.ToInt64(milis))
-                            .AddHours(Convert.ToInt64(hours)/100);
-                }
-                hours = "0";
-                milis = milis.Substring(0, milis.IndexOf(")"));
-                return
-                    new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(Convert.ToInt64(milis))
-                        .AddHours(Convert.ToInt64(hours)/100);
-            }
+        //private DateTime ConvertJsonStringToDateTime(string jsonTime)
+        //{
+        //    if (!string.IsNullOrEmpty(jsonTime) && jsonTime.IndexOf("Date") > -1)
+        //    {
+        //        string milis = jsonTime.Substring(jsonTime.IndexOf("(") + 1);
+        //        string sign = milis.IndexOf("+") > -1 ? "+" : "-";
+        //        string hours = "";
+        //        // Need to change based on GMT........ To be Confirmed
+        //        if (milis.IndexOf(sign) > -1)
+        //        {
+        //            hours = milis.Substring(milis.IndexOf(sign));
+        //            milis = milis.Substring(0, milis.IndexOf(sign));
+        //            hours = hours.Substring(0, hours.IndexOf(")"));
+        //            return
+        //                new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(Convert.ToInt64(milis))
+        //                    .AddHours(Convert.ToInt64(hours)/100);
+        //        }
+        //        hours = "0";
+        //        milis = milis.Substring(0, milis.IndexOf(")"));
+        //        return
+        //            new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(Convert.ToInt64(milis))
+        //                .AddHours(Convert.ToInt64(hours)/100);
+        //    }
 
-            return DateTime.Now;
-        }
+        //    return DateTime.Now;
+        //}
 
         #endregion
     }

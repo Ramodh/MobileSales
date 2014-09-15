@@ -29,8 +29,9 @@ namespace SageMobileSales.DataAccess.Repositories
             _eventAggregator = eventAggregator;
         }
 
+        #region public methods
         /// <summary>
-        ///     Extracts data from sData(jsonObject) and then saves data into ProductCategory, ProductCategoryLinks &
+        ///     Extract data from json, saves data into ProductCategory, ProductCategoryLinks &
         ///     LocalSyncDigest tables in LocalDB
         /// </summary>
         /// <param name="sDataProductCategory"></param>
@@ -82,7 +83,7 @@ namespace SageMobileSales.DataAccess.Repositories
 
 
         /// <summary>
-        ///     Updates ProdcutCategory data into LocalDb
+        ///     Update prodcutCategory data into local dB
         /// </summary>
         /// <param name="sDataProductCategory"></param>
         /// <returns></returns>
@@ -103,19 +104,19 @@ namespace SageMobileSales.DataAccess.Repositories
             return productCategoryDbObj;
         }
 
-        /// <summary>
-        ///     Deletes ProductCategory data from LocalDB
-        /// </summary>
-        /// <param name="productCategory"></param>
-        /// <returns></returns>
-        public Task DeleteProductCategoryDtlsAsync(ProductCategory productCategory)
-        {
-            throw new NotImplementedException();
-        }
+        ///// <summary>
+        /////     Deletes ProductCategory data from LocalDB
+        ///// </summary>
+        ///// <param name="productCategory"></param>
+        ///// <returns></returns>
+        //public Task DeleteProductCategoryDtlsAsync(ProductCategory productCategory)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
 
         /// <summary>
-        ///     Gets ProductCategory data from LocalDB
+        ///     Gets ProductCategory data from local dB
         /// </summary>
         /// <returns></returns>
         public async Task<List<ProductCategory>> GetProductCategoryListDtlsAsync(string parentId)
@@ -200,8 +201,11 @@ namespace SageMobileSales.DataAccess.Repositories
             return productCategoriesList;
         }
 
+        #endregion
+
+        #region private methods
         /// <summary>
-        ///     Add productCategory json response to dB
+        ///     Add productCategory json to local dB
         /// </summary>
         /// <param name="sDataProductCategory"></param>
         /// <returns></returns>
@@ -224,7 +228,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        ///     Adds or updates product json response to dB
+        ///     Add or update product json to local dB
         /// </summary>
         /// <param name="sDataQuote"></param>
         /// <returns></returns>
@@ -283,6 +287,12 @@ namespace SageMobileSales.DataAccess.Repositories
             return null;
         }
 
+        /// <summary>
+        /// Extract productCategory from json
+        /// </summary>
+        /// <param name="sDataProductCategory"></param>
+        /// <param name="productCategory"></param>
+        /// <returns></returns>
         private async Task<ProductCategory> GetProductCategorydataFromJsonAsync(JsonObject sDataProductCategory,
             ProductCategory productCategory)
         {
@@ -337,5 +347,7 @@ namespace SageMobileSales.DataAccess.Repositories
             }
             return productCategory;
         }
+
+        #endregion
     }
 }

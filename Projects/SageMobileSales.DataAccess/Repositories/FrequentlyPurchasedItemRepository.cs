@@ -71,8 +71,8 @@ namespace SageMobileSales.DataAccess.Repositories
             {
                 FrequentlyPurchasedItemList =
                     await
-                        _sageSalesDB.QueryAsync<FrequentlyPurchasedItem>(
-                            "Select * from FrequentlyPurchasedItem where CustomerId=?", customerId);
+                        _sageSalesDB.QueryAsync<FrequentlyPurchasedItem>("select distinct FPI.ItemDescription, FPI.ItemNumber, FPI.QuantityYtd, FPI.QuantityPriorYtd, (select Url from ProductAssociatedBlob as PAB where PAB.ProductId = PRD.ProductId AND PAB.IsPrimary='1') as Url from FrequentlyPurchasedItem as FPI join Product as PRD on PRD.ProductId = FPI.ItemId and PRD.EntityStatus='Active' where CustomerId=?", customerId);
+                      //      "Select * from FrequentlyPurchasedItem where CustomerId=?", customerId);
             }
             catch (SQLiteException ex)
             {
