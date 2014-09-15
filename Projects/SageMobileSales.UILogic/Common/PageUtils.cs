@@ -55,6 +55,12 @@ namespace SageMobileSales.UILogic.Common
         public static IAsyncAction asyncActionOrders;
         public static IAsyncAction asyncActionSalesRep;
         public static IAsyncAction asyncActionProducts;
+        public static bool CameFromOrderDetail = false;
+        public static string OrderSortType = string.Empty;
+        public static string OrderSortBy = string.Empty;
+        public static string QuoteSortType = string.Empty;
+        public static string QuoteSortBy = string.Empty;
+        public static bool CameFromQuoteDetail = false;
 
         # endregion
 

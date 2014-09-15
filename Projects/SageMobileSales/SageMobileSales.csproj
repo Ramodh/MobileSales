@@ -120,6 +120,9 @@
     <Compile Include="Behaviors\NavigateWithEventArgsToPageAction.cs" />
     <Compile Include="Behaviors\NumericTextBoxBehavior.cs" />
     <Compile Include="Behaviors\SeeMoreDataTemplateSelector.cs" />
+    <Compile Include="Common\DependencyPropertyChangedHelper.cs" />
+    <Compile Include="Common\ScrollViewerUtilities.cs" />
+    <Compile Include="Common\VisualTreeUtilities.cs" />
     <Compile Include="Converters\ErrorConverter.cs" />
     <Compile Include="Converters\StringFormatConverter.cs" />
     <Compile Include="Converters\TextHeaderVisibilityConverter.cs" />

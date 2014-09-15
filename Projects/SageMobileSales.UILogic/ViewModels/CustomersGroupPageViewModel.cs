@@ -139,7 +139,8 @@ namespace SageMobileSales.UILogic.ViewModels
                         //                           (IAsyncAction) =>
                         //                           {
                         // Sync SalesRep(Loggedin User) data
-                        await _salesRepService.SyncSalesRep();                        
+                        await _salesRepService.SyncSalesRep();
+                        //Constants.TenantId = "F200AC19-1BE6-48C5-B604-2D322020F48E";
                         Constants.TenantId = await _tenantRepository.GetTenantId();
                         //Company Settings
                         await _tenantService.SyncTenant();
@@ -167,7 +168,7 @@ namespace SageMobileSales.UILogic.ViewModels
 
                 if (string.IsNullOrEmpty(Constants.TenantId))
                 {
-                    
+                    //Constants.TenantId = "F200AC19-1BE6-48C5-B604-2D322020F48E";
                     Constants.TenantId = await _tenantRepository.GetTenantId();
                     string test = await _tenantRepository.GetTenantId();
                     Debug.WriteLine("" + test + " " + Constants.TenantId);
@@ -264,29 +265,24 @@ namespace SageMobileSales.UILogic.ViewModels
 
         public async Task UpdateCustomerListInfo()
         {
-            try
+            List<CustomerDetails> CustomerAdressList = await _customerRepository.GetCustomerListDtlsAsync();
+
+            List<CustomerGroupByAlphabet> sortedCustomerAdressList = CustomerAdressList
+                .GroupBy(alphabet => alphabet.CustomerName[0])
+                .OrderBy(g => g.Key)
+                .Select(g => new CustomerGroupByAlphabet {GroupName = g.Key, CustomerAddressList = g.ToList()})
+                .ToList();
+
+            GroupedCustomerList = sortedCustomerAdressList;
+            if (GroupedCustomerList.Count == 0)
             {
-                List<CustomerDetails> CustomerAdressList = await _customerRepository.GetCustomerListDtlsAsync();
-
-                List<CustomerGroupByAlphabet> sortedCustomerAdressList = CustomerAdressList
-                    .GroupBy(alphabet => alphabet.CustomerName[0])
-                    .OrderBy(g => g.Key)
-                    .Select(g => new CustomerGroupByAlphabet { GroupName = g.Key, CustomerAddressList = g.ToList() })
-                    .ToList();
-
-                GroupedCustomerList = sortedCustomerAdressList;
-                if (GroupedCustomerList.Count == 0)
-                {
-                    InProgress = false;
-                    EmptyCustomers = ResourceLoader.GetForCurrentView("Resources").GetString("CustomersEmptyText");
-                }
-                else
-                {
-                    EmptyCustomers = string.Empty;
-                }
+                InProgress = false;
+                EmptyCustomers = ResourceLoader.GetForCurrentView("Resources").GetString("CustomersEmptyText");
             }
-            catch (Exception e)
-            { }
+            else
+            {
+                EmptyCustomers = string.Empty;
+            }
         }
 
         public void CustomersSyncIndicator(bool sync)

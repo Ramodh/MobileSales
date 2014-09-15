@@ -49,27 +49,27 @@
                                 <ToggleMenuFlyoutItem x:Name="customerName" x:Uid="customerName" Text=""
                                                       Command="{Binding SortOrdersCommand}"
                                                       CommandParameter="{Binding ElementName=customerName,UpdateSourceTrigger=PropertyChanged}"
-                                                      IsChecked="{Binding}" />
+                                                      IsChecked="{Binding CustomerNamesort, Mode=TwoWay}" />
                                 <ToggleMenuFlyoutItem x:Name="orderNumber" x:Uid="orderNumber" Text=""
                                                       Command="{Binding SortOrdersCommand}"
                                                       CommandParameter="{Binding ElementName=orderNumber,UpdateSourceTrigger=PropertyChanged}"
-                                                      IsChecked="{Binding}" />
+                                                      IsChecked="{Binding OrderNumber, Mode=TwoWay}" />
                                 <ToggleMenuFlyoutItem x:Name="orderDate" x:Uid="orderDate" Text=""
                                                       Command="{Binding SortOrdersCommand}"
                                                       CommandParameter="{Binding ElementName=orderDate,UpdateSourceTrigger=PropertyChanged}"
-                                                      IsChecked="{Binding SelectedColumn}" />
+                                                      IsChecked="{Binding OrderDate, Mode=TwoWay}" />
                                 <ToggleMenuFlyoutItem Text="" x:Name="salesPerson" x:Uid="salesPerson"
                                                       Command="{Binding SortOrdersCommand}"
                                                       CommandParameter="{Binding ElementName=salesPerson,UpdateSourceTrigger=PropertyChanged}"
-                                                      IsChecked="{Binding}" />
+                                                      IsChecked="{Binding SalesPerson, Mode=TwoWay}" />
                                 <ToggleMenuFlyoutItem Text="" x:Name="orderStatus" x:Uid="orderStatus"
                                                       Command="{Binding SortOrdersCommand}"
                                                       CommandParameter="{Binding ElementName=orderStatus,UpdateSourceTrigger=PropertyChanged}"
-                                                      IsChecked="{Binding}" />
+                                                      IsChecked="{Binding OrderStatus, Mode=TwoWay}" />
                                 <ToggleMenuFlyoutItem Text="" x:Name="orderAmount" x:Uid="orderAmount"
                                                       Command="{Binding SortOrdersCommand}"
                                                       CommandParameter="{Binding ElementName=orderAmount,UpdateSourceTrigger=PropertyChanged}"
-                                                      IsChecked="{Binding}" />
+                                                      IsChecked="{Binding OrderAmount, Mode=TwoWay}" />
                                 <MenuFlyoutSeparator />
                                 <ToggleMenuFlyoutItem x:Name="sortByAscending" x:Uid="sortByAscending" Text=""
                                                       IsChecked="{Binding IsAscending, Mode=TwoWay}"
@@ -118,7 +118,8 @@
             SelectionMode="None"
             IsSwipeEnabled="false"
             IsItemClickEnabled="True"
-            ItemTemplate="{StaticResource OrdersTemplate}">
+            ItemTemplate="{StaticResource OrdersTemplate}"
+            Loaded="itemsGridView_Loaded">
             <interactivity:Interaction.Behaviors>
                 <core:EventTriggerBehavior EventName="ItemClick">
                     <core:CallMethodAction MethodName="GridViewItemClick"

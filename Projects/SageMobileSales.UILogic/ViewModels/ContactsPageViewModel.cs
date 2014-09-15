@@ -54,7 +54,7 @@ namespace SageMobileSales.UILogic.ViewModels
 
                 CustomerContactList = await _contactRepository.GetContactDetailsAsync(_customerId);
                 Customer customer = await _customerRepository.GetCustomerDataAsync(_customerId);
-                CustomerName = ResourceLoader.GetForCurrentView("Resources").GetString("DividerSymbol") +
+                CustomerName = ResourceLoader.GetForCurrentView("Resources").GetString("SeperatorSymbol") +
                                customer.CustomerName;
                 base.OnNavigatedTo(navigationParameter, navigationMode, viewModelState);
             }

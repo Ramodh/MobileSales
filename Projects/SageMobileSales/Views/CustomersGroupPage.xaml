@@ -65,7 +65,8 @@
             <SemanticZoom.ZoomedOutView>
                 <GridView Style="{StaticResource GridViewStyle}"
                           ItemTemplate="{StaticResource CustomerSemanticZoomedOutItemTemplate}"
-                          ItemContainerStyle="{StaticResource CustomerZoomedOutGridViewItemContainerStyle}">
+                          ItemContainerStyle="{StaticResource CustomerZoomedOutGridViewItemContainerStyle}"
+                          ScrollViewer.IsHorizontalScrollChainingEnabled="False">
                     <GridView.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WrapGrid ItemWidth="200" ItemHeight="100" VerticalChildrenAlignment="Center" />
@@ -85,7 +86,8 @@
                     SelectionMode="None"
                     IsSwipeEnabled="false"
                     IsItemClickEnabled="True"
-                    ItemTemplate="{StaticResource CustomerSemanticZoomedInItemTemplate}">
+                    ItemTemplate="{StaticResource CustomerSemanticZoomedInItemTemplate}"
+                      Loaded="itemsGridView_Loaded">
                     <interactivity:Interaction.Behaviors>
                         <core:EventTriggerBehavior EventName="ItemClick">
                             <core:CallMethodAction MethodName="GridViewItemClick"

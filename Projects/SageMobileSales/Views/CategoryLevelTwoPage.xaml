@@ -65,7 +65,8 @@
             ItemTemplate="{StaticResource CatalogItemTemplate}"
             DataFetchSize="1"
             ScrollViewer.IsDeferredScrollingEnabled="False"
-            VirtualizingStackPanel.VirtualizationMode="Standard">
+            VirtualizingStackPanel.VirtualizationMode="Standard"
+            Loaded="itemsGridView_Loaded">
             <interactivity:Interaction.Behaviors>
                 <core:EventTriggerBehavior EventName="ItemClick">
                     <core:CallMethodAction MethodName="GridViewItemClick"
