@@ -13,7 +13,7 @@
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     prism:ViewModelLocator.AutoWireViewModel="true"
-    mc:Ignorable="d"
+    mc:Ignorable="d" 
     x:Uid="Page">
 
 
@@ -76,13 +76,16 @@
             IsItemClickEnabled="True"
             ItemTemplate="{StaticResource ProductsItemTemplate}"
             ScrollViewer.IsDeferredScrollingEnabled="False"
-            VirtualizingStackPanel.VirtualizationMode="Recycling">
+            VirtualizingStackPanel.VirtualizationMode="Recycling"
+            ScrollViewer.IsHorizontalScrollChainingEnabled="False"
+            Loaded="itemsGridView_Loaded">
             <interactivity:Interaction.Behaviors>
                 <core:EventTriggerBehavior EventName="ItemClick">
                     <core:CallMethodAction MethodName="GridViewItemClick"
                                            TargetObject="{Binding Mode=OneWay}" />
-                </core:EventTriggerBehavior>
+                </core:EventTriggerBehavior>          
             </interactivity:Interaction.Behaviors>
+
         </GridView>
 
         <!-- Back button and page title -->

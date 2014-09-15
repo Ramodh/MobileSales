@@ -21,7 +21,8 @@
         <!-- Collection of items displayed by this page -->
         <CollectionViewSource
             x:Name="itemsViewSource"
-            Source="{Binding QuoteDetails}" />
+            Source="{Binding QuoteDetails}"
+          />
 
     </prism:VisualStateAwarePage.Resources>
 
@@ -41,23 +42,23 @@
                                 <ToggleMenuFlyoutItem x:Name="customerName" x:Uid="customerName" Text=""
                                                       Command="{Binding SortQuotesCommand}"
                                                       CommandParameter="{Binding ElementName=customerName,UpdateSourceTrigger=PropertyChanged}"
-                                                      IsChecked="{Binding}" />
+                                                      IsChecked="{Binding CustomerNamesort,Mode=TwoWay}" />
                                 <ToggleMenuFlyoutItem x:Name="quoteDate" x:Uid="quoteDate" Text=""
                                                       Command="{Binding SortQuotesCommand}"
                                                       CommandParameter="{Binding ElementName=quoteDate,UpdateSourceTrigger=PropertyChanged}"
-                                                      IsChecked="{Binding SelectedColumn}" />
+                                                      IsChecked="{Binding QuoteDate,Mode=TwoWay}" />
                                 <ToggleMenuFlyoutItem Text="" x:Name="salesPerson" x:Uid="salesPerson"
                                                       Command="{Binding SortQuotesCommand}"
                                                       CommandParameter="{Binding ElementName=salesPerson,UpdateSourceTrigger=PropertyChanged}"
-                                                      IsChecked="{Binding}" />
+                                                      IsChecked="{Binding SalesPerson,Mode=TwoWay}" />
                                 <ToggleMenuFlyoutItem Text="" x:Name="quoteStatus" x:Uid="quoteStatus"
                                                       Command="{Binding SortQuotesCommand}"
                                                       CommandParameter="{Binding ElementName=quoteStatus,UpdateSourceTrigger=PropertyChanged}"
-                                                      IsChecked="{Binding}" />
+                                                      IsChecked="{Binding QuoteStatus,Mode=TwoWay}" />
                                 <ToggleMenuFlyoutItem Text="" x:Name="quoteAmount" x:Uid="quoteAmount"
                                                       Command="{Binding SortQuotesCommand}"
                                                       CommandParameter="{Binding ElementName=quoteAmount,UpdateSourceTrigger=PropertyChanged}"
-                                                      IsChecked="{Binding}" />
+                                                      IsChecked="{Binding QuoteAmount,Mode=TwoWay}" />
                                 <MenuFlyoutSeparator />
                                 <ToggleMenuFlyoutItem x:Name="sortByAscending" x:Uid="sortByAscending" Text=""
                                                       IsChecked="{Binding IsAscending, Mode=TwoWay}"
@@ -113,7 +114,7 @@
 
         <!-- Horizontal scrolling grid -->
         <GridView
-            x:Name="itemGridView"
+            x:Name="itemsGridView"
             AutomationProperties.AutomationId="ItemsGridView"
             AutomationProperties.Name="Items"
             TabIndex="1"
@@ -123,12 +124,16 @@
             SelectionMode="None"
             IsSwipeEnabled="false"
             IsItemClickEnabled="True"
-            ItemTemplate="{StaticResource QuotesTemplate}">
+            ItemTemplate="{StaticResource QuotesTemplate}"
+             Loaded="itemsGridView_Loaded">
             <interactivity:Interaction.Behaviors>
                 <core:EventTriggerBehavior EventName="ItemClick">
                     <core:CallMethodAction MethodName="GridViewItemClick"
                                            TargetObject="{Binding Mode=OneWay}" />
                 </core:EventTriggerBehavior>
+                <!--<core:EventTriggerBehavior EventName="Loaded">
+                    <core:InvokeCommandAction Command="{Binding InitializeViewModelCommand}" CommandParameter="{Binding ElementName=itemsGridView}" />
+                </core:EventTriggerBehavior>-->
             </interactivity:Interaction.Behaviors>
         </GridView>
 

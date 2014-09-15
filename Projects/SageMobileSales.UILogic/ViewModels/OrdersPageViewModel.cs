@@ -20,6 +20,7 @@ using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
 using SageMobileSales.ServiceAgents.Services;
 using SageMobileSales.UILogic.Common;
+using Windows.Storage;
 
 namespace SageMobileSales.UILogic.ViewModels
 {
@@ -46,6 +47,18 @@ namespace SageMobileSales.UILogic.ViewModels
         private ToggleMenuFlyoutItem _sortByDescending;
         private bool _syncProgress;
         private ToggleMenuFlyoutItem selectedItem;
+        private bool _camefromOrderDetail;
+        private string _previousSelectedSortType;
+        private string _previousSortBy;
+        private bool _camefromQuoteDetail;
+        private bool _customerNamesort;
+        private bool _orderDate;
+        private bool _orderAmount;
+        private bool _orderStatus;
+        private bool _salesPerson;
+        private bool _orderNumber;
+        private string _sortType;
+        private string  _sortBy;
 
         public OrdersPageViewModel(INavigationService navigationService, ISalesRepRepository salesRepRepository,
             IOrderRepository orderRepository, ICustomerRepository customerRepository, IEventAggregator eventAggregator,
@@ -172,6 +185,83 @@ namespace SageMobileSales.UILogic.ViewModels
                     InProgress = false;
             }
         }
+        /// <summary>
+        ///   checks whether last visited page is quotedetails.
+        /// </summary>
+        public bool cameFromOrderDetail
+        {
+            get { return _camefromOrderDetail; }
+            private set { SetProperty(ref _camefromOrderDetail, value); }
+        }
+        /// <summary>
+        ///     checks whether customer name is selected or not
+        /// </summary>
+        public bool CustomerNamesort
+        {
+            get { return _customerNamesort; }
+            private set { SetProperty(ref _customerNamesort, value); }
+        }
+        /// <summary>
+        ///     checks whether Quote date is selected or not
+        /// </summary>
+        public bool OrderDate
+        {
+            get { return _orderDate; }
+            private set { SetProperty(ref _orderDate, value); }
+        }
+        /// <summary>
+        ///     checks whether Quote amount is selected or not
+        /// </summary>
+        public bool OrderAmount
+        {
+            get { return _orderAmount; }
+            private set { SetProperty(ref _orderAmount, value); }
+        }
+        /// <summary>
+        ///     checks whether Quote status is selected or not
+        /// </summary>
+        public bool OrderStatus
+        {
+            get { return _orderStatus; }
+            private set { SetProperty(ref _orderStatus, value); }
+        }
+        /// <summary>
+        ///     checks whether sales person is selected or not
+        /// </summary>
+        public bool SalesPerson
+        {
+            get { return _salesPerson; }
+            private set { SetProperty(ref _salesPerson, value); }
+        }
+        /// <summary>
+        ///     checks whether sales person is selected or not
+        /// </summary>
+        public bool OrderNumber
+        {
+            get { return _orderNumber; }
+            private set { SetProperty(ref _orderNumber, value); }
+        }
+        public string PreviousSelectedSortType
+        {
+            get { return _previousSelectedSortType; }
+            private set
+            {
+                SetProperty(ref _previousSelectedSortType, value);
+                OnPropertyChanged("PreviousSelectedSortType");
+            }
+
+        }
+        public string PreviousSortBy
+        {
+            get { return _previousSortBy; }
+            private set
+            {
+                SetProperty(ref _previousSortBy, value);
+                OnPropertyChanged("PreviousSortBy");
+            }
+
+        }
+
 
         /// <summary>
         ///     Load dummy data
@@ -185,7 +275,15 @@ namespace SageMobileSales.UILogic.ViewModels
             try
             {
                 InProgress = true;
-
+                ApplicationDataContainer orderSortSettings = ApplicationData.Current.LocalSettings;
+                if (orderSortSettings.Containers.ContainsKey("OrderSortSettingsContainer"))
+                {
+                    if (orderSortSettings.Containers["OrderSortSettingsContainer"].Values["cameFromOrderDetail"] != null)
+                    {
+                        PageUtils.CameFromOrderDetail = Convert.ToBoolean(orderSortSettings.Containers["OrderSortSettingsContainer"].Values["cameFromOrderDetail"].ToString());
+                        orderSortSettings.Containers["OrderSortSettingsContainer"].Values["cameFromOrderDetail"] = false;
+                    }
+                }
                 if (!Constants.OrdersSyncProgress)
                 {
                     IAsyncAction asyncAction = ThreadPool.RunAsync(
@@ -210,18 +308,27 @@ namespace SageMobileSales.UILogic.ViewModels
                     _customerId = navigationParameter as string;
                     Customer customer = await _customerRepository.GetCustomerDataAsync(_customerId);
                     OrdersList = new List<OrderDetails>();
-                    OrdersList = await _orderRepository.GetOrdersForCustomerAsync(customer.CustomerId);
-                    CustomerName = ResourceLoader.GetForCurrentView("Resources").GetString("DividerSymbol") +
+
+                    if (!Constants.ConnectedToInternet())
+                    {
+                        OrdersList = await _orderRepository.GetOrdersForCustomerAsync(customer.CustomerId);
+
+                        GetSortSetings();
+                    }
+                    CustomerName = ResourceLoader.GetForCurrentView("Resources").GetString("SeperatorSymbol") +
                                    customer.CustomerName;
                 }
                 else
                 {
                     OrdersPageTitle = "Orders";
-                    OrdersList = await _orderRepository.GetOrdersListAsync(await _salesRepRepository.GetSalesRepId());
-                }
 
-                IsDescending = true;
-                Sort(PageUtils.Date, IsAscending);
+                    if (!Constants.ConnectedToInternet())
+                    {
+                        OrdersList = await _orderRepository.GetOrdersListAsync(await _salesRepRepository.GetSalesRepId());
+
+                        GetSortSetings();
+                    }                        
+                }              
                 base.OnNavigatedTo(navigationParameter, navigationMode, viewModelState);
             }
             catch (Exception ex)
@@ -246,6 +353,8 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             try
             {
+                ApplicationDataContainer orderSortSettings = ApplicationData.Current.LocalSettings;
+         
                 var arg = (parameter as ItemClickEventArgs).ClickedItem as OrderDetails;
 
                 var rootFrame = Window.Current.Content as Frame;
@@ -261,6 +370,9 @@ namespace SageMobileSales.UILogic.ViewModels
                 }
                 else
                 {
+                    cameFromOrderDetail = true;
+                    orderSortSettings.Containers["OrderSortSettingsContainer"].Values["cameFromOrderDetail"] = cameFromOrderDetail;
+                    PageUtils.CameFromOrderDetail = cameFromOrderDetail;               
                     _navigationService.Navigate("OrderDetails", arg);
                 }
             }
@@ -311,6 +423,7 @@ namespace SageMobileSales.UILogic.ViewModels
             if (selectedItem != null)
             {
                 selectedItem.IsChecked = true;
+              //  OrderDate = false;
 
                 Sort(selectedItem.Text, IsAscending);
             }
@@ -324,6 +437,8 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             try
             {
+                ApplicationDataContainer orderSortSettings = ApplicationData.Current.LocalSettings;
+                orderSortSettings.CreateContainer("OrderSortSettingsContainer", ApplicationDataCreateDisposition.Always);
                 if (selectedItem == PageUtils.CustomerName)
                 {
                     if (IsAscending)
@@ -339,7 +454,13 @@ namespace SageMobileSales.UILogic.ViewModels
                         OrdersList = sortedQuoteDetails;
                     }
                     _selectedItem = selectedItem;
-                    SelectedColumn = false;
+                    CustomerNamesort = true;
+                    OrderDate = false;
+                    OrderAmount = false;
+                    OrderStatus = false;
+                    SalesPerson = false;
+                    OrderNumber = false;
+                   // SelectedColumn = false;
                 }
                 else if (selectedItem == PageUtils.Date)
                 {
@@ -355,7 +476,13 @@ namespace SageMobileSales.UILogic.ViewModels
                         OrdersList = sortedQuoteDetails;
                     }
                     _selectedItem = selectedItem;
-                    SelectedColumn = true;
+                    CustomerNamesort = false;
+                    OrderDate = true;
+                    OrderAmount = false;
+                    OrderStatus = false;
+                    SalesPerson = false;
+                    OrderNumber = false;
+                   // SelectedColumn = true;
                 }
                 else if (selectedItem == PageUtils.Status)
                 {
@@ -372,7 +499,13 @@ namespace SageMobileSales.UILogic.ViewModels
                         OrdersList = sortedQuoteDetails;
                     }
                     _selectedItem = selectedItem;
-                    SelectedColumn = false;
+                    CustomerNamesort = false;
+                    OrderDate = false;
+                    OrderAmount = false;
+                    OrderStatus = true;
+                    SalesPerson = false;
+                    OrderNumber = false;
+                   // SelectedColumn = false;
                 }
                 else if (selectedItem == PageUtils.Amount)
                 {
@@ -386,9 +519,15 @@ namespace SageMobileSales.UILogic.ViewModels
                         List<OrderDetails> sortedQuoteDetails =
                             OrdersList.OrderByDescending(sortby => sortby.Amount).ToList();
                         OrdersList = sortedQuoteDetails;
-                        SelectedColumn = false;
+                        //SelectedColumn = false;
                     }
                     _selectedItem = selectedItem;
+                    CustomerNamesort = false;
+                    OrderDate = false;
+                    OrderAmount = true;
+                    OrderStatus = false;
+                    SalesPerson = false;
+                    OrderNumber = false;
                 }
                 else if (selectedItem == PageUtils.SalesPerson)
                 {
@@ -404,7 +543,13 @@ namespace SageMobileSales.UILogic.ViewModels
                         OrdersList = sortedQuoteDetails;
                     }
                     _selectedItem = selectedItem;
-                    SelectedColumn = false;
+                    CustomerNamesort = false;
+                    OrderDate = false;
+                    OrderAmount = false;
+                    OrderStatus = false;
+                    SalesPerson = true;
+                    OrderNumber = false;
+                 //   SelectedColumn = false;
                 }
                 else if (selectedItem == PageUtils.OrderNumber)
                 {
@@ -421,8 +566,25 @@ namespace SageMobileSales.UILogic.ViewModels
                         OrdersList = sortedQuoteDetails;
                     }
                     _selectedItem = selectedItem;
-                    SelectedColumn = false;
+                    CustomerNamesort = false;
+                    OrderDate = false;
+                    OrderAmount = false;
+                    OrderStatus = false;
+                    SalesPerson = false;
+                    OrderNumber = true;
+                  //  SelectedColumn = false;
                 }
+                PreviousSelectedSortType = _selectedItem;
+                if (orderby)
+                {
+                    PreviousSortBy = "Ascending";
+                }
+                else
+                {
+                    PreviousSortBy = "Descending";
+                }
+                orderSortSettings.Containers["OrderSortSettingsContainer"].Values["PreviousSelectedSortType"] = PreviousSelectedSortType;
+                orderSortSettings.Containers["OrderSortSettingsContainer"].Values["PreviousSortBy"] = PreviousSortBy;
             }
             catch (Exception ex)
             {
@@ -441,6 +603,9 @@ namespace SageMobileSales.UILogic.ViewModels
 
             IsAscending = true;
             IsDescending = false;
+            PreviousSortBy = _sortByAscending.Text;
+            PageUtils.OrderSortBy = _sortByAscending.Text;
+         
             Sort(_selectedItem, IsAscending);
         }
 
@@ -454,6 +619,9 @@ namespace SageMobileSales.UILogic.ViewModels
 
             IsDescending = true;
             IsAscending = false;
+            PreviousSortBy = _sortByDescending.Text;
+            PageUtils.OrderSortBy = PreviousSortBy;
+        
             Sort(_selectedItem, IsAscending);
         }
 
@@ -481,6 +649,39 @@ namespace SageMobileSales.UILogic.ViewModels
             {
                 EmptyOrders = string.Empty;
             }
+            GetSortSetings();
+        }
+        private void GetSortSetings()
+        {
+            ApplicationDataContainer orderSortSettings = ApplicationData.Current.LocalSettings;
+            if (PageUtils.CameFromOrderDetail && orderSortSettings.Containers.ContainsKey("OrderSortSettingsContainer"))
+            {
+
+                if (orderSortSettings.Containers["OrderSortSettingsContainer"].Values["PreviousSelectedSortType"] != null &&
+                    orderSortSettings.Containers["OrderSortSettingsContainer"].Values["PreviousSortBy"] != null)
+                {
+                    PageUtils.OrderSortType = orderSortSettings.Containers["OrderSortSettingsContainer"].Values["PreviousSelectedSortType"].ToString();
+                    PageUtils.OrderSortBy = orderSortSettings.Containers["OrderSortSettingsContainer"].Values["PreviousSortBy"].ToString();
+                    if (PageUtils.OrderSortBy == "Ascending")
+                    {
+                        IsAscending = true;
+                        Sort(PageUtils.OrderSortType, IsDescending);
+                    }
+                    else
+                    {
+                        IsDescending = true;
+                        Sort(PageUtils.OrderSortType, IsAscending);
+                    }
+                }
+                // Constants.CameFromQuoteDetail = false;
+            }
+            else
+            {
+                IsDescending = true;
+                Sort(PageUtils.Date, IsAscending);
+            }
+
+
         }
 
         public void OrdersSyncIndicator(bool sync)

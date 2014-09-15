@@ -412,8 +412,8 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <Button x:Name="backButton" Margin="39,59,39,0"
-                    Command="{Binding NavigationHelper.GoBackCommand, ElementName=pageRoot}"
-                    Style="{StaticResource NavigationBackButtonNormalStyle}"
+                 Command="{Binding GoBackCommand, ElementName=pageRoot}"
+                    Style="{StaticResource NavigationBackButtonNormalStyle}"                    
                     VerticalAlignment="Top"
                     AutomationProperties.Name="Back"
                     AutomationProperties.AutomationId="BackButton"
