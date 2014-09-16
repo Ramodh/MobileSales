@@ -777,8 +777,10 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             try
             {
+                InProgress = true;
                 _quote = await UpdateQuote(DataAccessUtils.DraftQuote);
                 await DisplayQuotedetails();
+                InProgress = false;
             }
             catch (Exception ex)
             {
