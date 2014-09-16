@@ -1219,7 +1219,12 @@ namespace SageMobileSales.UILogic.ViewModels
                     //        _quoteService.UpdateQuoteShippingAddress(quote,
                     //            await _addressRepository.GetShippingAddress(quote.AddressId));
                     Address address = await _quoteService.UpdateQuoteShippingAddress(quote, quote.AddressId);
-                    if (address != null)
+                    if (address.AddressId.Contains(Constants.Pending))
+                    {
+                        quote.AddressId = null;
+                        await _quoteRepository.UpdateQuoteToDbAsync(quote);
+                    }
+                    else if (address != null)
                     {
                         quote.AddressId = address.AddressId;
                         await _quoteService.PostDraftQuote(quote);

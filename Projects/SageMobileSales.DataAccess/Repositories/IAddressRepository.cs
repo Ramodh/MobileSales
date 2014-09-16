@@ -12,6 +12,7 @@ namespace SageMobileSales.DataAccess.Repositories
         Task<Address> AddOrUpdateAddressJsonToDbAsync(JsonObject sDataAddress, string customerId);
         Task AddAddressToDbAsync(Address address);
         Task UpdateAddressToDbAsync(Address address);
+        Task DeleteAddressFromDbAsync(Address address);
 
         Task<Address> SavePostedAddressToDbAsync(JsonObject sDataAddress, string customerId, string addressPendingId);
         Task<Address> GetShippingAddressForCustomer(string customerId);
