@@ -739,4 +739,8 @@
     <value>UnitPrice</value>
     <comment>Menu Item  text for sort by recent order unit price</comment>
   </data>
+  <data name="SeperatorSymbol" xml:space="preserve">
+    <value>|  </value>
+    <comment>Grid divider symbol between header and customer name</comment>
+  </data>
 </root>

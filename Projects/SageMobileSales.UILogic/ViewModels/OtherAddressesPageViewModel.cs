@@ -161,7 +161,7 @@ namespace SageMobileSales.UILogic.ViewModels
                     //CustomerOtherAddress = await _addressRepository.GetOtherAddressesForCustomer(_customerId);
                 }
 
-                CustomerName = ResourceLoader.GetForCurrentView("Resources").GetString("DividerSymbol") +
+                CustomerName = ResourceLoader.GetForCurrentView("Resources").GetString("SeperatorSymbol") +
                                _customer.CustomerName;
 
                 if (!(CustomerAddresses.Count > 0))
