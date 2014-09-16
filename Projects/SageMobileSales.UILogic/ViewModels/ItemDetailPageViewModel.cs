@@ -279,16 +279,16 @@ namespace SageMobileSales.UILogic.ViewModels
         /// <param name="parameter"></param>
         public async void GridViewItemClick(object sender, object parameter)
         {
-            string productId = (((parameter as ItemClickEventArgs).ClickedItem as ProductDetails).ProductId);
+            _productId = (((parameter as ItemClickEventArgs).ClickedItem as ProductDetails).ProductId);
 
             //Display data from LocalDB
-            DisplayProductDetails(productId);
+            DisplayProductDetails(_productId);
             // Making Service request to get complete details- images, product, other products
-            await _productDetailsService.SyncProductDetails(productId);
+            await _productDetailsService.SyncProductDetails(_productId);
 
             //Need to implement caching for images
             //Display Updated from Web Service
-            DisplayProductDetails(productId);
+            DisplayProductDetails(_productId);
         }
 
         private async void DisplayProductDetails(string productId)
