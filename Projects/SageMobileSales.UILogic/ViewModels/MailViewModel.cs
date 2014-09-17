@@ -45,7 +45,7 @@ namespace SageMobileSales.UILogic.ViewModels
         /// <param name="subTotal"></param>
         /// <param name="total"></param>
         /// <returns></returns>
-        public string BuildQuoteEmailContent(Tenant tenant, CustomerDetails customerDetails, QuoteDetails quoteDetails,
+        public string BuildQuoteEmailContent(Tenant tenant, CustomerDetails customerDetails, Address customerMailingAddress, QuoteDetails quoteDetails,
             List<LineItemDetails> quoteLineItemsList, string subTotal, string total)
         {
             try
@@ -76,11 +76,11 @@ namespace SageMobileSales.UILogic.ViewModels
 
                     _customerDetailsTable = "<table border='0'><tr><td><b>Prepared for:</b></td><td>" +
                                             customerDetails.CustomerName + "</td></tr><tr><td></td><td>" +
-                                            customerDetails.AddressName + "</td></tr><tr><td></td><td>" +
-                                            customerDetails.Street1 + "</td></tr><tr><td></td><td>" +
-                                            customerDetails.City + "," + customerDetails.StateProvince + " " +
-                                            customerDetails.PostalCode + "</td></tr><tr><td></td><td>" +
-                                            customerDetails.Phone + "</td></tr></table><p><b>" +
+                                            customerMailingAddress.AddressName + "</td></tr><tr><td></td><td>" +
+                                            customerMailingAddress.Street1 + "</td></tr><tr><td></td><td>" +
+                                            customerMailingAddress.City + "," + customerDetails.StateProvince + " " +
+                                            customerMailingAddress.PostalCode + "</td></tr><tr><td></td><td>" +
+                                            customerMailingAddress.Phone + "</td></tr></table><p><b>" +
                                             quoteDetails.QuoteDescription + "</b></p>";
 
                     _lineItemDetailsTable =
@@ -139,7 +139,7 @@ namespace SageMobileSales.UILogic.ViewModels
         /// <param name="subTotal"></param>
         /// <param name="total"></param>
         /// <returns></returns>
-        public string BuildOrderEmailContent(Tenant tenant, CustomerDetails customerDetails, OrderDetails orderDetails,
+        public string BuildOrderEmailContent(Tenant tenant, CustomerDetails customerDetails, Address customerMailingAddress, OrderDetails orderDetails,
             List<LineItemDetails> orderLineItemsList, string subTotal, string total)
         {
             try
@@ -173,11 +173,11 @@ namespace SageMobileSales.UILogic.ViewModels
 
                     _customerDetailsTable = "<table border='0'><tr><td><b>Prepared for:</b></td><td>" +
                                             customerDetails.CustomerName + "</td></tr><tr><td></td><td>" +
-                                            customerDetails.AddressName + "</td></tr><tr><td></td><td>" +
-                                            customerDetails.Street1 + "</td></tr><tr><td></td><td>" +
-                                            customerDetails.City + "," + customerDetails.StateProvince + " " +
-                                            customerDetails.PostalCode + "</td></tr><tr><td></td><td>" +
-                                            customerDetails.Phone + "</td></tr></table><p><b>" +
+                                            customerMailingAddress.AddressName + "</td></tr><tr><td></td><td>" +
+                                            customerMailingAddress.Street1 + "</td></tr><tr><td></td><td>" +
+                                            customerMailingAddress.City + "," + customerDetails.StateProvince + " " +
+                                            customerMailingAddress.PostalCode + "</td></tr><tr><td></td><td>" +
+                                            customerMailingAddress.Phone + "</td></tr></table><p><b>" +
                                             orderDetails.OrderDescription + "</b></p>";
 
                     _lineItemDetailsTable =
