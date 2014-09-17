@@ -799,7 +799,7 @@ namespace SageMobileSales.ServiceAgents.Services
         }
 
 
-        private async Task<ShippingAddressJson> GetShippingAddressObj(string customerId, Address address)
+        private ShippingAddressJson GetShippingAddressObj(string customerId, Address address)
         {
 
             var ShippingAddress = new ShippingAddressJson();

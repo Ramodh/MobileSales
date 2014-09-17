@@ -141,7 +141,7 @@ namespace SageMobileSales.UILogic.ViewModels
 
                         if ((_quote.QuoteId.Contains(PageUtils.Pending)))
                         {
-                            if (address.AddressId.Contains(PageUtils.Pending))
+                            if (address != null && address.AddressId.Contains(PageUtils.Pending))
                             {
                                 _quote.AddressId = null;
                                 await _quoteRepository.UpdateQuoteToDbAsync(_quote);
@@ -157,7 +157,7 @@ namespace SageMobileSales.UILogic.ViewModels
                         }
                         else
                         {
-                            if (address.AddressId.Contains(PageUtils.Pending))
+                            if (address != null && address.AddressId.Contains(PageUtils.Pending))
                             {
                                 _quote.AddressId = null;
                                 await _quoteRepository.UpdateQuoteToDbAsync(_quote);
