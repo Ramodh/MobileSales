@@ -12,6 +12,7 @@ using SageMobileSales.DataAccess.Model;
 using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
 using SageMobileSales.ServiceAgents.JsonHelpers;
+using System.Net;
 
 namespace SageMobileSales.ServiceAgents.Services
 {
@@ -179,7 +180,7 @@ namespace SageMobileSales.ServiceAgents.Services
                     Address address = await UpdateQuoteShippingAddress(quote, quote.AddressId);
                     if (address.AddressId.Contains(Constants.Pending))
                     {
-                        quote.AddressId = null;
+                        quote.AddressId = string.Empty;
                         await _quoteRepository.UpdateQuoteToDbAsync(quote);
                     }
                     else if (address != null)
@@ -206,7 +207,7 @@ namespace SageMobileSales.ServiceAgents.Services
                     Address address = await UpdateQuoteShippingAddress(quote, quote.AddressId);
                     if (address.AddressId.Contains(Constants.Pending))
                     {
-                        quote.AddressId = null;
+                        quote.AddressId = string.Empty;
                         await _quoteRepository.UpdateQuoteToDbAsync(quote);
                     }
                     else if (address != null)
@@ -314,7 +315,8 @@ namespace SageMobileSales.ServiceAgents.Services
                     _serviceAgent.BuildAndPostObjectRequest(Constants.TenantId, Constants.Address, null,
                         Constants.AccessToken, null, obj);
 
-            if (addressResponse.StatusCode.ToString().Equals("1011"))
+            //For Avalara Settings
+            if (addressResponse.StatusCode == HttpStatusCode.InternalServerError)
             {
                 await _addressRepository.DeleteAddressFromDbAsync(address);
                 return address;
@@ -441,7 +443,7 @@ namespace SageMobileSales.ServiceAgents.Services
                         Address address = await UpdateQuoteShippingAddress(quote, quote.AddressId);
                         if (address.AddressId.Contains(Constants.Pending))
                         {
-                            quote.AddressId = null;
+                            quote.AddressId = string.Empty;
                             await _quoteRepository.UpdateQuoteToDbAsync(quote);
                         }
                         else if (address != null)
@@ -505,7 +507,7 @@ namespace SageMobileSales.ServiceAgents.Services
                         address = await UpdateQuoteShippingAddress(quote, shippingAddress.AddressId);
                         if (address.AddressId.Contains(Constants.Pending))
                         {
-                            quote.AddressId = null;
+                            quote.AddressId = string.Empty;
                             await _quoteRepository.UpdateQuoteToDbAsync(quote);
                         }
                         else if (address != null)
@@ -531,7 +533,7 @@ namespace SageMobileSales.ServiceAgents.Services
                             address = await UpdateQuoteShippingAddress(quote, shippingAddress.AddressId);
                             if (address.AddressId.Contains(Constants.Pending))
                             {
-                                quote.AddressId = null;
+                                quote.AddressId = string.Empty;
                                 await _quoteRepository.UpdateQuoteToDbAsync(quote);
                             }
                             else if (address != null)

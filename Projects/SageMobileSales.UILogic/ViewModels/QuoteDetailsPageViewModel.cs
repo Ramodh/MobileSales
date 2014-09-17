@@ -1223,7 +1223,7 @@ namespace SageMobileSales.UILogic.ViewModels
                     Address address = await _quoteService.UpdateQuoteShippingAddress(quote, quote.AddressId);
                     if (address.AddressId.Contains(Constants.Pending))
                     {
-                        quote.AddressId = null;
+                        quote.AddressId = string.Empty;
                         await _quoteRepository.UpdateQuoteToDbAsync(quote);
                     }
                     else if (address != null)
