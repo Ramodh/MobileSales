@@ -32,6 +32,7 @@ namespace SageMobileSales.UILogic.ViewModels
         private OrderDetails _orderDtls;
         private List<LineItemDetails> _orderLineItemsList;
         private ShippingAddressDetails _shippingAddress;
+        private Address _customerMailingAddress;
 
         private Tenant _tenant;
         private DataTransferManager dataTransferManager;
@@ -151,6 +152,7 @@ namespace SageMobileSales.UILogic.ViewModels
             CustomerDtls = new CustomerDetails();
             ShippingAddress = await _addressRepostiory.GetShippingAddressDetails(OrderDtls.AddressId);
             CustomerDtls = await _customerRepository.GetCustomerDtlsForOrder(OrderDtls);
+            _customerMailingAddress = await _addressRepostiory.GetCustomerMailingAddress(CustomerDtls.CustomerId);
             OrderLineItemsList = await _orderLineItemRepository.GetOrderLineItemDetailsAsync(OrderDtls.OrderId);
             OnPropertyChanged("SubTotal");
             OnPropertyChanged("DiscountPercentageValue");
@@ -203,7 +205,7 @@ namespace SageMobileSales.UILogic.ViewModels
             try
             {
                 var objMail = new MailViewModel();
-                string HtmlContentString = objMail.BuildOrderEmailContent(_tenant, CustomerDtls, OrderDtls,
+                string HtmlContentString = objMail.BuildOrderEmailContent(_tenant, CustomerDtls, _customerMailingAddress, OrderDtls,
                     OrderLineItemsList, SubTotal.ToString(), OrderDtls.Amount.ToString());
                 if (!String.IsNullOrEmpty(HtmlContentString))
                 {
