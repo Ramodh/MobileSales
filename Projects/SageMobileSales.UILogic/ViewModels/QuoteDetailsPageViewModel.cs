@@ -58,6 +58,7 @@ namespace SageMobileSales.UILogic.ViewModels
         private string _log = string.Empty;
         private Quote _quote;
         private QuoteDetails _quoteDetails;
+        private Address _customerMailingAddress;
         private string _quoteId;
 
         private ObservableCollection<QuoteLineItemViewModel> _quoteLineItemViewModels;
@@ -650,16 +651,17 @@ namespace SageMobileSales.UILogic.ViewModels
             bool succeeded = false;
             var objMail = new MailViewModel();
             QuoteDetails.ShippingAndHandling = ShippingAndHandling;
-            QuoteDetails.DiscountPercent = DiscountPercent;
-            string HtmlContentString = objMail.BuildQuoteEmailContent(_tenant, CustomerDetails, QuoteDetails,
+            QuoteDetails.DiscountPercent = DiscountPercent;            
+            string HtmlContentString = objMail.BuildQuoteEmailContent(_tenant, CustomerDetails, _customerMailingAddress, QuoteDetails,
                 QuoteLineItemsList, SubTotal.ToString(), Total.ToString());
             if (!String.IsNullOrEmpty(HtmlContentString))
             {
                 DataPackage requestData = request.Data;
-                requestData.Properties.Title = "Quote";
-                requestData.Properties.Description = CustomerDetails.CustomerName; // The description is optional.
+                requestData.Properties.Title = "Quote";                         
+                requestData.Properties.Description = CustomerDetails.CustomerName; // The description is optional.                
                 //requestData.SetData(HtmlContentString,HtmlContentString);
                 requestData.SetHtmlFormat(HtmlFormatHelper.CreateHtmlFormat(HtmlContentString));
+                
                 succeeded = true;
             }
             else
@@ -923,19 +925,11 @@ namespace SageMobileSales.UILogic.ViewModels
 
                 ShippingAndHandling = QuoteDetails.ShippingAndHandling;
                 DiscountPercent = QuoteDetails.DiscountPercent;
-                //if (QuoteDetails.QuoteStatus == DataAccessUtils.DraftQuote)
-                //{
-                //    IsSubmitQuote = Visibility.Visible;
-                //    IsPlaceOrder = Visibility.Collapsed;
-                //}
-                //else if (QuoteDetails.QuoteStatus == DataAccessUtils.SubmitQuote || QuoteDetails.QuoteStatus == "Quote")
-                //{
-                //    IsSubmitQuote = Visibility.Collapsed;
-                //    IsPlaceOrder = Visibility.Visible;
-                //}
+                               
                 CustomerDetails =
                     await _customerRepository.GetCustomerDtlsForQuote(_quoteDetails.CustomerId, _quoteDetails.AddressId);
-
+                _customerMailingAddress = await _addressRepository.GetCustomerMailingAddress(CustomerDetails.CustomerId);
+                
                 _itemNotSelected = true;
                 // changes app bar buttons visibility based on quote quote status
                 ChangeVisibility();

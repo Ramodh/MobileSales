@@ -394,6 +394,30 @@ namespace SageMobileSales.DataAccess.Repositories
             return shippingAddressList.FirstOrDefault();
         }
 
+        /// <summary>
+        /// Gets cutomer mailing address 
+        /// </summary>
+        /// <param name="customerId"></param>
+        /// <returns></returns>
+        public async Task<Address> GetCustomerMailingAddress(string customerId)
+        {
+            List<Address> customerMailingAddress = null;
+            try
+            {
+                customerMailingAddress =
+                    await
+                        _sageSalesDB.QueryAsync<Address>(
+                            "select * from Address where CustomerId=? and AddressType='Mailing'", customerId);
+            }
+            catch (Exception ex)
+            {
+
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+            return customerMailingAddress.FirstOrDefault();
+        }
+
         #endregion
 
         #region private methods

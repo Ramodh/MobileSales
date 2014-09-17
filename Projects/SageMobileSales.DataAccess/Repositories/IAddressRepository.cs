@@ -20,6 +20,7 @@ namespace SageMobileSales.DataAccess.Repositories
         Task<ShippingAddressDetails> GetShippingAddressDetails(string addressId);
         Task<List<Address>> GetAddressesForCustomer(string customerId);
         Task<List<Address>> GetOtherAddresses(string customerId);
+        Task<Address> GetCustomerMailingAddress(string customerId);
         //Task<Address> GetShippingAddressForQuote(string customerId);
         //Task<List<CustomerDetails>> GetOtherAddressesForCustomer(string customerId);
     }
