@@ -292,8 +292,7 @@ namespace SageMobileSales.UILogic.ViewModels
             if (selected.SelectedItem.ToString() == "Willow")
             {
                 ClientId = @"BmQhbGdK1YO5AQ0fsdndlR1GUlfP7EH3";
-                Url = "http://127.255.0.2:85/sdata/api/msales/1.0/";
-                //Url = "http://127.255.0.1:83/sdata/api/sales/1.0/";
+                Url = "https://willowmsales.sagedatacloud.com/sdata/api/msales/1.0/";
                 Scope = @"ie1nah68();";
                 IsSageIdProduction = false;
                 SelectedType = "Willow";
