@@ -348,7 +348,7 @@ namespace SageMobileSales.DataAccess.Repositories
             await _sageSalesDB.InsertAsync(address);
         }
 
-
+        ///<summary>
         /// Update address to localDb
         /// </summary>
         /// <param name="contact"></param>
@@ -356,6 +356,16 @@ namespace SageMobileSales.DataAccess.Repositories
         public async Task UpdateAddressToDbAsync(Address address)
         {
             await _sageSalesDB.UpdateAsync(address);
+        }
+
+        /// <summary>
+        /// Delete address from local dB
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
+        public async Task DeleteAddressFromDbAsync(Address address)
+        {
+            await _sageSalesDB.DeleteAsync(address);
         }
 
         /// <summary>

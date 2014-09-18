@@ -12,6 +12,7 @@ using SageMobileSales.DataAccess.Model;
 using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
 using SageMobileSales.ServiceAgents.JsonHelpers;
+using System.Net;
 
 namespace SageMobileSales.ServiceAgents.Services
 {
@@ -177,7 +178,12 @@ namespace SageMobileSales.ServiceAgents.Services
                 if (quote.AddressId.Contains(Constants.Pending))
                 {
                     Address address = await UpdateQuoteShippingAddress(quote, quote.AddressId);
-                    if (address != null)
+                    if (address.AddressId.Contains(Constants.Pending))
+                    {
+                        quote.AddressId = string.Empty;
+                        await _quoteRepository.UpdateQuoteToDbAsync(quote);
+                    }
+                    else if (address != null)
                     {
                         quote.AddressId = address.AddressId;
                         quote = await PostSubmitQuote(quote, result);
@@ -199,7 +205,12 @@ namespace SageMobileSales.ServiceAgents.Services
                 if (quote.AddressId.Contains(Constants.Pending))
                 {
                     Address address = await UpdateQuoteShippingAddress(quote, quote.AddressId);
-                    if (address != null)
+                    if (address.AddressId.Contains(Constants.Pending))
+                    {
+                        quote.AddressId = string.Empty;
+                        await _quoteRepository.UpdateQuoteToDbAsync(quote);
+                    }
+                    else if (address != null)
                     {
                         quote.AddressId = address.AddressId;
                         quote = await PatchSubmitQuote(quote, result);
@@ -289,10 +300,10 @@ namespace SageMobileSales.ServiceAgents.Services
         {
             object obj;
             Address addressObj = null;
-
+            Address address = await _addressRepository.GetShippingAddress(addressId);
             //List<QuoteLineItem> quoteLineItemList = await _quoteLineItemRepository.GetQuoteLineItemsForQuote(quote.QuoteId);
 
-            obj = GetShippingAddressObj(quote.CustomerId, addressId);
+            obj = GetShippingAddressObj(quote.CustomerId, address);
 
             HttpResponseMessage addressResponse = null;
             //string quoteEntityId;
@@ -303,6 +314,14 @@ namespace SageMobileSales.ServiceAgents.Services
                 await
                     _serviceAgent.BuildAndPostObjectRequest(Constants.TenantId, Constants.Address, null,
                         Constants.AccessToken, null, obj);
+
+            //For Avalara Settings
+            if (addressResponse.StatusCode == HttpStatusCode.InternalServerError)
+            {
+                await _addressRepository.DeleteAddressFromDbAsync(address);
+                return address;
+            }
+
             if (addressResponse != null && addressResponse.IsSuccessStatusCode)
             {
                 JsonObject sDataAddress = await _serviceAgent.ConvertTosDataObject(addressResponse);
@@ -422,7 +441,12 @@ namespace SageMobileSales.ServiceAgents.Services
                         //        UpdateQuoteShippingAddress(quote,
                         //            await _addressRepository.GetShippingAddress(_quote.AddressId));
                         Address address = await UpdateQuoteShippingAddress(quote, quote.AddressId);
-                        if (address != null)
+                        if (address.AddressId.Contains(Constants.Pending))
+                        {
+                            quote.AddressId = string.Empty;
+                            await _quoteRepository.UpdateQuoteToDbAsync(quote);
+                        }
+                        else if (address != null)
                         {
                             quote.AddressId = address.AddressId;
                             await PostDraftQuote(quote);
@@ -481,7 +505,12 @@ namespace SageMobileSales.ServiceAgents.Services
                         //Address address = await _addressRepository.GetShippingAddress(shippingAddress.AddressId);
 
                         address = await UpdateQuoteShippingAddress(quote, shippingAddress.AddressId);
-                        if (address != null)
+                        if (address.AddressId.Contains(Constants.Pending))
+                        {
+                            quote.AddressId = string.Empty;
+                            await _quoteRepository.UpdateQuoteToDbAsync(quote);
+                        }
+                        else if (address != null)
                         {
                             quote.AddressId = address.AddressId;
                             await PostDraftQuote(quote);
@@ -502,7 +531,12 @@ namespace SageMobileSales.ServiceAgents.Services
                             //Address address = await _addressRepository.GetShippingAddress(shippingAddress.AddressId);
 
                             address = await UpdateQuoteShippingAddress(quote, shippingAddress.AddressId);
-                            if (address != null)
+                            if (address.AddressId.Contains(Constants.Pending))
+                            {
+                                quote.AddressId = string.Empty;
+                                await _quoteRepository.UpdateQuoteToDbAsync(quote);
+                            }
+                            else if (address != null)
                             {
                                 quote.AddressId = address.AddressId;
                                 await UpdateQuoteShippingAddressKey(quote);
@@ -767,10 +801,9 @@ namespace SageMobileSales.ServiceAgents.Services
         }
 
 
-        private async Task<ShippingAddressJson> GetShippingAddressObj(string customerId, string addressId)
+        private ShippingAddressJson GetShippingAddressObj(string customerId, Address address)
         {
 
-            Address address = await _addressRepository.GetShippingAddress(addressId);
             var ShippingAddress = new ShippingAddressJson();
 
             ShippingAddress.Name = address.AddressName == null ? "" : address.AddressName;
