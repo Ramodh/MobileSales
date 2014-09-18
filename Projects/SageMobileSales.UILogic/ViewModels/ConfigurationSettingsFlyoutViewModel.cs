@@ -291,7 +291,7 @@ namespace SageMobileSales.UILogic.ViewModels
             }
             if (selected.SelectedItem.ToString() == "Willow")
             {
-                ClientId = @"BmQhbGdK1YO5AQ0fsdndlR1GUlfP7EH3";
+                ClientId = @"8iP7gBk2buVFtY1ymKNYkghS44f408sZ";
                 Url = "https://willowmsales.sagedatacloud.com/sdata/api/msales/1.0/";
                 Scope = @"ie1nah68();";
                 IsSageIdProduction = false;
