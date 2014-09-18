@@ -155,7 +155,7 @@
             <TextBox HorizontalAlignment="Left" Grid.Row="1" Grid.Column="3" VerticalAlignment="Top"
                      Style="{StaticResource createQuoteEditBlockStyle}" Text="{Binding QuoteDescription, Mode=TwoWay}"
                      AcceptsReturn="True" TextWrapping="Wrap" />
-            <Button x:Uid="saveQuote" Content="" Grid.Column="5" Grid.Row="1" VerticalAlignment="Bottom"
+            <Button x:Uid="saveQuote" Content="" Grid.Column="5" Grid.Row="1" VerticalAlignment="Bottom" IsTapEnabled="{Binding IsSaveEnabled,Mode=TwoWay}"
                     Style="{StaticResource ButtonNormalStyle}">
                 <interactivity:Interaction.Behaviors>
                     <core:EventTriggerBehavior EventName="Click">

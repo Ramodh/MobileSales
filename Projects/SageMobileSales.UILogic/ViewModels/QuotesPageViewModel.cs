@@ -772,7 +772,11 @@ namespace SageMobileSales.UILogic.ViewModels
          
         }
 
-       
+
+        /// <summary>
+        ///    gets sort settings in Quotes
+        /// </summary>
+      
         private void GetSortSetings()
         {
             ApplicationDataContainer sortSettings = ApplicationData.Current.LocalSettings;

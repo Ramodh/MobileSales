@@ -41,7 +41,7 @@
         <CommandBar Style="{StaticResource BottomAppBarStyle}">
             <CommandBar.PrimaryCommands>
                 <AppBarButton x:Name="addToQuote"
-                              x:Uid="addToQuote" Label="" Icon="Add" Visibility="{Binding CamefromCreateQuote}">
+                              x:Uid="addToQuote" Label="" Icon="Add" Visibility="{Binding CamefromCreateQuote}" IsTapEnabled="{Binding IsAddToQuoteEnabled,Mode=TwoWay}">
                     <interactivity:Interaction.Behaviors>
                         <core:EventTriggerBehavior EventName="Click">
                             <core:CallMethodAction MethodName="AddToQuoteButton_Click"

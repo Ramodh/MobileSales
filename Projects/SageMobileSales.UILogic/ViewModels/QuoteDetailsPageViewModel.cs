@@ -60,6 +60,7 @@ namespace SageMobileSales.UILogic.ViewModels
         private QuoteDetails _quoteDetails;
         private Address _customerMailingAddress;
         private string _quoteId;
+        private bool _isSubmitQuoteEnabled;
 
         private ObservableCollection<QuoteLineItemViewModel> _quoteLineItemViewModels;
         private List<LineItemDetails> _quoteLineItemsList;
@@ -275,6 +276,12 @@ namespace SageMobileSales.UILogic.ViewModels
             get { return _isDiscountEnabled; }
             private set { SetProperty(ref _isDiscountEnabled, value); }
         }
+        public bool IsSubmitQuoteEnabled
+        {
+            get { return _isSubmitQuoteEnabled; }
+            private set { SetProperty(ref _isSubmitQuoteEnabled, value); }
+        }
+        
 
         public DelegateCommand IncrementCountCommand { get; private set; }
 
@@ -438,44 +445,48 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             try
             {
-                MessageDialog msgDialog;
-                if (QuoteLineItemsList.Count > 0)
+                if (IsSubmitQuoteEnabled)
                 {
-                    InProgress = true;
-                    _quote = await UpdateQuote(DataAccessUtils.SubmitQuote);
+                    MessageDialog msgDialog;
+                    IsSubmitQuoteEnabled = false;
+                    if (QuoteLineItemsList.Count > 0)
+                    {
+                        InProgress = true;
+                        _quote = await UpdateQuote(DataAccessUtils.SubmitQuote);
 
-                    if (Constants.ConnectedToInternet())
-                        _quote = await _quoteService.SubmitQuote(_quote);
+                        if (Constants.ConnectedToInternet())
+                            _quote = await _quoteService.SubmitQuote(_quote);
 
-                    InProgress = false;
-                    //if (_quote.QuoteStatus == DataAccessUtils.SubmitQuote)
-                    //{
-                    //    IsSubmitQuote = Visibility.Collapsed;
-                    //    IsPlaceOrder = Visibility.Visible;
-                    //}
-                    QuoteDetails.QuoteStatus = _quote.QuoteStatus;
-                    OnPropertyChanged("QuoteDetails");
+                        InProgress = false;
+                        //if (_quote.QuoteStatus == DataAccessUtils.SubmitQuote)
+                        //{
+                        //    IsSubmitQuote = Visibility.Collapsed;
+                        //    IsPlaceOrder = Visibility.Visible;
+                        //}
+                        QuoteDetails.QuoteStatus = _quote.QuoteStatus;
+                        OnPropertyChanged("QuoteDetails");
 
-                    _itemNotSelected = true;
-                    ChangeVisibility();
-                    await DisplayQuotedetails();
-                    msgDialog =
-                        new MessageDialog(
-                            ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogSubmittedQuoteText"),
-                            ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogSubmittedQuoteTitle"));
-                    msgDialog.Commands.Add(new UICommand("Ok"));
+                        _itemNotSelected = true;
+                        ChangeVisibility();
+                        await DisplayQuotedetails();
+                        msgDialog =
+                            new MessageDialog(
+                                ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogSubmittedQuoteText"),
+                                ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogSubmittedQuoteTitle"));
+                        msgDialog.Commands.Add(new UICommand("Ok"));
 
-                    // _navigationService.GoBack();
+                        // _navigationService.GoBack();
+                    }
+                    else
+                    {
+                        msgDialog =
+                            new MessageDialog(
+                                ResourceLoader.GetForCurrentView("Resources").GetString("SubmitQuoteErrorMessage"),
+                                ResourceLoader.GetForCurrentView("Resources").GetString("SubmitQuoteErrorTitle"));
+                        msgDialog.Commands.Add(new UICommand("Ok"));
+                    }
+                    await msgDialog.ShowAsync();
                 }
-                else
-                {
-                    msgDialog =
-                        new MessageDialog(
-                            ResourceLoader.GetForCurrentView("Resources").GetString("SubmitQuoteErrorMessage"),
-                            ResourceLoader.GetForCurrentView("Resources").GetString("SubmitQuoteErrorTitle"));
-                    msgDialog.Commands.Add(new UICommand("Ok"));
-                }
-                await msgDialog.ShowAsync();
             }
             catch (Exception ex)
             {
@@ -812,6 +823,7 @@ namespace SageMobileSales.UILogic.ViewModels
         public override async void OnNavigatedTo(object navigationParameter, NavigationMode navigationMode,
             Dictionary<string, object> viewModelState)
         {
+            IsSubmitQuoteEnabled = true;
             _quoteId = navigationParameter as string;
             //  await _addressRepository.GetShippingAddressForCustomer(QuoteDetails.CustomerId);
 
