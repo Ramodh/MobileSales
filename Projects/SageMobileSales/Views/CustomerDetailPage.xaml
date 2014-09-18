@@ -232,7 +232,7 @@
                     </Grid.RowDefinitions>
                     <Button Grid.Row="0" Foreground="{ThemeResource ApplicationHeaderForegroundThemeBrush}"
                             AutomationProperties.Name="Group Title"
-                            Style="{StaticResource TextBlockButtonStyle}">
+                            Style="{StaticResource TextBlockButtonStyle}" Command="{Binding FrequentlyPurchasedItemsNavigationCommand}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock x:Uid="frequentlyPurchasedItems" Text="" Style="{StaticResource SubHeaderStyle}" />
                             <TextBlock Text="{StaticResource ChevronGlyph}"
@@ -268,7 +268,7 @@
                     </Grid.RowDefinitions>
                     <Button Grid.Row="0" Foreground="{ThemeResource ApplicationHeaderForegroundThemeBrush}"
                             AutomationProperties.Name="Group Title"
-                            Style="{StaticResource TextBlockButtonStyle}">
+                            Style="{StaticResource TextBlockButtonStyle}" Command="{Binding OrdersNavigationCommand}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock x:Uid="recentOrders" Text="" Style="{StaticResource SubHeaderStyle}" />
                             <TextBlock Text="{StaticResource ChevronGlyph}"
@@ -309,7 +309,7 @@
                       Style="{StaticResource GridViewProgressRingStyle}"/>-->
                     <Button Grid.Row="0" Foreground="{ThemeResource ApplicationHeaderForegroundThemeBrush}"
                             AutomationProperties.Name="Group Title"
-                            Style="{StaticResource TextBlockButtonStyle}">
+                            Style="{StaticResource TextBlockButtonStyle}" Command="{Binding QuotesNavigationCommand}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock x:Uid="recentQuotes" Text="" Style="{StaticResource SubHeaderStyle}" />
                             <TextBlock Text="{StaticResource ChevronGlyph}"
@@ -347,7 +347,7 @@
                     </Grid.RowDefinitions>
                     <Button Grid.Row="0" Foreground="{ThemeResource ApplicationHeaderForegroundThemeBrush}"
                             AutomationProperties.Name="Group Title"
-                            Style="{StaticResource TextBlockButtonStyle}">
+                            Style="{StaticResource TextBlockButtonStyle}" Command="{Binding OtherAddressesNavigationCommand}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Other Addresses" Style="{StaticResource SubHeaderStyle}" />
                             <TextBlock Text="{StaticResource ChevronGlyph}"
@@ -391,7 +391,7 @@
                       Style="{StaticResource GridViewProgressRingStyle}"/>-->
                     <Button Grid.Row="0" Foreground="{ThemeResource ApplicationHeaderForegroundThemeBrush}"
                             AutomationProperties.Name="Group Title"
-                            Style="{StaticResource TextBlockButtonStyle}">
+                            Style="{StaticResource TextBlockButtonStyle}" Command="{Binding ContactsNavigationCommand}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Contacts" Style="{StaticResource SubHeaderStyle}" />
                             <TextBlock Text="{StaticResource ChevronGlyph}"

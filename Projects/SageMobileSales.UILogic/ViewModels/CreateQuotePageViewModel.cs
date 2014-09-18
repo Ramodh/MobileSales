@@ -45,6 +45,7 @@ namespace SageMobileSales.UILogic.ViewModels
         private Product _productDetail;
         private string _quoteDescription;
         private QuoteType _selectedtype;
+        private bool _isSaveEnabled;
 
         public CreateQuotePageViewModel(INavigationService navigationService, IContactRepository contactRepository,
             IOrderRepository orderRepository,
@@ -149,7 +150,18 @@ namespace SageMobileSales.UILogic.ViewModels
             get { return _inProgress; }
             private set { SetProperty(ref _inProgress, value); }
         }
-
+        /// <summary>
+        ///     evaluate validation
+        /// </summary>
+        public bool IsSaveEnabled
+        {
+            get { return _isSaveEnabled; }
+            set
+            {
+                SetProperty(ref _isSaveEnabled, value);
+                OnPropertyChanged("IsSaveEnabled");
+            }
+        }
         public DelegateCommand CustomerCommand { get; private set; }
 
         public DelegateCommand<SearchBoxQuerySubmittedEventArgs> SearchCommand { get; set; }
@@ -244,6 +256,7 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             try
             {
+                IsSaveEnabled = true;
                 var rootFrame = Window.Current.Content as Frame;
                 List<PageStackEntry> navigationHistory = rootFrame.BackStack.ToList();
                 PageStackEntry pageStack = navigationHistory.LastOrDefault();
@@ -366,74 +379,78 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             try
             {
+
                 InProgress = true;
                 bool productExists = false;
-
-                var quote = new Quote();
-                if (PageUtils.SelectedCustomer != null)
+                if (IsSaveEnabled)
                 {
-                    quote.CustomerId = PageUtils.SelectedCustomer.CustomerId;
-                }
-                else
-                {
-                    quote.CustomerId = CustomerId;
-                }
-                quote.QuoteDescription = QuoteDescription;
-                if (PageUtils.SelectedProduct != null)
-                {
-                    ProductDetails = PageUtils.SelectedProduct;
-                    quote.Amount += Math.Round((ProductDetails.Quantity*ProductDetails.PriceStd), 2);
-                }
-                //if (_orderId != null)
-                //{
-                //    SelectedType.createFrom = PageUtils.PreviousOrder;
-                //}
-                quote = await _quoteRepository.AddQuoteToDbAsync(quote, SelectedType.createFrom, _orderId);
-
-                if (ProductDetails != null)
-                {
-                    // Check for any duplications of lineItems
-                    List<QuoteLineItem> quoteLineItemList =
-                        await _quoteLineItemRepository.GetQuoteLineItemsForQuote(quote.QuoteId);
-
-                    foreach (QuoteLineItem quoteLineItem in quoteLineItemList)
+                    var quote = new Quote();
+                    IsSaveEnabled = false;
+                    if (PageUtils.SelectedCustomer != null)
                     {
-                        if (quoteLineItem.ProductId == ProductDetails.ProductId)
-                        {
-                            quoteLineItem.Quantity = ProductDetails.Quantity;
-                            quoteLineItem.Price = ProductDetails.PriceStd;
+                        quote.CustomerId = PageUtils.SelectedCustomer.CustomerId;
+                    }
+                    else
+                    {
+                        quote.CustomerId = CustomerId;
+                    }
+                    quote.QuoteDescription = QuoteDescription;
+                    if (PageUtils.SelectedProduct != null)
+                    {
+                        ProductDetails = PageUtils.SelectedProduct;
+                        quote.Amount += Math.Round((ProductDetails.Quantity * ProductDetails.PriceStd), 2);
+                    }
+                    //if (_orderId != null)
+                    //{
+                    //    SelectedType.createFrom = PageUtils.PreviousOrder;
+                    //}
+                    quote = await _quoteRepository.AddQuoteToDbAsync(quote, SelectedType.createFrom, _orderId);
 
-                            await _quoteLineItemRepository.UpdateQuoteLineItemToDbAsync(quoteLineItem);
-                            productExists = true;
-                            break;
+                    if (ProductDetails != null)
+                    {
+                        // Check for any duplications of lineItems
+                        List<QuoteLineItem> quoteLineItemList =
+                            await _quoteLineItemRepository.GetQuoteLineItemsForQuote(quote.QuoteId);
+
+                        foreach (QuoteLineItem quoteLineItem in quoteLineItemList)
+                        {
+                            if (quoteLineItem.ProductId == ProductDetails.ProductId)
+                            {
+                                quoteLineItem.Quantity = ProductDetails.Quantity;
+                                quoteLineItem.Price = ProductDetails.PriceStd;
+
+                                await _quoteLineItemRepository.UpdateQuoteLineItemToDbAsync(quoteLineItem);
+                                productExists = true;
+                                break;
+                            }
+                        }
+
+                        if (!productExists)
+                        {
+                            var quoteLineItemAdd = new QuoteLineItem();
+                            quoteLineItemAdd.QuoteId = quote.QuoteId;
+                            quoteLineItemAdd.QuoteLineItemId = PageUtils.Pending + Guid.NewGuid();
+                            quoteLineItemAdd.ProductId = ProductDetails.ProductId;
+                            quoteLineItemAdd.tenantId = ProductDetails.TenantId;
+                            quoteLineItemAdd.Price = ProductDetails.PriceStd;
+                            quoteLineItemAdd.Quantity = ProductDetails.Quantity;
+                            quoteLineItemAdd.IsPending = true;
+                            await _quoteLineItemRepository.AddQuoteLineItemToDbAsync(quoteLineItemAdd);
                         }
                     }
 
-                    if (!productExists)
+                    if (quote != null && Constants.ConnectedToInternet())
                     {
-                        var quoteLineItemAdd = new QuoteLineItem();
-                        quoteLineItemAdd.QuoteId = quote.QuoteId;
-                        quoteLineItemAdd.QuoteLineItemId = PageUtils.Pending + Guid.NewGuid();
-                        quoteLineItemAdd.ProductId = ProductDetails.ProductId;
-                        quoteLineItemAdd.tenantId = ProductDetails.TenantId;
-                        quoteLineItemAdd.Price = ProductDetails.PriceStd;
-                        quoteLineItemAdd.Quantity = ProductDetails.Quantity;
-                        quoteLineItemAdd.IsPending = true;
-                        await _quoteLineItemRepository.AddQuoteLineItemToDbAsync(quoteLineItemAdd);
+                        Quote postedQuote = await _quoteService.PostDraftQuote(quote);
+                        if (postedQuote != null)
+                            quote = postedQuote;
                     }
-                }
 
-                if (quote != null && Constants.ConnectedToInternet())
-                {
-                    Quote postedQuote = await _quoteService.PostDraftQuote(quote);
-                    if (postedQuote != null)
-                        quote = postedQuote;
+                    InProgress = false;
+                    PageUtils.ResetLocalVariables();
+                    PageUtils.SelectedProduct = null;
+                    _navigationService.Navigate("QuoteDetails", quote.QuoteId);
                 }
-
-                InProgress = false;
-                PageUtils.ResetLocalVariables();
-                PageUtils.SelectedProduct = null;
-                _navigationService.Navigate("QuoteDetails", quote.QuoteId);
             }
             catch (Exception ex)
             {
