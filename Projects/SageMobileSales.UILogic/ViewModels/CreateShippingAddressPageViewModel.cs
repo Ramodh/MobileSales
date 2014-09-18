@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using Microsoft.Practices.Prism.StoreApps;
 using Microsoft.Practices.Prism.StoreApps.Interfaces;
@@ -10,6 +11,7 @@ using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
 using SageMobileSales.ServiceAgents.Services;
 using SageMobileSales.UILogic.Common;
+using Windows.UI.Xaml;
 
 namespace SageMobileSales.UILogic.ViewModels
 {
@@ -79,6 +81,13 @@ namespace SageMobileSales.UILogic.ViewModels
                 _address.Country = PageUtils.Country;
                 // _address.CustomerId = _quote.CustomerId;
                 // _quoteDetails = navigationParameter as QuoteDetails;
+                var Frame = Window.Current.Content as Frame;
+
+                if (Frame != null)
+                {                  
+                        Frame.BackStack.RemoveAt(Frame.BackStack.Count - 1);                 
+                }
+
                 var errorsCollection =
                     RetrieveEntityStateValue<IDictionary<string, ReadOnlyCollection<string>>>("errorsCollection",
                         viewModelState);
