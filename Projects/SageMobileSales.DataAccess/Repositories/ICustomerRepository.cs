@@ -17,5 +17,6 @@ namespace SageMobileSales.DataAccess.Repositories
         Task<List<Customer>> GetCustomerSearchSuggestionsAsync(string searchTerm);
         Task<Customer> AddOrUpdateCustomerJsonToDbAsync(JsonObject sDataCustomer);
         Task<CustomerDetails> GetCustomerDtlsForOrder(OrderDetails order);
+        Task DeleteInActiveCustomer();
     }
 }

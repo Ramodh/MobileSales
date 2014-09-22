@@ -7,6 +7,7 @@ using Windows.Storage;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Entities;
 using SQLite;
+using System.Diagnostics;
 
 namespace SageMobileSales.DataAccess.Repositories
 {
@@ -74,8 +75,9 @@ namespace SageMobileSales.DataAccess.Repositories
         /// </summary>
         /// <param name="sDataSalesRepSettings"></param>
         /// <returns></returns>
-        public async Task UpdateSalesRepDtlsAsync(JsonObject sDataSalesTeamMembers)
+        public async Task<bool> UpdateSalesRepDtlsAsync(JsonObject sDataSalesTeamMembers)
         {
+            bool isSalesPersonIdChanged = false;
             try
             {
                 IJsonValue value;
@@ -108,10 +110,31 @@ namespace SageMobileSales.DataAccess.Repositories
                                     Convert.ToDecimal(sDataSalesTeamMemberDetails.GetNamedNumber("SalesRepMaxDiscPct"));
                             }
                         }
+
+                        //Compare for salespersonIds
+                        if (sDataSalesTeamMemberDetails.TryGetValue("SalespersonIds", out value))
+                        {
+                            if (value.ValueType.ToString() != DataAccessUtils.Null)
+                            {
+                                string salesPersonDb = _salesRepDtls.SalesPersonIds;
+                                _salesRepDtls.SalesPersonIds = string.Empty;
+
+                                JsonArray salesPersonIdArray = sDataSalesTeamMemberDetails.GetNamedArray("SalespersonIds");
+                                foreach (var salesPersonId in salesPersonIdArray)
+                                    _salesRepDtls.SalesPersonIds = _salesRepDtls.SalesPersonIds + salesPersonId.GetString();
+
+                                //List<SalesRep> UserSalesPersonIds = await _sageSalesDB.Table<SalesRep>().ToListAsync();
+                                Debug.WriteLine("Json : " + _salesRepDtls.SalesPersonIds + "  =  dB : " + salesPersonDb);
+
+                                if (!string.IsNullOrEmpty(salesPersonDb) &&
+                                    !_salesRepDtls.SalesPersonIds.Equals(salesPersonDb))
+                                    isSalesPersonIdChanged = true;
+                            }
+                        }
                     }
                 }
 
-                // Updates SalesRep data into SalesRep table       
+                // Updates SalesRep data into SalesRep table
                 await _sageSalesDB.UpdateAsync(_salesRepDtls);
             }
             catch (SQLiteException ex)
@@ -124,6 +147,7 @@ namespace SageMobileSales.DataAccess.Repositories
                 _log = AppEventSource.Log.WriteLine(ex);
                 AppEventSource.Log.Error(_log);
             }
+            return isSalesPersonIdChanged;
         }
 
         /// <summary>

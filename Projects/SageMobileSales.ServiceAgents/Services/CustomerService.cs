@@ -49,6 +49,11 @@ namespace SageMobileSales.ServiceAgents.Services
                 await _localSyncDigestService.SyncLocalSource(Constants.CustomerEntity, Constants.syncSourceQueryEntity);
                 await SyncCustomers();
             }
+            else
+            {
+                // To delete all customers which are inActive
+                await _customerRepository.DeleteInActiveCustomer();
+            }
         }
 
         # endregion

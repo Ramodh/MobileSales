@@ -261,7 +261,7 @@ namespace SageMobileSales.UILogic.ViewModels
             {
                 //ClientId = @"xeQaIFwQvbDjKZvwzb92kFOLzDCd9CCc";
                 ClientId = @"HObO8ZbQtT6yt6c8YRmDHBBu2GCQ7U6p";
-                Url = "http://ashmsalessdcweb.cloudapp.net/sdata/api/msales/1.0/";
+                Url = "https://ashMSales.sagedatacloud.com/sdata/api/msales/1.0/";
                 Scope = @"k1mcudfb();";
                 IsSageIdProduction = false;
                 SelectedType = "Ash";
@@ -303,7 +303,7 @@ namespace SageMobileSales.UILogic.ViewModels
             {
                 //ClientId = @"Wt8uPEZAcc7x2XqdnLX1VwcU49FNklhN";
                 ClientId = @"98tyCStiJrMC2Wlu05waxy1HvFM3C2Qj";
-                Url = "http://elmmsales.sagedatacloud.com/sdata/api/msales/1.0/";
+                Url = "https://elmmsales.sagedatacloud.com/sdata/api/msales/1.0/";
                 Scope = @"elcv5viz();";
                 //Scope = @"gvb7lu14();";
                 IsSageIdProduction = false;
