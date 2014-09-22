@@ -20,5 +20,6 @@ namespace SageMobileSales.DataAccess.Entities
         public string EntityStatus { get; set; }
         public decimal YearToDate { get; set; }
         public decimal MonthToDate { get; set; }
+        public bool IsActive { get; set; }
     }
 }

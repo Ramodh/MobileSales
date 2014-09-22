@@ -32,6 +32,7 @@ namespace SageMobileSales.UILogic.ViewModels
         //private CustomerCollection _customerCollection;
         private readonly ISyncCoordinatorService _syncCoordinatorService;
         private readonly ITenantRepository _tenantRepository;
+        private readonly ILocalSyncDigestRepository _localSyncDigestRepository;
         private readonly ITenantService _tenantService;
         private string _emptyCustomers;
         private List<CustomerGroupByAlphabet> _groupedCustomerList;
@@ -41,7 +42,8 @@ namespace SageMobileSales.UILogic.ViewModels
 
         public CustomersGroupPageViewModel(INavigationService navigationService, ICustomerRepository customerRepository,
             ISyncCoordinatorService syncCoordinatorService, IEventAggregator eventAggregator,
-            ISalesRepService salesRepService, ITenantRepository tenantRepository, ITenantService tenantService)
+            ISalesRepService salesRepService, ITenantRepository tenantRepository, ITenantService tenantService,
+            ILocalSyncDigestRepository localSyncDigestRepository)
         {
             _navigationService = navigationService;
             _customerRepository = customerRepository;
@@ -50,12 +52,15 @@ namespace SageMobileSales.UILogic.ViewModels
             _salesRepService = salesRepService;
             _tenantService = tenantService;
             _tenantRepository = tenantRepository;
+            _localSyncDigestRepository = localSyncDigestRepository;
             _eventAggregator.GetEvent<CustomerDataChangedEvent>().Subscribe(UpdateCustomerList, ThreadOption.UIThread);
             _eventAggregator.GetEvent<CustomerSyncChangedEvent>()
                 .Subscribe(CustomersSyncIndicator, ThreadOption.UIThread);
         }
 
-
+        /// <summary>
+        ///     Collection to support incremental scrolling
+        /// </summary>
         //public CustomerCollection CustomerCollection
         //{
         //    get { return _customerCollection; }
@@ -65,11 +70,9 @@ namespace SageMobileSales.UILogic.ViewModels
         //        InProgress = false;
         //    }
         //}
+
         /// <summary>
-        ///     Collection to support incremental scrolling
-        /// </summary>
-        /// <summary>
-        ///     Collection to support incremental scrolling
+        ///     Customer list
         /// </summary>
         public List<CustomerGroupByAlphabet> GroupedCustomerList
         {
@@ -127,25 +130,30 @@ namespace SageMobileSales.UILogic.ViewModels
                 object _isLaunched = settingsLocal.Containers["SageSalesContainer"].Values[PageUtils.IsLaunched];
 
                 PageUtils.GetConfigurationSettings();
+
                 if (_isLaunched == null)
                 {
+                    //Change by Ramodh - Confirm if works fine and also to add it in seperate Thread
+                    await SyncUserData();
+
                     if (_isAuthorised == null)
                     {
                         // Adding ISAuthorised variable to Appliaction Data.
-                        // So that we can use this for the next logins whether user already Authorised or not.                      
+                        // So that we can use this for the next logins whether user already Authorised or not.
                         settingsLocal.Containers["SageSalesContainer"].Values[PageUtils.IsAuthorised] = true;
 
                         //IAsyncAction asyncAction = Windows.System.Threading.ThreadPool.RunAsync(
                         //                           (IAsyncAction) =>
                         //                           {
-                        // Sync SalesRep(Loggedin User) data
-                        await _salesRepService.SyncSalesRep();
-                        //Constants.TenantId = "F200AC19-1BE6-48C5-B604-2D322020F48E";
-                        Constants.TenantId = await _tenantRepository.GetTenantId();
-                        //Company Settings
-                        await _tenantService.SyncTenant();
-                        //SalesTeamMember
-                        //await _salesRepService.UpdateSalesRep();
+
+                        //// Sync SalesRep(Loggedin User) data
+                        //await _salesRepService.SyncSalesRep();
+
+                        ////Constants.TenantId = "F200AC19-1BE6-48C5-B604-2D322020F48E";
+                        //Constants.TenantId = await _tenantRepository.GetTenantId();
+                        ////Company Settings/SalesTeamMember
+                        //await _tenantService.SyncTenant();
+
                         //});
                         //PageUtils.asyncActionSalesRep = asyncAction;
 
@@ -153,26 +161,25 @@ namespace SageMobileSales.UILogic.ViewModels
                         //{
                         //    if (asyncStatus == AsyncStatus.Canceled)
                         //        return;
-
                         //});
                     }
                     else
                     {
                         PageUtils.GetApplicationData();
                     }
-                    if (settingsLocal.Containers["SageSalesContainer"].Values.ContainsKey(PageUtils.IsLaunched))
-                    {
-                        settingsLocal.Containers["SageSalesContainer"].Values[PageUtils.IsLaunched] = true;
-                    }
+
+                    //if (settingsLocal.Containers["SageSalesContainer"].Values.ContainsKey(PageUtils.IsLaunched))
+                    //{
+                    settingsLocal.Containers["SageSalesContainer"].Values[PageUtils.IsLaunched] = true;
+                    //}
                 }
 
-                if (string.IsNullOrEmpty(Constants.TenantId))
-                {
-                    //Constants.TenantId = "F200AC19-1BE6-48C5-B604-2D322020F48E";
-                    Constants.TenantId = await _tenantRepository.GetTenantId();
-                    string test = await _tenantRepository.GetTenantId();
-                    Debug.WriteLine("" + test + " " + Constants.TenantId);
-                }
+                //if (string.IsNullOrEmpty(Constants.TenantId))
+                //{
+                //    //Constants.TenantId = "F200AC19-1BE6-48C5-B604-2D322020F48E";
+                //    Constants.TenantId = await _tenantRepository.GetTenantId();
+                //    string test = await _tenantRepository.GetTenantId();
+                //}
 
                 if (!Constants.SyncProgress)
                 {
@@ -204,7 +211,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 List<CustomerGroupByAlphabet> sortedCustomerAdressList = CustomerAdressList
                     .GroupBy(alphabet => alphabet.CustomerName[0])
                     .OrderBy(g => g.Key)
-                    .Select(g => new CustomerGroupByAlphabet {GroupName = g.Key, CustomerAddressList = g.ToList()})
+                    .Select(g => new CustomerGroupByAlphabet { GroupName = g.Key, CustomerAddressList = g.ToList() })
                     .ToList();
 
                 GroupedCustomerList = sortedCustomerAdressList;
@@ -270,7 +277,7 @@ namespace SageMobileSales.UILogic.ViewModels
             List<CustomerGroupByAlphabet> sortedCustomerAdressList = CustomerAdressList
                 .GroupBy(alphabet => alphabet.CustomerName[0])
                 .OrderBy(g => g.Key)
-                .Select(g => new CustomerGroupByAlphabet {GroupName = g.Key, CustomerAddressList = g.ToList()})
+                .Select(g => new CustomerGroupByAlphabet { GroupName = g.Key, CustomerAddressList = g.ToList() })
                 .ToList();
 
             GroupedCustomerList = sortedCustomerAdressList;
@@ -288,6 +295,21 @@ namespace SageMobileSales.UILogic.ViewModels
         public void CustomersSyncIndicator(bool sync)
         {
             SyncProgress = Constants.CustomersSyncProgress;
+        }
+
+        public async Task SyncUserData()
+        {
+            // Sync SalesRep(Loggedin User) data
+            await _salesRepService.SyncSalesRep();
+
+            Constants.TenantId = await _tenantRepository.GetTenantId();
+
+            //Company Settings/SalesTeamMember
+            bool salesPersonChanged = await _tenantService.SyncTenant();
+
+            //Delete localSyncDigest for Customer and set all customers isActive to false
+            if (salesPersonChanged)
+                await _localSyncDigestRepository.DeleteLocalSyncDigestForCustomer();
         }
     }
 }

@@ -159,7 +159,7 @@ namespace SageMobileSales.DataAccess.Repositories
                 orderList =
                     await
                         _sageSalesDB.QueryAsync<OrderDetails>(
-                            "SELECT distinct customer.customerName, orders.CustomerId, orders.AddressId, orders.TenantId, orders.OrderId, orders.CreatedOn, orders.amount, orders.DiscountPercent, orders.ShippingAndHandling, orders.Tax, orders.OrderStatus,orders.OrderDescription, SalesRep.RepName FROM customer, orders left Join SalesRep On SalesRep.RepId=Orders.RepId where Orders.OrderStatus!='IsOrder'  And Orders.OrderStatus!='Temporary' and customer.customerId=orders.customerId and orders.customerId=? order by orders.createdOn desc",
+                            "SELECT distinct customer.customerName, orders.CustomerId, orders.AddressId, orders.TenantId, orders.OrderId, orders.CreatedOn, orders.amount, orders.DiscountPercent, orders.ShippingAndHandling, orders.Tax, orders.OrderStatus,orders.OrderDescription, SalesRep.RepName FROM customer, orders left Join SalesRep On SalesRep.RepId=Orders.RepId where Orders.OrderStatus!='IsOrder'  And Orders.OrderStatus!='Temporary' and customer.customerId=orders.customerId and customer.IsActive=1 and orders.customerId=? order by orders.createdOn desc",
                             customerId);
                 //"SELECT distinct customer.customerName, quote.CustomerId, quote.QuoteId, quote.CreatedOn, quote.amount, quote.quoteStatus,quote.QuoteDescription, SalesRep.RepName FROM customer, quote left Join SalesRep On SalesRep.RepId=Quote.RepId where Quote.QuoteStatus!='IsOrder'  And Quote.QuoteStatus!='Temporary' and customer.customerId=quote.customerId and quote.customerId=? order by quote.createdOn desc", customerId);
             }
@@ -187,7 +187,7 @@ namespace SageMobileSales.DataAccess.Repositories
                 ordersList =
                     await
                         _sageSalesDB.QueryAsync<OrderDetails>(
-                            "SELECT distinct customer.customerName, customer.CustomerId, orders.OrderId, orders.OrderStatus, orders.CreatedOn,orders.SubmittedDate,orders.AddressId, orders.Amount, orders.DiscountPercent, orders.Tax, orders.ShippingAndHandling, orders.TenantId,orders.OrderDescription,orders.OrderNumber, SalesRep.RepName FROM orders INNER JOIN customer ON customer.customerID = orders.customerId Inner Join SalesRep");
+                            "SELECT distinct customer.customerName, customer.CustomerId, orders.OrderId, orders.OrderStatus, orders.CreatedOn,orders.SubmittedDate,orders.AddressId, orders.Amount, orders.DiscountPercent, orders.Tax, orders.ShippingAndHandling, orders.TenantId,orders.OrderDescription,orders.OrderNumber, SalesRep.RepName FROM orders INNER JOIN customer ON customer.customerID = orders.customerId and customer.IsActive=1 Inner Join SalesRep");
             }
             catch (Exception ex)
             {

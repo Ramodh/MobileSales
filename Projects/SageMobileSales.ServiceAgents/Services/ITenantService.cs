@@ -4,6 +4,6 @@ namespace SageMobileSales.ServiceAgents.Services
 {
     public interface ITenantService
     {
-        Task SyncTenant();
+        Task<bool> SyncTenant();
     }
 }

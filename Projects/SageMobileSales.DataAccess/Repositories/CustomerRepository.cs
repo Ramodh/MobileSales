@@ -171,7 +171,7 @@ namespace SageMobileSales.DataAccess.Repositories
                 customerAddressList =
                     await
                         _sageSalesDB.QueryAsync<CustomerDetails>(
-                            "SELECT distinct customer.CustomerId, customer.CustomerName, customer.CreditAvailable, customer.CreditLimit, customer.PaymentTerms, address.AddressName, address.Street1, address.City, address.StateProvince, address.PostalCode, address.Phone FROM Customer  as customer left Join Address  as address on customer.CustomerId = address.customerId and address.addresstype='Mailing' and Customer.EntityStatus= 'Active'");
+                            "SELECT distinct customer.CustomerId, customer.CustomerName, customer.CreditAvailable, customer.CreditLimit, customer.PaymentTerms, address.AddressName, address.Street1, address.City, address.StateProvince, address.PostalCode, address.Phone FROM Customer  as customer Join Address  as address on customer.CustomerId = address.customerId and address.addresstype='Mailing' and Customer.IsActive=1");
                 //SELECT distinct customer.CustomerId, customer.CustomerName, customer.CreditAvailable, customer.CreditLimit, customer.PaymentTerms, address.AddressName, address.Street1, address.City, address.StateProvince, address.PostalCode, address.Phone FROM Customer  as customer Join Address  as address on customer.CustomerId = address.customerId and addresstype='Mailing' and Customer.EntityStatus= 'Active'                
                 //"SELECT * FROM Customer where Customer.EntityStatus= 'Active' order by customerName asc "
             }
@@ -195,7 +195,7 @@ namespace SageMobileSales.DataAccess.Repositories
                 // Retrieve the search suggestions from LocalDB
                 List<Customer> searchSuggestions =
                     await
-                        _sageSalesDB.QueryAsync<Customer>("SELECT * from customer where CustomerName like '%" +
+                        _sageSalesDB.QueryAsync<Customer>("SELECT * from customer where IsActive=1 and CustomerName like '%" +
                                                           searchTerm + "%'");
                 return searchSuggestions;
             }
@@ -220,7 +220,7 @@ namespace SageMobileSales.DataAccess.Repositories
                 customerAddressList =
                     await
                         _sageSalesDB.QueryAsync<CustomerDetails>(
-                            "SELECT distinct customer.CustomerId, customer.CustomerName, customer.CreditAvailable, customer.CreditLimit, customer.PaymentTerms, address.AddressName, address.Street1, address.City, address.StateProvince, address.PostalCode, address.Phone FROM Customer  as customer Join Address  as address on customer.CustomerId = ? and AddressId=?",
+                            "SELECT distinct customer.CustomerId, customer.CustomerName, customer.CreditAvailable, customer.CreditLimit, customer.PaymentTerms, address.AddressName, address.Street1, address.City, address.StateProvince, address.PostalCode, address.Phone FROM Customer  as customer Join Address  as address on customer.CustomerId = ? and customer.IsActive=1 and AddressId=?",
                             customerId, addressId);
             }
             catch (Exception ex)
@@ -244,7 +244,7 @@ namespace SageMobileSales.DataAccess.Repositories
                 customerDetailsList =
                     await
                         _sageSalesDB.QueryAsync<CustomerDetails>(
-                            "SELECT distinct customer.CustomerId, customer.CustomerName, customer.CreditAvailable, customer.CreditLimit, customer.PaymentTerms, address.AddressName, address.Street1, address.City, address.StateProvince, address.PostalCode, address.Phone FROM Customer  as customer Join Address  as address on customer.CustomerId = ? and AddressId=?",
+                            "SELECT distinct customer.CustomerId, customer.CustomerName, customer.CreditAvailable, customer.CreditLimit, customer.PaymentTerms, address.AddressName, address.Street1, address.City, address.StateProvince, address.PostalCode, address.Phone FROM Customer  as customer Join Address  as address on customer.CustomerId = ? and customer.IsActive=1 and AddressId=?",
                             order.CustomerId, order.AddressId);
             }
             catch (Exception ex)
@@ -265,7 +265,7 @@ namespace SageMobileSales.DataAccess.Repositories
             try
             {
                 customer =
-                    await _sageSalesDB.QueryAsync<Customer>("SELECT * FROM Customer where CustomerId=?", customerId);
+                    await _sageSalesDB.QueryAsync<Customer>("SELECT * FROM Customer where CustomerId=? and IsActive=1", customerId);
             }
             catch (Exception ex)
             {
@@ -273,6 +273,25 @@ namespace SageMobileSales.DataAccess.Repositories
                 AppEventSource.Log.Error(_log);
             }
             return customer.FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Delete inactive customers
+        /// </summary>
+        /// <returns></returns>
+        public async Task DeleteInActiveCustomer()
+        {
+            List<Customer> customer = null;
+            try
+            {
+                customer =
+                    await _sageSalesDB.QueryAsync<Customer>("DELETE FROM Customer where IsActive=0");
+            }
+            catch (Exception ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
         }
 
         #endregion
@@ -296,7 +315,7 @@ namespace SageMobileSales.DataAccess.Repositories
             }
             return null;
         }
-        
+
 
         /// <summary>
         ///     Add customer json to dB
@@ -428,6 +447,8 @@ namespace SageMobileSales.DataAccess.Repositories
                         }
                     }
                 }
+
+                customer.IsActive = true;
             }
             catch (Exception ex)
             {
