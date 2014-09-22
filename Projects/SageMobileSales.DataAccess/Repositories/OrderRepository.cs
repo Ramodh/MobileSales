@@ -386,11 +386,19 @@ namespace SageMobileSales.DataAccess.Repositories
                         order.DiscountPercent = Convert.ToDecimal(sDataOrder.GetNamedNumber("DiscountPercent"));
                     }
                 }
-                if (sDataOrder.TryGetValue("OrderNumber", out value))
+                //Changed for pegausus
+                //if (sDataOrder.TryGetValue("OrderNumber", out value))
+                //{
+                //    if (value.ValueType.ToString() != DataAccessUtils.Null)
+                //    {
+                //        order.OrderNumber = Convert.ToInt32(sDataOrder.GetNamedNumber("OrderNumber"));
+                //    }
+                //}
+                if (sDataOrder.TryGetValue("ExtRef", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        order.OrderNumber = Convert.ToInt32(sDataOrder.GetNamedNumber("OrderNumber"));
+                        order.OrderNumber = sDataOrder.GetNamedString("ExtRef");
                     }
                 }
 

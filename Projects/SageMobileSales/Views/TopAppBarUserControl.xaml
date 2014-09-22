@@ -15,7 +15,7 @@
     <Grid>
         <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
             <!--<AppBarButton x:Name="appButtonContinue"  Label="Customers" Content="&#x1f465;" FontFamily="Segoe UI Symbol" FontSize="28" Margin="0,0,0,0"/>-->
-            <AppBarButton x:Name="appButtonCustomers" Label="Customers">
+            <AppBarButton x:Name="appButtonCustomers" Label="Customers" IsEnabled="{Binding IsTenantSyncing,Mode=TwoWay}">
                 <AppBarButton.Content>
                     <Image Source="/Assets/appBar_Customers.png" Height="25" />
                 </AppBarButton.Content>
@@ -26,7 +26,7 @@
                     </core:EventTriggerBehavior>
                 </interactivity:Interaction.Behaviors>
             </AppBarButton>
-            <AppBarButton x:Name="appButtonCatalog" Label="Catalog">
+            <AppBarButton x:Name="appButtonCatalog" Label="Catalog" IsEnabled="{Binding IsTenantSyncing,Mode=TwoWay}">
                 <AppBarButton.Content>
                     <Image Source="/Assets/appBar_Catalog.png" Height="25" />
                 </AppBarButton.Content>
@@ -38,7 +38,7 @@
                 </interactivity:Interaction.Behaviors>
             </AppBarButton>
             <!--<AppBarButton x:Name="appButtonQuotes"  Label="Quotes" Content="&#x1f4b2;" FontFamily="Segoe UI Symbol" FontSize="26"/>-->
-            <AppBarButton x:Name="appButtonQuotes" Label="Quotes">
+            <AppBarButton x:Name="appButtonQuotes" Label="Quotes" IsEnabled="{Binding IsTenantSyncing,Mode=TwoWay}">
                 <AppBarButton.Content>
                     <Image Source="/Assets/appBar_Quotes.png" Height="25" />
                 </AppBarButton.Content>
@@ -54,7 +54,7 @@
                     </core:EventTriggerBehavior>
                 </interactivity:Interaction.Behaviors>
             </AppBarButton>
-            <AppBarButton x:Name="appButtonOrders" Label="Orders">
+            <AppBarButton x:Name="appButtonOrders" Label="Orders" IsEnabled="{Binding IsTenantSyncing,Mode=TwoWay}">
                 <AppBarButton.Content>
                     <Image Source="/Assets/appBar_Orders.png" Height="25" />
                 </AppBarButton.Content>

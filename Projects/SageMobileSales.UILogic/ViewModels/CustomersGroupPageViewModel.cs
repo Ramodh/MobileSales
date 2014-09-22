@@ -39,6 +39,7 @@ namespace SageMobileSales.UILogic.ViewModels
         private bool _inProgress;
         private string _log = string.Empty;
         private bool _syncProgress;
+        private bool _tenantSync=true;
 
         public CustomersGroupPageViewModel(INavigationService navigationService, ICustomerRepository customerRepository,
             ISyncCoordinatorService syncCoordinatorService, IEventAggregator eventAggregator,
@@ -97,7 +98,7 @@ namespace SageMobileSales.UILogic.ViewModels
         }
 
         /// <summary>
-        ///     Data  syncing indicator
+        ///     Data syncing indicator
         /// </summary>
         public bool SyncProgress
         {
@@ -106,6 +107,19 @@ namespace SageMobileSales.UILogic.ViewModels
             {
                 SetProperty(ref _syncProgress, value);
                 OnPropertyChanged("SyncProgress");
+            }
+        }
+
+        /// <summary>
+        ///     Tenant syncing
+        /// </summary>
+        public bool IsTenantSyncing
+        {
+            get { return _tenantSync; }
+            private set
+            {
+                SetProperty(ref _tenantSync, value);
+                OnPropertyChanged("IsTenantSyncing");
             }
         }
 
@@ -299,10 +313,11 @@ namespace SageMobileSales.UILogic.ViewModels
 
         public async Task SyncUserData()
         {
+            SyncProgress = true;
+            await TenantSyncing();
+
             // Sync SalesRep(Loggedin User) data
             await _salesRepService.SyncSalesRep();
-
-            Constants.TenantId = await _tenantRepository.GetTenantId();
 
             //Company Settings/SalesTeamMember
             bool salesPersonChanged = await _tenantService.SyncTenant();
@@ -310,6 +325,18 @@ namespace SageMobileSales.UILogic.ViewModels
             //Delete localSyncDigest for Customer and set all customers isActive to false
             if (salesPersonChanged)
                 await _localSyncDigestRepository.DeleteLocalSyncDigestForCustomer();
+
+            await TenantSyncing();
+            SyncProgress = false;
+        }
+
+        public async Task TenantSyncing()
+        {
+            Constants.TenantId = await _tenantRepository.GetTenantId();
+            if (string.IsNullOrEmpty(Constants.TenantId))
+                IsTenantSyncing = false;
+            else
+                IsTenantSyncing = true;
         }
     }
 }
