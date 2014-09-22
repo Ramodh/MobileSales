@@ -45,7 +45,7 @@
                               AutomationProperties.AutomationId="SubmitQuoteAppBarButton"
                               Label="Submit quote"
                               Icon="Accept"
-                              Command="{Binding SubmitQuoteCommand}"
+                              Command="{Binding SubmitQuoteCommand}" IsTapEnabled="{Binding IsSubmitQuoteEnabled,Mode=TwoWay}"
                               Visibility="{Binding IsSubmitQuoteVisible, Mode=TwoWay}" />
                 <AppBarButton x:Name="PlaceOrderAppBarButton" HorizontalAlignment="Right"
                               x:Uid="PlaceOrderAppBarButton"
@@ -411,8 +411,8 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <Button x:Name="backButton" Margin="39,59,39,0"
-                 Command="{Binding GoBackCommand, ElementName=pageRoot}"
-                    Style="{StaticResource NavigationBackButtonNormalStyle}"                    
+                    Command="{Binding GoBackCommand, ElementName=pageRoot}"
+                    Style="{StaticResource NavigationBackButtonNormalStyle}"
                     VerticalAlignment="Top"
                     AutomationProperties.Name="Back"
                     AutomationProperties.AutomationId="BackButton"

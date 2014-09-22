@@ -83,7 +83,7 @@ namespace SageMobileSales.UILogic.ViewModels
         private string _productStock;
         private QuoteDetails _quoteDetails;
         private string _unitOfMeasure;
-
+        private bool _isAddToQuoteEnabled;
         /// <summary>
         ///     Data loading indicator
         /// </summary>
@@ -191,6 +191,12 @@ namespace SageMobileSales.UILogic.ViewModels
             private set { SetProperty(ref _salesHistoryList, value); }
         }
 
+        public bool IsAddToQuoteEnabled
+        {
+            get { return _isAddToQuoteEnabled; }
+            private set { SetProperty(ref _isAddToQuoteEnabled, value); }
+        }
+
         #endregion
 
         public override async void OnNavigatedTo(object navigationParameter, NavigationMode navigationMode,
@@ -200,6 +206,7 @@ namespace SageMobileSales.UILogic.ViewModels
 
             if (PageUtils.CamefromQuoteDetails)
             {
+                IsAddToQuoteEnabled = true;
                 CamefromCreateQuote = Visibility.Visible;
                 CamefromCatalog = Visibility.Collapsed;
             }
@@ -352,86 +359,90 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             try
             {
-                //InProgress = true;
-                Quote quote = await _quoteRepository.GetQuoteAsync(PageUtils.SelectedQuoteId);
-                QuoteLineItem quoteLineItemExists =
-                    await _quoteLineItemRepository.GetQuoteLineItemIfExistsForQuote(quote.QuoteId, _productId);
-
-                if (quoteLineItemExists != null)
+                if (IsAddToQuoteEnabled)
                 {
-                    quoteLineItemExists.Quantity = quoteLineItemExists.Quantity + EnteredQuantity;
-                    await _quoteLineItemRepository.UpdateQuoteLineItemToDbAsync(quoteLineItemExists);
+                    IsAddToQuoteEnabled = false;
+                    //InProgress = true;
+                    Quote quote = await _quoteRepository.GetQuoteAsync(PageUtils.SelectedQuoteId);
+                    QuoteLineItem quoteLineItemExists =
+                        await _quoteLineItemRepository.GetQuoteLineItemIfExistsForQuote(quote.QuoteId, _productId);
 
-                    quote.Amount = quote.Amount +
-                                   Math.Round((quoteLineItemExists.Price*quoteLineItemExists.Quantity), 2);
-                    await _quoteRepository.UpdateQuoteToDbAsync(quote);
+                    if (quoteLineItemExists != null)
+                    {
+                        quoteLineItemExists.Quantity = quoteLineItemExists.Quantity + EnteredQuantity;
+                        await _quoteLineItemRepository.UpdateQuoteLineItemToDbAsync(quoteLineItemExists);
 
-                    if (quote.QuoteId.Contains(PageUtils.Pending))
-                    {
-                        if (Constants.ConnectedToInternet())
-                            await _quoteService.PostDraftQuote(quote);
-                    }
-                    else
-                    {
-                        if (quoteLineItemExists.QuoteLineItemId.Contains(PageUtils.Pending))
+                        quote.Amount = quote.Amount +
+                                       Math.Round((quoteLineItemExists.Price * quoteLineItemExists.Quantity), 2);
+                        await _quoteRepository.UpdateQuoteToDbAsync(quote);
+
+                        if (quote.QuoteId.Contains(PageUtils.Pending))
                         {
-                            //check internet before calling
                             if (Constants.ConnectedToInternet())
-                                await _quoteLineItemService.AddQuoteLineItem(quote, quoteLineItemExists);
+                                await _quoteService.PostDraftQuote(quote);
                         }
                         else
                         {
-                            if (Constants.ConnectedToInternet())
-                                await _quoteLineItemService.EditQuoteLineItem(quote, quoteLineItemExists);
+                            if (quoteLineItemExists.QuoteLineItemId.Contains(PageUtils.Pending))
+                            {
+                                //check internet before calling
+                                if (Constants.ConnectedToInternet())
+                                    await _quoteLineItemService.AddQuoteLineItem(quote, quoteLineItemExists);
+                            }
+                            else
+                            {
+                                if (Constants.ConnectedToInternet())
+                                    await _quoteLineItemService.EditQuoteLineItem(quote, quoteLineItemExists);
+                            }
                         }
-                    }
-                }
-                else
-                {
-                    var quoteLineItem = new QuoteLineItem();
-                    quoteLineItem.QuoteId = PageUtils.SelectedQuoteId;
-                    quoteLineItem.QuoteLineItemId = PageUtils.Pending + Guid.NewGuid();
-                    quoteLineItem.ProductId = _productId;
-                    quoteLineItem.tenantId = ProductDetails.TenantId;
-                    quoteLineItem.Price = ProductDetails.PriceStd;
-                    quoteLineItem.Quantity = EnteredQuantity;
-                    quoteLineItem.IsPending = true;
-
-                    await _quoteLineItemRepository.AddQuoteLineItemToDbAsync(quoteLineItem);
-
-                    quote.Amount = quote.Amount + Math.Round((quoteLineItem.Price*quoteLineItem.Quantity), 2);
-                    await _quoteRepository.UpdateQuoteToDbAsync(quote);
-
-                    if (quote.QuoteId.Contains(PageUtils.Pending))
-                    {
-                        if (Constants.ConnectedToInternet())
-                            await _quoteService.PostDraftQuote(quote);
                     }
                     else
                     {
-                        //check internet before calling
-                        if (Constants.ConnectedToInternet())
-                            await _quoteLineItemService.AddQuoteLineItem(quote, quoteLineItem);
+                        var quoteLineItem = new QuoteLineItem();
+                        quoteLineItem.QuoteId = PageUtils.SelectedQuoteId;
+                        quoteLineItem.QuoteLineItemId = PageUtils.Pending + Guid.NewGuid();
+                        quoteLineItem.ProductId = _productId;
+                        quoteLineItem.tenantId = ProductDetails.TenantId;
+                        quoteLineItem.Price = ProductDetails.PriceStd;
+                        quoteLineItem.Quantity = EnteredQuantity;
+                        quoteLineItem.IsPending = true;
+
+                        await _quoteLineItemRepository.AddQuoteLineItemToDbAsync(quoteLineItem);
+
+                        quote.Amount = quote.Amount + Math.Round((quoteLineItem.Price * quoteLineItem.Quantity), 2);
+                        await _quoteRepository.UpdateQuoteToDbAsync(quote);
+
+                        if (quote.QuoteId.Contains(PageUtils.Pending))
+                        {
+                            if (Constants.ConnectedToInternet())
+                                await _quoteService.PostDraftQuote(quote);
+                        }
+                        else
+                        {
+                            //check internet before calling
+                            if (Constants.ConnectedToInternet())
+                                await _quoteLineItemService.AddQuoteLineItem(quote, quoteLineItem);
+                        }
                     }
-                }
 
 
-                // Need to Make Post Service call to send quote lineitems to server.
-                //quote = await _quoteService.PostQuote(quote);
-                //_navigationService.Navigate("QuoteDetails", quoteLineItem.QuoteId);
+                    // Need to Make Post Service call to send quote lineitems to server.
+                    //quote = await _quoteService.PostQuote(quote);
+                    //_navigationService.Navigate("QuoteDetails", quoteLineItem.QuoteId);
 
-                PageUtils.SelectedQuoteId = string.Empty;
-                PageUtils.CamefromQuoteDetails = false;
+                    PageUtils.SelectedQuoteId = string.Empty;
+                    PageUtils.CamefromQuoteDetails = false;
 
-                var Frame = Window.Current.Content as Frame;
-                //InProgress = false;
-                if (Frame != null)
-                {
-                    while (Frame.CanGoBack)
+                    var Frame = Window.Current.Content as Frame;
+                    //InProgress = false;
+                    if (Frame != null)
                     {
-                        if (Frame.CurrentSourcePageType.Name == "QuoteDetailsPage")
-                            break;
-                        Frame.GoBack();
+                        while (Frame.CanGoBack)
+                        {
+                            if (Frame.CurrentSourcePageType.Name == "QuoteDetailsPage")
+                                break;
+                            Frame.GoBack();
+                        }
                     }
                 }
             }

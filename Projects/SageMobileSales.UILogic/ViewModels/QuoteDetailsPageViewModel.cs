@@ -60,6 +60,7 @@ namespace SageMobileSales.UILogic.ViewModels
         private QuoteDetails _quoteDetails;
         private Address _customerMailingAddress;
         private string _quoteId;
+        private bool _isSubmitQuoteEnabled;
 
         private ObservableCollection<QuoteLineItemViewModel> _quoteLineItemViewModels;
         private List<LineItemDetails> _quoteLineItemsList;
@@ -275,6 +276,12 @@ namespace SageMobileSales.UILogic.ViewModels
             get { return _isDiscountEnabled; }
             private set { SetProperty(ref _isDiscountEnabled, value); }
         }
+        public bool IsSubmitQuoteEnabled
+        {
+            get { return _isSubmitQuoteEnabled; }
+            private set { SetProperty(ref _isSubmitQuoteEnabled, value); }
+        }
+
 
         public DelegateCommand IncrementCountCommand { get; private set; }
 
@@ -438,7 +445,10 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             try
             {
+                if (IsSubmitQuoteEnabled)
+                {
                 MessageDialog msgDialog;
+                    IsSubmitQuoteEnabled = false;
                 if (QuoteLineItemsList.Count > 0)
                 {
                     InProgress = true;
@@ -476,6 +486,7 @@ namespace SageMobileSales.UILogic.ViewModels
                     msgDialog.Commands.Add(new UICommand("Ok"));
                 }
                 await msgDialog.ShowAsync();
+            }
             }
             catch (Exception ex)
             {
@@ -812,6 +823,7 @@ namespace SageMobileSales.UILogic.ViewModels
         public override async void OnNavigatedTo(object navigationParameter, NavigationMode navigationMode,
             Dictionary<string, object> viewModelState)
         {
+            IsSubmitQuoteEnabled = true;
             _quoteId = navigationParameter as string;
             //  await _addressRepository.GetShippingAddressForCustomer(QuoteDetails.CustomerId);
 

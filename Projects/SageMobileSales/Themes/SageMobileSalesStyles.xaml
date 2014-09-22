@@ -103,6 +103,20 @@
     </Style>
 
     <!--TextBlockStyle-->
+    <Style x:Key="RecentTextblockTextStyle"
+           TargetType="TextBlock"
+           BasedOn="{StaticResource BasicTextStyle}">
+        <Setter Property="LineHeight"
+                Value="22" />
+        <Setter Property="FontWeight"
+                Value="SemiBold"/>
+            <Setter Property="Foreground"
+                Value="#FF2D3636" />
+        <Setter Property="FontSize"
+                Value="22" />
+    </Style>
+
+    <!--TextBlockStyle-->
     <Style x:Key="DetailsPageTextblockTextStyle"
            TargetType="TextBlock"
            BasedOn="{StaticResource BasicTextStyle}">

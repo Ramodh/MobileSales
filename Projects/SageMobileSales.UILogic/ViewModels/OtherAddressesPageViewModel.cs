@@ -217,6 +217,15 @@ namespace SageMobileSales.UILogic.ViewModels
         /// <param name="parameter"></param>
         public void CreateShippingAddressButton_Click(object sender, object parameter)
         {
+            var Frame = Window.Current.Content as Frame;
+
+            if (Frame != null)
+            {
+                if (Frame.BackStack.Count >= 2)
+                {
+                    Frame.BackStack.RemoveAt(Frame.BackStack.Count - 1);
+                }
+            }
             _navigationService.Navigate("CreateShippingAddress", _quoteDetails.QuoteId);
         }
     }
