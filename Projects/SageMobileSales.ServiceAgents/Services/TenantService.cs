@@ -31,8 +31,9 @@ namespace SageMobileSales.ServiceAgents.Services
         ///     Once we get the response converts it into JsonObject.
         /// </summary>
         /// <returns></returns>
-        public async Task SyncTenant()
+        public async Task<bool> SyncTenant()
         {
+            bool salesPersonChanged = false;
             try
             {
                 parameters = new Dictionary<string, string>();
@@ -48,7 +49,7 @@ namespace SageMobileSales.ServiceAgents.Services
                     JsonObject sDataTenantSalesTeamMemberDtls = await _serviceAgent.ConvertTosDataObject(tenantResponse);
                     //Changed by ramodh for pegausus
                     await _tenantRepository.UpdateTenantAsync(sDataTenantSalesTeamMemberDtls, Constants.TenantId);
-                    await _salesRepRepository.UpdateSalesRepDtlsAsync(sDataTenantSalesTeamMemberDtls);
+                    salesPersonChanged = await _salesRepRepository.UpdateSalesRepDtlsAsync(sDataTenantSalesTeamMemberDtls);
                 }
             }
             catch (HttpRequestException ex)
@@ -66,6 +67,7 @@ namespace SageMobileSales.ServiceAgents.Services
                 _log = AppEventSource.Log.WriteLine(e);
                 AppEventSource.Log.Error(_log);
             }
+            return salesPersonChanged;
         }
     }
 }

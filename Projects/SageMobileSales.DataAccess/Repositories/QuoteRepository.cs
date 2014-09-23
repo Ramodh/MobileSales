@@ -103,7 +103,7 @@ namespace SageMobileSales.DataAccess.Repositories
                         _sageSalesDB.QueryAsync<QuoteDetails>(
                             "SELECT distinct customer.customerName, quote.Id, quote.CustomerId, quote.QuoteId, quote.CreatedOn, quote.amount, quote.quoteStatus,quote.QuoteDescription,(select RepName from SalesRep as RP where RP.RepId='" +
                             salesRepId +
-                            "') as RepName FROM quote INNER JOIN customer ON customer.customerID = quote.customerId And Quote.QuoteStatus!='" +
+                            "') as RepName FROM quote INNER JOIN customer ON customer.customerID = quote.customerId And customer.IsActive=1 And Quote.QuoteStatus!='" +
                             DataAccessUtils.IsOrderQuoteStatus + "' And Quote.QuoteStatus!='" +
                             DataAccessUtils.TemporaryQuoteStatus + "' And Quote.IsDeleted='0'");
             }
@@ -350,7 +350,7 @@ namespace SageMobileSales.DataAccess.Repositories
                 quote =
                     await
                         _sageSalesDB.QueryAsync<QuoteDetails>(
-                            "SELECT distinct customer.customerName, quote.Id, quote.CustomerId, quote.QuoteId, quote.CreatedOn, quote.amount, quote.quoteStatus,quote.QuoteDescription, SalesRep.RepName FROM customer, quote left Join SalesRep On SalesRep.RepId=Quote.RepId where Quote.QuoteStatus!='IsOrder'  And Quote.QuoteStatus!='Temporary' And Quote.IsDeleted!=1 and customer.customerId=quote.customerId and quote.customerId=? order by quote.createdOn desc",
+                            "SELECT distinct customer.customerName, quote.Id, quote.CustomerId, quote.QuoteId, quote.CreatedOn, quote.amount, quote.quoteStatus,quote.QuoteDescription, SalesRep.RepName FROM customer, quote left Join SalesRep On SalesRep.RepId=Quote.RepId where Quote.QuoteStatus!='IsOrder'  And Quote.QuoteStatus!='Temporary' And Quote.IsDeleted!=1 and customer.customerId=quote.customerId and quote.customerId=? and customer.IsActive=1 order by quote.createdOn desc",
                             customerId);
             }
             catch (SQLiteException ex)

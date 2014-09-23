@@ -281,7 +281,7 @@ namespace SageMobileSales.UILogic.ViewModels
             get { return _isSubmitQuoteEnabled; }
             private set { SetProperty(ref _isSubmitQuoteEnabled, value); }
         }
-        
+
 
         public DelegateCommand IncrementCountCommand { get; private set; }
 
@@ -447,46 +447,46 @@ namespace SageMobileSales.UILogic.ViewModels
             {
                 if (IsSubmitQuoteEnabled)
                 {
-                    MessageDialog msgDialog;
+                MessageDialog msgDialog;
                     IsSubmitQuoteEnabled = false;
-                    if (QuoteLineItemsList.Count > 0)
-                    {
-                        InProgress = true;
-                        _quote = await UpdateQuote(DataAccessUtils.SubmitQuote);
+                if (QuoteLineItemsList.Count > 0)
+                {
+                    InProgress = true;
+                    _quote = await UpdateQuote(DataAccessUtils.SubmitQuote);
 
-                        if (Constants.ConnectedToInternet())
-                            _quote = await _quoteService.SubmitQuote(_quote);
+                    if (Constants.ConnectedToInternet())
+                        _quote = await _quoteService.SubmitQuote(_quote);
 
-                        InProgress = false;
-                        //if (_quote.QuoteStatus == DataAccessUtils.SubmitQuote)
-                        //{
-                        //    IsSubmitQuote = Visibility.Collapsed;
-                        //    IsPlaceOrder = Visibility.Visible;
-                        //}
-                        QuoteDetails.QuoteStatus = _quote.QuoteStatus;
-                        OnPropertyChanged("QuoteDetails");
+                    InProgress = false;
+                    //if (_quote.QuoteStatus == DataAccessUtils.SubmitQuote)
+                    //{
+                    //    IsSubmitQuote = Visibility.Collapsed;
+                    //    IsPlaceOrder = Visibility.Visible;
+                    //}
+                    QuoteDetails.QuoteStatus = _quote.QuoteStatus;
+                    OnPropertyChanged("QuoteDetails");
 
-                        _itemNotSelected = true;
-                        ChangeVisibility();
-                        await DisplayQuotedetails();
-                        msgDialog =
-                            new MessageDialog(
-                                ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogSubmittedQuoteText"),
-                                ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogSubmittedQuoteTitle"));
-                        msgDialog.Commands.Add(new UICommand("Ok"));
+                    _itemNotSelected = true;
+                    ChangeVisibility();
+                    await DisplayQuotedetails();
+                    msgDialog =
+                        new MessageDialog(
+                            ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogSubmittedQuoteText"),
+                            ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogSubmittedQuoteTitle"));
+                    msgDialog.Commands.Add(new UICommand("Ok"));
 
-                        // _navigationService.GoBack();
-                    }
-                    else
-                    {
-                        msgDialog =
-                            new MessageDialog(
-                                ResourceLoader.GetForCurrentView("Resources").GetString("SubmitQuoteErrorMessage"),
-                                ResourceLoader.GetForCurrentView("Resources").GetString("SubmitQuoteErrorTitle"));
-                        msgDialog.Commands.Add(new UICommand("Ok"));
-                    }
-                    await msgDialog.ShowAsync();
+                    // _navigationService.GoBack();
                 }
+                else
+                {
+                    msgDialog =
+                        new MessageDialog(
+                            ResourceLoader.GetForCurrentView("Resources").GetString("SubmitQuoteErrorMessage"),
+                            ResourceLoader.GetForCurrentView("Resources").GetString("SubmitQuoteErrorTitle"));
+                    msgDialog.Commands.Add(new UICommand("Ok"));
+                }
+                await msgDialog.ShowAsync();
+            }
             }
             catch (Exception ex)
             {

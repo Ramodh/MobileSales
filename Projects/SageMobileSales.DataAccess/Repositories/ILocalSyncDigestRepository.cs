@@ -10,5 +10,6 @@ namespace SageMobileSales.DataAccess.Repositories
         Task<LocalSyncDigest> UpdateLocalSyncDigestDtlsAsync(LocalSyncDigest localSyncDigest);
         //Task DeleteLocalSyncDigestDtlsAsync(LocalSyncDigest localSyncDigest);
         Task<LocalSyncDigest> GetLocalSyncDigestDtlsAsync(string sDataEntity);
+        Task DeleteLocalSyncDigestForCustomer();
     }
 }

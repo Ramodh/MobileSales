@@ -8,7 +8,7 @@ namespace SageMobileSales.DataAccess.Repositories
     public interface ISalesRepRepository
     {
         Task<string> SaveSalesRepDtlsAsync(JsonObject salesRepDtlsJson);
-        Task UpdateSalesRepDtlsAsync(JsonObject userSettingsDtlsJson);
+        Task<bool> UpdateSalesRepDtlsAsync(JsonObject userSettingsDtlsJson);
         //Task DeleteSalesRepDtlsAsync(SalesRep salesRep);
         Task<List<SalesRep>> GetSalesRepDtlsAsync();
         Task<string> GetSalesRepId();

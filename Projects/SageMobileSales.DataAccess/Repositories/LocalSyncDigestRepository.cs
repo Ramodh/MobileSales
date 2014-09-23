@@ -109,6 +109,28 @@ namespace SageMobileSales.DataAccess.Repositories
             return null;
         }
 
+        /// <summary>
+        /// Delete localDigestSync for customer
+        /// </summary>
+        /// <returns></returns>
+        public async Task DeleteLocalSyncDigestForCustomer()
+        {
+            try
+            {
+                List<LocalSyncDigest> result =
+                    await
+                        _sageSalesDB.QueryAsync<LocalSyncDigest>("DELETE FROM LocalSyncDigest WHERE SDataEntity LIKE 'MyCustomers'");
+
+                //Change Customers to inActive
+                List<Customer> customerList = await _sageSalesDB.QueryAsync<Customer>("UPDATE Customer SET IsActive='0'");
+            }
+            catch (Exception ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+        }
+
         #endregion
     }
 }
