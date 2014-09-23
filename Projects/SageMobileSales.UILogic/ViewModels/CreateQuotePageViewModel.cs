@@ -191,6 +191,7 @@ namespace SageMobileSales.UILogic.ViewModels
         /// <param name="args"></param>
         private async Task SearchBoxSuggestionsRequested(SearchBoxSuggestionsRequestedEventArgs eventArgs)
         {
+            IsSaveEnabled = true;
             string queryText = eventArgs.QueryText != null ? eventArgs.QueryText.Trim() : null;
             SearchSuggestionsRequestDeferral deferral = eventArgs.Request.GetDeferral();
             RandomAccessStreamReference obj =
@@ -230,6 +231,10 @@ namespace SageMobileSales.UILogic.ViewModels
                 {
                     suggestionCollection.AppendQuerySuggestion(
                         ResourceLoader.GetForCurrentView("Resources").GetString("NoSuggestions"));
+                }
+                if(queryText=="")
+                {
+                    CustomerId = null;
                 }
                 PageUtils.SelectedCustomer = null;
                 CustomerSearchBoxText = "Search for a Customer";
@@ -379,11 +384,12 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             try
             {
-
-                InProgress = true;
                 bool productExists = false;
+              
                 if (IsSaveEnabled)
                 {
+                    InProgress = true;
+                  
                     var quote = new Quote();
                     IsSaveEnabled = false;
                     if (PageUtils.SelectedCustomer != null)
@@ -444,11 +450,13 @@ namespace SageMobileSales.UILogic.ViewModels
                         Quote postedQuote = await _quoteService.PostDraftQuote(quote);
                         if (postedQuote != null)
                             quote = postedQuote;
+                       
                     }
 
                     InProgress = false;
                     PageUtils.ResetLocalVariables();
                     PageUtils.SelectedProduct = null;
+                    if(quote!=null)
                     _navigationService.Navigate("QuoteDetails", quote.QuoteId);
                 }
             }
