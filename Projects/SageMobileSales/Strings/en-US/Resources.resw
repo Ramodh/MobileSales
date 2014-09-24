@@ -747,4 +747,16 @@
     <value>MobileSales</value>
     <comment>Mobiles sales text</comment>
   </data>
+  <data name="ErrorTitle" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="InternalServerErrorText" xml:space="preserve">
+    <value>Please try again in a few minutes.</value>
+  </data>
+  <data name="InternalServerErrorTitle" xml:space="preserve">
+    <value>Cannot contact server</value>
+  </data>
+  <data name="UnAuthorizedText" xml:space="preserve">
+    <value>The Sage ID you entered is not authorized to use this application. Contact your administrator.</value>
+  </data>
 </root>

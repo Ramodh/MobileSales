@@ -68,9 +68,6 @@ namespace SageMobileSales.UILogic.ViewModels
             }
 
             await SyncUserData();
-            InProgress = false;
-            _navigationService.ClearHistory();
-            _navigationService.Navigate("CustomersGroup", null);
 
             base.OnNavigatedTo(navigationParameter, navigationMode, viewModelState);
         }
@@ -92,6 +89,10 @@ namespace SageMobileSales.UILogic.ViewModels
             //Delete localSyncDigest for Customer and set all customers isActive to false
             if (salesPersonChanged)
                 await _localSyncDigestRepository.DeleteLocalSyncDigestForCustomer();
+
+            InProgress = false;
+            _navigationService.ClearHistory();
+            _navigationService.Navigate("CustomersGroup", null);
         }
     }
 }

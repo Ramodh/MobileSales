@@ -13,6 +13,7 @@ using SageMobileSales.ServiceAgents.Services;
 using SageMobileSales.UILogic.Common;
 using SQLite;
 using SageMobileSales.DataAccess.Repositories;
+using Windows.UI.Popups;
 
 namespace SageMobileSales.UILogic.ViewModels
 {
@@ -35,6 +36,7 @@ namespace SageMobileSales.UILogic.ViewModels
         private string _log = string.Empty;
         private SQLiteAsyncConnection _sageSalesDB;
         public DelegateCommand SignInCommand { get; private set; }
+        ApplicationDataContainer settingsLocal;
 
         public bool InProgress
         {
@@ -92,8 +94,7 @@ namespace SageMobileSales.UILogic.ViewModels
         /// <returns></returns>
         private async Task Authorise()
         {
-            ApplicationDataContainer settingsLocal = ApplicationData.Current.LocalSettings;
-            ApplicationDataContainer configSettings = ApplicationData.Current.LocalSettings;
+            settingsLocal = ApplicationData.Current.LocalSettings;
             settingsLocal.CreateContainer("SageSalesContainer", ApplicationDataCreateDisposition.Always);
             object _isAuthorised = settingsLocal.Containers["SageSalesContainer"].Values[PageUtils.IsAuthorised];
 
@@ -128,18 +129,10 @@ namespace SageMobileSales.UILogic.ViewModels
                         }
                         //Sync current user/tenant info
                         await SyncUserData();
-
-                        InProgress = false;
-                        isSignInDisabled = true;
-                        _navigationService.Navigate("CustomersGroup", null);
                     }
                     else
                     {
-                        settingsLocal = ApplicationData.Current.LocalSettings;
-                        settingsLocal.DeleteContainer("SageSalesContainer");
-                        _navigationService.Navigate("Signin", null);
-                        InProgress = false;
-                        isSignInDisabled = true;
+                        ResetData();
                     }
                 }
                 else
@@ -168,26 +161,81 @@ namespace SageMobileSales.UILogic.ViewModels
         #endregion
 
         #region private methods
-
-        /// <summary>
-        /// Sync user/tenant info
-        /// </summary>
-        /// <returns></returns>
         private async Task SyncUserData()
         {
             // Sync SalesRep(Loggedin User) data
             await _salesRepService.SyncSalesRep();
 
             Constants.TenantId = await _tenantRepository.GetTenantId();
+            if (string.IsNullOrEmpty(Constants.TenantId))
+            {
+                InProgress = false;
+                isSignInDisabled = true;
+                MessageDialog msgDialog = new MessageDialog(
+                              ResourceLoader.GetForCurrentView("Resources").GetString("InternalServerErrorText"),
+                              ResourceLoader.GetForCurrentView("Resources").GetString("InternalServerErrorTitle"));
+                msgDialog.Commands.Add(new UICommand("Ok", (UICommandInvokedHandler) => { ResetData(); }));
+                await msgDialog.ShowAsync();
+            }
+            else
+            {
+                //Company Settings/SalesTeamMember
+                bool salesPersonChanged = await _tenantService.SyncTenant();
 
-            //Company Settings/SalesTeamMember
-            bool salesPersonChanged = await _tenantService.SyncTenant();
+                //Delete localSyncDigest for Customer and set all customers isActive to false
+                if (salesPersonChanged)
+                    await _localSyncDigestRepository.DeleteLocalSyncDigestForCustomer();
 
-            //Delete localSyncDigest for Customer and set all customers isActive to false
-            if (salesPersonChanged)
-                await _localSyncDigestRepository.DeleteLocalSyncDigestForCustomer();
+                InProgress = false;
+                isSignInDisabled = true;
+                _navigationService.Navigate("CustomersGroup", null);
+            }
         }
 
+        //MessageDialog msgDialog;
+        //    // Sync SalesRep(Loggedin User) data
+        //    HttpResponseMessage responseMessage = await _salesRepService.SyncSalesRep();
+
+        //    if(responseMessage.StatusCode==HttpStatusCode.Unauthorized)
+        //    {
+        //        msgDialog =
+        //                new MessageDialog(
+        //                    ResourceLoader.GetForCurrentView("Resources").GetString("UnAuthorizedText"),
+        //                    ResourceLoader.GetForCurrentView("Resources").GetString("ErrorTitle"));
+        //        msgDialog.Commands.Add(new UICommand("Ok"));
+        //    }
+        //    else if(responseMessage.StatusCode==HttpStatusCode.OK)
+        //    {
+        //        Constants.TenantId = await _tenantRepository.GetTenantId();
+
+        //        //Company Settings/SalesTeamMember
+        //        bool salesPersonChanged = await _tenantService.SyncTenant();
+
+        //        //Delete localSyncDigest for Customer and set all customers isActive to false
+        //        if (salesPersonChanged)
+        //            await _localSyncDigestRepository.DeleteLocalSyncDigestForCustomer();
+
+        //        InProgress = false;
+        //        isSignInDisabled = true;
+        //        _navigationService.Navigate("CustomersGroup", null);
+        //    }
+        //    else
+        //    {
+        //        msgDialog =
+        //                  new MessageDialog(
+        //                      ResourceLoader.GetForCurrentView("Resources").GetString("InternalServerErrorText"),
+        //                      ResourceLoader.GetForCurrentView("Resources").GetString("InternalServerErrorTitle"));
+        //        msgDialog.Commands.Add(new UICommand("Ok"));
+        //    }
+
+        private void ResetData()
+        {
+            settingsLocal = ApplicationData.Current.LocalSettings;
+            settingsLocal.DeleteContainer("SageSalesContainer");
+            _navigationService.Navigate("Signin", null);
+            InProgress = false;
+            isSignInDisabled = true;
+        }
         #endregion
     }
 }
