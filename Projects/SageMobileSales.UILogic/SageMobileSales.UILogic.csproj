@@ -129,6 +129,7 @@
     <Compile Include="ViewModels\FrequentlyPurchasedItemsPageViewModel.cs" />
     <Compile Include="ViewModels\ItemDetailPageViewModel.cs" />
     <Compile Include="ViewModels\ItemsPageViewModel.cs" />
+    <Compile Include="ViewModels\LoadingIndicatorPageViewModel.cs" />
     <Compile Include="ViewModels\MailViewModel.cs" />
     <Compile Include="ViewModels\OrderDetailsPageViewModel.cs" />
     <Compile Include="ViewModels\OrdersPageViewModel.cs" />

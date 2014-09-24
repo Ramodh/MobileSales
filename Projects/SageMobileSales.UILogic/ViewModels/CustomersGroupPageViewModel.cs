@@ -139,54 +139,54 @@ namespace SageMobileSales.UILogic.ViewModels
             {
                 InProgress = true;
 
-                ApplicationDataContainer settingsLocal = ApplicationData.Current.LocalSettings;
-                object _isAuthorised = settingsLocal.Containers["SageSalesContainer"].Values[PageUtils.IsAuthorised];
-                object _isLaunched = settingsLocal.Containers["SageSalesContainer"].Values[PageUtils.IsLaunched];
+                //ApplicationDataContainer settingsLocal = ApplicationData.Current.LocalSettings;
+                //object _isAuthorised = settingsLocal.Containers["SageSalesContainer"].Values[PageUtils.IsAuthorised];
+                //object _isLaunched = settingsLocal.Containers["SageSalesContainer"].Values[PageUtils.IsLaunched];
 
-                PageUtils.GetConfigurationSettings();
+                //PageUtils.GetConfigurationSettings();
 
-                if (_isLaunched == null)
-                {
-                    //Change by Ramodh - Confirm if works fine and also to add it in seperate Thread
-                    await SyncUserData();
+                //if (_isLaunched == null)
+                //{
+                //    //Change by Ramodh - Confirm if works fine and also to add it in seperate Thread
+                //    //await SyncUserData();
 
-                    if (_isAuthorised == null)
-                    {
-                        // Adding ISAuthorised variable to Appliaction Data.
-                        // So that we can use this for the next logins whether user already Authorised or not.
-                        settingsLocal.Containers["SageSalesContainer"].Values[PageUtils.IsAuthorised] = true;
+                //    if (_isAuthorised == null)
+                //    {
+                //        // Adding ISAuthorised variable to Appliaction Data.
+                //        // So that we can use this for the next logins whether user already Authorised or not.
+                //        settingsLocal.Containers["SageSalesContainer"].Values[PageUtils.IsAuthorised] = true;
 
-                        //IAsyncAction asyncAction = Windows.System.Threading.ThreadPool.RunAsync(
-                        //                           (IAsyncAction) =>
-                        //                           {
+                //        //IAsyncAction asyncAction = Windows.System.Threading.ThreadPool.RunAsync(
+                //        //                           (IAsyncAction) =>
+                //        //                           {
 
-                        //// Sync SalesRep(Loggedin User) data
-                        //await _salesRepService.SyncSalesRep();
+                //        //// Sync SalesRep(Loggedin User) data
+                //        //await _salesRepService.SyncSalesRep();
 
-                        ////Constants.TenantId = "F200AC19-1BE6-48C5-B604-2D322020F48E";
-                        //Constants.TenantId = await _tenantRepository.GetTenantId();
-                        ////Company Settings/SalesTeamMember
-                        //await _tenantService.SyncTenant();
+                //        ////Constants.TenantId = "F200AC19-1BE6-48C5-B604-2D322020F48E";
+                //        //Constants.TenantId = await _tenantRepository.GetTenantId();
+                //        ////Company Settings/SalesTeamMember
+                //        //await _tenantService.SyncTenant();
 
-                        //});
-                        //PageUtils.asyncActionSalesRep = asyncAction;
+                //        //});
+                //        //PageUtils.asyncActionSalesRep = asyncAction;
 
-                        //asyncAction.Completed = new AsyncActionCompletedHandler((IAsyncAction asyncInfo, AsyncStatus asyncStatus) =>
-                        //{
-                        //    if (asyncStatus == AsyncStatus.Canceled)
-                        //        return;
-                        //});
-                    }
-                    else
-                    {
-                        PageUtils.GetApplicationData();
-                    }
+                //        //asyncAction.Completed = new AsyncActionCompletedHandler((IAsyncAction asyncInfo, AsyncStatus asyncStatus) =>
+                //        //{
+                //        //    if (asyncStatus == AsyncStatus.Canceled)
+                //        //        return;
+                //        //});
+                //    }
+                //    else
+                //    {
+                //        PageUtils.GetApplicationData();
+                //    }
 
-                    //if (settingsLocal.Containers["SageSalesContainer"].Values.ContainsKey(PageUtils.IsLaunched))
-                    //{
-                    settingsLocal.Containers["SageSalesContainer"].Values[PageUtils.IsLaunched] = true;
-                    //}
-                }
+                //    //if (settingsLocal.Containers["SageSalesContainer"].Values.ContainsKey(PageUtils.IsLaunched))
+                //    //{
+                //    settingsLocal.Containers["SageSalesContainer"].Values[PageUtils.IsLaunched] = true;
+                //    //}
+                //}
 
                 //if (string.IsNullOrEmpty(Constants.TenantId))
                 //{
