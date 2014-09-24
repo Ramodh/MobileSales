@@ -134,7 +134,7 @@
     <comment>Help link</comment>
   </data>
   <data name="itemDetailPageTitle.Text" xml:space="preserve">
-    <value>ItemDetail</value>
+    <value>Item Details</value>
     <comment>ItemDetailPage heading</comment>
   </data>
   <data name="itemsPageTitle.Text" xml:space="preserve">
