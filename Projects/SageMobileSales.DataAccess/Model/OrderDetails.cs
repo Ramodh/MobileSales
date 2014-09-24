@@ -24,7 +24,7 @@ namespace SageMobileSales.DataAccess.Model
         }
 
         //public string ExternalReferenceNumber { get; set; }
-        public int OrderNumber { get; set; }
+        public string OrderNumber { get; set; }
         public string CustomerId { get; set; }
         public string AddressId { get; set; }
         public string RepId { get; set; }

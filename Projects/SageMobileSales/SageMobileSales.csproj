@@ -20,7 +20,7 @@
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
     <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
-    <AppxBundlePlatforms>x64</AppxBundlePlatforms>
+    <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
     <PackageCertificateThumbprint>242C7C91F3A645BFC46822912018B015161C610C</PackageCertificateThumbprint>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\Solutions\SageMobileSales\</SolutionDir>
     <RestorePackages>true</RestorePackages>
@@ -102,7 +102,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>bin\x86\Release\</OutputPath>
-    <DefineConstants>TRACE;NETFX_CORE;PRODUCTION</DefineConstants>
+    <DefineConstants>TRACE;NETFX_CORE</DefineConstants>
     <Optimize>true</Optimize>
     <NoWarn>;2008</NoWarn>
     <DebugType>pdbonly</DebugType>
@@ -121,6 +121,7 @@
     <Compile Include="Behaviors\NumericTextBoxBehavior.cs" />
     <Compile Include="Behaviors\SeeMoreDataTemplateSelector.cs" />
     <Compile Include="Common\DependencyPropertyChangedHelper.cs" />
+    <Compile Include="Common\FlipViewIndicator.cs" />
     <Compile Include="Common\ScrollViewerUtilities.cs" />
     <Compile Include="Common\VisualTreeUtilities.cs" />
     <Compile Include="Converters\ErrorConverter.cs" />
@@ -185,6 +186,9 @@
     </Compile>
     <Compile Include="Views\ConfigurationSettingsFlyout.xaml.cs">
       <DependentUpon>ConfigurationSettingsFlyout.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\LoadingIndicatorPage.xaml.cs">
+      <DependentUpon>LoadingIndicatorPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\OrderDetailsPage.xaml.cs">
       <DependentUpon>OrderDetailsPage.xaml</DependentUpon>
@@ -338,6 +342,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\ConfigurationSettingsFlyout.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\LoadingIndicatorPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

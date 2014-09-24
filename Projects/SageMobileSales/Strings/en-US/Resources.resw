@@ -134,7 +134,7 @@
     <comment>Help link</comment>
   </data>
   <data name="itemDetailPageTitle.Text" xml:space="preserve">
-    <value>ItemDetail</value>
+    <value>Item Details</value>
     <comment>ItemDetailPage heading</comment>
   </data>
   <data name="itemsPageTitle.Text" xml:space="preserve">
@@ -157,8 +157,8 @@
     <value>Quotes</value>
     <comment>Quotes Hub Section heading(Main menu)</comment>
   </data>
-  <data name="SageMobileSales.Text" xml:space="preserve">
-    <value>Sage Mobile Sales</value>
+  <data name="Sage.Text" xml:space="preserve">
+    <value>Sage</value>
     <comment>Appears as Heading 1 in Sign In page</comment>
   </data>
   <data name="SageSales.Header" xml:space="preserve">
@@ -742,5 +742,9 @@
   <data name="SeperatorSymbol" xml:space="preserve">
     <value>|  </value>
     <comment>Grid divider symbol between header and customer name</comment>
+  </data>
+  <data name="MobileSales.Text" xml:space="preserve">
+    <value>MobileSales</value>
+    <comment>Mobiles sales text</comment>
   </data>
 </root>

@@ -39,6 +39,7 @@ namespace SageMobileSales.UILogic.ViewModels
         private bool _inProgress;
         private string _log = string.Empty;
         private bool _syncProgress;
+        private bool _tenantSync = true;
 
         public CustomersGroupPageViewModel(INavigationService navigationService, ICustomerRepository customerRepository,
             ISyncCoordinatorService syncCoordinatorService, IEventAggregator eventAggregator,
@@ -97,7 +98,7 @@ namespace SageMobileSales.UILogic.ViewModels
         }
 
         /// <summary>
-        ///     Data  syncing indicator
+        ///     Data syncing indicator
         /// </summary>
         public bool SyncProgress
         {
@@ -106,6 +107,19 @@ namespace SageMobileSales.UILogic.ViewModels
             {
                 SetProperty(ref _syncProgress, value);
                 OnPropertyChanged("SyncProgress");
+            }
+        }
+
+        /// <summary>
+        ///     Tenant syncing
+        /// </summary>
+        public bool IsTenantSyncing
+        {
+            get { return _tenantSync; }
+            private set
+            {
+                SetProperty(ref _tenantSync, value);
+                OnPropertyChanged("IsTenantSyncing");
             }
         }
 
@@ -124,57 +138,6 @@ namespace SageMobileSales.UILogic.ViewModels
             try
             {
                 InProgress = true;
-
-                ApplicationDataContainer settingsLocal = ApplicationData.Current.LocalSettings;
-                object _isAuthorised = settingsLocal.Containers["SageSalesContainer"].Values[PageUtils.IsAuthorised];
-                object _isLaunched = settingsLocal.Containers["SageSalesContainer"].Values[PageUtils.IsLaunched];
-
-                PageUtils.GetConfigurationSettings();
-                PageUtils.GetApplicationData();
-                if (_isLaunched == null)
-                {
-                    //Change by Ramodh - Confirm if works fine and also to add it in seperate Thread
-                    await SyncUserData();
-
-                    if (_isAuthorised == null)
-                    {
-                        // Adding ISAuthorised variable to Appliaction Data.
-                        // So that we can use this for the next logins whether user already Authorised or not.
-                        settingsLocal.Containers["SageSalesContainer"].Values[PageUtils.IsAuthorised] = true;
-
-                        //IAsyncAction asyncAction = Windows.System.Threading.ThreadPool.RunAsync(
-                        //                           (IAsyncAction) =>
-                        //                           {
-
-                        //// Sync SalesRep(Loggedin User) data
-                        //await _salesRepService.SyncSalesRep();
-
-                        ////Constants.TenantId = "F200AC19-1BE6-48C5-B604-2D322020F48E";
-                        //Constants.TenantId = await _tenantRepository.GetTenantId();
-                        ////Company Settings/SalesTeamMember
-                        //await _tenantService.SyncTenant();
-
-                        //});
-                        //PageUtils.asyncActionSalesRep = asyncAction;
-
-                        //asyncAction.Completed = new AsyncActionCompletedHandler((IAsyncAction asyncInfo, AsyncStatus asyncStatus) =>
-                        //{
-                        //    if (asyncStatus == AsyncStatus.Canceled)
-                        //        return;
-                        //});
-                    }                   
-                    //if (settingsLocal.Containers["SageSalesContainer"].Values.ContainsKey(PageUtils.IsLaunched))
-                    //{
-                    settingsLocal.Containers["SageSalesContainer"].Values[PageUtils.IsLaunched] = true;
-                    //}
-                }
-
-                //if (string.IsNullOrEmpty(Constants.TenantId))
-                //{
-                //    //Constants.TenantId = "F200AC19-1BE6-48C5-B604-2D322020F48E";
-                //    Constants.TenantId = await _tenantRepository.GetTenantId();
-                //    string test = await _tenantRepository.GetTenantId();
-                //}
 
                 if (!Constants.SyncProgress)
                 {
@@ -203,8 +166,18 @@ namespace SageMobileSales.UILogic.ViewModels
                 //            group item by new { ((CustomerAddress)item).CustomerName } into g
                 //            select new { GroupName = g.Key.CustomerName[0], Items = g };
 
+                //var query = from customer in CustomerAdressList
+                //            let c = customer.CustomerName[0]
+                //            group customer by c >= '0' && c <= '9' ? '0' : char.ToUpper(c);
+
+                //List<CustomerGroupByAlphabet> sortedCustomerAdressList = CustomerAdressList
+                //    .GroupBy(alphabet => alphabet.CustomerName[0])
+                //    .OrderBy(g => g.Key)
+                //    .Select(g => new CustomerGroupByAlphabet { GroupName = g.Key, CustomerAddressList = g.ToList() })
+                //    .ToList();
+
                 List<CustomerGroupByAlphabet> sortedCustomerAdressList = CustomerAdressList
-                    .GroupBy(alphabet => alphabet.CustomerName[0])
+                    .GroupBy(alphabet => char.ToUpper(alphabet.CustomerName[0]))
                     .OrderBy(g => g.Key)
                     .Select(g => new CustomerGroupByAlphabet { GroupName = g.Key, CustomerAddressList = g.ToList() })
                     .ToList();
@@ -270,7 +243,7 @@ namespace SageMobileSales.UILogic.ViewModels
             List<CustomerDetails> CustomerAdressList = await _customerRepository.GetCustomerListDtlsAsync();
 
             List<CustomerGroupByAlphabet> sortedCustomerAdressList = CustomerAdressList
-                .GroupBy(alphabet => alphabet.CustomerName[0])
+                .GroupBy(alphabet => char.ToUpper(alphabet.CustomerName[0]))
                 .OrderBy(g => g.Key)
                 .Select(g => new CustomerGroupByAlphabet { GroupName = g.Key, CustomerAddressList = g.ToList() })
                 .ToList();
@@ -290,21 +263,6 @@ namespace SageMobileSales.UILogic.ViewModels
         public void CustomersSyncIndicator(bool sync)
         {
             SyncProgress = Constants.CustomersSyncProgress;
-        }
-
-        public async Task SyncUserData()
-        {
-            // Sync SalesRep(Loggedin User) data
-            await _salesRepService.SyncSalesRep();
-
-            Constants.TenantId = await _tenantRepository.GetTenantId();
-
-            //Company Settings/SalesTeamMember
-            bool salesPersonChanged = await _tenantService.SyncTenant();
-
-            //Delete localSyncDigest for Customer and set all customers isActive to false
-            if (salesPersonChanged)
-                await _localSyncDigestRepository.DeleteLocalSyncDigestForCustomer();
         }
     }
 }

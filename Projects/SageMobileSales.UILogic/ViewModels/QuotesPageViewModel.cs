@@ -710,7 +710,7 @@ namespace SageMobileSales.UILogic.ViewModels
 
         public void QuotesButton_Click(object sender, object parameter)
         {
-            _navigationService.ClearHistory();
+            //_navigationService.ClearHistory();
             _navigationService.Navigate("Quotes", null);
         }
 
