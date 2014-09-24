@@ -245,7 +245,7 @@
     <!--Grid Style (LayoutRoot)-->
     <Style x:Key="LayoutRootStyle"
            TargetType="Grid">
-        <Setter Property="Background" Value="White" />
+        <Setter Property="Background" Value="#ffffff" />
     </Style>
 
     <Style x:Key="AddressTextStyle"
