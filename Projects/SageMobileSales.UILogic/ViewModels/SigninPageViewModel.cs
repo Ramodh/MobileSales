@@ -106,11 +106,11 @@ namespace SageMobileSales.UILogic.ViewModels
                         InProgress = true;
                         isSignInDisabled = false;
                         _accessToken = await _oAuthService.Authorize();
-                        settingsLocal.Containers["SageSalesContainer"].Values[PageUtils.IsAuthorised] = true;
                     }
 
                     if (!string.IsNullOrEmpty(_accessToken))
                     {
+                        settingsLocal.Containers["SageSalesContainer"].Values[PageUtils.IsAuthorised] = true;
                         Constants.IsDbDeleted = false;
                         _navigationService.ClearHistory();
                         if (settingsLocal.Containers.ContainsKey("ConfigurationSettingsContainer"))
