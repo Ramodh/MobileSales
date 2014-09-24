@@ -168,6 +168,11 @@ namespace SageMobileSales.UILogic.ViewModels
         #endregion
 
         #region private methods
+
+        /// <summary>
+        /// Sync user/tenant info
+        /// </summary>
+        /// <returns></returns>
         private async Task SyncUserData()
         {
             // Sync SalesRep(Loggedin User) data
@@ -182,6 +187,7 @@ namespace SageMobileSales.UILogic.ViewModels
             if (salesPersonChanged)
                 await _localSyncDigestRepository.DeleteLocalSyncDigestForCustomer();
         }
+
         #endregion
     }
 }

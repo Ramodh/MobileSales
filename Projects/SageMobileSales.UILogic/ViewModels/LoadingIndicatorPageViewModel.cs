@@ -58,15 +58,11 @@ namespace SageMobileSales.UILogic.ViewModels
 
             if (_isLaunched == null)
             {
-                //Change by Ramodh - Confirm if works fine and also to add it in seperate Thread
-                //await SyncUserData();
-
                 if (_isAuthorised == null)
                 {
                     // Adding ISAuthorised variable to Appliaction Data.
                     // So that we can use this for the next logins whether user already Authorised or not.
                     settingsLocal.Containers["SageSalesContainer"].Values[PageUtils.IsAuthorised] = true;
-
                 }
                 settingsLocal.Containers["SageSalesContainer"].Values[PageUtils.IsLaunched] = true;
             }
@@ -79,7 +75,10 @@ namespace SageMobileSales.UILogic.ViewModels
             base.OnNavigatedTo(navigationParameter, navigationMode, viewModelState);
         }
 
-
+        /// <summary>
+        /// Sync user data/tenant info
+        /// </summary>
+        /// <returns></returns>
         public async Task SyncUserData()
         {
             // Sync SalesRep(Loggedin User) data
