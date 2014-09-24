@@ -12,6 +12,7 @@ using SageMobileSales.ServiceAgents.Common;
 using SageMobileSales.ServiceAgents.Services;
 using SageMobileSales.UILogic.Common;
 using SQLite;
+using SageMobileSales.DataAccess.Repositories;
 
 namespace SageMobileSales.UILogic.ViewModels
 {
@@ -21,7 +22,10 @@ namespace SageMobileSales.UILogic.ViewModels
 
         private readonly IDatabase _database;
         private readonly INavigationService _navigationService;
-
+        private readonly ISalesRepService _salesRepService;
+        private readonly ITenantRepository _tenantRepository;
+        private readonly ILocalSyncDigestRepository _localSyncDigestRepository;
+        private readonly ITenantService _tenantService;
         private readonly IOAuthService _oAuthService;
 
 
@@ -46,11 +50,18 @@ namespace SageMobileSales.UILogic.ViewModels
 
         #endregion
 
-        public SigninPageViewModel(IOAuthService oAuthService, INavigationService navigationService, IDatabase database)
+        public SigninPageViewModel(IOAuthService oAuthService, INavigationService navigationService, IDatabase database,
+            ISalesRepService salesRepService,
+            ITenantRepository tenantRepository, ITenantService tenantService,
+            ILocalSyncDigestRepository localSyncDigestRepository)
         {
             _oAuthService = oAuthService;
             _navigationService = navigationService;
             _database = database;
+            _salesRepService = salesRepService;
+            _tenantService = tenantService;
+            _tenantRepository = tenantRepository;
+            _localSyncDigestRepository = localSyncDigestRepository;
             SignInCommand = DelegateCommand.FromAsyncHandler(Authorise);
         }
 
@@ -95,8 +106,8 @@ namespace SageMobileSales.UILogic.ViewModels
                         InProgress = true;
                         isSignInDisabled = false;
                         _accessToken = await _oAuthService.Authorize();
+                        settingsLocal.Containers["SageSalesContainer"].Values[PageUtils.IsAuthorised] = true;
                     }
-
 
                     if (!string.IsNullOrEmpty(_accessToken))
                     {
@@ -115,6 +126,9 @@ namespace SageMobileSales.UILogic.ViewModels
                                 _sageSalesDB = _database.GetAsyncConnection();
                             }
                         }
+                        //Sync current user/tenant info
+                        await SyncUserData();
+
                         InProgress = false;
                         isSignInDisabled = true;
                         _navigationService.Navigate("CustomersGroup", null);
@@ -151,6 +165,23 @@ namespace SageMobileSales.UILogic.ViewModels
             }
         }
 
+        #endregion
+
+        #region private methods
+        private async Task SyncUserData()
+        {
+            // Sync SalesRep(Loggedin User) data
+            await _salesRepService.SyncSalesRep();
+
+            Constants.TenantId = await _tenantRepository.GetTenantId();
+
+            //Company Settings/SalesTeamMember
+            bool salesPersonChanged = await _tenantService.SyncTenant();
+
+            //Delete localSyncDigest for Customer and set all customers isActive to false
+            if (salesPersonChanged)
+                await _localSyncDigestRepository.DeleteLocalSyncDigestForCustomer();
+        }
         #endregion
     }
 }

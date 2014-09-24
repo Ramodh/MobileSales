@@ -186,6 +186,9 @@
     <Compile Include="Views\ConfigurationSettingsFlyout.xaml.cs">
       <DependentUpon>ConfigurationSettingsFlyout.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\LoadingIndicatorPage.xaml.cs">
+      <DependentUpon>LoadingIndicatorPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\OrderDetailsPage.xaml.cs">
       <DependentUpon>OrderDetailsPage.xaml</DependentUpon>
     </Compile>
@@ -338,6 +341,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\ConfigurationSettingsFlyout.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\LoadingIndicatorPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

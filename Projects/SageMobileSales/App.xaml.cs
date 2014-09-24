@@ -71,7 +71,7 @@ namespace SageMobileSales
             }
             else
             {
-                NavigationService.Navigate("CustomersGroup", null);
+                NavigationService.Navigate("LoadingIndicator", null);
             }
 
             Window.Current.Activate();
