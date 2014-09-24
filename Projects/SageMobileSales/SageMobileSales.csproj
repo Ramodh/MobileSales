@@ -121,6 +121,7 @@
     <Compile Include="Behaviors\NumericTextBoxBehavior.cs" />
     <Compile Include="Behaviors\SeeMoreDataTemplateSelector.cs" />
     <Compile Include="Common\DependencyPropertyChangedHelper.cs" />
+    <Compile Include="Common\FlipViewIndicator.cs" />
     <Compile Include="Common\ScrollViewerUtilities.cs" />
     <Compile Include="Common\VisualTreeUtilities.cs" />
     <Compile Include="Converters\ErrorConverter.cs" />
