@@ -1,0 +1,37 @@
+﻿<prism:VisualStateAwarePage
+    x:Class="SageMobileSales.Views.LoadingIndicatorPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:SageMobileSales.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:prism="using:Microsoft.Practices.Prism.StoreApps"
+    prism:ViewModelLocator.AutoWireViewModel="true"
+    mc:Ignorable="d">
+
+    <Grid Style="{StaticResource LayoutRootStyle}"> 
+
+        <!--<StackPanel Orientation="Vertical" VerticalAlignment="Center">
+            <Image Source="\Assets\SageMobileSales_Splash_620x300.png" Height="300" Width="620"/>
+            -->
+        <!--<TextBlock x:Uid="SageMobileSales" HorizontalAlignment="Center" TextWrapping="Wrap" FontSize="96"
+                       Foreground="Green" />
+            <Button x:Uid="SignIn" HorizontalAlignment="Center" Command="{Binding SignInCommand}" FontSize="29.333"
+                    Background="Green" FontWeight="Bold" BorderBrush="Green" IsEnabled="{Binding isSignInDisabled}" />-->
+        <!--
+            <ProgressRing Grid.Row="1" Height="70" Width="70"
+                          IsActive="{Binding InProgress, Mode=TwoWay}"
+                          Visibility="{Binding InProgress, Mode=TwoWay,Converter={StaticResource InProgessVisibilityConverter}}"
+                          Style="{StaticResource GridViewProgressRingStyle}" />
+        </StackPanel>--> 
+
+        <Image Source="/Assets/SageMobileSales_Splash_620x300.png" Height="300" Width="620"/>
+        <!--<Button x:Uid="SignIn" HorizontalAlignment="Center" VerticalAlignment="Center" Command="{Binding SignInCommand}" FontSize="20"
+                    Background="#4EB04C" FontWeight="Bold" BorderBrush="#4EB04C" IsEnabled="{Binding isSignInDisabled}" Margin="0,120,0,0"/>-->
+        <ProgressRing Grid.Row="1" Height="40" Width="40"
+                          IsActive="{Binding InProgress, Mode=TwoWay}"
+                          Style="{StaticResource GridViewProgressRingStyle}" Margin="0,120,0,0"/>
+        <!--Visibility="{Binding InProgress, Mode=TwoWay,Converter={StaticResource InProgessVisibilityConverter}}"-->
+
+    </Grid>
+</prism:VisualStateAwarePage>
