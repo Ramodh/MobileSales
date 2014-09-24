@@ -117,14 +117,21 @@ namespace SageMobileSales.ServiceAgents.Common
                         if (Constants.ConnectedToInternet())
                         {
                             response = await httpClient.SendAsync(req);
+                            if (response != null)
+                            {
+                                if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == 0)
+                                {
+                                    return response = await GetRefreshTokenAndMakeRequest(req, _url, HttpMethod.Get, null);
+                                }
+                            }
                         }
 
-                        if (response.StatusCode == HttpStatusCode.Unauthorized)
-                        {
-                            req = Clone(req);
-                            await _oAuthService.Authorize();
-                            response = await httpClient.SendAsync(req);
-                        }
+                        //if (response.StatusCode == HttpStatusCode.Unauthorized)
+                        //{
+                        //    req = Clone(req);
+                        //    await _oAuthService.Authorize();
+                        //    response = await httpClient.SendAsync(req);
+                        //}
                         return response;
                     }
 
@@ -192,6 +199,14 @@ namespace SageMobileSales.ServiceAgents.Common
                             await
                                 httpClient.PostAsync(_url,
                                     new StringContent(serialized, Encoding.UTF8, "application/json"));
+                        if (response != null)
+                        {
+                            if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == 0)
+                            {
+                                response = await GetRefreshTokenAndMakeRequest(null, _url, HttpMethod.Post, new StringContent(serialized, Encoding.UTF8, "application/json"));
+                                return response.IsSuccessStatusCode;
+                            }
+                        }
                     }
                     return response.IsSuccessStatusCode;
                 }
@@ -292,6 +307,14 @@ namespace SageMobileSales.ServiceAgents.Common
                     response =
                         await
                             httpClient.PostAsync(_url, new StringContent(serialized, Encoding.UTF8, "application/json"));
+                    if (response != null)
+                    {
+                        if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == 0)
+                        {
+                            response = await GetRefreshTokenAndMakeRequest(null, _url, HttpMethod.Post, new StringContent(serialized, Encoding.UTF8, "application/json"));
+                            return response;
+                        }
+                    }
                 }
                 return response;
             }
@@ -382,6 +405,14 @@ namespace SageMobileSales.ServiceAgents.Common
                     response =
                         await
                             httpClient.PutAsync(_url, new StringContent(serialized, Encoding.UTF8, "application/json"));
+                    if (response != null)
+                    {
+                        if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == 0)
+                        {
+                            response = await GetRefreshTokenAndMakeRequest(null, _url, HttpMethod.Put, new StringContent(serialized, Encoding.UTF8, "application/json"));
+                            return response;
+                        }
+                    }
                 }
             }
             catch (HttpRequestException ex)
@@ -477,6 +508,14 @@ namespace SageMobileSales.ServiceAgents.Common
                 if (Constants.ConnectedToInternet())
                 {
                     response = await httpClient.SendAsync(request);
+                    if (response != null)
+                    {
+                        if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == 0)
+                        {
+                            response = await GetRefreshTokenAndMakeRequest(request, _url, method, null);
+                            return response;
+                        }
+                    }
                 }
 
                 //}
@@ -560,6 +599,14 @@ namespace SageMobileSales.ServiceAgents.Common
                 if (Constants.ConnectedToInternet())
                 {
                     response = await httpClient.DeleteAsync(_url);
+                    if (response != null)
+                    {
+                        if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == 0)
+                        {
+                            response = await GetRefreshTokenAndMakeRequest(null, _url, HttpMethod.Delete, null);
+                            return response;
+                        }
+                    }
                 }
             }
             catch (HttpRequestException ex)
@@ -651,6 +698,75 @@ namespace SageMobileSales.ServiceAgents.Common
             return clone;
         }
 
+        /// <summary>
+        /// Get Refresh token from WINRT library and sending request again to the server.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="url"></param>
+        /// <param name="requestType"></param>
+        /// /// <param name="requestConent"></param>
+        /// <returns></returns>
+        private async Task<HttpResponseMessage> GetRefreshTokenAndMakeRequest(HttpRequestMessage request, string url, HttpMethod requestType, HttpContent requestConent)
+        {
+            HttpResponseMessage response = null;
+            try
+            {
+                request = Clone(request);
+                Constants.AccessToken = await _oAuthService.Authorize();
+
+                var httpClient = new HttpClient();
+
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer",
+                     Constants.AccessToken);
+
+                httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Accept", "application/json");
+                httpClient.DefaultRequestHeaders.TryAddWithoutValidation("AppProtocol", "Mobile Sales");
+                httpClient.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent",
+                    "Mozilla/5.0 (Windows NT 6.2; WOW64; rv:19.0) Gecko/20100101 Firefox/19.0");
+                httpClient.DefaultRequestHeaders.TryAddWithoutValidation("AppProtocolVersion", "1.0.0.0");
+
+                if (requestType == HttpMethod.Get || requestType == new HttpMethod("PATCH"))
+                {
+                    request = new HttpRequestMessage(requestType, url);
+                    response = await httpClient.SendAsync(request);
+                }
+                else if (requestType == HttpMethod.Post)
+                {
+                    response =
+                          await
+                              httpClient.PostAsync(url, requestConent);
+                }
+                else if (requestType == HttpMethod.Put)
+                {
+                    response =
+                          await
+                              httpClient.PutAsync(url, requestConent);
+                }
+                else if (requestType == HttpMethod.Delete)
+                {
+                    response = await httpClient.DeleteAsync(url);
+                }
+
+                if (response != null)
+                {
+                    if (response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.NoContent)
+                    {
+                        return response;
+                    }
+                }
+                else
+                {
+
+                    response = null;
+                }
+            }
+            catch (Exception ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+            return response;
+        }
         #endregion
     }
 }

@@ -127,13 +127,14 @@ namespace SageMobileSales.ServiceAgents.Services
                         // Looping this method again to make request for next batch of records(ProductCategory).
                         await SyncProductCategory();
                     }
+                    else
+                    {
+                        DataAccessUtils.ProductCategoryTotalCount = 0;
+                        DataAccessUtils.ProductCategoryReturnedCount = 0;
+                        DataAccessUtils.IsProductCategorySyncCompleted = false;
+                    }
                 }
-                else
-                {
-                    DataAccessUtils.ProductCategoryTotalCount = 0;
-                    DataAccessUtils.ProductCategoryReturnedCount = 0;
-                    DataAccessUtils.IsProductCategorySyncCompleted = false;
-                }
+               
             }
             catch (SQLiteException ex)
             {
