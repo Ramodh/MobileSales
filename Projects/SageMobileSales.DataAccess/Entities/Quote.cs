@@ -21,7 +21,7 @@ namespace SageMobileSales.DataAccess.Entities
         public decimal Amount { get; set; }
         public string ExternalReferenceNumber { get; set; }
         public decimal DiscountPercent { get; set; }
-        public int QuoteNumber { get; set; }
+        public string QuoteNumber { get; set; }
         public bool IsPending { get; set; }
         public bool IsDeleted { get; set; }
         public decimal SubTotal { get; set; }

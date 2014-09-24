@@ -58,7 +58,7 @@ namespace SageMobileSales.ServiceAgents.Services
             if (Constants.IsSyncAvailable)
             {
                 await _localSyncDigestService.SyncLocalSource(Constants.QuoteEntity, Constants.syncSourceQueryEntity);
-                await SyncQuotes();
+              await SyncQuotes();
             }
             else
             {

@@ -43,6 +43,6 @@ namespace SageMobileSales.DataAccess.Model
         public string AddressId { get; set; }
         public string RepId { get; set; }
         public string TenantId { get; set; }
-        public int QuoteNumber { get; set; }
+        public string QuoteNumber { get; set; }
     }
 }

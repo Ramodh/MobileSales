@@ -802,14 +802,6 @@ namespace SageMobileSales.DataAccess.Repositories
                         quote.QuoteDescription = sDataQuote.GetNamedString("Description");
                     }
                 }
-
-                //if (sDataQuote.TryGetValue("TenantId", out value))
-                //{
-                //    if (value.ValueType.ToString() != DataAccessUtils.Null)
-                //    {
-                //        quote.TenantId = sDataQuote.GetNamedString("TenantId");
-                //    }
-                //}
                 if (sDataQuote.TryGetValue("CreatedOn", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
@@ -818,7 +810,6 @@ namespace SageMobileSales.DataAccess.Repositories
                         quote.CreatedOn = DateTime.Parse(sDataQuote.GetNamedString("CreatedOn"));
                     }
                 }
-
                 if (sDataQuote.TryGetValue("SubmittedDate", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
@@ -872,13 +863,13 @@ namespace SageMobileSales.DataAccess.Repositories
                     }
                 }
 
-                if (sDataQuote.TryGetValue("ExtRef", out value))
-                {
-                    if (value.ValueType.ToString() != DataAccessUtils.Null)
-                    {
-                        quote.ExternalReferenceNumber = sDataQuote.GetNamedString("ExtRef");
-                    }
-                }
+                //if (sDataQuote.TryGetValue("ExtRef", out value))
+                //{
+                //    if (value.ValueType.ToString() != DataAccessUtils.Null)
+                //    {
+                //        quote.ExternalReferenceNumber = sDataQuote.GetNamedString("ExtRef");
+                //    }
+                //}
                 if (sDataQuote.TryGetValue("DiscountPercent", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
@@ -886,11 +877,11 @@ namespace SageMobileSales.DataAccess.Repositories
                         quote.DiscountPercent = Convert.ToDecimal(sDataQuote.GetNamedNumber("DiscountPercent"));
                     }
                 }
-                if (sDataQuote.TryGetValue("QuoteNumber", out value))
+                if (sDataQuote.TryGetValue("ExtRef", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        quote.QuoteNumber = Convert.ToInt32(sDataQuote.GetNamedNumber("QuoteNumber"));
+                        quote.QuoteNumber = sDataQuote.GetNamedString("ExtRef");
                     }
                 }
 
