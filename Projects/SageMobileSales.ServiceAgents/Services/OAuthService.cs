@@ -136,15 +136,15 @@ namespace SageMobileSales.ServiceAgents.Services
             try
             {
                 Constants.IsDbDeleted = true;
+                ApplicationDataContainer settingsLocal = ApplicationData.Current.LocalSettings;
+                settingsLocal.DeleteContainer("SageSalesContainer");
                 if (_client == null)
                 {
                     _client = new OAuthClient(ClientId);
                 }
                 await _client.CleanupAsync();
                 _client.LogEvent += onLogEvent;
-                Token = String.Empty;
-                ApplicationDataContainer settingsLocal = ApplicationData.Current.LocalSettings;
-                settingsLocal.DeleteContainer("SageSalesContainer");
+                Token = String.Empty;               
                 //  await _database.Delete();
             }
             catch (NullReferenceException ex)

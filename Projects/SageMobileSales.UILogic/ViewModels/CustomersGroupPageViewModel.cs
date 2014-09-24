@@ -130,7 +130,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 object _isLaunched = settingsLocal.Containers["SageSalesContainer"].Values[PageUtils.IsLaunched];
 
                 PageUtils.GetConfigurationSettings();
-
+                PageUtils.GetApplicationData();
                 if (_isLaunched == null)
                 {
                     //Change by Ramodh - Confirm if works fine and also to add it in seperate Thread
@@ -162,12 +162,7 @@ namespace SageMobileSales.UILogic.ViewModels
                         //    if (asyncStatus == AsyncStatus.Canceled)
                         //        return;
                         //});
-                    }
-                    else
-                    {
-                        PageUtils.GetApplicationData();
-                    }
-
+                    }                   
                     //if (settingsLocal.Containers["SageSalesContainer"].Values.ContainsKey(PageUtils.IsLaunched))
                     //{
                     settingsLocal.Containers["SageSalesContainer"].Values[PageUtils.IsLaunched] = true;

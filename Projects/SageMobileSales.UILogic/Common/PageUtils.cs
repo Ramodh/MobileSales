@@ -71,8 +71,8 @@ namespace SageMobileSales.UILogic.Common
             ApplicationDataContainer settingsLocal = ApplicationData.Current.LocalSettings;
             if (settingsLocal.Containers.ContainsKey("SageSalesContainer"))
             {
-                Constants.AccessToken = settingsLocal.Containers["SageSalesContainer"].Values["AccessToken"].ToString();
-                Constants.TrackingId = settingsLocal.Containers["SageSalesContainer"].Values["TrackingId"].ToString();
+                Constants.AccessToken = settingsLocal.Containers["SageSalesContainer"].Values["AccessToken"]==null?null:settingsLocal.Containers["SageSalesContainer"].Values["AccessToken"].ToString();
+                Constants.TrackingId = settingsLocal.Containers["SageSalesContainer"].Values["TrackingId"] == null ? null : settingsLocal.Containers["SageSalesContainer"].Values["TrackingId"].ToString();
                 if (settingsLocal.Containers["SageSalesContainer"].Values["syncQueryEntity"] != null)
                 {
                     Constants.syncQueryEntity =
