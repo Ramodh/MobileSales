@@ -42,13 +42,13 @@ namespace SageMobileSales.DataAccess.Repositories
                     {
                         if (value.ValueType.ToString() != null)
                         {
-                            JsonArray sDataQuoteLineItemsArray = sDataQuote.GetNamedArray("Details");
-                            if (sDataQuoteLineItemsArray.Count > 0)
-                            {
-                                await SaveQuoteLineItemDetailsAsync(sDataQuoteLineItemsArray, quoteId);
-                            }
-                        }
+                    JsonArray sDataQuoteLineItemsArray = sDataQuote.GetNamedArray("Details");
+                    if (sDataQuoteLineItemsArray.Count > 0)
+                    {
+                        await SaveQuoteLineItemDetailsAsync(sDataQuoteLineItemsArray, quoteId);
                     }
+                }
+            }
                 }
             }
             catch (SQLiteException ex)

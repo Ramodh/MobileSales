@@ -146,7 +146,7 @@ namespace SageMobileSales.ServiceAgents.Services
                     parameters.Add("LocalTick", digest.localTick.ToString());
                     parameters.Add("LastRecordId", null);
                 }
-
+                ErrorLog("Order local tick : " + digest.localTick);
                 //string salesRepId = await _salesRepRepository.GetSalesRepId();
                 //if (!string.IsNullOrEmpty(salesRepId))
                 //{
@@ -178,14 +178,17 @@ namespace SageMobileSales.ServiceAgents.Services
                             _eventAggregator.GetEvent<OrderDataChangedEvent>().Publish(true);
                         }
                         int _totalCount = Convert.ToInt32(sDataOrders.GetNamedNumber("$totalResults"));
+                        ErrorLog("Order total count : " + _totalCount);
                         JsonArray ordersObject = sDataOrders.GetNamedArray("$resources");
                         int _returnedCount = ordersObject.Count;
+                        ErrorLog("Order returned count : " + _returnedCount);
                         if (_returnedCount > 0 && _totalCount - _returnedCount >= 0 &&
                             !(DataAccessUtils.IsOrdersSyncCompleted))
                         {
                             JsonObject lastOrderObject = ordersObject.GetObjectAt(Convert.ToUInt32(_returnedCount - 1));
                             digest.LastRecordId = lastOrderObject.GetNamedString("$key");
                             int _syncEndpointTick = Convert.ToInt32(lastOrderObject.GetNamedNumber("SyncTick"));
+                            ErrorLog("Order sync tick : " + _syncEndpointTick);
                             if (_syncEndpointTick > digest.localTick)
                             {
                                 digest.localTick = _syncEndpointTick;
@@ -254,6 +257,15 @@ namespace SageMobileSales.ServiceAgents.Services
             //order.TransactionDate ="/Date(1392833833000-0600)/";
 
             return orderjson;
+        }
+
+        /// <summary>
+        /// Error log
+        /// </summary>
+        /// <param name="message"></param>
+        private void ErrorLog(string message)
+        {
+            AppEventSource.Log.Info(message);
         }
 
         #endregion

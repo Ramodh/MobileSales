@@ -47,15 +47,21 @@ namespace SageMobileSales.ServiceAgents.Services
 
                 if (!Constants.CustomersSyncProgress)
                 {
+                    _log = "Common Customer Sync Started";
+                    AppEventSource.Log.Info(_log);
                     Constants.CustomersSyncProgress = true;
                     _eventAggregator.GetEvent<CustomerSyncChangedEvent>().Publish(Constants.CustomersSyncProgress);
                     await _customerService.StartCustomersSyncProcess();
                     Constants.CustomersSyncProgress = false;
                     _eventAggregator.GetEvent<CustomerSyncChangedEvent>().Publish(Constants.CustomersSyncProgress);
+                    _log = "Common Customer Sync Started";
+                    AppEventSource.Log.Info(_log);
                 }
 
                 if (!Constants.ProductsSyncProgress)
                 {
+                    _log = "Common Product Sync Started";
+                    AppEventSource.Log.Info(_log);
                     Constants.ProductsSyncProgress = true;
                     _eventAggregator.GetEvent<ProductSyncChangedEvent>().Publish(Constants.ProductsSyncProgress);
                     await _productCategoryService.StartCategorySyncProcess();
@@ -63,24 +69,34 @@ namespace SageMobileSales.ServiceAgents.Services
                     await _productAssociatedBlobService.StartProductAssoicatedBlobsSyncProcess();
                     Constants.ProductsSyncProgress = false;
                     _eventAggregator.GetEvent<ProductSyncChangedEvent>().Publish(Constants.ProductsSyncProgress);
+                    _log = "Common Product Sync Started";
+                    AppEventSource.Log.Info(_log);
                 }
 
                 if (!Constants.QuotesSyncProgress)
                 {
+                    _log = "Common Quote Sync Started";
+                    AppEventSource.Log.Info(_log);
                     Constants.QuotesSyncProgress = true;
                     _eventAggregator.GetEvent<QuoteSyncChangedEvent>().Publish(Constants.QuotesSyncProgress);
                     await _quoteService.StartQuoteSyncProcess();
                     Constants.QuotesSyncProgress = false;
                     _eventAggregator.GetEvent<QuoteSyncChangedEvent>().Publish(Constants.QuotesSyncProgress);
+                    _log = "Common Quote Sync Started";
+                    AppEventSource.Log.Info(_log);
                 }
 
                 if (!Constants.OrdersSyncProgress)
                 {
+                    _log = "Common Order Sync Started";
+                    AppEventSource.Log.Info(_log);
                     Constants.OrdersSyncProgress = true;
                     _eventAggregator.GetEvent<OrderSyncChangedEvent>().Publish(Constants.OrdersSyncProgress);
                     await _orderService.StartOrdersSyncProcess();
                     Constants.OrdersSyncProgress = false;
                     _eventAggregator.GetEvent<OrderSyncChangedEvent>().Publish(Constants.OrdersSyncProgress);
+                    _log = "Common Order Sync Started";
+                    AppEventSource.Log.Info(_log);
                 }
 
                 Constants.SyncProgress = false;
