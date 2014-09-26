@@ -33,22 +33,22 @@ namespace SageMobileSales.DataAccess.Repositories
         /// <returns>Product</returns>
         public async Task SaveQuoteLineItemsAsync(JsonObject sDataQuote, string quoteId)
         {
-            IJsonValue value;
             try
             {
+                IJsonValue value;
                 if (!string.IsNullOrEmpty(quoteId))
                 {
                     if (sDataQuote.TryGetValue("Details", out value))
                     {
                         if (value.ValueType.ToString() != null)
                         {
-                            JsonArray sDataQuoteLineItemsArray = sDataQuote.GetNamedArray("Details");
-                            if (sDataQuoteLineItemsArray.Count > 0)
-                            {
-                                await SaveQuoteLineItemDetailsAsync(sDataQuoteLineItemsArray, quoteId);
-                            }
-                        }
+                    JsonArray sDataQuoteLineItemsArray = sDataQuote.GetNamedArray("Details");
+                    if (sDataQuoteLineItemsArray.Count > 0)
+                    {
+                        await SaveQuoteLineItemDetailsAsync(sDataQuoteLineItemsArray, quoteId);
                     }
+                }
+            }
                 }
             }
             catch (SQLiteException ex)

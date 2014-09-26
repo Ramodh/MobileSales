@@ -58,7 +58,7 @@ namespace SageMobileSales.ServiceAgents.Services
             if (Constants.IsSyncAvailable)
             {
                 await _localSyncDigestService.SyncLocalSource(Constants.QuoteEntity, Constants.syncSourceQueryEntity);
-                await SyncQuotes();
+              await SyncQuotes();
             }
             else
             {
@@ -644,10 +644,11 @@ namespace SageMobileSales.ServiceAgents.Services
                 parameters.Add("LastRecordId", null);
             }
             ErrorLog("Quote local tick : " + digest.localTick);
-            string salesRepId = await _salesRepRepository.GetSalesRepId();
-            if (!string.IsNullOrEmpty(salesRepId))
-            {
+            //string salesRepId = await _salesRepRepository.GetSalesRepId();
+            //if (!string.IsNullOrEmpty(salesRepId))
+            //{
                 parameters.Add("Count", "100");
+                parameters.Add("include", "Details");
                 HttpResponseMessage quotesResponse = null;
 
                 Constants.syncQueryEntity = Constants.syncSourceQueryEntity + "('" + Constants.TrackingId + "')";
@@ -695,7 +696,7 @@ namespace SageMobileSales.ServiceAgents.Services
                         DataAccessUtils.IsQuotesSyncCompleted = false;
                     }
                 }
-            }
+            //}
         }
 
         /// <summary>
