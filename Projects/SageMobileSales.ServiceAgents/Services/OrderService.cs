@@ -146,14 +146,14 @@ namespace SageMobileSales.ServiceAgents.Services
                     parameters.Add("LocalTick", digest.localTick.ToString());
                     parameters.Add("LastRecordId", null);
                 }
-
+                ErrorLog("Order local tick : " + digest.localTick);
                 string salesRepId = await _salesRepRepository.GetSalesRepId();
                 if (!string.IsNullOrEmpty(salesRepId))
                 {
                     //http://172.29.59.122:8080/sdata/api/msales/1.0/f200ac19-1be6-48c5-b604-2d322020f48e/Orders/
                     //$SyncSource('B181349C-FFEC-42FD-9A20-B83A5C07F7A6-8e144a26-f89a-4a7f-9265-8a9453a27222')?Count=50&LocalTick=0 
                     //salesRepId = "SalesRep.id eq " + "'" + salesRepId + "'";
-                    parameters.Add("Count", "50");
+                    parameters.Add("Count", "100");
                     //parameters.Add("where", salesRepId);
                     //parameters.Add("include", "Details,Details/InventoryItem&select=*,Details/Price,Details/Quantity,Details/InventoryItem/Name,Details/InventoryItem/Sku");
                     HttpResponseMessage ordersResponse = null;
@@ -177,14 +177,17 @@ namespace SageMobileSales.ServiceAgents.Services
                             _eventAggregator.GetEvent<OrderDataChangedEvent>().Publish(true);
                         }
                         int _totalCount = Convert.ToInt32(sDataOrders.GetNamedNumber("$totalResults"));
+                        ErrorLog("Order total count : " + _totalCount);
                         JsonArray ordersObject = sDataOrders.GetNamedArray("$resources");
                         int _returnedCount = ordersObject.Count;
+                        ErrorLog("Order returned count : " + _returnedCount);
                         if (_returnedCount > 0 && _totalCount - _returnedCount >= 0 &&
                             !(DataAccessUtils.IsOrdersSyncCompleted))
                         {
                             JsonObject lastOrderObject = ordersObject.GetObjectAt(Convert.ToUInt32(_returnedCount - 1));
                             digest.LastRecordId = lastOrderObject.GetNamedString("$key");
                             int _syncEndpointTick = Convert.ToInt32(lastOrderObject.GetNamedNumber("SyncTick"));
+                            ErrorLog("Order sync tick : " + _syncEndpointTick);
                             if (_syncEndpointTick > digest.localTick)
                             {
                                 digest.localTick = _syncEndpointTick;
@@ -253,6 +256,15 @@ namespace SageMobileSales.ServiceAgents.Services
             //order.TransactionDate ="/Date(1392833833000-0600)/";
 
             return orderjson;
+        }
+
+        /// <summary>
+        /// Error log
+        /// </summary>
+        /// <param name="message"></param>
+        private void ErrorLog(string message)
+        {
+            AppEventSource.Log.Info(message);
         }
 
         #endregion
