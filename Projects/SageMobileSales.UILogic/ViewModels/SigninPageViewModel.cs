@@ -114,19 +114,20 @@ namespace SageMobileSales.UILogic.ViewModels
                         settingsLocal.Containers["SageSalesContainer"].Values[PageUtils.IsAuthorised] = true;
                         Constants.IsDbDeleted = false;
                         _navigationService.ClearHistory();
-                        if (settingsLocal.Containers.ContainsKey("ConfigurationSettingsContainer"))
-                        {
-                            DataAccessUtils.IsServerChanged =
-                                Convert.ToBoolean(
-                                    settingsLocal.Containers["ConfigurationSettingsContainer"].Values["IsServerChanged"]);
+                        //if (settingsLocal.Containers.ContainsKey("ConfigurationSettingsContainer"))
+                        //{
+                        //    DataAccessUtils.IsServerChanged =
+                        //        Convert.ToBoolean(
+                        //            settingsLocal.Containers["ConfigurationSettingsContainer"].Values["IsServerChanged"]);
 
-                            if (DataAccessUtils.IsServerChanged)
-                            {
-                                await _database.Delete();
-                                await _database.Initialize();
-                                _sageSalesDB = _database.GetAsyncConnection();
-                            }
-                        }
+                        //    if (DataAccessUtils.IsServerChanged)
+                        //    {
+                        //        ReCreateDatabase();
+                        //    }
+                        //}
+
+                        ReCreateDatabase();
+
                         //Sync current user/tenant info
                         await SyncUserData();
                     }
@@ -235,6 +236,13 @@ namespace SageMobileSales.UILogic.ViewModels
             _navigationService.Navigate("Signin", null);
             InProgress = false;
             isSignInDisabled = true;
+        }
+
+        private async void ReCreateDatabase()
+        {
+            await _database.Delete();
+            await _database.Initialize();
+            _sageSalesDB = _database.GetAsyncConnection();
         }
         #endregion
     }

@@ -147,13 +147,14 @@ namespace SageMobileSales.ServiceAgents.Services
                     parameters.Add("LastRecordId", null);
                 }
 
-                string salesRepId = await _salesRepRepository.GetSalesRepId();
-                if (!string.IsNullOrEmpty(salesRepId))
-                {
+                //string salesRepId = await _salesRepRepository.GetSalesRepId();
+                //if (!string.IsNullOrEmpty(salesRepId))
+                //{
                     //http://172.29.59.122:8080/sdata/api/msales/1.0/f200ac19-1be6-48c5-b604-2d322020f48e/Orders/
                     //$SyncSource('B181349C-FFEC-42FD-9A20-B83A5C07F7A6-8e144a26-f89a-4a7f-9265-8a9453a27222')?Count=50&LocalTick=0 
                     //salesRepId = "SalesRep.id eq " + "'" + salesRepId + "'";
-                    parameters.Add("Count", "50");
+                    parameters.Add("Count", "100");
+                    parameters.Add("include", "Details");
                     //parameters.Add("where", salesRepId);
                     //parameters.Add("include", "Details,Details/InventoryItem&select=*,Details/Price,Details/Quantity,Details/InventoryItem/Name,Details/InventoryItem/Sku");
                     HttpResponseMessage ordersResponse = null;
@@ -202,7 +203,7 @@ namespace SageMobileSales.ServiceAgents.Services
                             DataAccessUtils.IsOrdersSyncCompleted = false;
                         }
                     }
-                }
+                //}
             }
             catch (SQLiteException ex)
             {
