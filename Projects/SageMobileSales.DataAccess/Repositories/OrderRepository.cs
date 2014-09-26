@@ -53,12 +53,11 @@ namespace SageMobileSales.DataAccess.Repositories
             {
                 JsonObject sDataOrder = sDataOrdersArray[order].GetObject();
 
-                //Changed for pegasus as it returns only order list.
-                //await
-                //    _orderLineItemRepository.SaveOrderLineItemsAsync(sDataOrder,
-                //        (await SaveOrderDetailsAsync(sDataOrder)).OrderId);
+                await
+                    _orderLineItemRepository.SaveOrderLineItemsAsync(sDataOrder,
+                        (await SaveOrderDetailsAsync(sDataOrder)).OrderId);
 
-                await SaveOrderDetailsAsync(sDataOrder);
+                //await SaveOrderDetailsAsync(sDataOrder);
 
                 if (localSyncDigest != null)
                 {
