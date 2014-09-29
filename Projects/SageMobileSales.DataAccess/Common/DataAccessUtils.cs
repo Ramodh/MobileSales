@@ -33,7 +33,7 @@
         public static string PreviousOrder = "Previous order";
         public static string PreviousPurchasedItems = "Previously purchased items";
         public static string SelectedServerType = string.Empty;
-        public static bool IsServerChanged = false;
+        //public static bool IsServerChanged = false;
         public static string SeeMore = "See More";
     }
 }

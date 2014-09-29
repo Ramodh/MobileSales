@@ -69,6 +69,7 @@ namespace SageMobileSales.ServiceAgents.Services
                     parameters.Add("LocalTick", digest.localTick.ToString());
                     parameters.Add("LastRecordId", null);
                 }
+                ErrorLog("Product local tick : " + digest.localTick);
                 parameters.Add("Count", "100");
                 HttpResponseMessage productsResponse = null;
                 productsResponse =
@@ -85,14 +86,17 @@ namespace SageMobileSales.ServiceAgents.Services
                             Convert.ToInt32(sDataProducts.GetNamedNumber("$totalResults"));
 
                     int _totalCount = Convert.ToInt32(sDataProducts.GetNamedNumber("$totalResults"));
+                    ErrorLog("Product total count : " + _totalCount);
                     JsonArray categoriesObject = sDataProducts.GetNamedArray("$resources");
                     int _returnedCount = categoriesObject.Count;
+                    ErrorLog("Product returned count : " + _returnedCount);
                     if (_returnedCount > 0 && _totalCount - _returnedCount >= 0 &&
                         !(DataAccessUtils.IsProductSyncCompleted))
                     {
                         JsonObject lastProductObject = categoriesObject.GetObjectAt(Convert.ToUInt32(_returnedCount - 1));
                         digest.LastRecordId = lastProductObject.GetNamedString("$key");
                         int _syncEndpointTick = Convert.ToInt32(lastProductObject.GetNamedNumber("SyncTick"));
+                        ErrorLog("Product sync tick : " + _syncEndpointTick);
                         if (_syncEndpointTick > digest.localTick)
                         {
                             digest.localTick = _syncEndpointTick;
@@ -131,6 +135,15 @@ namespace SageMobileSales.ServiceAgents.Services
                 _log = AppEventSource.Log.WriteLine(ex);
                 AppEventSource.Log.Error(_log);
             }
+        }
+
+        /// <summary>
+        /// Error log
+        /// </summary>
+        /// <param name="message"></param>
+        private void ErrorLog(string message)
+        {
+            AppEventSource.Log.Info(message);
         }
     }
 }

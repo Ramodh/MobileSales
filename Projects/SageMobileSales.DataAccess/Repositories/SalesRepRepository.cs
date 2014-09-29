@@ -259,21 +259,21 @@ namespace SageMobileSales.DataAccess.Repositories
                             //}
                             return await UpdateSalesRepJsonToDbAsync(sDataSalesRepDtls, salesRepList.FirstOrDefault());
                         }
-                        if (!DataAccessUtils.IsServerChanged)
-                        {
-                            await _database.Delete();
-                            await _database.Initialize();
-                            _sageSalesDB = _database.GetAsyncConnection();
-                        }
-                        else
-                        {
-                            DataAccessUtils.IsServerChanged = false;
-                            if (configSettings.Containers["ConfigurationSettingsContainer"] != null)
-                            {
-                                configSettings.Containers["ConfigurationSettingsContainer"].Values["IsServerChanged"] =
-                                    false;
-                            }
-                        }
+                        //if (!DataAccessUtils.IsServerChanged)
+                        //{
+                        //    await _database.Delete();
+                        //    await _database.Initialize();
+                        //    _sageSalesDB = _database.GetAsyncConnection();
+                        //}
+                        //else
+                        //{
+                        //    DataAccessUtils.IsServerChanged = false;
+                        //    if (configSettings.Containers["ConfigurationSettingsContainer"] != null)
+                        //    {
+                        //        configSettings.Containers["ConfigurationSettingsContainer"].Values["IsServerChanged"] =
+                        //            false;
+                        //    }
+                        //}
 
                         return await AddSalesRepJsonToDbAsync(sDataSalesRepDtls);
                     }

@@ -643,11 +643,12 @@ namespace SageMobileSales.ServiceAgents.Services
                 parameters.Add("LocalTick", digest.localTick.ToString());
                 parameters.Add("LastRecordId", null);
             }
-
-            string salesRepId = await _salesRepRepository.GetSalesRepId();
-            if (!string.IsNullOrEmpty(salesRepId))
-            {
+            ErrorLog("Quote local tick : " + digest.localTick);
+            //string salesRepId = await _salesRepRepository.GetSalesRepId();
+            //if (!string.IsNullOrEmpty(salesRepId))
+            //{
                 parameters.Add("Count", "100");
+                parameters.Add("include", "Details");
                 HttpResponseMessage quotesResponse = null;
 
                 Constants.syncQueryEntity = Constants.syncSourceQueryEntity + "('" + Constants.TrackingId + "')";
@@ -667,14 +668,17 @@ namespace SageMobileSales.ServiceAgents.Services
                         _eventAggregator.GetEvent<QuoteDataChangedEvent>().Publish(true);
                     }
                     int _totalCount = Convert.ToInt32(sDataQuotes.GetNamedNumber("$totalResults"));
+                    ErrorLog("Quote total count : " + _totalCount);
                     JsonArray quotesObject = sDataQuotes.GetNamedArray("$resources");
                     int _returnedCount = quotesObject.Count;
+                    ErrorLog("Quote returned count : " + _returnedCount);
                     if (_returnedCount > 0 && _totalCount - _returnedCount >= 0 &&
                         !(DataAccessUtils.IsQuotesSyncCompleted))
                     {
                         JsonObject lastQuoteObject = quotesObject.GetObjectAt(Convert.ToUInt32(_returnedCount - 1));
                         digest.LastRecordId = lastQuoteObject.GetNamedString("$key");
                         int _syncEndpointTick = Convert.ToInt32(lastQuoteObject.GetNamedNumber("SyncTick"));
+                        ErrorLog("Quote sync tick : " + _syncEndpointTick);
                         if (_syncEndpointTick > digest.localTick)
                         {
                             digest.localTick = _syncEndpointTick;
@@ -692,7 +696,7 @@ namespace SageMobileSales.ServiceAgents.Services
                         DataAccessUtils.IsQuotesSyncCompleted = false;
                     }
                 }
-            }
+            //}
         }
 
         /// <summary>
@@ -868,6 +872,15 @@ namespace SageMobileSales.ServiceAgents.Services
                 }
             }
             return quoteJsonObject;
+        }
+
+        /// <summary>
+        /// Error log
+        /// </summary>
+        /// <param name="message"></param>
+        private void ErrorLog(string message)
+        {
+            AppEventSource.Log.Info(message);
         }
 
         #endregion
