@@ -30,32 +30,29 @@
     </prism:VisualStateAwarePage.Resources>
     <!--Bottom AppBar-->
     <Page.BottomAppBar>
-        <AppBar>
-            <Grid x:Name="appbarGrid" Background="#FF355B4E">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="50*" />
-                    <ColumnDefinition Width="50*" />
-                </Grid.ColumnDefinitions>
-                <StackPanel x:Name="RightPanel" Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right">
-                    <AppBarButton x:Uid="addContact" Icon="Contact" Label="">
-                        <interactivity:Interaction.Behaviors>
-                            <core:EventTriggerBehavior EventName="Click">
-                                <core:CallMethodAction MethodName="AddContactsButton_Click"
+        <CommandBar Style="{StaticResource BottomAppBarStyle}"
+                    IsSticky="True"
+                    AutomationProperties.AutomationId="BottomAppBar"
+                    x:Uid="BottomAppBar">
+            <CommandBar.PrimaryCommands>
+                <AppBarButton x:Uid="addContact" Icon="Contact" Label="">
+                    <interactivity:Interaction.Behaviors>
+                        <core:EventTriggerBehavior EventName="Click">
+                            <core:CallMethodAction MethodName="AddContactsButton_Click"
                                                        TargetObject="{Binding Mode=OneWay}" />
-                            </core:EventTriggerBehavior>
-                        </interactivity:Interaction.Behaviors>
-                    </AppBarButton>
-                    <AppBarButton x:Uid="appbtncreateQuote" Icon="Add" Label="">
-                        <interactivity:Interaction.Behaviors>
-                            <core:EventTriggerBehavior EventName="Click">
-                                <core:CallMethodAction MethodName="CreateQuoteButton_Click"
+                        </core:EventTriggerBehavior>
+                    </interactivity:Interaction.Behaviors>
+                </AppBarButton>
+                <AppBarButton x:Uid="appbtncreateQuote" Icon="Add" Label="">
+                    <interactivity:Interaction.Behaviors>
+                        <core:EventTriggerBehavior EventName="Click">
+                            <core:CallMethodAction MethodName="CreateQuoteButton_Click"
                                                        TargetObject="{Binding Mode=OneWay}" />
-                            </core:EventTriggerBehavior>
-                        </interactivity:Interaction.Behaviors>
-                    </AppBarButton>
-                </StackPanel>
-            </Grid>
-        </AppBar>
+                        </core:EventTriggerBehavior>
+                    </interactivity:Interaction.Behaviors>
+                </AppBarButton>
+            </CommandBar.PrimaryCommands>
+        </CommandBar>
     </Page.BottomAppBar>
 
 

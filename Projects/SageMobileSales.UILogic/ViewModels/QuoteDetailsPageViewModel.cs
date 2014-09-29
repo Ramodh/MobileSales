@@ -1150,6 +1150,19 @@ namespace SageMobileSales.UILogic.ViewModels
                     IsEditQuoteVisible = Visibility.Visible;
                     IsPlaceOrderVisible = Visibility.Collapsed;
                 }
+                else if((_quote.QuoteStatus==DataAccessUtils.Error))
+                {
+                    IsAddItemVisible = Visibility.Collapsed;
+                    IsChangeAddressVisible = Visibility.Collapsed;
+                    IsSubmitQuoteVisible = Visibility.Collapsed;
+                    IsSendmailVisible = Visibility.Visible;
+                    IsDeleteQuoteVisible = Visibility.Visible;
+                    IsEditQuoteLineItemVisible = Visibility.Collapsed;
+                    IsEditQuoteVisible = Visibility.Collapsed;
+                    IsPlaceOrderVisible = Visibility.Collapsed;
+                    IsShippingAndHandlingEnabled = false;
+                    IsDiscountEnabled = false;
+                }
                 else
                 {
                     IsAddItemVisible = Visibility.Collapsed;

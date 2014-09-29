@@ -28,6 +28,7 @@
         public static string DraftQuote = "Draft";
         public static string SubmitQuote = "Submitted";
         public static string Quote = "Quote";
+        public static string Error = "Error";
         public static string Scratch = "Scratch";
         public static string PreviousOrder = "Previous order";
         public static string PreviousPurchasedItems = "Previously purchased items";
