@@ -28,60 +28,58 @@
 
     <!--Bottom AppBar-->
     <Page.BottomAppBar>
-        <AppBar>
-            <Grid x:Name="appbarGrid" Style="{StaticResource BottomAppbarStyle}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="50*" />
-                    <ColumnDefinition Width="50*" />
-                </Grid.ColumnDefinitions>
-                <StackPanel x:Name="RightPanel" Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right">
-                    <AppBarButton x:Name="appbtnSortQuotes" x:Uid="appbtnSortQuotes" Icon="Sort" Label="">
-                        <AppBarButton.Flyout>
+        <CommandBar Style="{StaticResource BottomAppBarStyle}"
+                    IsSticky="True"
+                    AutomationProperties.AutomationId="BottomAppBar"
+                    x:Uid="BottomAppBar">
+            <CommandBar.PrimaryCommands>
+                <AppBarButton x:Name="appbtnSortQuotes" x:Uid="appbtnSortQuotes" Icon="Sort" Label="">
+                    <AppBarButton.Flyout>
 
-                            <MenuFlyout x:Name="sortMenuFlyout">
-                                <ToggleMenuFlyoutItem x:Name="customerName" x:Uid="customerName" Text=""
+                        <MenuFlyout x:Name="sortMenuFlyout">
+                            <ToggleMenuFlyoutItem x:Name="customerName" x:Uid="customerName" Text=""
                                                       Command="{Binding SortQuotesCommand}"
                                                       CommandParameter="{Binding ElementName=customerName,UpdateSourceTrigger=PropertyChanged}"
                                                       IsChecked="{Binding CustomerNamesort,Mode=TwoWay}" />
-                                <ToggleMenuFlyoutItem x:Name="quoteDate" x:Uid="quoteDate" Text=""
+                            <ToggleMenuFlyoutItem x:Name="quoteDate" x:Uid="quoteDate" Text=""
                                                       Command="{Binding SortQuotesCommand}"
                                                       CommandParameter="{Binding ElementName=quoteDate,UpdateSourceTrigger=PropertyChanged}"
                                                       IsChecked="{Binding QuoteDate,Mode=TwoWay}" />
-                                <ToggleMenuFlyoutItem Text="" x:Name="salesPerson" x:Uid="salesPerson"
+                            <ToggleMenuFlyoutItem Text="" x:Name="salesPerson" x:Uid="salesPerson"
                                                       Command="{Binding SortQuotesCommand}"
                                                       CommandParameter="{Binding ElementName=salesPerson,UpdateSourceTrigger=PropertyChanged}"
                                                       IsChecked="{Binding SalesPerson,Mode=TwoWay}" />
-                                <ToggleMenuFlyoutItem Text="" x:Name="quoteStatus" x:Uid="quoteStatus"
+                            <ToggleMenuFlyoutItem Text="" x:Name="quoteStatus" x:Uid="quoteStatus"
                                                       Command="{Binding SortQuotesCommand}"
                                                       CommandParameter="{Binding ElementName=quoteStatus,UpdateSourceTrigger=PropertyChanged}"
                                                       IsChecked="{Binding QuoteStatus,Mode=TwoWay}" />
-                                <ToggleMenuFlyoutItem Text="" x:Name="quoteAmount" x:Uid="quoteAmount"
+                            <ToggleMenuFlyoutItem Text="" x:Name="quoteAmount" x:Uid="quoteAmount"
                                                       Command="{Binding SortQuotesCommand}"
                                                       CommandParameter="{Binding ElementName=quoteAmount,UpdateSourceTrigger=PropertyChanged}"
                                                       IsChecked="{Binding QuoteAmount,Mode=TwoWay}" />
-                                <MenuFlyoutSeparator />
-                                <ToggleMenuFlyoutItem x:Name="sortByAscending" x:Uid="sortByAscending" Text=""
+                            <MenuFlyoutSeparator />
+                            <ToggleMenuFlyoutItem x:Name="sortByAscending" x:Uid="sortByAscending" Text=""
                                                       IsChecked="{Binding IsAscending, Mode=TwoWay}"
                                                       Command="{Binding SortByAscendingCommand}"
                                                       CommandParameter="{Binding ElementName=sortByAscending,UpdateSourceTrigger=PropertyChanged}" />
-                                <ToggleMenuFlyoutItem x:Name="sortByDescending" x:Uid="sortByDescending" Text=""
+                            <ToggleMenuFlyoutItem x:Name="sortByDescending" x:Uid="sortByDescending" Text=""
                                                       IsChecked="{Binding IsDescending, Mode=TwoWay}"
                                                       Command="{Binding SortByDescendingCommand}"
                                                       CommandParameter="{Binding ElementName=sortByDescending,UpdateSourceTrigger=PropertyChanged}" />
-                            </MenuFlyout>
-                        </AppBarButton.Flyout>
-                    </AppBarButton>
-                    <AppBarButton x:Name="createQuoteappbarbtn" x:Uid="createQuoteappbarbtn" Label="" Icon="Add">
-                        <interactivity:Interaction.Behaviors>
-                            <core:EventTriggerBehavior EventName="Click">
-                                <core:CallMethodAction MethodName="CreateQuoteButton_Click"
+                        </MenuFlyout>
+                    </AppBarButton.Flyout>
+                </AppBarButton>
+                <AppBarButton x:Name="createQuoteappbarbtn" x:Uid="createQuoteappbarbtn" Label="" Icon="Add">
+                    <interactivity:Interaction.Behaviors>
+                        <core:EventTriggerBehavior EventName="Click">
+                            <core:CallMethodAction MethodName="CreateQuoteButton_Click"
                                                        TargetObject="{Binding Mode=OneWay}" />
-                            </core:EventTriggerBehavior>
-                        </interactivity:Interaction.Behaviors>
-                    </AppBarButton>
-                </StackPanel>
-            </Grid>
-        </AppBar>
+                        </core:EventTriggerBehavior>
+                    </interactivity:Interaction.Behaviors>
+                </AppBarButton>
+            </CommandBar.PrimaryCommands>
+        </CommandBar>
+    
     </Page.BottomAppBar>
     <prism:VisualStateAwarePage.TopAppBar>
         <AppBar x:Name="TopAppBar1" Style="{StaticResource TopAppBarUserControlStyle}" x:Uid="TopAppBar1">
