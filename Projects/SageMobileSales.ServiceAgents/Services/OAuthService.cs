@@ -32,8 +32,8 @@ namespace SageMobileSales.ServiceAgents.Services
             _database = database;
             // Authorisation Info 
 
-            _state = "Example state";
-            _deviceName = "Example";
+            _state = "Examplestate";
+            _deviceName = "mobilesalesiosclient";
             _token = String.Empty;
         }
 
@@ -142,7 +142,8 @@ namespace SageMobileSales.ServiceAgents.Services
                 {
                     _client = new OAuthClient(ClientId);
                 }
-                await _client.CleanupAsync();
+
+                await _client.CleanupAsync(settingsLocal.Containers["ConfigurationSettingsContainer"].Values["IsServerChanged"]!=null?Convert.ToBoolean(settingsLocal.Containers["ConfigurationSettingsContainer"].Values["IsServerChanged"]):false);
                 _client.LogEvent += onLogEvent;
                 Token = String.Empty;               
                 //  await _database.Delete();

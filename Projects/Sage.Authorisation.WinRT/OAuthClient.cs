@@ -279,18 +279,20 @@ namespace Sage.Authorisation.WinRT
         /// <remarks>
         ///     It is required that this method is called when your application is being uninstalled.
         /// </remarks>
-        public IAsyncAction CleanupAsync()
+        public IAsyncAction CleanupAsync(bool isServerChanged)
         {
             if (_busy)
             {
                 throw new AuthorisationBusyException();
             }
+            if (isServerChanged)
+            {
+                CredentialStore credentialStore = new CredentialStore(_clientId, new HttpHelper(_log, _configuration));
 
-            //CredentialStore credentialStore = new CredentialStore(_clientId, new HttpHelper(_log, _configuration));
+                _log.Info(LogEventType.ClearingClientCredential, _loader.GetString("LogClearingClientCredential"));
 
-            //_log.Info(LogEventType.ClearingClientCredential, _loader.GetString("LogClearingClientCredential"));
-
-            //credentialStore.ClearCredentialMetadata();
+                credentialStore.ClearCredentialMetadata();
+            }
 
             return _tokenStore.CleanupAsync().AsAsyncAction();
         }
