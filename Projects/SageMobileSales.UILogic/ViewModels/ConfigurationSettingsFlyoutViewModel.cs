@@ -384,7 +384,7 @@ namespace SageMobileSales.UILogic.ViewModels
             configSettings.Containers["ConfigurationSettingsContainer"].Values["RedirectUrl"] = RedirectUrl;
             configSettings.Containers["ConfigurationSettingsContainer"].Values["IsSageProduction"] = IsSageIdProduction;
             configSettings.Containers["ConfigurationSettingsContainer"].Values["SelectedType"] = SelectedType;
-            //configSettings.Containers["ConfigurationSettingsContainer"].Values["IsServerChanged"] = true;
+            configSettings.Containers["ConfigurationSettingsContainer"].Values["IsServerChanged"] = true;
             Constants.ClientId = ClientId;
             Constants.Url = Url;
             Constants.Scope = Scope;
