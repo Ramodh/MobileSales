@@ -497,7 +497,7 @@
     <!--FrequentlyPurchasedItems ItemTemplate-->
 
     <DataTemplate x:Key="FrequentlyPurchasedItemsTemplate">
-        <Grid Height="110" Margin="2" Background="#FF355B4E" Width="350">
+        <Grid Height="120" Margin="2" Background="#FF355B4E" Width="380">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
@@ -508,19 +508,19 @@
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="90" />
+                <ColumnDefinition Width="80" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <Border Background="{StaticResource ListViewItemPlaceholderBackgroundThemeBrush}" Width="110" Height="110" Grid.Column="0" Grid.RowSpan="4"
+            <Border Background="{StaticResource ListViewItemPlaceholderBackgroundThemeBrush}" Width="110" Height="120" Grid.Column="0" Grid.RowSpan="4"
                     VerticalAlignment="Top">
                 <!--<Image Source="{Binding Url}" Stretch="UniformToFill" Height="100" Width="100"/>-->
                 <controls:ImageplaceHolderUserControl Placeholder="/Assets/imagePlaceholder_100x100.png"
-                                                      Source="{Binding Url}" Height="100" Width="100" />
+                                                      Source="{Binding Url}" Height="110" Width="100" />
             </Border>
 
             <TextBlock x:Uid="ItemName" Grid.Row="0" Style="{StaticResource AddressTextStyle}"
-                      TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="1" />
+                      TextWrapping="NoWrap" TextTrimming="WordEllipsis"  Grid.Column="1" />
             <TextBlock Grid.Row="0" Text="{Binding ItemDescription}" Style="{StaticResource AddressTextStyle}"
                        TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="2"/>
             <TextBlock x:Uid="ItemNo" Grid.Row="1" Style="{StaticResource AddressTextStyle}"

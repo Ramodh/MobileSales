@@ -468,8 +468,16 @@ namespace SageMobileSales.UILogic.ViewModels
             try
             {
                 var arg = ((parameter as ItemClickEventArgs).ClickedItem as FrequentlyPurchasedItem);
-
-                _navigationService.Navigate("ItemDetail", arg.ItemId);
+                if (arg != null)
+                    if (arg.ItemDescription == DataAccessUtils.SeeMore)
+                    {
+                        NavigateToFrequentlyPurchasedItems();
+                    }
+                    else
+                    {
+                        _navigationService.Navigate("ItemDetail", arg.ItemId);
+                    }
+               
             }
             catch (Exception ex)
             {
