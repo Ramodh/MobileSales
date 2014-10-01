@@ -1,5 +1,6 @@
 ﻿using Microsoft.Practices.Prism.StoreApps;
 using Microsoft.Practices.Prism.StoreApps.Interfaces;
+using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
 using SageMobileSales.ServiceAgents.Services;
@@ -22,6 +23,7 @@ namespace SageMobileSales.UILogic.ViewModels
         private readonly ILocalSyncDigestRepository _localSyncDigestRepository;
         private readonly ITenantService _tenantService;
         private bool _inProgress;
+        private string _log = string.Empty;
 
         public LoadingIndicatorPageViewModel(INavigationService navigationService, ISalesRepService salesRepService,
             ITenantRepository tenantRepository, ITenantService tenantService,
@@ -46,30 +48,38 @@ namespace SageMobileSales.UILogic.ViewModels
 
         public async override void OnNavigatedTo(object navigationParameter, Windows.UI.Xaml.Navigation.NavigationMode navigationMode, Dictionary<string, object> viewModelState)
         {
-            InProgress = true;
-
-            //Loading all global variables
-            ApplicationDataContainer settingsLocal = ApplicationData.Current.LocalSettings;
-            object _isAuthorised = settingsLocal.Containers["SageSalesContainer"].Values["IsAuthorised"];
-            object _isLaunched = settingsLocal.Containers["SageSalesContainer"].Values["IsLaunched"];
-
-            PageUtils.GetConfigurationSettings();
-            PageUtils.GetApplicationData();
-
-            if (_isLaunched == null)
+            try
             {
-                if (_isAuthorised == null)
+                InProgress = true;
+
+                //Loading all global variables
+                ApplicationDataContainer settingsLocal = ApplicationData.Current.LocalSettings;
+                object _isAuthorised = settingsLocal.Containers["SageSalesContainer"].Values["IsAuthorised"];
+                object _isLaunched = settingsLocal.Containers["SageSalesContainer"].Values["IsLaunched"];
+
+                PageUtils.GetConfigurationSettings();
+                PageUtils.GetApplicationData();
+
+                if (_isLaunched == null)
                 {
-                    // Adding ISAuthorised variable to Appliaction Data.
-                    // So that we can use this for the next logins whether user already Authorised or not.
-                    settingsLocal.Containers["SageSalesContainer"].Values[PageUtils.IsAuthorised] = true;
+                    if (_isAuthorised == null)
+                    {
+                        // Adding ISAuthorised variable to Appliaction Data.
+                        // So that we can use this for the next logins whether user already Authorised or not.
+                        settingsLocal.Containers["SageSalesContainer"].Values[PageUtils.IsAuthorised] = true;
+                    }
+                    settingsLocal.Containers["SageSalesContainer"].Values[PageUtils.IsLaunched] = true;
                 }
-                settingsLocal.Containers["SageSalesContainer"].Values[PageUtils.IsLaunched] = true;
+
+                await SyncUserData();
+
+                base.OnNavigatedTo(navigationParameter, navigationMode, viewModelState);
             }
-
-            await SyncUserData();
-
-            base.OnNavigatedTo(navigationParameter, navigationMode, viewModelState);
+            catch (Exception ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
         }
 
         /// <summary>
@@ -78,21 +88,29 @@ namespace SageMobileSales.UILogic.ViewModels
         /// <returns></returns>
         public async Task SyncUserData()
         {
-            // Sync SalesRep(Loggedin User) data
-            await _salesRepService.SyncSalesRep();
+            try
+            {
+                // Sync SalesRep(Loggedin User) data
+                await _salesRepService.SyncSalesRep();
 
-            Constants.TenantId = await _tenantRepository.GetTenantId();
+                Constants.TenantId = await _tenantRepository.GetTenantId();
 
-            //Company Settings/SalesTeamMember
-            bool salesPersonChanged = await _tenantService.SyncTenant();
+                //Company Settings/SalesTeamMember
+                bool salesPersonChanged = await _tenantService.SyncTenant();
 
-            //Delete localSyncDigest for Customer and set all customers isActive to false
-            if (salesPersonChanged)
-                await _localSyncDigestRepository.DeleteLocalSyncDigestForCustomer();
+                //Delete localSyncDigest for Customer and set all customers isActive to false
+                if (salesPersonChanged)
+                    await _localSyncDigestRepository.DeleteLocalSyncDigestForCustomer();
 
-            InProgress = false;
-            _navigationService.ClearHistory();
-            _navigationService.Navigate("CustomersGroup", null);
+                InProgress = false;
+                _navigationService.ClearHistory();
+                _navigationService.Navigate("CustomersGroup", null);
+            }
+            catch (Exception ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
         }
     }
 }

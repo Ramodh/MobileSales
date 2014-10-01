@@ -1017,7 +1017,14 @@ namespace SageMobileSales.UILogic.ViewModels
             decimal Total = 0;
             if (_quoteDetails != null)
             {
-                Total += SubTotal - DiscountPercentageValue + _shippingAndHandling + _quoteDetails.Tax;
+                if (_quoteDetails.QuoteStatus == DataAccessUtils.DraftQuote || _quoteDetails.QuoteStatus==DataAccessUtils.SubmitQuote)
+                {
+                    Total += SubTotal - DiscountPercentageValue + _shippingAndHandling + _quoteDetails.Tax;
+                }
+                else
+                {
+                    Total = QuoteDetails.Amount;
+                }
             }
             return Total;
         }
