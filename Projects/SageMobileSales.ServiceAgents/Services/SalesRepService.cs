@@ -4,6 +4,8 @@ using Windows.Data.Json;
 using Windows.Storage;
 using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
+using SageMobileSales.DataAccess.Common;
+using System.Text.RegularExpressions;
 
 namespace SageMobileSales.ServiceAgents.Services
 {
@@ -69,6 +71,10 @@ namespace SageMobileSales.ServiceAgents.Services
 
             string userId = await _salesRepRepository.SaveSalesRepDtlsAsync(sDataSalesRep);
             Constants.TrackingId = Constants.GetDeviceId() + userId;
+            Constants.TrackingId = Regex.Replace(Constants.TrackingId, @"[/=]", "");
+
+            //Constants.TrackingId = "BQCvYQYAAQAEAIPkAQCGJwIA/OUJALQY737208ec-d8a0-4388-b7f1-2d166bb8d28a";
+            AppEventSource.Log.Info("Tracking Id : " + Constants.TrackingId);
 
             // Adding TrackingId to Applicationdata Container as we are using this in every Servicerequest.
             // And this will be usefull when we are doing partial sync for particular Service.
