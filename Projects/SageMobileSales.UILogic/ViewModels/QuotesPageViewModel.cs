@@ -43,7 +43,7 @@ namespace SageMobileSales.UILogic.ViewModels
         private bool _isDescending;
         private string _log = string.Empty;
         private Quote _quote;
-        
+        private bool _gridViewItemClickable;
         private List<QuoteDetails> _quoteDetails;
         private string _quotePageTitle;
         private ToggleMenuFlyoutItem _selectedColumn;
@@ -89,7 +89,15 @@ namespace SageMobileSales.UILogic.ViewModels
         public ICommand SortQuotesCommand { get; set; }
         public ICommand SortByAscendingCommand { get; set; }
         public ICommand SortByDescendingCommand { get; set; }
-      
+
+        /// <summary>
+        ///     Checks whether grid view item is clickable or not
+        /// </summary>
+        public bool GridViewItemClickable
+        {
+            get { return _gridViewItemClickable; }
+            private set { SetProperty(ref _gridViewItemClickable, value); }
+        }
         /// <summary>
         ///     checks whether customer name is selected or not
         /// </summary>
@@ -276,6 +284,7 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             try
             {
+                GridViewItemClickable = true;
                 ApplicationDataContainer sortSettings = ApplicationData.Current.LocalSettings;
                 if (sortSettings.Containers.ContainsKey("SortSettingsContainer"))
                 {
@@ -360,6 +369,7 @@ namespace SageMobileSales.UILogic.ViewModels
         /// <param name="parameter"></param>
         public async void GridViewItemClick(object sender, object parameter)
         {
+            GridViewItemClickable = false;
             ApplicationDataContainer sortSettings = ApplicationData.Current.LocalSettings;
             try
             {               
@@ -426,7 +436,7 @@ namespace SageMobileSales.UILogic.ViewModels
             try
             {
                 if (PageUtils.SelectedProduct != null)
-                {
+                {                
                     QuoteLineItem quoteLineItemExists =
                         await
                             _quoteLineItemRepository.GetQuoteLineItemIfExistsForQuote(_quote.QuoteId,
@@ -476,7 +486,7 @@ namespace SageMobileSales.UILogic.ViewModels
                             await _quoteLineItemService.AddQuoteLineItem(_quote, quoteLineItem);
                         }
                     }
-                    PageUtils.SelectedProduct = null;
+                    PageUtils.SelectedProduct = null;                  
                     _navigationService.Navigate("QuoteDetails", _quote.QuoteId);
                 }
             }

@@ -121,7 +121,7 @@
             ItemsSource="{Binding Source={StaticResource itemsViewSource}}"
             SelectionMode="None"
             IsSwipeEnabled="false"
-            IsItemClickEnabled="True"
+            IsItemClickEnabled="{Binding GridViewItemClickable}"          
             ItemTemplate="{StaticResource QuotesTemplate}"
              Loaded="itemsGridView_Loaded">
             <interactivity:Interaction.Behaviors>
