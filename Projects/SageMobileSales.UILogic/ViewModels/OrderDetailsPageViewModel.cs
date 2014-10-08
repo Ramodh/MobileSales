@@ -115,7 +115,7 @@ namespace SageMobileSales.UILogic.ViewModels
             try
             {
                 OrderDtls = navigationParameter as OrderDetails;
-                DisplayOrderDtls();
+                 DisplayOrderDtls();
                 base.OnNavigatedTo(navigationParameter, navigationMode, viewModelState);
                 dataTransferManager = DataTransferManager.GetForCurrentView();
                 dataTransferManager.DataRequested += OnDataRequested;

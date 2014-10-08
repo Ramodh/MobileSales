@@ -11,6 +11,7 @@ using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
 using SageMobileSales.ServiceAgents.JsonHelpers;
 using SQLite;
+using System.Net;
 
 namespace SageMobileSales.ServiceAgents.Services
 {
@@ -88,6 +89,10 @@ namespace SageMobileSales.ServiceAgents.Services
 
                     //TO DO save order response
                     order = await _orderRepository.SaveOrderAsync(sDataQuote);
+                }
+                else if (quoteResponse==null || quoteResponse.StatusCode == HttpStatusCode.InternalServerError)
+                {
+                    return null;
                 }
             }
             catch (SQLiteException ex)

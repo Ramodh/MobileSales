@@ -11,6 +11,7 @@ using SageMobileSales.DataAccess.Model;
 using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
 using SageMobileSales.ServiceAgents.Services;
+using Windows.UI.Popups;
 
 namespace SageMobileSales.UILogic.ViewModels
 {
@@ -201,10 +202,22 @@ namespace SageMobileSales.UILogic.ViewModels
                 if (Constants.ConnectedToInternet())
                 {
                     Orders order = await _orderService.PostOrder(QuoteDtls);
-                    InProgress = false;
-                    _navigationService.ClearHistory();
-                    OrderDetails orderDtls = await _orderRepository.GetOrderDetailsAsync(order.OrderId);
-                    _navigationService.Navigate("OrderDetails", orderDtls);
+                    if (order != null)
+                    {
+                        InProgress = false;
+                        _navigationService.ClearHistory();
+                        OrderDetails orderDtls = await _orderRepository.GetOrderDetailsAsync(order.OrderId);
+                        _navigationService.Navigate("OrderDetails", orderDtls);
+                    }
+                    else
+                    {
+                        InProgress = false;                        
+                        MessageDialog msgDialog = new MessageDialog(
+                                      ResourceLoader.GetForCurrentView("Resources").GetString("InternalServerErrorText"),
+                                      ResourceLoader.GetForCurrentView("Resources").GetString("InternalServerErrorTitle"));
+                        msgDialog.Commands.Add(new UICommand("Ok"));
+                        await msgDialog.ShowAsync();
+                    }
                 }
                 else
                 {
