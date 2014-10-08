@@ -89,7 +89,7 @@ namespace SageMobileSales.UILogic.ViewModels
         public ICommand SortQuotesCommand { get; set; }
         public ICommand SortByAscendingCommand { get; set; }
         public ICommand SortByDescendingCommand { get; set; }
-
+      
         /// <summary>
         ///     Checks whether grid view item is clickable or not
         /// </summary>
@@ -321,21 +321,21 @@ namespace SageMobileSales.UILogic.ViewModels
                 {
                     _customerAddress = navigationParameter as CustomerDetails;
 
-                    if (!Constants.ConnectedToInternet())
-                    {
+                    //if (!Constants.ConnectedToInternet())
+                    //{
                         QuoteDetails = await _quoteRepository.GetQuotesForCustomerAsync(_customerAddress.CustomerId);
                         GetSortSetings();
-                    }
+                    //}
                     CustomerName = ResourceLoader.GetForCurrentView("Resources").GetString("SeperatorSymbol") +
                                    _customerAddress.CustomerName;
                 }          
                 else
                 {
-                    if (!Constants.ConnectedToInternet())
-                    {
+                    //if (!Constants.ConnectedToInternet())
+                    //{
                         QuoteDetails = await _quoteRepository.GetQuotesListAsync(await _salesRepRepository.GetSalesRepId());
                         GetSortSetings();
-                    }
+                    //}
 
                     // QuotePageTitle = ResourceLoader.GetForCurrentView("Resources").GetString("quotePageTitle");
                 }
@@ -436,7 +436,7 @@ namespace SageMobileSales.UILogic.ViewModels
             try
             {
                 if (PageUtils.SelectedProduct != null)
-                {                
+                {
                     QuoteLineItem quoteLineItemExists =
                         await
                             _quoteLineItemRepository.GetQuoteLineItemIfExistsForQuote(_quote.QuoteId,
@@ -448,7 +448,7 @@ namespace SageMobileSales.UILogic.ViewModels
                         await _quoteLineItemRepository.UpdateQuoteLineItemToDbAsync(quoteLineItemExists);
 
                         _quote.Amount = _quote.Amount +
-                                        Math.Round((quoteLineItemExists.Price*quoteLineItemExists.Quantity), 2);
+                                        Math.Round((quoteLineItemExists.Price * quoteLineItemExists.Quantity), 2);
                         await _quoteRepository.UpdateQuoteToDbAsync(_quote);
 
                         if (_quote.QuoteId.Contains(PageUtils.Pending))
@@ -486,7 +486,7 @@ namespace SageMobileSales.UILogic.ViewModels
                             await _quoteLineItemService.AddQuoteLineItem(_quote, quoteLineItem);
                         }
                     }
-                    PageUtils.SelectedProduct = null;                  
+                    PageUtils.SelectedProduct = null;
                     _navigationService.Navigate("QuoteDetails", _quote.QuoteId);
                 }
             }
@@ -506,7 +506,7 @@ namespace SageMobileSales.UILogic.ViewModels
             _quote.QuoteStatus = DataAccessUtils.DraftQuote;
             if (PageUtils.SelectedProduct != null)
             {
-                _quote.Amount += Math.Round((PageUtils.SelectedProduct.Quantity*PageUtils.SelectedProduct.PriceStd), 2);
+                _quote.Amount += Math.Round((PageUtils.SelectedProduct.Quantity * PageUtils.SelectedProduct.PriceStd), 2);
             }
             _quote = await _quoteRepository.UpdateQuoteToDbAsync(_quote);
             await _quoteService.RevertSubmittedQuoteToDraft(_quote);
@@ -660,7 +660,7 @@ namespace SageMobileSales.UILogic.ViewModels
                
                 }
                  PreviousSelectedSortType = _selectedItem;
-                if(orderby)
+                if (orderby)
                 {
                     PreviousSortBy = "Ascending";
                 }

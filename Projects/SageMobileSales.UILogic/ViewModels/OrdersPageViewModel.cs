@@ -58,7 +58,7 @@ namespace SageMobileSales.UILogic.ViewModels
         private bool _salesPerson;
         private bool _orderNumber;
         private string _sortType;
-        private string  _sortBy;
+        private string _sortBy;
 
         public OrdersPageViewModel(INavigationService navigationService, ISalesRepRepository salesRepRepository,
             IOrderRepository orderRepository, ICustomerRepository customerRepository, IEventAggregator eventAggregator,
@@ -309,12 +309,12 @@ namespace SageMobileSales.UILogic.ViewModels
                     Customer customer = await _customerRepository.GetCustomerDataAsync(_customerId);
                     OrdersList = new List<OrderDetails>();
 
-                    if (!Constants.ConnectedToInternet())
-                    {
-                        OrdersList = await _orderRepository.GetOrdersForCustomerAsync(customer.CustomerId);
+                    //if (!Constants.ConnectedToInternet())
+                    //{
+                    OrdersList = await _orderRepository.GetOrdersForCustomerAsync(customer.CustomerId);
 
-                        GetSortSetings();
-                    }
+                    GetSortSetings();
+                    //}
                     CustomerName = ResourceLoader.GetForCurrentView("Resources").GetString("SeperatorSymbol") +
                                    customer.CustomerName;
                 }
@@ -322,13 +322,13 @@ namespace SageMobileSales.UILogic.ViewModels
                 {
                     OrdersPageTitle = "Orders";
 
-                    if (!Constants.ConnectedToInternet())
-                    {
-                        OrdersList = await _orderRepository.GetOrdersListAsync(await _salesRepRepository.GetSalesRepId());
+                    //if (!Constants.ConnectedToInternet())
+                    //{
+                    OrdersList = await _orderRepository.GetOrdersListAsync(await _salesRepRepository.GetSalesRepId());
 
-                        GetSortSetings();
-                    }                        
-                }              
+                    GetSortSetings();
+                    //}                        
+                }
                 base.OnNavigatedTo(navigationParameter, navigationMode, viewModelState);
             }
             catch (Exception ex)
@@ -354,7 +354,7 @@ namespace SageMobileSales.UILogic.ViewModels
             try
             {
                 ApplicationDataContainer orderSortSettings = ApplicationData.Current.LocalSettings;
-         
+
                 var arg = (parameter as ItemClickEventArgs).ClickedItem as OrderDetails;
 
                 var rootFrame = Window.Current.Content as Frame;
@@ -372,7 +372,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 {
                     cameFromOrderDetail = true;
                     orderSortSettings.Containers["OrderSortSettingsContainer"].Values["cameFromOrderDetail"] = cameFromOrderDetail;
-                    PageUtils.CameFromOrderDetail = cameFromOrderDetail;               
+                    PageUtils.CameFromOrderDetail = cameFromOrderDetail;
                     _navigationService.Navigate("OrderDetails", arg);
                 }
             }
@@ -423,7 +423,7 @@ namespace SageMobileSales.UILogic.ViewModels
             if (selectedItem != null)
             {
                 selectedItem.IsChecked = true;
-              //  OrderDate = false;
+                //  OrderDate = false;
 
                 Sort(selectedItem.Text, IsAscending);
             }
@@ -460,7 +460,7 @@ namespace SageMobileSales.UILogic.ViewModels
                     OrderStatus = false;
                     SalesPerson = false;
                     OrderNumber = false;
-                   // SelectedColumn = false;
+                    // SelectedColumn = false;
                 }
                 else if (selectedItem == PageUtils.Date)
                 {
@@ -482,7 +482,7 @@ namespace SageMobileSales.UILogic.ViewModels
                     OrderStatus = false;
                     SalesPerson = false;
                     OrderNumber = false;
-                   // SelectedColumn = true;
+                    // SelectedColumn = true;
                 }
                 else if (selectedItem == PageUtils.Status)
                 {
@@ -505,7 +505,7 @@ namespace SageMobileSales.UILogic.ViewModels
                     OrderStatus = true;
                     SalesPerson = false;
                     OrderNumber = false;
-                   // SelectedColumn = false;
+                    // SelectedColumn = false;
                 }
                 else if (selectedItem == PageUtils.Amount)
                 {
@@ -549,7 +549,7 @@ namespace SageMobileSales.UILogic.ViewModels
                     OrderStatus = false;
                     SalesPerson = true;
                     OrderNumber = false;
-                 //   SelectedColumn = false;
+                    //   SelectedColumn = false;
                 }
                 else if (selectedItem == PageUtils.OrderNumber)
                 {
@@ -572,7 +572,7 @@ namespace SageMobileSales.UILogic.ViewModels
                     OrderStatus = false;
                     SalesPerson = false;
                     OrderNumber = true;
-                  //  SelectedColumn = false;
+                    //  SelectedColumn = false;
                 }
                 PreviousSelectedSortType = _selectedItem;
                 if (orderby)
@@ -605,7 +605,7 @@ namespace SageMobileSales.UILogic.ViewModels
             IsDescending = false;
             PreviousSortBy = _sortByAscending.Text;
             PageUtils.OrderSortBy = _sortByAscending.Text;
-         
+
             Sort(_selectedItem, IsAscending);
         }
 
@@ -621,7 +621,7 @@ namespace SageMobileSales.UILogic.ViewModels
             IsAscending = false;
             PreviousSortBy = _sortByDescending.Text;
             PageUtils.OrderSortBy = PreviousSortBy;
-        
+
             Sort(_selectedItem, IsAscending);
         }
 

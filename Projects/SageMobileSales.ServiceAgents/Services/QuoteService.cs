@@ -60,10 +60,10 @@ namespace SageMobileSales.ServiceAgents.Services
                 await _localSyncDigestService.SyncLocalSource(Constants.QuoteEntity, Constants.syncSourceQueryEntity);
               await SyncQuotes();
             }
-            else
-            {
-                _eventAggregator.GetEvent<QuoteDataChangedEvent>().Publish(true);
-            }
+            //else
+            //{
+            //    _eventAggregator.GetEvent<QuoteDataChangedEvent>().Publish(true);
+            //}
         }
 
         /// <summary>

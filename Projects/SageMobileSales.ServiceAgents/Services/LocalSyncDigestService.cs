@@ -45,7 +45,7 @@ namespace SageMobileSales.ServiceAgents.Services
                     JsonObject sDataLocalDigest = await _serviceAgent.ConvertTosDataObject(localDigestResponse);
 
                     // Check's whether Sync is available or not to go forward
-                    _isSyncAvailable = await CheckSyncAvailable(sDataLocalDigest);
+                    _isSyncAvailable = await CheckSyncAvailable(sDataLocalDigest, entity);
                 }
             }
             catch (NullReferenceException ex)
@@ -66,7 +66,7 @@ namespace SageMobileSales.ServiceAgents.Services
             }
             return _isSyncAvailable;
         }
-        
+
 
 
 
@@ -105,35 +105,35 @@ namespace SageMobileSales.ServiceAgents.Services
 
         # region Private Methods
 
-        /// <summary>
-        ///     Makes call to save LocalSyncDigest data into LocalDB
-        /// </summary>
-        /// <param name="sDataLocalDigest"></param>
-        /// <returns></returns>
-        private async Task<LocalSyncDigest> SaveLocalDigest(JsonObject sDataLocalDigest)
-        {
-            LocalSyncDigest digest = null;
-            try
-            {
-                if (sDataLocalDigest.GetNamedString("ResourceKind") != null)
-                {
-                    digest =
-                        await
-                            _localSyncDigestRepository.GetLocalSyncDigestDtlsAsync(
-                                sDataLocalDigest.GetNamedString("ResourceKind"));
-                    if (digest == null)
-                    {
-                        digest = await _localSyncDigestRepository.SaveLocalSyncDigestDtlsAsync(sDataLocalDigest);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                _log = AppEventSource.Log.WriteLine(ex);
-                AppEventSource.Log.Error(_log);
-            }
-            return digest;
-        }
+        ///// <summary>
+        /////     Makes call to save LocalSyncDigest data into LocalDB
+        ///// </summary>
+        ///// <param name="sDataLocalDigest"></param>
+        ///// <returns></returns>
+        //private async Task<LocalSyncDigest> SaveLocalDigest(JsonObject sDataLocalDigest)
+        //{
+        //    LocalSyncDigest digest = null;
+        //    try
+        //    {
+        //        if (sDataLocalDigest.GetNamedString("ResourceKind") != null)
+        //        {
+        //            digest =
+        //                await
+        //                    _localSyncDigestRepository.GetLocalSyncDigestDtlsAsync(
+        //                        sDataLocalDigest.GetNamedString("ResourceKind"));
+        //            if (digest == null)
+        //            {
+        //                digest = await _localSyncDigestRepository.SaveLocalSyncDigestDtlsAsync(sDataLocalDigest);
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _log = AppEventSource.Log.WriteLine(ex);
+        //        AppEventSource.Log.Error(_log);
+        //    }
+        //    return digest;
+        //}
 
         /// <summary>
         ///     Checks whether Sync is available or not by comparing with LocalTick & the Tick which service returned.
@@ -141,14 +141,13 @@ namespace SageMobileSales.ServiceAgents.Services
         /// </summary>
         /// <param name="sDataLocalDigest"></param>
         /// <returns>bool value(Whether sync is available or not)</returns>
-        private async Task<bool> CheckSyncAvailable(JsonObject sDataLocalDigest)
+        private async Task<bool> CheckSyncAvailable(JsonObject sDataLocalDigest, string entity)
         {
             try
             {
                 _localDigest =
                     await
-                        _localSyncDigestRepository.GetLocalSyncDigestDtlsAsync(
-                            sDataLocalDigest.GetNamedString("ResourceKind"));
+                        _localSyncDigestRepository.GetLocalSyncDigestDtlsAsync(entity);
                 if (_localDigest != null)
                 {
                     if (Convert.ToInt32(sDataLocalDigest.GetNamedNumber("Tick")) >= _localDigest.localTick)

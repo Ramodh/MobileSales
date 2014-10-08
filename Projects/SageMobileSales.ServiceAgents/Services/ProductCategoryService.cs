@@ -45,10 +45,10 @@ namespace SageMobileSales.ServiceAgents.Services
                 await _localSyncDigestService.SyncLocalSource(Constants.CategoryEntity, Constants.syncSourceQueryEntity);
                 await SyncProductCategory();
             }
-            else
-            {
-                _eventAggregator.GetEvent<ProductDataChangedEvent>().Publish(true);
-            }
+            //else
+            //{
+            //    _eventAggregator.GetEvent<ProductDataChangedEvent>().Publish(true);
+            //}
         }
 
 
