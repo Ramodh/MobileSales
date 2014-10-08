@@ -43,7 +43,7 @@ namespace SageMobileSales.UILogic.ViewModels
         private bool _isDescending;
         private string _log = string.Empty;
         private Quote _quote;
-        
+
         private List<QuoteDetails> _quoteDetails;
         private string _quotePageTitle;
         private ToggleMenuFlyoutItem _selectedColumn;
@@ -62,7 +62,7 @@ namespace SageMobileSales.UILogic.ViewModels
         private bool _salesPerson;
 
 
-       
+
         public QuotesPageViewModel(INavigationService navigationService, ISalesRepRepository salesRepRepository,
             IQuoteRepository quoteRepository, IQuoteLineItemRepository quoteLineItemRepository,
             IQuoteService quoteService,
@@ -89,7 +89,7 @@ namespace SageMobileSales.UILogic.ViewModels
         public ICommand SortQuotesCommand { get; set; }
         public ICommand SortByAscendingCommand { get; set; }
         public ICommand SortByDescendingCommand { get; set; }
-      
+
         /// <summary>
         ///     checks whether customer name is selected or not
         /// </summary>
@@ -221,7 +221,7 @@ namespace SageMobileSales.UILogic.ViewModels
         /// <summary>
         // Quote Details
         /// </summary>
-       
+
         public List<QuoteDetails> QuoteDetails
         {
             get { return _quoteDetails; }
@@ -234,7 +234,7 @@ namespace SageMobileSales.UILogic.ViewModels
                     InProgress = false;
             }
         }
-    
+
         public string PreviousSelectedSortType
         {
             get { return _previousSelectedSortType; }
@@ -262,7 +262,7 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             get { return _camefromQuoteDetail; }
             private set { SetProperty(ref _camefromQuoteDetail, value); }
-        }      
+        }
 
 
         /// <summary>
@@ -312,26 +312,26 @@ namespace SageMobileSales.UILogic.ViewModels
                 {
                     _customerAddress = navigationParameter as CustomerDetails;
 
-                    if (!Constants.ConnectedToInternet())
-                    {
-                        QuoteDetails = await _quoteRepository.GetQuotesForCustomerAsync(_customerAddress.CustomerId);
-                        GetSortSetings();
-                    }
+                    //if (!Constants.ConnectedToInternet())
+                    //{
+                    QuoteDetails = await _quoteRepository.GetQuotesForCustomerAsync(_customerAddress.CustomerId);
+                    GetSortSetings();
+                    //}
                     CustomerName = ResourceLoader.GetForCurrentView("Resources").GetString("SeperatorSymbol") +
                                    _customerAddress.CustomerName;
-                }          
+                }
                 else
                 {
-                    if (!Constants.ConnectedToInternet())
-                    {
-                        QuoteDetails = await _quoteRepository.GetQuotesListAsync(await _salesRepRepository.GetSalesRepId());
-                        GetSortSetings();
-                    }
+                    //if (!Constants.ConnectedToInternet())
+                    //{
+                    QuoteDetails = await _quoteRepository.GetQuotesListAsync(await _salesRepRepository.GetSalesRepId());
+                    GetSortSetings();
+                    //}
 
                     // QuotePageTitle = ResourceLoader.GetForCurrentView("Resources").GetString("quotePageTitle");
                 }
 
-          
+
 
                 if (Constants.ConnectedToInternet())
                     await ProcessPendingRequestsForQuote();
@@ -362,7 +362,7 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             ApplicationDataContainer sortSettings = ApplicationData.Current.LocalSettings;
             try
-            {               
+            {
                 var selectedQuotedetails = ((parameter as ItemClickEventArgs).ClickedItem as QuoteDetails);
                 _quote = await _quoteRepository.GetQuoteAsync(selectedQuotedetails.QuoteId);
 
@@ -387,7 +387,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 {
                     CamefromQuoteDetail = true;
                     sortSettings.Containers["SortSettingsContainer"].Values["CamefromQuoteDetail"] = CamefromQuoteDetail;
-                    PageUtils.CameFromQuoteDetail = CamefromQuoteDetail;               
+                    PageUtils.CameFromQuoteDetail = CamefromQuoteDetail;
                     _navigationService.Navigate("QuoteDetails", _quote.QuoteId);
                 }
             }
@@ -438,7 +438,7 @@ namespace SageMobileSales.UILogic.ViewModels
                         await _quoteLineItemRepository.UpdateQuoteLineItemToDbAsync(quoteLineItemExists);
 
                         _quote.Amount = _quote.Amount +
-                                        Math.Round((quoteLineItemExists.Price*quoteLineItemExists.Quantity), 2);
+                                        Math.Round((quoteLineItemExists.Price * quoteLineItemExists.Quantity), 2);
                         await _quoteRepository.UpdateQuoteToDbAsync(_quote);
 
                         if (_quote.QuoteId.Contains(PageUtils.Pending))
@@ -496,7 +496,7 @@ namespace SageMobileSales.UILogic.ViewModels
             _quote.QuoteStatus = DataAccessUtils.DraftQuote;
             if (PageUtils.SelectedProduct != null)
             {
-                _quote.Amount += Math.Round((PageUtils.SelectedProduct.Quantity*PageUtils.SelectedProduct.PriceStd), 2);
+                _quote.Amount += Math.Round((PageUtils.SelectedProduct.Quantity * PageUtils.SelectedProduct.PriceStd), 2);
             }
             _quote = await _quoteRepository.UpdateQuoteToDbAsync(_quote);
             await _quoteService.RevertSubmittedQuoteToDraft(_quote);
@@ -510,21 +510,21 @@ namespace SageMobileSales.UILogic.ViewModels
         /// <param name="sender"></param>
         public void SortQuotes(object sender)
         {
-            ApplicationDataContainer sortSettings = ApplicationData.Current.LocalSettings;           
+            ApplicationDataContainer sortSettings = ApplicationData.Current.LocalSettings;
             if (selectedItem != null)
             {
                 selectedItem.IsChecked = false;
-                
+
             }
             selectedItem = sender as ToggleMenuFlyoutItem;
 
             if (selectedItem != null)
             {
-               selectedItem.IsChecked = true;
-           
+                selectedItem.IsChecked = true;
+
                 Sort(selectedItem.Text, IsAscending);
             }
-          //  SelectedColumn = selectedItem;     
+            //  SelectedColumn = selectedItem;     
         }
 
         /// <summary>
@@ -553,14 +553,14 @@ namespace SageMobileSales.UILogic.ViewModels
                     }
                     _selectedItem = selectedItem;
 
-               
+
                     CustomerNamesort = true;
                     QuoteDate = false;
                     QuoteAmount = false;
                     QuoteStatus = false;
                     SalesPerson = false;
 
-                    
+
                 }
                 else if (selectedItem == PageUtils.Date)
                 {
@@ -577,9 +577,9 @@ namespace SageMobileSales.UILogic.ViewModels
                         QuoteDetails = sortedQuoteDetails;
                     }
                     _selectedItem = selectedItem;
-                 
+
                     QuoteDate = true;
-                    CustomerNamesort = false;                   
+                    CustomerNamesort = false;
                     QuoteAmount = false;
                     QuoteStatus = false;
                     SalesPerson = false;
@@ -599,12 +599,12 @@ namespace SageMobileSales.UILogic.ViewModels
                         QuoteDetails = sortedQuoteDetails;
                     }
                     _selectedItem = selectedItem;
-             
+
                     QuoteStatus = true;
                     QuoteDate = false;
                     CustomerNamesort = false;
                     QuoteAmount = false;
-                   
+
                     SalesPerson = false;
                 }
                 else if (selectedItem == PageUtils.Amount)
@@ -640,17 +640,17 @@ namespace SageMobileSales.UILogic.ViewModels
                             QuoteDetails.OrderByDescending(sortby => sortby.RepName).ToList();
                         QuoteDetails = sortedQuoteDetails;
                     }
-                    SalesPerson = true;              
+                    SalesPerson = true;
                     QuoteStatus = false;
                     QuoteDate = false;
                     CustomerNamesort = false;
                     QuoteAmount = false;
-                 
+
                     _selectedItem = selectedItem;
-               
+
                 }
-                 PreviousSelectedSortType = _selectedItem;
-                if(orderby)
+                PreviousSelectedSortType = _selectedItem;
+                if (orderby)
                 {
                     PreviousSortBy = "Ascending";
                 }
@@ -675,7 +675,7 @@ namespace SageMobileSales.UILogic.ViewModels
         /// <param name="sender"></param>
         public void SortByAscending(object sender)
         {
-            ApplicationDataContainer sortSettings = ApplicationData.Current.LocalSettings;     
+            ApplicationDataContainer sortSettings = ApplicationData.Current.LocalSettings;
             _sortByAscending = sender as ToggleMenuFlyoutItem;
 
             IsAscending = true;
@@ -692,7 +692,7 @@ namespace SageMobileSales.UILogic.ViewModels
         public void SortByDescending(object sender)
         {
             ApplicationDataContainer sortSettings = ApplicationData.Current.LocalSettings;
-    
+
             _sortByDescending = sender as ToggleMenuFlyoutItem;
 
             IsDescending = true;
@@ -750,7 +750,7 @@ namespace SageMobileSales.UILogic.ViewModels
         }
 
         public async Task UpdateQuoteListInfo()
-        {           
+        {
             if (_customerAddress == null)
             {
                 QuoteDetails = await _quoteRepository.GetQuotesListAsync(await _salesRepRepository.GetSalesRepId());
@@ -769,36 +769,36 @@ namespace SageMobileSales.UILogic.ViewModels
                 EmptyQuotes = string.Empty;
             }
             GetSortSetings();
-         
+
         }
 
 
         /// <summary>
         ///    gets sort settings in Quotes
         /// </summary>
-      
+
         private void GetSortSetings()
         {
             ApplicationDataContainer sortSettings = ApplicationData.Current.LocalSettings;
             if (PageUtils.CameFromQuoteDetail && sortSettings.Containers.ContainsKey("SortSettingsContainer"))
             {
-               
-                    if (sortSettings.Containers["SortSettingsContainer"].Values["PreviousSelectedSortType"] != null && 
-                        sortSettings.Containers["SortSettingsContainer"].Values["PreviousSortBy"] != null)
+
+                if (sortSettings.Containers["SortSettingsContainer"].Values["PreviousSelectedSortType"] != null &&
+                    sortSettings.Containers["SortSettingsContainer"].Values["PreviousSortBy"] != null)
+                {
+                    PageUtils.QuoteSortType = sortSettings.Containers["SortSettingsContainer"].Values["PreviousSelectedSortType"].ToString();
+                    PageUtils.QuoteSortBy = sortSettings.Containers["SortSettingsContainer"].Values["PreviousSortBy"].ToString();
+                    if (PageUtils.QuoteSortBy == "Ascending")
                     {
-                        PageUtils.QuoteSortType = sortSettings.Containers["SortSettingsContainer"].Values["PreviousSelectedSortType"].ToString();
-                        PageUtils.QuoteSortBy = sortSettings.Containers["SortSettingsContainer"].Values["PreviousSortBy"].ToString();
-                        if (PageUtils.QuoteSortBy == "Ascending")
-                            {
-                                IsAscending = true;
-                                Sort(PageUtils.QuoteSortType, IsDescending);
-                            }
-                            else
-                            {
-                                IsDescending = true;
-                                Sort(PageUtils.QuoteSortType, IsAscending);
-                            }
-                    }               
+                        IsAscending = true;
+                        Sort(PageUtils.QuoteSortType, IsDescending);
+                    }
+                    else
+                    {
+                        IsDescending = true;
+                        Sort(PageUtils.QuoteSortType, IsAscending);
+                    }
+                }
             }
             else
             {
@@ -806,7 +806,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 Sort(PageUtils.Date, IsAscending);
             }
 
-        }         
+        }
 
 
         public void QuotesSyncIndicator(bool sync)

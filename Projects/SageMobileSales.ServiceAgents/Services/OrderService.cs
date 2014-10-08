@@ -56,10 +56,10 @@ namespace SageMobileSales.ServiceAgents.Services
                 await _localSyncDigestService.SyncLocalSource(Constants.OrderEntity, Constants.syncSourceQueryEntity);
                 await SyncOrders();
             }
-            else
-            {
-                _eventAggregator.GetEvent<OrderDataChangedEvent>().Publish(true);
-            }
+            //else
+            //{
+            //    _eventAggregator.GetEvent<OrderDataChangedEvent>().Publish(true);
+            //}
         }
 
         //Need clarification

@@ -22,35 +22,35 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         # region public methods
-        /// <summary>
-        ///     Extracts localSyncDigest data from json, save in local dB
-        /// </summary>
-        /// <param name="sDataLocalDigest"></param>
-        /// <returns></returns>
-        public async Task<LocalSyncDigest> SaveLocalSyncDigestDtlsAsync(JsonObject sDataLocalDigest)
-        {
-            var _localSyncDigest = new LocalSyncDigest();
-            try
-            {
-                _localSyncDigest.localTick = Convert.ToInt32(sDataLocalDigest.GetNamedNumber("Tick"));
-                _localSyncDigest.SDataEntity = sDataLocalDigest.GetNamedString("ResourceKind");
-                _localSyncDigest.TenantId = sDataLocalDigest.GetNamedString("TenantId");
-                await _sageSalesDB.InsertAsync(_localSyncDigest);
-            }
-            catch (Exception ex)
-            {
-                _log = AppEventSource.Log.WriteLine(ex);
-                AppEventSource.Log.Error(_log);
-            }
-            return _localSyncDigest;
-        }
+        ///// <summary>
+        /////     Extracts localSyncDigest data from json, save in local dB
+        ///// </summary>
+        ///// <param name="sDataLocalDigest"></param>
+        ///// <returns></returns>
+        //public async Task<LocalSyncDigest> SaveLocalSyncDigestDtlsAsync(JsonObject sDataLocalDigest)
+        //{
+        //    var _localSyncDigest = new LocalSyncDigest();
+        //    try
+        //    {
+        //        _localSyncDigest.localTick = Convert.ToInt32(sDataLocalDigest.GetNamedNumber("Tick"));
+        //        _localSyncDigest.SDataEntity = sDataLocalDigest.GetNamedString("ResourceKind");
+        //        _localSyncDigest.TenantId = sDataLocalDigest.GetNamedString("TenantId");
+        //        await _sageSalesDB.InsertAsync(_localSyncDigest);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _log = AppEventSource.Log.WriteLine(ex);
+        //        AppEventSource.Log.Error(_log);
+        //    }
+        //    return _localSyncDigest;
+        //}
 
         /// <summary>
         ///     Update LocalSyncDigest data into local dB
         /// </summary>
         /// <param name="localSyncDigest"></param>
         /// <returns></returns>
-        public async Task<LocalSyncDigest> UpdateLocalSyncDigestDtlsAsync(LocalSyncDigest localSyncDigest)
+        public async Task<LocalSyncDigest> AddOrUpdateLocalSyncDigestDtlsAsync(LocalSyncDigest localSyncDigest)
         {
             try
             {

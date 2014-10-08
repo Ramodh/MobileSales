@@ -68,7 +68,7 @@ namespace SageMobileSales.DataAccess.Repositories
                             localSyncDigest.LastSyncTime = DateTime.Now;
                             DataAccessUtils.IsProductAssociatedBlobsSyncCompleted = true;
                         }
-                        await _localSyncDigestRepository.UpdateLocalSyncDigestDtlsAsync(localSyncDigest);
+                        await _localSyncDigestRepository.AddOrUpdateLocalSyncDigestDtlsAsync(localSyncDigest);
                     }
                 }                
             }
