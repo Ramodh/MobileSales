@@ -71,8 +71,7 @@ namespace SageMobileSales.ServiceAgents.Services
 
             string userId = await _salesRepRepository.SaveSalesRepDtlsAsync(sDataSalesRep);
             Constants.TrackingId = Constants.GetDeviceId() + userId;
-            Constants.TrackingId = Regex.Replace(Constants.TrackingId, @"[/=]", "");
-
+           
             //Constants.TrackingId = "BQCvYQYAAQAEAIPkAQCGJwIA/OUJALQY737208ec-d8a0-4388-b7f1-2d166bb8d28a";
             AppEventSource.Log.Info("Tracking Id : " + Constants.TrackingId);
 
