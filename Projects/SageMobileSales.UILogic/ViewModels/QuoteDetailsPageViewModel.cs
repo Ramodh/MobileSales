@@ -109,9 +109,7 @@ namespace SageMobileSales.UILogic.ViewModels
             {
                 eventAggregator.GetEvent<QuoteDetailsUpdatedEvent>().Subscribe(UpdateQuoteDetailsAsync);
             }
-        }
-
-
+        }     
         public List<LineItemDetails> QuoteLineItemsList
         {
             get { return _quoteLineItemsList; }
@@ -573,6 +571,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 if (((TextBox)args).Text != null && ((TextBox)args).Text != string.Empty)
                 {
                     _shippingAndHandling = Convert.ToDecimal(((TextBox)args).Text);
+                    _shippingAndHandling = Math.Round(_shippingAndHandling, 2);
                 }
                 else
                 {
