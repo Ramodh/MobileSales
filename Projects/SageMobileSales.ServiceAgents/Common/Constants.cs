@@ -90,9 +90,14 @@ namespace SageMobileSales.ServiceAgents.Common
         /// <returns></returns>
         public static string GetDeviceId()
         {
-            HardwareToken token = HardwareIdentification.GetPackageSpecificToken(null);
-            string deviceId = CryptographicBuffer.EncodeToBase64String(token.Id);
-            return deviceId;
+            var token = HardwareIdentification.GetPackageSpecificToken(null);
+            var hardwareId = token.Id;
+            var dataReader = Windows.Storage.Streams.DataReader.FromBuffer(hardwareId);
+
+            var bytes = new byte[hardwareId.Length];
+            dataReader.ReadBytes(bytes);
+
+            return BitConverter.ToString(bytes);
         }
 
         /// <summary>

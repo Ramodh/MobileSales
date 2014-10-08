@@ -842,7 +842,6 @@ namespace SageMobileSales.UILogic.ViewModels
 
             QuoteDetails = await _quoteRepository.GetQuoteDetailsAsync(_quoteId);
 
-
             ShippingAddressDetails = await _addressRepository.GetShippingAddressDetails(QuoteDetails.AddressId);
             InProgress = true;
             await DisplayQuotedetails();
@@ -936,7 +935,9 @@ namespace SageMobileSales.UILogic.ViewModels
 
                 ShippingAndHandling = QuoteDetails.ShippingAndHandling;
                 DiscountPercent = QuoteDetails.DiscountPercent;
-                               
+
+                ShippingAddressDetails = await _addressRepository.GetShippingAddressDetails(QuoteDetails.AddressId);
+
                 CustomerDetails =
                     await _customerRepository.GetCustomerDtlsForQuote(_quoteDetails.CustomerId, _quoteDetails.AddressId);
                 _customerMailingAddress = await _addressRepository.GetCustomerMailingAddress(CustomerDetails.CustomerId);
