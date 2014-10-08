@@ -126,7 +126,7 @@ namespace SageMobileSales.UILogic.ViewModels
                         //    }
                         //}
 
-                        ReCreateDatabase();
+                        await ReCreateDatabase();
 
                         //Sync current user/tenant info
                         await SyncUserData();
@@ -238,7 +238,7 @@ namespace SageMobileSales.UILogic.ViewModels
             isSignInDisabled = true;
         }
 
-        private async void ReCreateDatabase()
+        private async Task ReCreateDatabase()
         {
             await _database.Delete();
             await _database.Initialize();
