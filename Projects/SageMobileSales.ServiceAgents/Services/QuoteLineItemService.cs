@@ -99,7 +99,7 @@ namespace SageMobileSales.ServiceAgents.Services
             try
             {
                 parameters = new Dictionary<string, string>();
-                //parameters.Add("include", "Details");
+                parameters.Add("include", "Details");
                 object obj;
 
                 obj = ConvertQuoteDetailsWithShippingAddressKeyToJsonFormattedObject(quote, quoteLineItem);
@@ -154,31 +154,38 @@ namespace SageMobileSales.ServiceAgents.Services
         {
             try
             {
-                parameters = new Dictionary<string, string>();
-                parameters.Add("include", "Details");
-                object obj;
-
-                obj = ConvertEditedQuoteDetailsWithShippingAddressKeyToJsonFormattedObject(quote, quoteLineItem, false);
-
-                HttpResponseMessage quoteResponse = null;
-                string quoteEntityId;
-
-                quoteEntityId = Constants.DraftQuotes + "('" + quote.QuoteId + "')";
-
-                quoteResponse =
-                    await
-                        _serviceAgent.BuildAndPatchObjectRequest(Constants.TenantId, quoteEntityId, null,
-                            Constants.AccessToken, parameters,
-                            obj);
-
-                //quoteResponse =
-                //    await
-                //        _serviceAgent.BuildAndPutObjectRequest(quoteEntityId, null, Constants.AccessToken, parameters,
-                //            obj);
-                if (quoteResponse != null && quoteResponse.IsSuccessStatusCode)
+                if (quoteLineItem.QuoteLineItemId.Contains(Constants.Pending))
                 {
-                    JsonObject sDataQuote = await _serviceAgent.ConvertTosDataObject(quoteResponse);
-                    await _quoteRepository.SavePostedQuoteToDbAsync(sDataQuote, quote, null, quoteLineItem);
+                    await AddQuoteLineItem(quote, quoteLineItem);
+                }
+                else
+                {
+                    parameters = new Dictionary<string, string>();
+                    parameters.Add("include", "Details");
+                    object obj;
+
+                    obj = ConvertEditedQuoteDetailsWithShippingAddressKeyToJsonFormattedObject(quote, quoteLineItem, false);
+
+                    HttpResponseMessage quoteResponse = null;
+                    string quoteEntityId;
+
+                    quoteEntityId = Constants.DraftQuotes + "('" + quote.QuoteId + "')";
+
+                    quoteResponse =
+                        await
+                            _serviceAgent.BuildAndPatchObjectRequest(Constants.TenantId, quoteEntityId, null,
+                                Constants.AccessToken, parameters,
+                                obj);
+
+                    //quoteResponse =
+                    //    await
+                    //        _serviceAgent.BuildAndPutObjectRequest(quoteEntityId, null, Constants.AccessToken, parameters,
+                    //            obj);
+                    if (quoteResponse != null && quoteResponse.IsSuccessStatusCode)
+                    {
+                        JsonObject sDataQuote = await _serviceAgent.ConvertTosDataObject(quoteResponse);
+                        await _quoteRepository.SavePostedQuoteToDbAsync(sDataQuote, quote, null, quoteLineItem);
+                    }
                 }
             }
             catch (SQLiteException ex)

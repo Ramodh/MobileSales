@@ -7,7 +7,7 @@ namespace SageMobileSales.ServiceAgents.Services
     {
         Task StartQuoteSyncProcess();
         Task<Quote> PostDraftQuote(Quote quote);
-        Task<Quote> PatchDraftQuote(Quote quote);
+        //Task<Quote> PatchDraftQuote(Quote quote);
         Task<Quote> SubmitQuote(Quote quote);
         Task DeleteQuote(string quoteId);
         Task UpdateQuoteShippingAddressKey(Quote quote);
