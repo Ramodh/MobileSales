@@ -453,7 +453,10 @@ namespace SageMobileSales.UILogic.ViewModels
                     _quote = await UpdateQuote(DataAccessUtils.SubmitQuote);
 
                     if (Constants.ConnectedToInternet())
+                    {
+                        await UpdateQuoteAndQuoteLineItemdetailsToServer(_quote);
                         _quote = await _quoteService.SubmitQuote(_quote);
+                    }
 
                     InProgress = false;
                     //if (_quote.QuoteStatus == DataAccessUtils.SubmitQuote)
@@ -854,8 +857,15 @@ namespace SageMobileSales.UILogic.ViewModels
             base.OnNavigatedTo(navigationParameter, navigationMode, viewModelState);
         }
 
-        public override void OnNavigatedFrom(Dictionary<string, object> viewModelState, bool suspending)
+        public async override void OnNavigatedFrom(Dictionary<string, object> viewModelState, bool suspending)
         {
+            if (Constants.ConnectedToInternet())
+            {
+                if (_quote.QuoteStatus.ToLower() == "draft")
+                {
+                    await UpdateQuoteAndQuoteLineItemdetailsToServer(_quote);
+                }
+            }
             if (dataTransferManager != null)
             {
                 // Unregister the current page as a share source.
@@ -1063,7 +1073,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 //{
                 //    await _quoteService.UpdateDiscountOrShippingAndHandling(_quote);
                 //}
-                await _quoteService.UpdateDiscountOrShippingAndHandling(_quote);
+                //await _quoteService.UpdateDiscountOrShippingAndHandling(_quote);
             }
             catch (Exception ex)
             {
@@ -1278,6 +1288,32 @@ namespace SageMobileSales.UILogic.ViewModels
             await _quoteLineItemService.SyncOfflineQuoteLineItems();
             await _quoteService.SyncOfflineShippingAddress();
             await _quoteLineItemService.SyncOfflineQuoteLineItems();
+        }
+
+
+        /// <summary>
+        /// Update Quote and QuoteLineItem details to Server
+        /// </summary>
+        /// <param name="quote"></param>
+        /// <returns></returns>
+        private async Task UpdateQuoteAndQuoteLineItemdetailsToServer(Quote quote)
+        {
+            try
+            {
+                List<QuoteLineItem> quoteLineItemsList = await _quoteLineItemRepository.GetQuoteLineItemsForQuote(quote.QuoteId);
+                if (quoteLineItemsList != null && quoteLineItemsList.Count > 0)
+                {
+                    foreach (QuoteLineItem quoteLineItem in quoteLineItemsList)
+                    {
+                        await _quoteLineItemService.EditQuoteLineItem(quote, quoteLineItem);
+                    }
+                }
+                await _quoteService.UpdateDiscountOrShippingAndHandling(quote);
+            }
+            catch (Exception ex)
+            { 
+            
+            }
         }
 
     }

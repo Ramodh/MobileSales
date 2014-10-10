@@ -193,7 +193,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 if (LineItemQuantity > 0)
                 {
                     LineItemQuantity -= 1;
-                    await UpdateQuoteLineItem(sender as QuoteLineItemViewModel);
+                    await UpdateQuoteLineItemToLocalDB(sender as QuoteLineItemViewModel);
                 }
             }
             catch (Exception ex)
@@ -208,7 +208,7 @@ namespace SageMobileSales.UILogic.ViewModels
             try
             {
                 LineItemQuantity += 1;
-                await UpdateQuoteLineItem(sender as QuoteLineItemViewModel);
+                await UpdateQuoteLineItemToLocalDB(sender as QuoteLineItemViewModel);
             }
             catch (Exception ex)
             {
@@ -230,7 +230,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 if (quotelineItemObj != null)
                 {
                     LineItemQuantity = quotelineItemObj.LineItemQuantity;
-                    await UpdateQuoteLineItem(quotelineItemObj);
+                    await UpdateQuoteLineItemToLocalDB(quotelineItemObj);
                 }
             }
             catch (Exception ex)
@@ -256,7 +256,7 @@ namespace SageMobileSales.UILogic.ViewModels
             }
         }
 
-        private async Task UpdateQuoteLineItem(QuoteLineItemViewModel selectedItem)
+        private async Task UpdateQuoteLineItemToLocalDB(QuoteLineItemViewModel selectedItem)
         {
             try
             {
@@ -266,12 +266,12 @@ namespace SageMobileSales.UILogic.ViewModels
                   await _quoteLineItemRepository.GetQuoteLineAsync(selectedItem.LineItemId);
                 selectedQuoteLineItem.Quantity = selectedItem.LineItemQuantity;
                 await _quoteLineItemRepository.UpdateQuoteLineItemToDbAsync(selectedQuoteLineItem);
-                _quote = await UpdateQuote(string.Empty);
+                _quote = await UpdateQuoteToLocalDB(string.Empty);
 
-                if (_quote != null && Constants.ConnectedToInternet())
-                {
-                    await _quoteLineItemService.EditQuoteLineItem(_quote, selectedQuoteLineItem);
-                }
+                //if (_quote != null && Constants.ConnectedToInternet())
+                //{
+                //    await _quoteLineItemService.EditQuoteLineItem(_quote, selectedQuoteLineItem);
+                //}
             }
             catch (Exception ex)
             {
@@ -280,7 +280,7 @@ namespace SageMobileSales.UILogic.ViewModels
             }
         }
 
-        private async Task<Quote> UpdateQuote(string quoteStatus)
+        private async Task<Quote> UpdateQuoteToLocalDB(string quoteStatus)
         {
             try
             {
@@ -348,7 +348,7 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             try
             {
-                _quote = await UpdateQuote(DataAccessUtils.DraftQuote);
+                _quote = await UpdateQuoteToLocalDB(DataAccessUtils.DraftQuote);
                 IsEnabled = false;
                 OnPropertyChanged("IsEnabled");
             }
