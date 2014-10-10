@@ -790,6 +790,7 @@ namespace SageMobileSales.UILogic.ViewModels
             try
             {
                 InProgress = true;
+                IsSubmitQuoteEnabled = true;
                 _quote = await UpdateQuote(DataAccessUtils.DraftQuote);
                 await DisplayQuotedetails();
                 InProgress = false;
