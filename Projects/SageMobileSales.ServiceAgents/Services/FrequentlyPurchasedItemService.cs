@@ -27,6 +27,7 @@ namespace SageMobileSales.ServiceAgents.Services
             parameters = new Dictionary<string, string>();
             customerId = "CustomerId eq guid" + "'" + customerId + "'";
             parameters.Add("where", customerId);
+            parameters.Add("orderBy","NumberOfInvoices desc");
 
             //string frequentlyPurchasedItemByCustomerEntityId = Constants.FrequentlyPurchasedItem + "('" + customerId + "')";
             HttpResponseMessage frequentlyPurchasedItemResponse = null;
