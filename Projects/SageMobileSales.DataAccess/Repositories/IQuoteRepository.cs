@@ -27,5 +27,6 @@ namespace SageMobileSales.DataAccess.Repositories
         Task<List<Quote>> GetPendingQuotes();
         Task<List<Quote>> GetDeletedQuotes();
         Task<List<QuoteShippingAddress>> GetPendingShippingAddress();
+        Task<List<QuoteDetails>> GetNonSubmittedQuotesListAsync(string salesRepId);
     }
 }
