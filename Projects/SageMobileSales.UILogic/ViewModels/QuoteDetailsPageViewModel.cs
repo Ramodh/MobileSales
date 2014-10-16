@@ -544,7 +544,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 {
                     _quote = await _quoteRepository.GetQuoteAsync(_quoteId);
                 }
-                if (_quote.QuoteStatus == "Quote")
+                if (_quote.QuoteStatus == DataAccessUtils.Quote || _quote.QuoteStatus == DataAccessUtils.Error)
                 {
                     await
                         ShowMessageDialog(
@@ -1176,7 +1176,7 @@ namespace SageMobileSales.UILogic.ViewModels
                     IsSendmailVisible = Visibility.Visible;
                     IsDeleteQuoteVisible = Visibility.Visible;
                     IsEditQuoteLineItemVisible = Visibility.Collapsed;
-                    IsEditQuoteVisible = Visibility.Collapsed;
+                    IsEditQuoteVisible = Visibility.Visible;
                     IsPlaceOrderVisible = Visibility.Collapsed;
                     IsShippingAndHandlingEnabled = false;
                     IsDiscountEnabled = false;
