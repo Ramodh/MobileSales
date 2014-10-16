@@ -759,4 +759,11 @@
   <data name="UnAuthorizedText" xml:space="preserve">
     <value>The Sage ID you entered is not authorized to use this application. Contact your administrator.</value>
   </data>
+  <data name="PlaceOrderErrorText" xml:space="preserve">
+    <value>Please try again in a few minutes</value>
+  </data>
+  <data name="PlaceOrderErrorTitle" xml:space="preserve">
+    <value>There was a problem placing your order</value>
+    <comment>place order error text</comment>
+  </data>
 </root>
