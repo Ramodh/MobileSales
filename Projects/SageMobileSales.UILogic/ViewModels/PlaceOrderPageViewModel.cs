@@ -211,10 +211,10 @@ namespace SageMobileSales.UILogic.ViewModels
                     }
                     else
                     {
-                        InProgress = false;                        
+                        InProgress = false;
                         MessageDialog msgDialog = new MessageDialog(
-                                      ResourceLoader.GetForCurrentView("Resources").GetString("InternalServerErrorText"),
-                                      ResourceLoader.GetForCurrentView("Resources").GetString("InternalServerErrorTitle"));
+                                      ResourceLoader.GetForCurrentView("Resources").GetString("PlaceOrderErrorText"),
+                                      ResourceLoader.GetForCurrentView("Resources").GetString("PlaceOrderErrorTitle"));
                         msgDialog.Commands.Add(new UICommand("Ok"));
                         await msgDialog.ShowAsync();
                     }
