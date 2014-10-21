@@ -270,7 +270,7 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             get { return _camefromQuoteDetail; }
             private set { SetProperty(ref _camefromQuoteDetail, value); }
-        }      
+        }
 
 
         /// <summary>
@@ -323,24 +323,29 @@ namespace SageMobileSales.UILogic.ViewModels
 
                     //if (!Constants.ConnectedToInternet())
                     //{
-                        QuoteDetails = await _quoteRepository.GetQuotesForCustomerAsync(_customerAddress.CustomerId);
-                        GetSortSetings();
+                    QuoteDetails = await _quoteRepository.GetQuotesForCustomerAsync(_customerAddress.CustomerId);
+                    GetSortSetings();
                     //}
                     CustomerName = ResourceLoader.GetForCurrentView("Resources").GetString("SeperatorSymbol") +
                                    _customerAddress.CustomerName;
-                }          
+                }
+                else if (PageUtils.SelectedProduct != null)
+                {
+                    QuoteDetails = await _quoteRepository.GetNonSubmittedQuotesListAsync(await _salesRepRepository.GetSalesRepId());
+                    GetSortSetings();
+                }
                 else
                 {
                     //if (!Constants.ConnectedToInternet())
                     //{
-                        QuoteDetails = await _quoteRepository.GetQuotesListAsync(await _salesRepRepository.GetSalesRepId());
-                        GetSortSetings();
+                    QuoteDetails = await _quoteRepository.GetQuotesListAsync(await _salesRepRepository.GetSalesRepId());
+                    GetSortSetings();
                     //}
 
                     // QuotePageTitle = ResourceLoader.GetForCurrentView("Resources").GetString("quotePageTitle");
                 }
 
-          
+                OnPropertyChanged("QuoteDetails");
 
                 if (Constants.ConnectedToInternet())
                     await ProcessPendingRequestsForQuote();
@@ -359,6 +364,10 @@ namespace SageMobileSales.UILogic.ViewModels
 
         public override void OnNavigatedFrom(Dictionary<string, object> viewModelState, bool suspending)
         {
+            if (PageUtils.SelectedProduct != null)
+            {
+                PageUtils.SelectedProduct = null;
+            }
             base.OnNavigatedFrom(viewModelState, suspending);
         }
 
@@ -761,13 +770,17 @@ namespace SageMobileSales.UILogic.ViewModels
 
         public async Task UpdateQuoteListInfo()
         {           
-            if (_customerAddress == null)
+            if (_customerAddress != null)
             {
-                QuoteDetails = await _quoteRepository.GetQuotesListAsync(await _salesRepRepository.GetSalesRepId());
+                QuoteDetails = await _quoteRepository.GetQuotesForCustomerAsync(_customerAddress.CustomerId);                
+            }
+            else if (PageUtils.SelectedProduct != null)
+            {
+                QuoteDetails = await _quoteRepository.GetNonSubmittedQuotesListAsync(await _salesRepRepository.GetSalesRepId());                
             }
             else
             {
-                QuoteDetails = await _quoteRepository.GetQuotesForCustomerAsync(_customerAddress.CustomerId);
+                QuoteDetails = await _quoteRepository.GetQuotesListAsync(await _salesRepRepository.GetSalesRepId());
             }
             if (QuoteDetails.Count == 0)
             {

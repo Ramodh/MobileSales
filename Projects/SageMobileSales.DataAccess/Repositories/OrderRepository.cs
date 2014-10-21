@@ -197,6 +197,32 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
+        ///     Gets order status order list for particular customer
+        /// </summary>
+        /// <param name="salesRepId"></param>
+        /// <returns></returns>
+        public async Task<List<OrderDetails>> GetOrderStatusListAsync(string customerId)
+        {
+
+            //salesRepId is not required, Check and remove
+            List<OrderDetails> ordersList = null;
+            try
+            {                
+                ordersList =
+                    await
+                        _sageSalesDB.QueryAsync<OrderDetails>(
+                            "SELECT distinct customer.customerName, orders.CustomerId,orders.OrderNumber, orders.AddressId, orders.TenantId, orders.OrderId, orders.CreatedOn, orders.amount, orders.DiscountPercent, orders.ShippingAndHandling, orders.Tax, orders.OrderStatus,orders.OrderDescription, SalesRep.RepName FROM customer, orders left Join SalesRep On SalesRep.RepId=Orders.RepId where Orders.OrderStatus=='Order' and customer.customerId=orders.customerId and customer.IsActive=1 and orders.customerId=? order by orders.createdOn desc",
+                            customerId);
+            }
+            catch (Exception ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+            return ordersList;
+        }
+
+        /// <summary>
         ///     Add or update order json to local dB
         /// </summary>
         /// <param name="sDataOrder"></param>

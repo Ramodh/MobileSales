@@ -128,6 +128,41 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
+        ///     Gets all nonsubmitted quote list
+        /// </summary>
+        /// <param name="salesRepId"></param>
+        /// <returns></returns>
+        public async Task<List<QuoteDetails>> GetNonSubmittedQuotesListAsync(string salesRepId)
+        {
+            List<QuoteDetails> quotesList = null;
+            try
+            {
+                quotesList =
+                    await
+                        _sageSalesDB.QueryAsync<QuoteDetails>(
+                            "SELECT distinct customer.customerName, quote.Id, quote.CustomerId, quote.QuoteId, quote.CreatedOn, quote.amount, quote.quoteStatus,quote.QuoteDescription,(select RepName from SalesRep as RP where RP.RepId='" + salesRepId + "') as RepName FROM quote INNER JOIN customer ON customer.customerID = quote.customerId And customer.IsActive=1 And Quote.QuoteStatus!='" + DataAccessUtils.IsOrderQuoteStatus + "' And Quote.QuoteStatus!='" + DataAccessUtils.TemporaryQuoteStatus + "' And Quote.QuoteStatus!='" + DataAccessUtils.SubmitQuote + "' And Quote.IsDeleted='0'");
+            }
+            catch (SQLiteException ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+            catch (NullReferenceException ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+
+            catch (Exception ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+                ;
+            }
+            return quotesList;
+        }
+
+        /// <summary>
         ///     Extract data from response and updates quotes, addresses and quoteLineItems
         /// </summary>
         /// <param name="sDataCustomer"></param>
