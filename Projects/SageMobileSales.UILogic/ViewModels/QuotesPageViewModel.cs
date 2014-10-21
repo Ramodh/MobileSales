@@ -747,7 +747,17 @@ namespace SageMobileSales.UILogic.ViewModels
 
         public void CreateQuoteButton_Click(object sender, object parameter)
         {
-            _navigationService.Navigate("CreateQuote", null);
+            var rootFrame = Window.Current.Content as Frame;
+            List<PageStackEntry> navigationHistory = rootFrame.BackStack.ToList();
+            PageStackEntry pageStack = navigationHistory.LastOrDefault();
+            if (pageStack != null && pageStack.SourcePageType.Name == PageUtils.CustomerDetailPage)
+            {
+                _navigationService.Navigate("CreateQuote", _customerAddress);
+            }
+            else
+            {
+                _navigationService.Navigate("CreateQuote", null);
+            }
         }
 
         /// <summary>

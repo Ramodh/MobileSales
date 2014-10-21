@@ -277,13 +277,16 @@ namespace SageMobileSales.UILogic.ViewModels
                     CustomerSearchBoxText = "Search for a Customer";
                 }
 
-                if (navigationParameter != null && pageStack.SourcePageType.Name == PageUtils.CustomerDetailPage)
+                if (navigationParameter != null)
                 {
-                    _customerAddress = navigationParameter as CustomerDetails;
-                    PageUtils.SelectedCustomerDetails = _customerAddress;
+                    if (pageStack.SourcePageType.Name == PageUtils.CustomerDetailPage || pageStack.SourcePageType.Name == "QuotesPage")
+                    {
+                        _customerAddress = navigationParameter as CustomerDetails;
+                        PageUtils.SelectedCustomerDetails = _customerAddress;
 
-                    IsCustomerSearchVisible = Visibility.Collapsed;
-                    IsTextBlockVisible = Visibility.Visible;
+                        IsCustomerSearchVisible = Visibility.Collapsed;
+                        IsTextBlockVisible = Visibility.Visible;
+                    }
                 }
                 else if (navigationParameter != null && pageStack.SourcePageType.Name == PageUtils.OrdersPage)
                 {
