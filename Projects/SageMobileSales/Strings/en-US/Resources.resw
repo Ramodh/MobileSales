@@ -771,7 +771,15 @@
     <comment>Error message in CreateQuote on Save click without selecting a cusstomer</comment>
   </data>
   <data name="MesDialogCreateQuoteTitle" xml:space="preserve">
-    <value>Cannot create Quote</value>
+    <value>Cannot Create Quote</value>
     <comment>Error message title in CreateQuote</comment>
+  </data>
+  <data name="MesDialogAddContactSaveMessage" xml:space="preserve">
+    <value>Please enter Firstname or LastName</value>
+    <comment>Error message for saving contact in AddContactPage</comment>
+  </data>
+  <data name="MesDialogAddContactTitle" xml:space="preserve">
+    <value>Cannot Create Contact</value>
+    <comment>Error message title for saving contact in AddContactPage</comment>
   </data>
 </root>
