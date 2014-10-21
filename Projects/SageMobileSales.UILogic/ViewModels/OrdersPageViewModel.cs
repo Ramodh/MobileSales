@@ -59,6 +59,7 @@ namespace SageMobileSales.UILogic.ViewModels
         private bool _orderNumber;
         private string _sortType;
         private string _sortBy;
+        private string _cameFrom = string.Empty;
 
         public OrdersPageViewModel(INavigationService navigationService, ISalesRepRepository salesRepRepository,
             IOrderRepository orderRepository, ICustomerRepository customerRepository, IEventAggregator eventAggregator,
@@ -264,7 +265,7 @@ namespace SageMobileSales.UILogic.ViewModels
 
 
         /// <summary>
-        ///     Load dummy data
+        ///    
         /// </summary>
         /// <param name="navigationParameter"></param>
         /// <param name="navigationMode"></param>
@@ -303,21 +304,47 @@ namespace SageMobileSales.UILogic.ViewModels
                 }
 
                 SyncProgress = Constants.OrdersSyncProgress;
+
+                var Frame = Window.Current.Content as Frame;
+                //InProgress = false;
+                if (Frame != null)
+                {
+                    List<PageStackEntry> navigationHistory = Frame.BackStack.ToList();
+                    if (navigationHistory.Count > 0)
+                    {
+                        PageStackEntry pageStack = navigationHistory.LastOrDefault();
+                        _cameFrom = pageStack.SourcePageType.Name;
+                    }
+
+                }
+
                 if (navigationParameter != null)
                 {
                     _customerId = navigationParameter as string;
                     Customer customer = await _customerRepository.GetCustomerDataAsync(_customerId);
                     OrdersList = new List<OrderDetails>();
+                    if (_cameFrom == "CreateQuotePage")
+                    {
+                        OrdersList = await _orderRepository.GetOrderStatusListAsync(_customerId);
+                        GetSortSetings();
+                    }
+                    else
+                    {
+                        //if (!Constants.ConnectedToInternet())
+                        //{
+                        OrdersList = await _orderRepository.GetOrdersForCustomerAsync(customer.CustomerId);
 
-                    //if (!Constants.ConnectedToInternet())
-                    //{
-                    OrdersList = await _orderRepository.GetOrdersForCustomerAsync(customer.CustomerId);
-
-                    GetSortSetings();
+                        GetSortSetings();
+                    }
                     //}
                     CustomerName = ResourceLoader.GetForCurrentView("Resources").GetString("SeperatorSymbol") +
                                    customer.CustomerName;
                 }
+                //else if (_cameFrom == "CreateQuotePage")
+                //{
+                //    OrdersList = await _orderRepository.GetOrderStatusListAsync(await _salesRepRepository.GetSalesRepId());
+                //    GetSortSetings();
+                //}
                 else
                 {
                     OrdersPageTitle = "Orders";
@@ -632,13 +659,20 @@ namespace SageMobileSales.UILogic.ViewModels
 
         public async Task UpdateOrderListInfo()
         {
-            if (_customerId == null)
+            if (_customerId != null)
             {
-                OrdersList = await _orderRepository.GetOrdersListAsync(await _salesRepRepository.GetSalesRepId());
-            }
+                if (_cameFrom == "CreateQuotePage")
+                {
+                    OrdersList = await _orderRepository.GetOrderStatusListAsync(_customerId);
+                }
+                else
+                {
+                    OrdersList = await _orderRepository.GetOrdersForCustomerAsync(_customerId);                    
+                }
+            }          
             else
             {
-                OrdersList = await _orderRepository.GetOrdersForCustomerAsync(_customerId);
+                OrdersList = await _orderRepository.GetOrdersListAsync(await _salesRepRepository.GetSalesRepId());
             }
             if (OrdersList.Count == 0)
             {
