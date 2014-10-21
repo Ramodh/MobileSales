@@ -392,7 +392,7 @@
             <TextBlock Grid.Row="0" Text="{Binding CustomerName}" Style="{StaticResource SubheaderTextBlockStyle}"
                        VerticalAlignment="Top" TextWrapping="NoWrap" Margin="7,5" Grid.ColumnSpan="3" />
             <TextBlock Grid.Row="1" Text="{Binding QuoteDescription}" Style="{StaticResource AddressTextStyle}"
-                       TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.ColumnSpan="3" />
+                       TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.ColumnSpan="3" MaxHeight="30" />
 
             <TextBlock Grid.Row="2"
                        Text="{Binding CreatedOn,Converter={StaticResource StringFormatConverter},ConverterParameter='{}{0:MM/dd/yyyy}'}"
