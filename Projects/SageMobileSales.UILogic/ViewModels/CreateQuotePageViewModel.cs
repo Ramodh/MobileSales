@@ -17,6 +17,7 @@ using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
 using SageMobileSales.ServiceAgents.Services;
 using SageMobileSales.UILogic.Common;
+using Windows.UI.Popups;
 
 namespace SageMobileSales.UILogic.ViewModels
 {
@@ -279,7 +280,7 @@ namespace SageMobileSales.UILogic.ViewModels
 
                 if (navigationParameter != null)
                 {
-                    if (pageStack.SourcePageType.Name == PageUtils.CustomerDetailPage || pageStack.SourcePageType.Name == "QuotesPage")
+                    if (pageStack.SourcePageType.Name == PageUtils.CustomerDetailPage || pageStack.SourcePageType.Name == PageUtils.QuotesPage)
                     {
                         _customerAddress = navigationParameter as CustomerDetails;
                         PageUtils.SelectedCustomerDetails = _customerAddress;
@@ -402,6 +403,16 @@ namespace SageMobileSales.UILogic.ViewModels
                     else
                     {
                         quote.CustomerId = CustomerId;
+                    }
+                    if (quote.CustomerId == null)
+                    {
+                        InProgress = false;
+                        MessageDialog msgDialog = new MessageDialog(
+                          ResourceLoader.GetForCurrentView("Resources").GetString(" MesDialogCreateQuoteSaveMessage"),
+                          ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogCreateQuoteTitle"));
+                        msgDialog.Commands.Add(new UICommand("Ok"));
+                        await msgDialog.ShowAsync();
+                        IsSaveEnabled = true;
                     }
                     quote.QuoteDescription = QuoteDescription;
                     if (PageUtils.SelectedProduct != null)

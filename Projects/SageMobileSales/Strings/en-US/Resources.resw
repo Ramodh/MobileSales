@@ -766,4 +766,12 @@
     <value>There was a problem placing your order</value>
     <comment>place order error text</comment>
   </data>
+  <data name="MesDialogCreateQuoteSaveMessage" xml:space="preserve">
+    <value>Please select a customer</value>
+    <comment>Error message in CreateQuote on Save click without selecting a cusstomer</comment>
+  </data>
+  <data name="MesDialogCreateQuoteTitle" xml:space="preserve">
+    <value>Cannot create Quote</value>
+    <comment>Error message title in CreateQuote</comment>
+  </data>
 </root>
