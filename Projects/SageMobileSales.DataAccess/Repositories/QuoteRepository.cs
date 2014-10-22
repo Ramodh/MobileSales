@@ -380,13 +380,19 @@ namespace SageMobileSales.DataAccess.Repositories
         public async Task<List<QuoteDetails>> GetQuotesForCustomerAsync(string customerId)
         {
             List<QuoteDetails> quote = null;
+            string salesRepId = await _salesRepRepository.GetSalesRepId();
             try
             {
                 quote =
-                    await
+                      await
                         _sageSalesDB.QueryAsync<QuoteDetails>(
-                            "SELECT distinct customer.customerName, quote.Id, quote.CustomerId, quote.QuoteId, quote.CreatedOn, quote.amount, quote.quoteStatus,quote.QuoteDescription, SalesRep.RepName FROM customer, quote left Join SalesRep On SalesRep.RepId=Quote.RepId where Quote.QuoteStatus!='IsOrder'  And Quote.QuoteStatus!='Temporary' And Quote.IsDeleted!=1 and customer.customerId=quote.customerId and quote.customerId=? and customer.IsActive=1 order by quote.createdOn desc",
+                            "SELECT distinct customer.customerName, quote.Id, quote.CustomerId, quote.QuoteId, quote.CreatedOn, quote.amount, quote.quoteStatus,quote.QuoteDescription,(select RepName from SalesRep as RP where RP.RepId='" +
+                            salesRepId + "') as RepName FROM customer, quote where Quote.QuoteStatus!='IsOrder'  And Quote.QuoteStatus!='Temporary' And Quote.IsDeleted!=1 and customer.customerId=quote.customerId and quote.customerId=? and customer.IsActive=1 order by quote.createdOn desc",
                             customerId);
+                    //await
+                    //    _sageSalesDB.QueryAsync<QuoteDetails>(
+                    //        "SELECT distinct customer.customerName, quote.Id, quote.CustomerId, quote.QuoteId, quote.CreatedOn, quote.amount, quote.quoteStatus,quote.QuoteDescription, SalesRep.RepName FROM customer, quote left Join SalesRep On SalesRep.RepId=Quote.RepId where Quote.QuoteStatus!='IsOrder'  And Quote.QuoteStatus!='Temporary' And Quote.IsDeleted!=1 and customer.customerId=quote.customerId and quote.customerId=? and customer.IsActive=1 order by quote.createdOn desc",
+                    //        customerId);
             }
             catch (SQLiteException ex)
             {
