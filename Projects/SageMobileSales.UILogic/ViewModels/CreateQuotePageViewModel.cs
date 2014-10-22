@@ -200,24 +200,30 @@ namespace SageMobileSales.UILogic.ViewModels
             try
             {
                 SearchSuggestionCollection suggestionCollection = eventArgs.Request.SearchSuggestionCollection;
-                if (queryText == "")
-                {
-                    if (queryText == "")
-                    {
-                        foreach (Customer customer in CustomerList)
-                        {
-                            if (!string.IsNullOrEmpty(customer.CustomerName))
-                            {
-                                suggestionCollection.AppendResultSuggestion(customer.CustomerName, string.Empty,
-                                    customer.CustomerId, obj, string.Empty);
-                            }
-                        }
-                    }
-                }
-                else
+                //if (queryText == "")
+                //{
+                //    if (queryText == "")
+                //    {
+                //        foreach (Customer customer in CustomerList)
+                //        {
+                //            if (!string.IsNullOrEmpty(customer.CustomerName))
+                //            {
+                //                suggestionCollection.AppendResultSuggestion(customer.CustomerName, string.Empty,
+                //                    customer.CustomerId, obj, string.Empty);
+                //            }
+                //        }
+                //    }
+                //}
+                //else
+                //{
+                //    queryText = queryText.Trim().Replace("'", string.Empty);
+                //}
+
+                if(!queryText.Equals(string.Empty))
                 {
                     queryText = queryText.Trim().Replace("'", string.Empty);
                 }
+
                 List<Customer> querySuggestions = await _customerRepository.GetCustomerSearchSuggestionsAsync(queryText);
                 if (querySuggestions != null && querySuggestions.Count > 0)
                 {
