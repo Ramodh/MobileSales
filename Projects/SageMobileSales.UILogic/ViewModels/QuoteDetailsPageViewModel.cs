@@ -861,9 +861,12 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             if (Constants.ConnectedToInternet())
             {
-                if (_quote.QuoteStatus.ToLower() == "draft")
+                if (_quote != null)
                 {
-                    await UpdateQuoteAndQuoteLineItemdetailsToServer(_quote);
+                    if (_quote.QuoteStatus == DataAccessUtils.DraftQuote)
+                    {
+                        await UpdateQuoteAndQuoteLineItemdetailsToServer(_quote);
+                    }
                 }
             }
             if (dataTransferManager != null)
@@ -1172,7 +1175,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 {
                     IsAddItemVisible = Visibility.Collapsed;
                     IsChangeAddressVisible = Visibility.Collapsed;
-                    IsSubmitQuoteVisible = Visibility.Collapsed;
+                    IsSubmitQuoteVisible = Visibility.Visible;
                     IsSendmailVisible = Visibility.Visible;
                     IsDeleteQuoteVisible = Visibility.Visible;
                     IsEditQuoteLineItemVisible = Visibility.Collapsed;
