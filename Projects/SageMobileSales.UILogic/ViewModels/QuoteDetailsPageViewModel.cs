@@ -863,7 +863,7 @@ namespace SageMobileSales.UILogic.ViewModels
             {
                 if (_quote != null)
                 {
-                    if (_quote.QuoteStatus.ToLower() == "draft")
+                    if (_quote.QuoteStatus == DataAccessUtils.DraftQuote)
                     {
                         await UpdateQuoteAndQuoteLineItemdetailsToServer(_quote);
                     }
