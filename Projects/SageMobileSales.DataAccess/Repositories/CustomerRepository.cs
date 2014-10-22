@@ -148,7 +148,7 @@ namespace SageMobileSales.DataAccess.Repositories
             try
             {
                 //Need to implement "where IsActive='1'" on completion of Entity Status handling
-                customer = await _sageSalesDB.QueryAsync<Customer>("SELECT * FROM Customer order by customerName asc");
+                customer = await _sageSalesDB.QueryAsync<Customer>("SELECT * FROM Customer WHERE IsActive='1' ORDER BY customerName ASC");
             }
             catch (Exception ex)
             {
