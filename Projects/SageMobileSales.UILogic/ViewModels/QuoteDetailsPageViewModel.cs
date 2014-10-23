@@ -1129,7 +1129,7 @@ namespace SageMobileSales.UILogic.ViewModels
                     IsChangeAddressVisible = Visibility.Collapsed;
                     IsSubmitQuoteVisible = Visibility.Collapsed;
                     IsSendmailVisible = Visibility.Visible;
-                    IsDeleteQuoteVisible = Visibility.Collapsed;
+                    IsDeleteQuoteVisible = Visibility.Visible;
                     IsEditQuoteLineItemVisible = Visibility.Collapsed;
                     IsEditQuoteVisible = Visibility.Visible;
                     IsPlaceOrderVisible = Visibility.Visible;
