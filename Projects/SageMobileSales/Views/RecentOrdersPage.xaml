@@ -1,0 +1,188 @@
+﻿<prism:VisualStateAwarePage
+    x:Name="pageRoot"
+    x:Class="SageMobileSales.Views.RecentOrdersPage"
+    DataContext="{Binding DefaultViewModel, RelativeSource={RelativeSource Self}}"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:views="using:SageMobileSales.Views"    
+    xmlns:common="using:SageMobileSales.Common"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:prism="using:Microsoft.Practices.Prism.StoreApps"
+    xmlns:behaviors="using:SageMobileSales.Behaviors"
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    prism:ViewModelLocator.AutoWireViewModel="true"
+    mc:Ignorable="d">
+
+    <prism:VisualStateAwarePage.Resources>
+        <!-- TODO: Delete this line if the key AppName is declared in App.xaml -->
+        <x:String x:Key="AppName">My Application</x:String>
+        <CollectionViewSource
+            x:Name="itemsViewSourceRecentOrders"
+            Source="{Binding SalesHistoryList}" />
+    </prism:VisualStateAwarePage.Resources>
+    
+    <prism:VisualStateAwarePage.TopAppBar>
+        <AppBar x:Name="TopAppBar1" Style="{StaticResource TopAppBarUserControlStyle}">
+            <views:TopAppBarUserControl />
+        </AppBar>
+    </prism:VisualStateAwarePage.TopAppBar>
+    <Page.BottomAppBar>
+        <AppBar>
+            <Grid x:Name="appbarGrid" Style="{StaticResource BottomAppbarStyle}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50*" />
+                    <ColumnDefinition Width="50*" />
+                </Grid.ColumnDefinitions>
+                <StackPanel x:Name="RightPanel" Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right">
+                    <AppBarButton x:Name="appbtnSortQuotes" x:Uid="appbtnSortQuotes" Icon="Sort" Label="">
+                        <AppBarButton.Flyout>
+
+                            <MenuFlyout x:Name="sortMenuFlyout">
+                                <ToggleMenuFlyoutItem x:Name="orderInvoice" x:Uid="orderInvoice" Text=""
+                                                      Command="{Binding SortRecentOrdersCommand}"
+                                                      CommandParameter="{Binding ElementName=orderInvoice,UpdateSourceTrigger=PropertyChanged}"
+                                                      IsChecked="{Binding}" />
+                                <ToggleMenuFlyoutItem x:Name="date" x:Uid="date" Text=""
+                                                      Command="{Binding SortRecentOrdersCommand}"
+                                                      CommandParameter="{Binding ElementName=date,UpdateSourceTrigger=PropertyChanged}"
+                                                      IsChecked="{Binding SelectedColumn}" />
+                                <ToggleMenuFlyoutItem Text="" x:Name="orderQuantity" x:Uid="orderQuantity"
+                                                      Command="{Binding SortRecentOrdersCommand}"
+                                                      CommandParameter="{Binding ElementName=orderQuantity,UpdateSourceTrigger=PropertyChanged}"
+                                                      IsChecked="{Binding}" />
+                                <ToggleMenuFlyoutItem Text="" x:Name="orderUnitPrice" x:Uid="orderUnitPrice"
+                                                      Command="{Binding SortRecentOrdersCommand}"
+                                                      CommandParameter="{Binding ElementName=orderUnitPrice,UpdateSourceTrigger=PropertyChanged}"
+                                                      IsChecked="{Binding}" />
+                                <ToggleMenuFlyoutItem Text="" x:Name="orderTotalAmount" x:Uid="orderTotalAmount"
+                                                      Command="{Binding SortRecentOrdersCommand}"
+                                                      CommandParameter="{Binding ElementName=orderTotalAmount,UpdateSourceTrigger=PropertyChanged}"
+                                                      IsChecked="{Binding}" />
+                                <MenuFlyoutSeparator />
+                                <ToggleMenuFlyoutItem x:Name="sortByAscending" x:Uid="sortByAscending" Text=""
+                                                      IsChecked="{Binding IsAscending, Mode=TwoWay}"
+                                                      Command="{Binding SortByAscendingCommand}"
+                                                      CommandParameter="{Binding ElementName=sortByAscending,UpdateSourceTrigger=PropertyChanged}" />
+                                <ToggleMenuFlyoutItem x:Name="sortByDescending" x:Uid="sortByDescending" Text=""
+                                                      IsChecked="{Binding IsDescending, Mode=TwoWay}"
+                                                      Command="{Binding SortByDescendingCommand}"
+                                                      CommandParameter="{Binding ElementName=sortByDescending,UpdateSourceTrigger=PropertyChanged}" />
+                            </MenuFlyout>
+                        </AppBarButton.Flyout>
+                    </AppBarButton>
+                </StackPanel>
+            </Grid>
+        </AppBar>
+    </Page.BottomAppBar>
+
+    <!--
+        This grid acts as a root panel for the page that defines two rows:
+        * Row 0 contains the back button and page title
+        * Row 1 contains the rest of the page layout
+    -->
+    <Grid x:Name="LayoutRoot" Style="{StaticResource LayoutRootStyle}">
+        <Grid.ChildrenTransitions>
+            <TransitionCollection>
+                <EntranceThemeTransition/>
+            </TransitionCollection>
+        </Grid.ChildrenTransitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="140" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        
+        <ProgressRing Grid.Row="1" Height="70" Width="70"
+                      IsActive="{Binding InProgress, Mode=TwoWay}"
+                      Visibility="{Binding InProgress, Mode=TwoWay,Converter={StaticResource InProgessVisibilityConverter}}"
+                      Style="{StaticResource GridViewProgressRingStyle}" />
+
+        <ScrollViewer x:Name="scrollViewer" Grid.Row="1" HorizontalScrollMode="Enabled" IsHorizontalRailEnabled="False"
+                      VerticalScrollMode="Disabled" IsVerticalRailEnabled="False" ZoomMode="Disabled"
+                      IsDeferredScrollingEnabled="False" BringIntoViewOnFocusChange="True"
+                      HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+            <Grid x:Name="scrollGrid">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="120" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="40" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Grid x:Name="ProductDetailsview" Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="390" />
+                        <RowDefinition Height="15" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <StackPanel Grid.Row="0">
+                        <Border Background="{StaticResource ListViewItemPlaceholderBackgroundThemeBrush}" Height="390" Width="400" BorderBrush="Black" BorderThickness="2">
+                            <!--<Image Source="{Binding Url}" Stretch="UniformToFill" Height="100" Width="100"/>-->
+                            <views:ImageplaceHolderUserControl Placeholder="/Assets/imagePlaceholder_100x100.png"
+                                                      Source="{Binding ImageUri}" Height="390" Width="400" />
+                        </Border>
+                    </StackPanel>
+                    <Grid Grid.Row="2" Margin="2" Background="Gainsboro" Height="120" Width="400">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.ColumnSpan="2" Margin="5" Grid.Row="0" Text="{Binding ProductName}" Style="{StaticResource RecentTextblockTextStyle}"
+                           TextWrapping="NoWrap" TextTrimming="WordEllipsis"/>
+                        <TextBlock x:Uid="RecentOrderProductSku" Grid.Column="0" Grid.Row="1" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" Foreground="Black"/>
+                        <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding ProductSku}" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" Foreground="Black"/>
+                        <TextBlock x:Uid="RecentOrderUnitPrice" Grid.Column="0" Grid.Row="2" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" Foreground="Black"/>
+                        <TextBlock Grid.Column="1" Grid.Row="2" Text="{Binding LineItemPrice,Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:C}'}" Style="{StaticResource AddressTextStyle}" MaxHeight="60" Foreground="Black"/>
+                        <TextBlock x:Uid="RecentOrderStockInHand" Grid.Column="0" Grid.Row="3" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" Foreground="Black"/>
+                        <TextBlock Grid.Column="1" Grid.Row="3" Text="{Binding ProductQuantity}" Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" Foreground="Black"/>
+                    </Grid>
+                </Grid>
+
+                <GridView Grid.Column="3"
+                              x:Name="recentOrdersGridView"
+                              AutomationProperties.AutomationId="recentOrdersGridView"
+                              AutomationProperties.Name="recentOrders"
+                              TabIndex="1"
+                              Grid.RowSpan="2"
+
+                              ItemsSource="{Binding Source={StaticResource itemsViewSourceRecentOrders}}"
+                              SelectionMode="None"
+                              IsSwipeEnabled="false"
+                              IsItemClickEnabled="True"
+                              ItemTemplate="{StaticResource recentOrdersTemplate}">
+
+                    <!--<interactivity:Interaction.Behaviors>
+                        <core:EventTriggerBehavior EventName="ItemClick">
+                            <core:CallMethodAction MethodName="GridViewRecentOrderItemClick"
+                                                       TargetObject="{Binding Mode=OneWay}" />
+                        </core:EventTriggerBehavior>
+                    </interactivity:Interaction.Behaviors>-->
+                </GridView>
+            </Grid>
+        </ScrollViewer>
+        <!-- Back button and page title -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="120"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Button x:Name="backButton" Margin="39,59,39,0" Command="{Binding NavigationHelper.GoBackCommand, ElementName=pageRoot}"
+                        Style="{StaticResource NavigationBackButtonNormalStyle}"
+                        VerticalAlignment="Top"
+                        AutomationProperties.Name="Back"
+                        AutomationProperties.AutomationId="BackButton"
+                        AutomationProperties.ItemType="Navigation Button"/>
+            <TextBlock x:Uid="RecentOrdersPageTitle" x:Name="pageTitle" Style="{StaticResource PageTitleTextStyle}" Grid.Column="1" 
+                        IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="0,0,30,40"/>
+            <TextBlock x:Name="CustomerName" Text="{Binding CustomerName}" Style="{StaticResource PageTitleTextStyle}" Grid.Column="2" Foreground="Black" 
+                        IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="0,0,30,40" FontSize="45"/>
+        </Grid>
+    </Grid>
+</prism:VisualStateAwarePage>

@@ -1,0 +1,769 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="catalogPageTitle.Text" xml:space="preserve">
+    <value>Catalog</value>
+    <comment>Catalog Hub Section heading(Main menu)</comment>
+  </data>
+  <data name="Customers.Text" xml:space="preserve">
+    <value>Customers</value>
+    <comment>Customers Hub Section heading(Main menu)</comment>
+  </data>
+  <data name="Enternewpasscode.Text" xml:space="preserve">
+    <value>Please enter a new passcode</value>
+    <comment>Appears as Heading 3 in Passcode page</comment>
+  </data>
+  <data name="HelpText" xml:space="preserve">
+    <value>Help</value>
+    <comment>Help link</comment>
+  </data>
+  <data name="itemDetailPageTitle.Text" xml:space="preserve">
+    <value>Item Details</value>
+    <comment>ItemDetailPage heading</comment>
+  </data>
+  <data name="itemsPageTitle.Text" xml:space="preserve">
+    <value>Items</value>
+    <comment>Products</comment>
+  </data>
+  <data name="Orders.Text" xml:space="preserve">
+    <value>Orders</value>
+    <comment>Orders Hub Section heading(Main menu)</comment>
+  </data>
+  <data name="Personalinformationseriously.Text" xml:space="preserve">
+    <value>We take your personal information seriously.</value>
+    <comment>Appears as Heading 1 in Passcode page</comment>
+  </data>
+  <data name="Pleasecreatepasscodeforthisapp.Text" xml:space="preserve">
+    <value>Please create a 4 digit code to protect the data this app uses.</value>
+    <comment>Appears as Heading 2 in Passcode page</comment>
+  </data>
+  <data name="Quotes.Text" xml:space="preserve">
+    <value>Quotes</value>
+    <comment>Quotes Hub Section heading(Main menu)</comment>
+  </data>
+  <data name="Sage.Text" xml:space="preserve">
+    <value>Sage</value>
+    <comment>Appears as Heading 1 in Sign In page</comment>
+  </data>
+  <data name="SageSales.Header" xml:space="preserve">
+    <value>Sage Sales</value>
+    <comment>Main Heading for Hub Page(Main menu)</comment>
+  </data>
+  <data name="SignIn.Content" xml:space="preserve">
+    <value>Sign In</value>
+    <comment>Button Content in Sign In page</comment>
+  </data>
+  <data name="SignInWithSageIDAccount.Text" xml:space="preserve">
+    <value>Sign In using your Sage ID account</value>
+    <comment>Apperas as Heading 2 in Sign In page</comment>
+  </data>
+  <data name="NoInternetConnection" xml:space="preserve">
+    <value>Your PC isn't connected to Internet.</value>
+    <comment>Popup message for NoInternet Access.</comment>
+  </data>
+  <data name="EmptyProductsText" xml:space="preserve">
+    <value>No items present</value>
+    <comment>Notifies no items present</comment>
+  </data>
+  <data name="Logout" xml:space="preserve">
+    <value>Logout</value>
+    <comment>Logout as Charms Settings text</comment>
+  </data>
+  <data name="filterSearchbox.PlaceholderText" xml:space="preserve">
+    <value>Filter Items</value>
+    <comment>Filter products</comment>
+  </data>
+  <data name="NoImage" xml:space="preserve">
+    <value>No image found</value>
+    <comment>displayed when image is not found for product</comment>
+  </data>
+  <data name="NoImageUrl" xml:space="preserve">
+    <value>msAPPX://Assets//imagePlaceholder_100x100.png</value>
+    <comment>url if image is not found</comment>
+  </data>
+  <data name="noResultsTextBlock.Text" xml:space="preserve">
+    <value>No results match your search.</value>
+    <comment>Displayed when no results are found</comment>
+  </data>
+  <data name="resultText.Text" xml:space="preserve">
+    <value>Results for</value>
+    <comment>Results Heading</comment>
+  </data>
+  <data name="SearchBoxUserControl.PlaceholderText" xml:space="preserve">
+    <value>Search for a Product</value>
+    <comment>Place Holder for search</comment>
+  </data>
+  <data name="skuTb.Text" xml:space="preserve">
+    <value>SKU: 	</value>
+    <comment>SKU of ItemDetail</comment>
+  </data>
+  <data name="stockTb.Text" xml:space="preserve">
+    <value>Stock on hand: 	 </value>
+    <comment>ItemDetail Stock</comment>
+  </data>
+  <data name="otherProductsTitle.Text" xml:space="preserve">
+    <value>You may also like</value>
+    <comment>Other products title</comment>
+  </data>
+  <data name="quantityTb.Text" xml:space="preserve">
+    <value>Quantity:</value>
+    <comment>Quantity title</comment>
+  </data>
+  <data name="NoSuggestions" xml:space="preserve">
+    <value>No Suggestions found</value>
+    <comment>no suggestions for search</comment>
+  </data>
+  <data name="customersPageTitle.Text" xml:space="preserve">
+    <value>Customers</value>
+    <comment>Customer page title</comment>
+  </data>
+  <data name="Account.Text" xml:space="preserve">
+    <value>Account</value>
+    <comment>Account TextBlock text in Customerdetails page</comment>
+  </data>
+  <data name="Address.Text" xml:space="preserve">
+    <value>Address</value>
+    <comment>Address TextBlock text in Customerdetails page</comment>
+  </data>
+  <data name="Availablecredit.Text" xml:space="preserve">
+    <value>Available credit:</value>
+    <comment>Available credit TextBlock text in Accounts section in Customerdetails page</comment>
+  </data>
+  <data name="CreditLimit.Text" xml:space="preserve">
+    <value>Credit Limit:</value>
+    <comment>CreditLimit TextBlock text in Accounts section in Customerdetails page</comment>
+  </data>
+  <data name="SalesThisMonth.Text" xml:space="preserve">
+    <value>Sales this month</value>
+    <comment>Sales this month TextBlock text in Customerdetails page</comment>
+  </data>
+  <data name="SalesYTD.Text" xml:space="preserve">
+    <value>Sales YTD</value>
+    <comment>Sales YTD TextBlock text in Customerdetails page</comment>
+  </data>
+  <data name="Terms.Text" xml:space="preserve">
+    <value>Terms:</value>
+    <comment>Terms TextBlock text in Accounts section in Customerdetails page</comment>
+  </data>
+  <data name="addContact.Label" xml:space="preserve">
+    <value>Add Contact</value>
+    <comment>Appears as bottom appbar button text for add new contact</comment>
+  </data>
+  <data name="appbtncreateQuote.Label" xml:space="preserve">
+    <value>Create Quote</value>
+    <comment>Appears as bottom appbar button text for  new quote</comment>
+  </data>
+  <data name="contactEmail.Header" xml:space="preserve">
+    <value>Email</value>
+    <comment>Header for email Textblock text in AddContactPage</comment>
+  </data>
+  <data name="contactTitle.Header" xml:space="preserve">
+    <value>Title</value>
+    <comment>Header for Title Textblock text in AddContactPage</comment>
+  </data>
+  <data name="createQuote.Text" xml:space="preserve">
+    <value>Create from: </value>
+    <comment>Textblock text for selecting method of creating quote</comment>
+  </data>
+  <data name="createQuotePageTitle.Text" xml:space="preserve">
+    <value>Create Quote</value>
+    <comment>CreateQuotePage heading</comment>
+  </data>
+  <data name="ErrorRegex" xml:space="preserve">
+    <value>This field contains invalid characters</value>
+    <comment>Error message for invalid text in add contact Page</comment>
+  </data>
+  <data name="ErrorRequired" xml:space="preserve">
+    <value>This field is required</value>
+    <comment>Error message for required field in add contact Page</comment>
+  </data>
+  <data name="firstName.Header" xml:space="preserve">
+    <value>First Name*</value>
+    <comment>Header for FirstName Textblock text in AddContactPage</comment>
+  </data>
+  <data name="InvalidPropertyNameException" xml:space="preserve">
+    <value>The entity does not contain a property with that name</value>
+    <comment>Property Validation Exception for addcontact Page</comment>
+  </data>
+  <data name="lastName.Header" xml:space="preserve">
+    <value>Last Name*</value>
+    <comment>Header for last Name  Textblock text in AddContactPage</comment>
+  </data>
+  <data name="AddContactPageTitle.Text" xml:space="preserve">
+    <value>Add new contact</value>
+    <comment>New contact Heading</comment>
+  </data>
+  <data name="phoneMobile.Header" xml:space="preserve">
+    <value>Mobile Phone</value>
+    <comment>Header for mobile phone Textblock text in AddContactPage</comment>
+  </data>
+  <data name="phoneWork.Header" xml:space="preserve">
+    <value>Business Phone</value>
+    <comment>Header for business phone Textblock text in AddContactPage</comment>
+  </data>
+  <data name="quoteDescription.Text" xml:space="preserve">
+    <value>Description:</value>
+    <comment>Textblock text for description of quote</comment>
+  </data>
+  <data name="saveNewContact.Content" xml:space="preserve">
+    <value>Save </value>
+    <comment>App bar button text for saving a contact</comment>
+  </data>
+  <data name="saveQuote.Content" xml:space="preserve">
+    <value>Save</value>
+    <comment>App bar button text for saving quote</comment>
+  </data>
+  <data name="ContactsPageTitle.Text" xml:space="preserve">
+    <value>Contacts</value>
+    <comment>ContactsPage Title</comment>
+  </data>
+  <data name="associatedObjectException" xml:space="preserve">
+    <value>associatedObject is not assignable to type:</value>
+    <comment>Exception for associated object</comment>
+  </data>
+  <data name="appbtnSortQuotes.Label" xml:space="preserve">
+    <value>Sort</value>
+    <comment>Appbar button Label for sorting quotes</comment>
+  </data>
+  <data name="Catalog" xml:space="preserve">
+    <value>Catalog</value>
+    <comment>catalog page</comment>
+  </data>
+  <data name="changeshippingAddress.Label" xml:space="preserve">
+    <value>Change Address</value>
+    <comment>Appbar button label for change shipping address</comment>
+  </data>
+  <data name="createShippingAddressPageTitle.Text" xml:space="preserve">
+    <value>Create Shipping Address</value>
+    <comment>Main Heading for Create Shipping Address Page</comment>
+  </data>
+  <data name="customerName.Text" xml:space="preserve">
+    <value>Customer Name</value>
+    <comment>Menu Item text for sort by Customer Name</comment>
+  </data>
+  <data name="quoteAmount.Text" xml:space="preserve">
+    <value>Amount</value>
+    <comment>Menu Item text for sort by Amount</comment>
+  </data>
+  <data name="quoteDate.Text" xml:space="preserve">
+    <value>Date</value>
+    <comment>Menu Item  text for sort by date</comment>
+  </data>
+  <data name="quotePageTitle" xml:space="preserve">
+    <value>Quotes</value>
+    <comment>Quotes page Title</comment>
+  </data>
+  <data name="quoteStatus.Text" xml:space="preserve">
+    <value>Status</value>
+    <comment>Menu Item text for sort by Status</comment>
+  </data>
+  <data name="salesPerson.Text" xml:space="preserve">
+    <value>Sales Person</value>
+    <comment>Menu Item text for sort by Sales Person</comment>
+  </data>
+  <data name="sortByAscending.Text" xml:space="preserve">
+    <value>Ascending</value>
+    <comment>Toggle menu item for sort by ascending</comment>
+  </data>
+  <data name="sortByDescending.Text" xml:space="preserve">
+    <value>Descending</value>
+    <comment>Toggle menu item for sort by descending</comment>
+  </data>
+  <data name="address1.Header" xml:space="preserve">
+    <value>Address1*</value>
+    <comment>Address1 Header for createShippingAddress page</comment>
+  </data>
+  <data name="address2.Header" xml:space="preserve">
+    <value>Address2</value>
+    <comment>Address2 Header for createShippingAddress page</comment>
+  </data>
+  <data name="address3.Header" xml:space="preserve">
+    <value>Address3</value>
+    <comment>Address3 Header for createShippingAddress page</comment>
+  </data>
+  <data name="address4.Header" xml:space="preserve">
+    <value>Address4</value>
+    <comment>Address4 Header for createShippingAddress page</comment>
+  </data>
+  <data name="addressTitle.Header" xml:space="preserve">
+    <value>Name*</value>
+    <comment>Address Header for createShippingAddress page</comment>
+  </data>
+  <data name="addToExistingQuote.Label" xml:space="preserve">
+    <value>Add To Existing Quote</value>
+    <comment>Label for addToExistingQuote appbar button</comment>
+  </data>
+  <data name="addToNewQuote.Label" xml:space="preserve">
+    <value>Add To New Quote</value>
+    <comment>Label for addToNewQuote appbar button</comment>
+  </data>
+  <data name="city.Header" xml:space="preserve">
+    <value>City*</value>
+    <comment>City Header for createShippingAddress page</comment>
+  </data>
+  <data name="country.Text" xml:space="preserve">
+    <value>USA</value>
+    <comment>Text for Country in create shippingAddress page</comment>
+  </data>
+  <data name="createShippingAddress.Label" xml:space="preserve">
+    <value>Create Shipping Address</value>
+    <comment>Label for appbar buttton in otheraaddress page</comment>
+  </data>
+  <data name="previouslyPurchasedItems.Content" xml:space="preserve">
+    <value>Previously Purchased Items</value>
+    <comment>Button content for previouslyPurchasedItems in create quote page</comment>
+  </data>
+  <data name="previousOrder.Content" xml:space="preserve">
+    <value>Previous Orders</value>
+    <comment>Button content for previousOrder in create quote page</comment>
+  </data>
+  <data name="saveAddress.Content" xml:space="preserve">
+    <value>Save </value>
+    <comment> label for saving address</comment>
+  </data>
+  <data name="scratch.Content" xml:space="preserve">
+    <value>Scratch                                             Create the quote from Scratch</value>
+    <comment>Button content for sratch in create quote page</comment>
+  </data>
+  <data name="state.Header" xml:space="preserve">
+    <value>State/Province*</value>
+    <comment>State Header for createShippingAddress page</comment>
+  </data>
+  <data name="zipcode.Header" xml:space="preserve">
+    <value>Zip Code/Postal Code*</value>
+    <comment>zipcode Header for createShippingAddress page</comment>
+  </data>
+  <data name="CustomerSearchBox.PlaceholderText" xml:space="preserve">
+    <value>Search for a Customer</value>
+    <comment>Customer SearchBox Placeholder Text</comment>
+  </data>
+  <data name="selectCustomerPopupTitle.Text" xml:space="preserve">
+    <value>Select Customer</value>
+    <comment>select Customer Popup Title in ItemDetail page</comment>
+  </data>
+  <data name="createQuoteappbarbtn.Label" xml:space="preserve">
+    <value>Create a new Quote</value>
+    <comment>appbarbutton label for create quote</comment>
+  </data>
+  <data name="EmptyAddressesText" xml:space="preserve">
+    <value>No Addresses found</value>
+    <comment>Text to display when no addresses are found</comment>
+  </data>
+  <data name="recentOrders.Text" xml:space="preserve">
+    <value>Recent Orders</value>
+    <comment>Header for recent orders  in CustomerDetailPage </comment>
+  </data>
+  <data name="recentQuotes.Text" xml:space="preserve">
+    <value>Recent Quotes</value>
+    <comment>Header for recent quotes in CustomerDetailPage</comment>
+  </data>
+  <data name="orderAmount.Text" xml:space="preserve">
+    <value>Amount</value>
+    <comment>Menu Item  text for sort by Order Amount</comment>
+  </data>
+  <data name="orderDate.Text" xml:space="preserve">
+    <value>Date</value>
+    <comment>Menu Item  text for sort by Order Date</comment>
+  </data>
+  <data name="orderNumber.Text" xml:space="preserve">
+    <value>Order Number</value>
+    <comment>Menu Item  text for sort by OrderNumber</comment>
+  </data>
+  <data name="orderStatus.Text" xml:space="preserve">
+    <value>Status</value>
+    <comment>Menu Item  text for sort by Order Status</comment>
+  </data>
+  <data name="addToQuote.Label" xml:space="preserve">
+    <value>Add To Quote</value>
+    <comment>Label for addToQuote appbar button</comment>
+  </data>
+  <data name="priceTb.Text" xml:space="preserve">
+    <value>Price: 	</value>
+    <comment>Price of ItemDetail</comment>
+  </data>
+  <data name="MesDialogSubmittedQuoteText" xml:space="preserve">
+    <value>Your Quote has been Submitted.</value>
+    <comment>Displays in MessageDialog after Quote is been Submitted.</comment>
+  </data>
+  <data name="Buynow" xml:space="preserve">
+    <value>Buy now</value>
+    <comment>Buy now ListViewItem text in PlaceOrder</comment>
+  </data>
+  <data name="BuynowSubText" xml:space="preserve">
+    <value>Accept immediate payment</value>
+    <comment>Buy now ListViewItem Sub text in PlaceOrder</comment>
+  </data>
+  <data name="OnAccount" xml:space="preserve">
+    <value>On Account</value>
+    <comment>OnAccount ListViewItem text in PlaceOrder</comment>
+  </data>
+  <data name="OnAccountSubText" xml:space="preserve">
+    <value>The Order will be submitted to the ERP system for invoicing</value>
+    <comment>OnAccount ListViewItem Sub text in PlaceOrder</comment>
+  </data>
+  <data name="OnAccountWithdeposit" xml:space="preserve">
+    <value>On Account with deposit</value>
+    <comment>OnAccountwithdeposit ListViewItem text in PlaceOrder</comment>
+  </data>
+  <data name="OnAccountWithdepositSubText" xml:space="preserve">
+    <value>The Order is submitted to the ERP system with a deposit</value>
+    <comment>OnAccountwithdeposit ListViewItem Sub text in PlaceOrder</comment>
+  </data>
+  <data name="DeleteQuoteLineItemMessageDialog" xml:space="preserve">
+    <value>Delete this Item?</value>
+    <comment>Message to display in delete Quotelineitem Dialog</comment>
+  </data>
+  <data name="DeleteQuoteMessageDialog" xml:space="preserve">
+    <value>Delete Quote?</value>
+    <comment>Message to display in delete Quote Dialog</comment>
+  </data>
+  <data name="CopyrightInfo" xml:space="preserve">
+    <value>Copyright and Trademark</value>
+    <comment>Text for copyright link</comment>
+  </data>
+  <data name="CopyrightURL" xml:space="preserve">
+    <value>http://na.sage.com/us/legal#copyright</value>
+    <comment>URL for copyright</comment>
+  </data>
+  <data name="HelpURL" xml:space="preserve">
+    <value>http://sge.bz/1sYAmsX</value>
+    <comment>URL for help</comment>
+  </data>
+  <data name="PrivacyPolicy" xml:space="preserve">
+    <value>Privacy Policy</value>
+    <comment>Text for privacy policy link</comment>
+  </data>
+  <data name="PrivacyPolicyURL" xml:space="preserve">
+    <value>http://na.sage.com/us/legal#privacy</value>
+    <comment>URL for Privacy policy</comment>
+  </data>
+  <data name="DeploymentSettings" xml:space="preserve">
+    <value>Settings</value>
+    <comment>Deployment Settings text</comment>
+  </data>
+  <data name="server" xml:space="preserve">
+    <value>Server</value>
+    <comment>text to be displayed for settings to select server</comment>
+  </data>
+  <data name="ChangeQuoteMesDialogText" xml:space="preserve">
+    <value>Change quote status to Draft so you can edit?</value>
+    <comment>Message dialog text in quote details page while adding items to Submitted quote. </comment>
+  </data>
+  <data name="ChangeQuoteMesDialogTitle" xml:space="preserve">
+    <value>Change Status?</value>
+    <comment>Message dialog title in quote details page while adding items to Submitted quote.</comment>
+  </data>
+  <data name="MesDialogCancelbuttonText" xml:space="preserve">
+    <value>Cancel</value>
+    <comment>Message dialog cancel button text.</comment>
+  </data>
+  <data name="MesDialogChangeStatusbuttonText" xml:space="preserve">
+    <value>Change Status</value>
+    <comment>Message dialog changestatus button text.</comment>
+  </data>
+  <data name="MesDialogDeletebuttonText" xml:space="preserve">
+    <value>Delete</value>
+    <comment>Message dialog delete button text.</comment>
+  </data>
+  <data name="MesDialogDiscountPercentageText" xml:space="preserve">
+    <value>The discount percentage exceeded the maximum amount set by your administrator. It has been changed to the maximum amount allowed.</value>
+    <comment>Message dialog text in quote details when user enters maximum discount percentage.</comment>
+  </data>
+  <data name="MesDialogDiscountPercentageTitle" xml:space="preserve">
+    <value>Discount percent too high</value>
+    <comment>Message dialog  title in quote details.</comment>
+  </data>
+  <data name="MesDialogSubmittedQuoteText1" xml:space="preserve">
+    <value>Your Quote has been Submitted.</value>
+    <comment>Displays in MessageDialog after Quote is been Submitted.</comment>
+  </data>
+  <data name="MesDialogSubmittedQuoteTitle" xml:space="preserve">
+    <value>Submit Quote</value>
+    <comment>Message dialog submit quote title.</comment>
+  </data>
+  <data name="SubmitQuoteErrorMessage" xml:space="preserve">
+    <value>Atleast one item must be added before you can submit the quote.</value>
+    <comment>Displays error message in Quote details page when we submit quote without any quote lineitems.</comment>
+  </data>
+  <data name="SubmitQuoteErrorTitle" xml:space="preserve">
+    <value>Error</value>
+    <comment>Error message box header in Quote details page.</comment>
+  </data>
+  <data name="Confirm.Content" xml:space="preserve">
+    <value>Confirm</value>
+    <comment>Confirm button text in place order</comment>
+  </data>
+  <data name="FeedbackLinkText" xml:space="preserve">
+    <value>Send Feedback</value>
+    <comment>Feedback link text for settings</comment>
+  </data>
+  <data name="FeedbackMailtoURL" xml:space="preserve">
+    <value>mailto:?to=sagemobilesolutions@sage.com&amp;subject=Sage Mobile Sales Windows App</value>
+    <comment>Feedback mailto link</comment>
+  </data>
+  <data name="About" xml:space="preserve">
+    <value>About</value>
+    <comment>Heading text for AboutFlyout</comment>
+  </data>
+  <data name="AppTitle.Text" xml:space="preserve">
+    <value>Sage Mobile Sales</value>
+    <comment>App Title text in About Flyout</comment>
+  </data>
+  <data name="AppLaunchingInfo" xml:space="preserve">
+    <value>App is Launching</value>
+    <comment>Text for app lanching for Info in log file</comment>
+  </data>
+  <data name="CategoriesEmptyText" xml:space="preserve">
+    <value>No Categories present</value>
+    <comment>Empty string which we display when no categories available</comment>
+  </data>
+  <data name="CustomersEmptyText" xml:space="preserve">
+    <value>No Customers present</value>
+    <comment>Empty string which we display when no quotes available</comment>
+  </data>
+  <data name="OrdersEmptyText" xml:space="preserve">
+    <value>No Orders present</value>
+    <comment>Empty string which we display when no orders available</comment>
+  </data>
+  <data name="QuotesEmptyText" xml:space="preserve">
+    <value>No Quotes present</value>
+    <comment>Empty string which we display when no quotes available</comment>
+  </data>
+  <data name="DividerSymbol.Text" xml:space="preserve">
+    <value> |  </value>
+    <comment>Recent Orders Grid divider symbol between header and customer name</comment>
+  </data>
+  <data name="ItemdetailRecentOrders.Text" xml:space="preserve">
+    <value>Recent Orders</value>
+    <comment>Recent Orders Grid Header in Item detail Page</comment>
+  </data>
+  <data name="RecentOrderDate.Text" xml:space="preserve">
+    <value>Date:</value>
+    <comment>Recent orders Grid data template date column</comment>
+  </data>
+  <data name="RecentOrderInvoice.Text" xml:space="preserve">
+    <value>Invoice:</value>
+    <comment>Recent orders Grid data template invoice column</comment>
+  </data>
+  <data name="RecentOrderProductSku.Text" xml:space="preserve">
+    <value>Product No:</value>
+    <comment>Product No. textblock text in Recent Orders page</comment>
+  </data>
+  <data name="RecentOrderQty.Text" xml:space="preserve">
+    <value>Qty:</value>
+    <comment>Recent orders Grid data template Quantity column</comment>
+  </data>
+  <data name="RecentOrdersPageTitle.Text" xml:space="preserve">
+    <value>Recent Orders |</value>
+    <comment>Recent Orders page Title</comment>
+  </data>
+  <data name="RecentOrdersQuotelineitem.Text" xml:space="preserve">
+    <value>Recent Orders</value>
+    <comment>RecentOrder text inside Quote lineitem in quote details</comment>
+  </data>
+  <data name="RecentOrderStockInHand.Text" xml:space="preserve">
+    <value>Stock in hand:</value>
+    <comment>Stock in hand textblock text in Recent Orders page</comment>
+  </data>
+  <data name="RecentOrderTotal.Text" xml:space="preserve">
+    <value>Total:</value>
+    <comment>Recent orders Grid data template Total column</comment>
+  </data>
+  <data name="RecentOrderUnitPrice.Text" xml:space="preserve">
+    <value>Unit Price:</value>
+    <comment>Recent orders Grid data template Unit Price column</comment>
+  </data>
+  <data name="frequentlyPurchasedItems.Text" xml:space="preserve">
+    <value>Frequently Purchased Items</value>
+    <comment>Frequently Purchased ItemsPage  Page title</comment>
+  </data>
+  <data name="FrequentlyPurchasedItemsPageTitle.Text" xml:space="preserve">
+    <value>Frequently Purchased Items |</value>
+    <comment>Frequently Purchased ItemsPage Header in Customerdetail Page</comment>
+  </data>
+  <data name="ItemName.Text" xml:space="preserve">
+    <value>Product :</value>
+    <comment>Product Textblock text in FrequentlyPurchasedItemsPage</comment>
+  </data>
+  <data name="ItemNo.Text" xml:space="preserve">
+    <value>Item No :</value>
+    <comment>ItemNo Textblock text in FrequentlyPurchasedItemsPage</comment>
+  </data>
+  <data name="OrdersPageTitle.Text" xml:space="preserve">
+    <value>Orders</value>
+  </data>
+  <data name="PriorYTD.Text" xml:space="preserve">
+    <value>Prior YTD :</value>
+    <comment>PriorTextblock text in FrequentlyPurchasedItemsPage</comment>
+  </data>
+  <data name="QuantityYTD.Text" xml:space="preserve">
+    <value>Qty YTD :</value>
+    <comment>QuantityTextblock text in FrequentlyPurchasedItemsPage</comment>
+  </data>
+  <data name="quotesPageTitle.Text" xml:space="preserve">
+    <value>Quotes</value>
+  </data>
+  <data name="date.Text" xml:space="preserve">
+    <value>Date</value>
+    <comment>Menu Item  text for sort by date</comment>
+  </data>
+  <data name="orderInvoice.Text" xml:space="preserve">
+    <value>Invoice</value>
+    <comment>Menu Item  text for sort by Invoice </comment>
+  </data>
+  <data name="orderQuantity.Text" xml:space="preserve">
+    <value>Quantity</value>
+    <comment>Menu Item  text for sort by recent order quantity</comment>
+  </data>
+  <data name="orderTotalAmount.Text" xml:space="preserve">
+    <value>Total Amount</value>
+    <comment>Menu Item  text for sort by recent order Total Amount</comment>
+  </data>
+  <data name="orderUnitPrice.Text" xml:space="preserve">
+    <value>UnitPrice</value>
+    <comment>Menu Item  text for sort by recent order unit price</comment>
+  </data>
+  <data name="SeperatorSymbol" xml:space="preserve">
+    <value>|  </value>
+    <comment>Grid divider symbol between header and customer name</comment>
+  </data>
+  <data name="MobileSales.Text" xml:space="preserve">
+    <value>MobileSales</value>
+    <comment>Mobiles sales text</comment>
+  </data>
+  <data name="ErrorTitle" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="InternalServerErrorText" xml:space="preserve">
+    <value>Please try again in a few minutes.</value>
+  </data>
+  <data name="InternalServerErrorTitle" xml:space="preserve">
+    <value>Cannot contact server</value>
+  </data>
+  <data name="UnAuthorizedText" xml:space="preserve">
+    <value>The Sage ID you entered is not authorized to use this application. Contact your administrator.</value>
+  </data>
+  <data name="PlaceOrderErrorText" xml:space="preserve">
+    <value>Please try again in a few minutes</value>
+  </data>
+  <data name="PlaceOrderErrorTitle" xml:space="preserve">
+    <value>There was a problem placing your order</value>
+    <comment>place order error text</comment>
+  </data>
+</root>
