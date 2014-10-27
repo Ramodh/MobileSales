@@ -204,7 +204,7 @@
                                      Text="{Binding EnteredQuantity,Mode=TwoWay}"
                                      Style="{StaticResource QuantityTextBoxStyle}" VerticalAlignment="Center"
                                      InputScope="Number" PreventKeyboardDisplayOnProgrammaticFocus="True"
-                                     PlaceholderText="0">
+                                     PlaceholderText="0" MaxLength="9">
                                 <interactivity:Interaction.Behaviors>
                                     <behaviors:NumericTextBoxBehavior />
                                     <core:EventTriggerBehavior EventName="TextChanged">
