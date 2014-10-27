@@ -283,21 +283,20 @@ namespace SageMobileSales.UILogic.ViewModels
                     CustomerSearchBoxText = "Search for a Customer";
                 }
 
-                if (navigationParameter != null)
+                if (navigationParameter != null && (pageStack.SourcePageType.Name == PageUtils.CustomerDetailPage || pageStack.SourcePageType.Name == PageUtils.QuotesPage))
                 {
-                    if (pageStack.SourcePageType.Name == PageUtils.CustomerDetailPage || pageStack.SourcePageType.Name == PageUtils.QuotesPage)
-                    {
-                        _customerAddress = navigationParameter as CustomerDetails;
-                        PageUtils.SelectedCustomerDetails = _customerAddress;
+                    _customerAddress = navigationParameter as CustomerDetails;
+                    PageUtils.SelectedCustomerDetails = _customerAddress;
 
-                        IsCustomerSearchVisible = Visibility.Collapsed;
-                        IsTextBlockVisible = Visibility.Visible;
-                    }
+                    IsCustomerSearchVisible = Visibility.Collapsed;
+                    IsTextBlockVisible = Visibility.Visible;
+
                 }
                 else if (navigationParameter != null && pageStack.SourcePageType.Name == PageUtils.OrdersPage)
                 {
                     _orderId = navigationParameter as string;
                     _orderDetails = await _orderRepository.GetOrderDetailsAsync(_orderId);
+                    CustomerId = _orderDetails.CustomerId;
                     SelectedType = CreateQuoteFrom[1];
                     if (PageUtils.SelectedCustomerDetails != null)
                     {
