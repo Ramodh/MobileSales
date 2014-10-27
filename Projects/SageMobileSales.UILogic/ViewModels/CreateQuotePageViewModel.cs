@@ -295,8 +295,9 @@ namespace SageMobileSales.UILogic.ViewModels
                     }
                     else if (pageStack.SourcePageType.Name == PageUtils.OrdersPage)
                     {
-                        _orderId = navigationParameter as string;
+                        _orderId = navigationParameter as string;                        
                         _orderDetails = await _orderRepository.GetOrderDetailsAsync(_orderId);
+                        CustomerId = _orderDetails.CustomerId;
                         SelectedType = CreateQuoteFrom[1];
                         if (PageUtils.SelectedCustomerDetails != null)
                         {
