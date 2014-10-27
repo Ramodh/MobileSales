@@ -26,6 +26,7 @@ namespace SageMobileSales.UILogic.Common
         public static string Invoice = "Invoice";
         public static string QuoteDetailsPage = "QuoteDetailsPage";
         public static string ItemDetailPage = "ItemDetailPage";
+        public static string CreateQuotePage = "CreateQuotePage";
         public static string PreviousOrder = "Previous order";
         public static string PreviousPurchasedItems = "Previously purchased items";
         public static string ScratchText = "Create the quote from scratch";
@@ -44,8 +45,7 @@ namespace SageMobileSales.UILogic.Common
         public static bool CamefromQuoteDetails = false;
         public static bool CamefromItemDetails = false;
         public static string CustomerDetailPage = "CustomerDetailPage";
-        public static string OrdersPage = "OrdersPage";
-        public static string CreateQuotePage = "CreateQuotePage";
+        public static string OrdersPage = "OrdersPage";        
         public static string QuotesPage = "QuotesPage";
         public static string SeeMore = "See More";
         public static bool CamefromCustomerDetails = false;
