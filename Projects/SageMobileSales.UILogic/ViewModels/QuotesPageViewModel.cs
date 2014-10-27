@@ -409,6 +409,7 @@ namespace SageMobileSales.UILogic.ViewModels
                     PageUtils.CameFromQuoteDetail = CamefromQuoteDetail;               
                     _navigationService.Navigate("QuoteDetails", _quote.QuoteId);
                 }
+                GridViewItemClickable = true;
             }
             catch (Exception ex)
             {
