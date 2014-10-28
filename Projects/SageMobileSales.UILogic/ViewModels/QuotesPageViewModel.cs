@@ -427,8 +427,9 @@ namespace SageMobileSales.UILogic.ViewModels
             var messageDialog = new MessageDialog("Change Quote status from Submit to Draft.");
 
             // Add commands and set their command ids
-            messageDialog.Commands.Add(new UICommand("Cancel", command => { }, 0));
-            messageDialog.Commands.Add(new UICommand("Change Status", CommandInvokedHandler, 1));
+            messageDialog.Commands.Add(new UICommand("Change Status", CommandInvokedHandler, 0));
+            messageDialog.Commands.Add(new UICommand("Cancel", command => { }, 1));
+              
 
             // Set the command that will be invoked by default
             messageDialog.DefaultCommandIndex = 1;
