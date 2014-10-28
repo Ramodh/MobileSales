@@ -845,7 +845,9 @@ namespace SageMobileSales.UILogic.ViewModels
 
             if (Frame != null)
             {
-                if (Frame.BackStack.Count >= 2)
+                List<PageStackEntry> navigationHistory = Frame.BackStack.ToList();
+                PageStackEntry pageStack = navigationHistory.LastOrDefault();
+                if (Frame.BackStack.Count >= 2 && pageStack.SourcePageType.Name != PageUtils.CustomerDetailPage)
                 {
                     Frame.BackStack.RemoveAt(Frame.BackStack.Count - 1);
                 }
