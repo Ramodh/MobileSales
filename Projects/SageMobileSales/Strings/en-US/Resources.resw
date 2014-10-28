@@ -782,4 +782,12 @@
     <value>Cannot Create Contact</value>
     <comment>Error message title for saving contact in AddContactPage</comment>
   </data>
+  <data name="MesDialogConnectionUnavailableMessage" xml:space="preserve">
+    <value>Check your internet connection and resubmit the quote</value>
+    <comment>Display connection unavailable message</comment>
+  </data>
+  <data name="MesDialogConnectionUnavailableTitle" xml:space="preserve">
+    <value>No Internet Connection</value>
+    <comment>Display connection unavailable message Title</comment>
+  </data>
 </root>
