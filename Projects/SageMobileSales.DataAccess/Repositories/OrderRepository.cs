@@ -210,7 +210,7 @@ namespace SageMobileSales.DataAccess.Repositories
         /// </summary>
         /// <param name="salesRepId"></param>
         /// <returns></returns>
-        public async Task<List<OrderDetails>> GetOrderStatusListAsync(string customerId)
+        public async Task<List<OrderDetails>> GetOrderStatusListForCustomerAsync(string customerId)
         {
 
             //salesRepId is not required, Check and remove
@@ -222,6 +222,32 @@ namespace SageMobileSales.DataAccess.Repositories
                         _sageSalesDB.QueryAsync<OrderDetails>(
                             "SELECT distinct customer.customerName, orders.CustomerId,orders.OrderNumber, orders.AddressId, orders.TenantId, orders.OrderId, orders.CreatedOn, orders.amount, orders.DiscountPercent, orders.ShippingAndHandling, orders.Tax, orders.OrderStatus,orders.OrderDescription, SalesRep.RepName FROM customer, orders left Join SalesRep On SalesRep.RepId=Orders.RepId where Orders.OrderStatus=='Order' and customer.customerId=orders.customerId and customer.IsActive=1 and orders.customerId=? order by orders.createdOn desc",
                             customerId);
+            }
+            catch (Exception ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+            return ordersList;
+        }
+
+        /// <summary>
+        ///     Gets orderstatus list for that salesRepId
+        /// </summary>
+        /// <param name="salesRepId"></param>
+        /// <returns></returns>
+        public async Task<List<OrderDetails>> GetOrdersStatusListForSalesRepAsync(string salesRepId)
+        {
+
+            //salesRepId is not required, Check and remove
+            List<OrderDetails> ordersList = null;
+            try
+            {
+                //"SELECT distinct customer.customerName, customer.CustomerId, orders.OrderId, orders.OrderStatus, orders.CreatedOn,orders.UpdatedOn,orders.AddressId, orders.Amount, orders.DiscountPercent, orders.Tax, orders.ShippingAndHandling, orders.ExternalReferenceNumber,orders.TenantId,orders.OrderDescription, SalesRep.RepName FROM orders INNER JOIN customer ON customer.customerID = orders.customerId Inner Join SalesRep On orders.RepId=?"
+                ordersList =
+                    await
+                        _sageSalesDB.QueryAsync<OrderDetails>(
+                            "SELECT distinct customer.customerName, customer.CustomerId, orders.OrderId, orders.OrderStatus, orders.CreatedOn,orders.SubmittedDate,orders.AddressId, orders.Amount, orders.DiscountPercent, orders.Tax, orders.ShippingAndHandling, orders.TenantId,orders.OrderDescription,orders.OrderNumber, SalesRep.RepName FROM orders INNER JOIN customer ON customer.customerID = orders.customerId and Orders.OrderStatus=='Order' and customer.IsActive=1 Inner Join SalesRep");
             }
             catch (Exception ex)
             {
