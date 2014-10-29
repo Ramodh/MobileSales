@@ -21,6 +21,7 @@ using SageMobileSales.ServiceAgents.Common;
 using SageMobileSales.ServiceAgents.Services;
 using SageMobileSales.UILogic.Common;
 using SageMobileSales.Views;
+using Windows.UI.Popups;
 
 // The Blank Application template is documented at http://go.microsoft.com/fwlink/?LinkId=234227
 
@@ -208,7 +209,13 @@ namespace SageMobileSales
             ApplicationDataContainer configSettings = ApplicationData.Current.LocalSettings;
             configSettings.Containers["ConfigurationSettingsContainer"].Values["IsServerChanged"] = false;
             await oAuthService.Cleanup();
-            NavigationService.Navigate("Signin", null);
+
+            MessageDialog msgDialog = new MessageDialog(
+                              ResourceLoader.GetForCurrentView("Resources").GetString("LogoutText"),
+                              ResourceLoader.GetForCurrentView("Resources").GetString("LogoutTitle"));
+            msgDialog.Commands.Add(new UICommand("Ok", (UICommandInvokedHandler) => { NavigationService.Navigate("Signin", null); }));
+            msgDialog.Commands.Add(new UICommand("Cancel"));
+            await msgDialog.ShowAsync();
         }
 
 

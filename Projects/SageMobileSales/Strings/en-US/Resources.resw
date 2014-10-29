@@ -782,4 +782,10 @@
     <value>Cannot Create Contact</value>
     <comment>Error message title for saving contact in AddContactPage</comment>
   </data>
+  <data name="LogoutText" xml:space="preserve">
+    <value>Are you sure you want to Logout?</value>
+  </data>
+  <data name="LogoutTitle" xml:space="preserve">
+    <value>Confirm Logout</value>
+  </data>
 </root>

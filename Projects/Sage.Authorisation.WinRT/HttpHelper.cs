@@ -8,6 +8,7 @@ using Windows.Security.Authentication.Web;
 using Newtonsoft.Json;
 using Sage.Authorisation.WinRT.Exceptions;
 using Sage.Authorisation.WinRT.Storage;
+using Windows.UI.Popups;
 
 namespace Sage.Authorisation.WinRT
 {
@@ -180,18 +181,21 @@ namespace Sage.Authorisation.WinRT
 
                 string responseString = await result.Content.ReadAsStringAsync();
 
-                if (result.StatusCode == HttpStatusCode.BadRequest)
-                {
-                    // throw exception containing details from response
-                    var error = ParseJsonString<ErrorResponse>(responseString);
-                    error.Throw(state);
-                }
-
                 if (result.StatusCode == HttpStatusCode.OK)
                 {
                     TokenResponse tokenResponse = TokenResponse.Parse(responseString);
                     return tokenResponse;
                 }
+                else
+                {
+                    await ShowMessageDialogAsync(result);
+                }
+                //if (result.StatusCode == HttpStatusCode.BadRequest)
+                //{
+                //    // throw exception containing details from response
+                //    var error = ParseJsonString<ErrorResponse>(responseString);
+                //    error.Throw(state);
+                //}
 
                 throw new ExpectedOKException(result.StatusCode, state);
             }
@@ -393,6 +397,44 @@ namespace Sage.Authorisation.WinRT
                     request.Dispose();
                 }
             }
+        }
+
+        private async Task ShowMessageDialogAsync(HttpResponseMessage result)
+        {
+            string errorText;
+            string errorTitle;
+
+            switch (result.StatusCode)
+            {
+                case HttpStatusCode.BadRequest:
+                    errorText = "There was a problem contacting the sign in server.";
+                    errorTitle = "Unable to sign in";
+                    break;
+
+                case HttpStatusCode.Unauthorized:
+                case HttpStatusCode.Forbidden:
+                    errorText = "The user has not been granted sufficient permission to proceed";
+                    errorTitle = "Unable to sign in";
+                    break;
+
+                case HttpStatusCode.NotFound:
+                    errorText = "Verify the correct server is selected in app settings";
+                    errorTitle = "Unable to connect to the site";
+                    break;
+
+                case HttpStatusCode.InternalServerError:
+                    errorText = "Please try again in a few minutes";
+                    errorTitle = "Cannot contact server";
+                    break;
+
+                default:
+                    errorText = "There was a problem contacting the sign in server.";
+                    errorTitle = "Unable to sign in";
+                    break;
+            }
+
+            var msgDialog = new MessageDialog(errorText,errorTitle);
+            await msgDialog.ShowAsync();
         }
     }
 }
