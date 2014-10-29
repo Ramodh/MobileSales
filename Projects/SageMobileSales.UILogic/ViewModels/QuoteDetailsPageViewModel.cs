@@ -446,46 +446,58 @@ namespace SageMobileSales.UILogic.ViewModels
                 if (IsSubmitQuoteEnabled)
                 {
                 MessageDialog msgDialog;
-                    IsSubmitQuoteEnabled = false;
-                if (QuoteLineItemsList.Count > 0)
-                {
-                    InProgress = true;
-                    _quote = await UpdateQuote(DataAccessUtils.SubmitQuote);
-
-                    if (Constants.ConnectedToInternet())
+                  
+                    if (QuoteLineItemsList.Count > 0)
                     {
-                        await UpdateQuoteAndQuoteLineItemdetailsToServer(_quote);
-                        _quote = await _quoteService.SubmitQuote(_quote);
+                        if (Constants.ConnectedToInternet())
+                        {
+
+                            InProgress = true;
+                            _quote = await UpdateQuote(DataAccessUtils.SubmitQuote);
+
+                            if (Constants.ConnectedToInternet())
+                            {
+                                await UpdateQuoteAndQuoteLineItemdetailsToServer(_quote);
+                                _quote = await _quoteService.SubmitQuote(_quote);
+                            }
+
+                            InProgress = false;
+                            IsSubmitQuoteEnabled = false;
+                            //if (_quote.QuoteStatus == DataAccessUtils.SubmitQuote)
+                            //{
+                            //    IsSubmitQuote = Visibility.Collapsed;
+                            //    IsPlaceOrder = Visibility.Visible;
+                            //}
+                            QuoteDetails.QuoteStatus = _quote.QuoteStatus;
+                            OnPropertyChanged("QuoteDetails");
+
+                            _itemNotSelected = true;
+                            ChangeVisibility();
+                            await DisplayQuotedetails();
+                            msgDialog =
+                                new MessageDialog(
+                                    ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogSubmittedQuoteText"),
+                                    ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogSubmittedQuoteTitle"));
+                            msgDialog.Commands.Add(new UICommand("Ok"));
+
+                            // _navigationService.GoBack();
+                        }
+                        else
+                        {
+                           msgDialog = new MessageDialog(
+                          ResourceLoader.GetForCurrentView("Resources").GetString(" MesDialogConnectionUnavailableMessage"),
+                          ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogConnectionUnavailableTitle"));
+                            msgDialog.Commands.Add(new UICommand("Ok"));                     
+                        }
                     }
-
-                    InProgress = false;
-                    //if (_quote.QuoteStatus == DataAccessUtils.SubmitQuote)
-                    //{
-                    //    IsSubmitQuote = Visibility.Collapsed;
-                    //    IsPlaceOrder = Visibility.Visible;
-                    //}
-                    QuoteDetails.QuoteStatus = _quote.QuoteStatus;
-                    OnPropertyChanged("QuoteDetails");
-
-                    _itemNotSelected = true;
-                    ChangeVisibility();
-                    await DisplayQuotedetails();
-                    msgDialog =
-                        new MessageDialog(
-                            ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogSubmittedQuoteText"),
-                            ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogSubmittedQuoteTitle"));
-                    msgDialog.Commands.Add(new UICommand("Ok"));
-
-                    // _navigationService.GoBack();
-                }
-                else
-                {
-                    msgDialog =
-                        new MessageDialog(
-                            ResourceLoader.GetForCurrentView("Resources").GetString("SubmitQuoteErrorMessage"),
-                            ResourceLoader.GetForCurrentView("Resources").GetString("SubmitQuoteErrorTitle"));
-                    msgDialog.Commands.Add(new UICommand("Ok"));
-                }
+                    else
+                    {
+                        msgDialog =
+                            new MessageDialog(
+                                ResourceLoader.GetForCurrentView("Resources").GetString("SubmitQuoteErrorMessage"),
+                                ResourceLoader.GetForCurrentView("Resources").GetString("SubmitQuoteErrorTitle"));
+                        msgDialog.Commands.Add(new UICommand("Ok"));
+                    }
                 await msgDialog.ShowAsync();
             }
             }
@@ -694,32 +706,31 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             var messageDialog = new MessageDialog(messageText, messageTitle);
 
-            // Add commands and set their command ids
-            messageDialog.Commands.Add(
-                new UICommand(ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogCancelbuttonText"),
-                    command => { _isCancelled = true; }, 0));
             if (deleteQuote)
             {
                 messageDialog.Commands.Add(
                     new UICommand(ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogDeletebuttonText"),
-                        DeleteQuoteCommandInvokedHandler, 1));
+                        DeleteQuoteCommandInvokedHandler, 0));
             }
             else if (isChangeStatus)
             {
                 messageDialog.Commands.Add(
                     new UICommand(
                         ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogChangeStatusbuttonText"),
-                        RevertQuoteStatusCommandInvokedHandler, 1));
+                        RevertQuoteStatusCommandInvokedHandler, 0));
             }
             else
             {
                 messageDialog.Commands.Add(
                     new UICommand(ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogDeletebuttonText"),
-                        DeleteQuoteLineItemCommandInvokedHandler, 1));
+                        DeleteQuoteLineItemCommandInvokedHandler, 0));
             }
-
+            // Add commands and set their command ids
+            messageDialog.Commands.Add(
+                new UICommand(ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogCancelbuttonText"),
+                    command => { _isCancelled = true; }, 1));
             // Set the command that will be invoked by default
-            // messageDialog.DefaultCommandIndex = 1;
+           // messageDialog.DefaultCommandIndex = 1;
 
             // Show the message dialog and get the event that was invoked via the async operator
             await messageDialog.ShowAsync();
@@ -834,7 +845,9 @@ namespace SageMobileSales.UILogic.ViewModels
 
             if (Frame != null)
             {
-                if (Frame.BackStack.Count >= 2)
+                List<PageStackEntry> navigationHistory = Frame.BackStack.ToList();
+                PageStackEntry pageStack = navigationHistory.LastOrDefault();
+                if (Frame.BackStack.Count >= 2 && pageStack.SourcePageType.Name != PageUtils.CustomerDetailPage)
                 {
                     Frame.BackStack.RemoveAt(Frame.BackStack.Count - 1);
                 }
