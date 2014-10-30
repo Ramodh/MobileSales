@@ -188,16 +188,16 @@ namespace SageMobileSales.UILogic.ViewModels
             //}
 
 
-            //if (selected.SelectedItem.ToString() == "Production")
-            //{
-            //    ClientId = @"fRt7TgcUAzq9y0b3BLCTUM4Y0wwcWC51";
-            //    Url = "https://mobilesales.na.sage.com/sdata/api/dynamic/-/";
-            //    Scope = @"kmt6bhzz();";
-            //    RedirectUrl = "https://signon.sso.services.sage.com/oauth/native";
-            //    IsSageIdProduction = true;
-            //    SelectedType = "Production";
-            //    SetConfigurationValues();
-            //}
+            if (selected.SelectedItem.ToString() == "Production")
+            {
+                ClientId = @"fRt7TgcUAzq9y0b3BLCTUM4Y0wwcWC51";
+                Url = "https://sagemobilesales.na.sage.com/";
+                Scope = @"kmt6bhzz();";
+                RedirectUrl = "https://signon.sso.services.sage.com/oauth/native";
+                IsSageIdProduction = true;
+                SelectedType = "Production";
+                SetConfigurationValues();
+            }
 
 
             //if (selected.SelectedItem.ToString() == "SharedComponents")
@@ -312,10 +312,10 @@ namespace SageMobileSales.UILogic.ViewModels
                 SetConfigurationValues();
             }
             if (selected.SelectedItem.ToString() == "Teak")
-            {                
+            {
                 ClientId = @"BmQhbGdK1YO5AQ0fsdndlR1GUlfP7EH3";
                 Url = "https://TeakMSales.sagedatacloud.com/sdata/api/msales/1.0/";
-                Scope = @"s99fetln();";                
+                Scope = @"s99fetln();";
                 IsSageIdProduction = false;
                 SelectedType = "Teak";
                 RedirectUrl = "https://signon.sso.staging.services.sage.com/oauth/native";
