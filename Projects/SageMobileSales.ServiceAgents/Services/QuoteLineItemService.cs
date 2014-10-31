@@ -207,7 +207,7 @@ namespace SageMobileSales.ServiceAgents.Services
 
 
         /// <summary>
-        ///     Deletes quoteLineItem via delete(http) request
+        ///     Deletes quoteLineItem 
         /// </summary>
         /// <param name="quoteLineItem"></param>
         /// <returns></returns>
