@@ -766,4 +766,8 @@
     <value>There was a problem placing your order</value>
     <comment>place order error text</comment>
   </data>
+  <data name="MesDialogUnableToSubmitdQuoteWithZeroQtyText" xml:space="preserve">
+    <value>At least one item must be added before you can submit the quote.</value>
+    <comment> At least one item must be added before you can submit the quote.</comment>
+  </data>
 </root>
