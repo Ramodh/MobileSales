@@ -13,6 +13,7 @@ using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
 using SageMobileSales.ServiceAgents.JsonHelpers;
 using System.Net;
+using SQLite;
 
 namespace SageMobileSales.ServiceAgents.Services
 {
@@ -58,7 +59,7 @@ namespace SageMobileSales.ServiceAgents.Services
             if (Constants.IsSyncAvailable)
             {
                 await _localSyncDigestService.SyncLocalSource(Constants.QuoteEntity, Constants.syncSourceQueryEntity);
-              await SyncQuotes();
+                await SyncQuotes();
             }
             //else
             //{
@@ -162,12 +163,18 @@ namespace SageMobileSales.ServiceAgents.Services
             List<QuoteLineItem> quoteLineItemList =
                 await _quoteLineItemRepository.GetQuoteLineItemsForQuote(quote.QuoteId);
 
-            // Deleting quoteLineItems if quantity is <= 0........ confirm on this
             foreach (QuoteLineItem quoteLineItem in quoteLineItemList)
             {
-                if (quoteLineItem.Quantity <= 0)
+                if (quoteLineItem.Quantity <= 0 && quoteLineItem.QuoteLineItemId.Contains(DataAccessUtils.Pending))
+                {
                     await _quoteLineItemRepository.DeleteQuoteLineItemFromDbAsync(quoteLineItem.QuoteLineItemId);
+                    quoteLineItemList.Remove(quoteLineItem);
+                }
             }
+
+            IEnumerable<QuoteLineItem> deleteQuoteLineItemList = quoteLineItemList.Where(e => e.Quantity <= 0);
+            if (deleteQuoteLineItemList.Count() > 0)
+                await DeleteQuoteLineItemList(quote, deleteQuoteLineItemList.ToList());
 
             IEnumerable<QuoteLineItem> result =
                 quoteLineItemList.Where(e => e.QuoteLineItemId.Contains(Constants.Pending));
@@ -387,6 +394,55 @@ namespace SageMobileSales.ServiceAgents.Services
             }
         }
 
+        /// <summary>
+        ///     Deletes quoteLineItem 
+        /// </summary>
+        /// <param name="quoteLineItem"></param>
+        /// <returns></returns>
+        public async Task DeleteQuoteLineItemList(Quote quote, List<QuoteLineItem> quoteLineItemList)
+        {
+            try
+            {
+                parameters = new Dictionary<string, string>();
+                parameters.Add("include", "Details");
+                object obj;
+
+                obj =
+                    ConvertEditedQuoteDetailsWithShippingAddressKeyToJsonFormattedObject(quote, quoteLineItemList);
+
+                HttpResponseMessage quoteResponse = null;
+                string quoteEntityId;
+
+                quoteEntityId = Constants.DraftQuotes + "('" + quote.QuoteId + "')";
+
+                quoteResponse =
+                    await
+                        _serviceAgent.BuildAndPatchObjectRequest(Constants.TenantId, quoteEntityId, null,
+                            Constants.AccessToken, parameters,
+                            obj);
+
+                if (quoteResponse != null && quoteResponse.IsSuccessStatusCode)
+                {
+                    foreach (var quoteLineItem in quoteLineItemList)
+                        await _quoteLineItemRepository.DeleteQuoteLineItemFromDbAsync(quoteLineItem.QuoteLineItemId);
+                }
+            }
+            catch (SQLiteException ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+            catch (HttpRequestException ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+            catch (Exception ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+        }
 
         //Method used for "Buy it Now"
         ///// <summary>
@@ -650,55 +706,55 @@ namespace SageMobileSales.ServiceAgents.Services
             //string salesRepId = await _salesRepRepository.GetSalesRepId();
             //if (!string.IsNullOrEmpty(salesRepId))
             //{
-                parameters.Add("Count", "100");
-                parameters.Add("include", "Details");
-                HttpResponseMessage quotesResponse = null;
+            parameters.Add("Count", "100");
+            parameters.Add("include", "Details");
+            HttpResponseMessage quotesResponse = null;
 
-                Constants.syncQueryEntity = Constants.syncSourceQueryEntity + "('" + Constants.TrackingId + "')";
+            Constants.syncQueryEntity = Constants.syncSourceQueryEntity + "('" + Constants.TrackingId + "')";
 
-                quotesResponse =
-                    await
-                        _serviceAgent.BuildAndSendRequest(Constants.TenantId, Constants.QuoteEntity,
-                            Constants.syncQueryEntity, null,
-                            Constants.AccessToken, parameters);
-                if (quotesResponse != null && quotesResponse.IsSuccessStatusCode)
+            quotesResponse =
+                await
+                    _serviceAgent.BuildAndSendRequest(Constants.TenantId, Constants.QuoteEntity,
+                        Constants.syncQueryEntity, null,
+                        Constants.AccessToken, parameters);
+            if (quotesResponse != null && quotesResponse.IsSuccessStatusCode)
+            {
+                JsonObject sDataQuotes = await _serviceAgent.ConvertTosDataObject(quotesResponse);
+                if (Convert.ToInt32(sDataQuotes.GetNamedNumber("$totalResults")) > DataAccessUtils.QuotesTotalCount)
+                    DataAccessUtils.QuotesTotalCount = Convert.ToInt32(sDataQuotes.GetNamedNumber("$totalResults"));
+                if (DataAccessUtils.QuotesTotalCount == 0)
                 {
-                    JsonObject sDataQuotes = await _serviceAgent.ConvertTosDataObject(quotesResponse);
-                    if (Convert.ToInt32(sDataQuotes.GetNamedNumber("$totalResults")) > DataAccessUtils.QuotesTotalCount)
-                        DataAccessUtils.QuotesTotalCount = Convert.ToInt32(sDataQuotes.GetNamedNumber("$totalResults"));
-                    if (DataAccessUtils.QuotesTotalCount == 0)
-                    {
-                        _eventAggregator.GetEvent<QuoteDataChangedEvent>().Publish(true);
-                    }
-                    int _totalCount = Convert.ToInt32(sDataQuotes.GetNamedNumber("$totalResults"));
-                    ErrorLog("Quote total count : " + _totalCount);
-                    JsonArray quotesObject = sDataQuotes.GetNamedArray("$resources");
-                    int _returnedCount = quotesObject.Count;
-                    ErrorLog("Quote returned count : " + _returnedCount);
-                    if (_returnedCount > 0 && _totalCount - _returnedCount >= 0 &&
-                        !(DataAccessUtils.IsQuotesSyncCompleted))
-                    {
-                        JsonObject lastQuoteObject = quotesObject.GetObjectAt(Convert.ToUInt32(_returnedCount - 1));
-                        digest.LastRecordId = lastQuoteObject.GetNamedString("$key");
-                        int _syncEndpointTick = Convert.ToInt32(lastQuoteObject.GetNamedNumber("SyncTick"));
-                        ErrorLog("Quote sync tick : " + _syncEndpointTick);
-                        if (_syncEndpointTick > digest.localTick)
-                        {
-                            digest.localTick = _syncEndpointTick;
-                        }
-
-                        // Saves Quotes data into LocalDB
-                        await _quoteRepository.SaveQuotesAsync(sDataQuotes, digest);
-                        // Looping this method again to make request for next batch of records(Quotes).
-                        await SyncQuotes();
-                    }
-                    else
-                    {
-                        DataAccessUtils.QuotesTotalCount = 0;
-                        DataAccessUtils.QuotesReturnedCount = 0;
-                        DataAccessUtils.IsQuotesSyncCompleted = false;
-                    }
+                    _eventAggregator.GetEvent<QuoteDataChangedEvent>().Publish(true);
                 }
+                int _totalCount = Convert.ToInt32(sDataQuotes.GetNamedNumber("$totalResults"));
+                ErrorLog("Quote total count : " + _totalCount);
+                JsonArray quotesObject = sDataQuotes.GetNamedArray("$resources");
+                int _returnedCount = quotesObject.Count;
+                ErrorLog("Quote returned count : " + _returnedCount);
+                if (_returnedCount > 0 && _totalCount - _returnedCount >= 0 &&
+                    !(DataAccessUtils.IsQuotesSyncCompleted))
+                {
+                    JsonObject lastQuoteObject = quotesObject.GetObjectAt(Convert.ToUInt32(_returnedCount - 1));
+                    digest.LastRecordId = lastQuoteObject.GetNamedString("$key");
+                    int _syncEndpointTick = Convert.ToInt32(lastQuoteObject.GetNamedNumber("SyncTick"));
+                    ErrorLog("Quote sync tick : " + _syncEndpointTick);
+                    if (_syncEndpointTick > digest.localTick)
+                    {
+                        digest.localTick = _syncEndpointTick;
+                    }
+
+                    // Saves Quotes data into LocalDB
+                    await _quoteRepository.SaveQuotesAsync(sDataQuotes, digest);
+                    // Looping this method again to make request for next batch of records(Quotes).
+                    await SyncQuotes();
+                }
+                else
+                {
+                    DataAccessUtils.QuotesTotalCount = 0;
+                    DataAccessUtils.QuotesReturnedCount = 0;
+                    DataAccessUtils.IsQuotesSyncCompleted = false;
+                }
+            }
             //}
         }
 
@@ -871,6 +927,51 @@ namespace SageMobileSales.ServiceAgents.Services
                             detail.Quantity = quoteLineItem.Quantity;
                             quoteJsonObject.Details.Add(detail);
                         }
+                    }
+                }
+            }
+            return quoteJsonObject;
+        }
+
+        /// <summary>
+        ///     Converts edited quote details, shipping address key to json formatted object
+        /// </summary>
+        /// <param name="quote"></param>
+        /// <param name="quoteLineItem"></param>
+        /// <returns></returns>
+        private EditQuoteDetailsShippingAddressKeyJson
+            ConvertEditedQuoteDetailsWithShippingAddressKeyToJsonFormattedObject(Quote quote,
+                List<QuoteLineItem> quoteLineItemList)
+        {
+            var quoteJsonObject = new EditQuoteDetailsShippingAddressKeyJson();
+            quoteJsonObject.Description = quote.QuoteDescription == null ? "" : quote.QuoteDescription;
+            //quoteJsonObject.DiscountPercent = quote.DiscountPercent;
+            quoteJsonObject.QuoteTotal = quote.Amount;
+            quoteJsonObject.SandH = quote.ShippingAndHandling;
+            //quoteJsonObject.Status = quote.QuoteStatus;
+            quoteJsonObject.CustomerId = quote.CustomerId;
+            //quoteJsonObject.SalesRep = new SalesKeyJson { key = quote.RepId };
+
+            quoteJsonObject.ShippingAddressId = quote.AddressId;
+            quoteJsonObject.Details = new List<EditDetail>();
+            EditDetail detail;
+            //quoteJsonObject.Details.resources = new List<ResourceKey>();
+            //ResourceKey resource;
+
+            if (quoteLineItemList != null)
+            {
+                if (quoteLineItemList.Count > 0)
+                {
+                    foreach (QuoteLineItem quoteLineItem in quoteLineItemList)
+                    {
+                        detail = new EditDetail();
+                        detail.key = quoteLineItem.QuoteLineItemId;
+                        detail.InventoryItemId = quoteLineItem.ProductId;
+                        detail.Price = quoteLineItem.Price;
+                        detail.Quantity = quoteLineItem.Quantity;
+                        detail.IsDeleted = true;
+
+                        quoteJsonObject.Details.Add(detail);
                     }
                 }
             }

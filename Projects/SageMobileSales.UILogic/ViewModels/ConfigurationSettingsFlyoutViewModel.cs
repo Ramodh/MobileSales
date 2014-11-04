@@ -188,16 +188,16 @@ namespace SageMobileSales.UILogic.ViewModels
             //}
 
 
-            //if (selected.SelectedItem.ToString() == "Production")
-            //{
-            //    ClientId = @"fRt7TgcUAzq9y0b3BLCTUM4Y0wwcWC51";
-            //    Url = "https://mobilesales.na.sage.com/sdata/api/dynamic/-/";
-            //    Scope = @"kmt6bhzz();";
-            //    RedirectUrl = "https://signon.sso.services.sage.com/oauth/native";
-            //    IsSageIdProduction = true;
-            //    SelectedType = "Production";
-            //    SetConfigurationValues();
-            //}
+            if (selected.SelectedItem.ToString() == "Production")
+            {
+                ClientId = @"fRt7TgcUAzq9y0b3BLCTUM4Y0wwcWC51";
+                Url = "https://sagemobilesales.na.sage.com/";
+                Scope = @"kmt6bhzz();";
+                RedirectUrl = "https://signon.sso.services.sage.com/oauth/native";
+                IsSageIdProduction = true;
+                SelectedType = "Production";
+                SetConfigurationValues();
+            }
 
 
             //if (selected.SelectedItem.ToString() == "SharedComponents")
