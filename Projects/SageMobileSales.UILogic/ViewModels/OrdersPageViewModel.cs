@@ -305,46 +305,47 @@ namespace SageMobileSales.UILogic.ViewModels
 
                 SyncProgress = Constants.OrdersSyncProgress;
 
-                var Frame = Window.Current.Content as Frame;
-                //InProgress = false;
-                if (Frame != null)
-                {
-                    List<PageStackEntry> navigationHistory = Frame.BackStack.ToList();
-                    if (navigationHistory.Count > 0)
-                    {
-                        PageStackEntry pageStack = navigationHistory.LastOrDefault();
-                        _cameFrom = pageStack.SourcePageType.Name;
-                    }
+                //var Frame = Window.Current.Content as Frame;
+                ////InProgress = false;
+                //if (Frame != null)
+                //{
+                //    List<PageStackEntry> navigationHistory = Frame.BackStack.ToList();
+                //    if (navigationHistory.Count > 0)
+                //    {
+                //        PageStackEntry pageStack = navigationHistory.LastOrDefault();
+                //        _cameFrom = pageStack.SourcePageType.Name;
+                //    }
 
-                }
+                //}
 
                 if (navigationParameter != null)
                 {
                     _customerId = navigationParameter as string;
                     Customer customer = await _customerRepository.GetCustomerDataAsync(_customerId);
                     OrdersList = new List<OrderDetails>();
-                    if (_cameFrom == PageUtils.CreateQuotePage)
-                    {
-                        OrdersList = await _orderRepository.GetOrderStatusListForCustomerAsync(_customerId);
-                        //GetSortSetings();
-                    }
-                    else
-                    {
-                        //if (!Constants.ConnectedToInternet())
-                        //{
-                        OrdersList = await _orderRepository.GetOrdersForCustomerAsync(customer.CustomerId);
+                    //if (_cameFrom == PageUtils.CreateQuotePage)
+                    //{
+                    //    OrdersList = await _orderRepository.GetOrderStatusListForCustomerAsync(_customerId);
+                    //    //GetSortSetings();
+                    //}
+                    //else
+                    //{
+                    //    //if (!Constants.ConnectedToInternet())
+                    //    //{
+                    //    OrdersList = await _orderRepository.GetOrdersForCustomerAsync(customer.CustomerId);
 
-                        //GetSortSetings();
-                    }
+                    //    //GetSortSetings();
+                    //}
+                    OrdersList = await _orderRepository.GetOrdersForCustomerAsync(customer.CustomerId);
                     //}
                     CustomerName = ResourceLoader.GetForCurrentView("Resources").GetString("SeperatorSymbol") +
                                    customer.CustomerName;
                 }
-                else if (_cameFrom == PageUtils.CreateQuotePage)
-                {
-                    OrdersList = await _orderRepository.GetOrdersStatusListForSalesRepAsync(await _salesRepRepository.GetSalesRepId());
-                    // GetSortSetings();
-                }
+                //else if (_cameFrom == PageUtils.CreateQuotePage)
+                //{
+                //    OrdersList = await _orderRepository.GetOrdersStatusListForSalesRepAsync(await _salesRepRepository.GetSalesRepId());
+                //    // GetSortSetings();
+                //}
                 else
                 {
                     OrdersPageTitle = "Orders";
@@ -662,19 +663,15 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             if (_customerId != null)
             {
-                if (_cameFrom == PageUtils.CreateQuotePage)
-                {
-                    OrdersList = await _orderRepository.GetOrderStatusListForCustomerAsync(_customerId);
-                }
-                else
-                {
+                //if (_cameFrom == PageUtils.CreateQuotePage)
+                //{
+                //    OrdersList = await _orderRepository.GetOrderStatusListForCustomerAsync(_customerId);
+                //}
+                //else
+                //{
                     OrdersList = await _orderRepository.GetOrdersForCustomerAsync(_customerId);
-                }
-            }
-            else if (_cameFrom == PageUtils.CreateQuotePage && _customerId == null)
-            {
-                OrdersList = await _orderRepository.GetOrdersStatusListForSalesRepAsync(await _salesRepRepository.GetSalesRepId());
-            }
+                //}
+            }          
             else
             {
                 OrdersList = await _orderRepository.GetOrdersListAsync(await _salesRepRepository.GetSalesRepId());
