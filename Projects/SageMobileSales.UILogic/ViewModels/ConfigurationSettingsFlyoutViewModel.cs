@@ -58,6 +58,8 @@ namespace SageMobileSales.UILogic.ViewModels
             Servers.Add("Willow");
             Servers.Add("Elm");
             Servers.Add("Teak");
+            Servers.Add("Preview");
+            
             SelectedType = Constants.SelectedType;
         }
 
@@ -318,6 +320,16 @@ namespace SageMobileSales.UILogic.ViewModels
                 Scope = @"s99fetln();";                
                 IsSageIdProduction = false;
                 SelectedType = "Teak";
+                RedirectUrl = "https://signon.sso.staging.services.sage.com/oauth/native";
+                SetConfigurationValues();
+            }
+            if (selected.SelectedItem.ToString() == "Preview")
+            {
+                ClientId = @"RAHGBa7mZz5BZB5JmJqn42Ydl1IuHn5Q";
+                Url = "https://PreviewMSales.sagedatacloud.com/sdata/api/msales/1.0/";
+                Scope = @"bgtvnjmd();";
+                IsSageIdProduction = false;
+                SelectedType = "Preview";
                 RedirectUrl = "https://signon.sso.staging.services.sage.com/oauth/native";
                 SetConfigurationValues();
             }
