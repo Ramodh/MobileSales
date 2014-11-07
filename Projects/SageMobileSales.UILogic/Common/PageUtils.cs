@@ -85,13 +85,31 @@ namespace SageMobileSales.UILogic.Common
         {
 #if(PRODUCTION)  
              
-            Constants.ClientId = @"7XtkBANAnzQ9a1aRqspNlHR5UtSRUP0J";
-            Constants.Url = "https://mobilesales.na.sage.com/sdata/api/dynamic/-/";
-            Constants.Scope = @"hrixtfgl();";
+            Constants.ClientId = @"fRt7TgcUAzq9y0b3BLCTUM4Y0wwcWC51";
+            Constants.Url = "https://sagemobilesales.na.sage.com/sdata/api/msales/1.0/";
+            Constants.Scope = @"kmt6bhzz();";
             Constants.RedirectUrl = "https://signon.sso.services.sage.com/oauth/native";
             Constants.IsSageIdProduction = true;
             Constants.SelectedType = "Production";
-      #else
+
+            ApplicationDataContainer configSettingsProd = ApplicationData.Current.LocalSettings;
+            if (configSettingsProd != null)
+            {
+                if (configSettingsProd.Containers.ContainsKey("ConfigurationSettingsContainer"))
+                {
+                    configSettingsProd.Containers["ConfigurationSettingsContainer"].Values["ClientId"] =
+                        Constants.ClientId;
+                    configSettingsProd.Containers["ConfigurationSettingsContainer"].Values["Scope"] = Constants.Scope;
+                    configSettingsProd.Containers["ConfigurationSettingsContainer"].Values["Url"] = Constants.Url;
+                    configSettingsProd.Containers["ConfigurationSettingsContainer"].Values["RedirectUrl"] =
+                        Constants.RedirectUrl;
+                    configSettingsProd.Containers["ConfigurationSettingsContainer"].Values["IsSageProduction"] =
+                        Constants.IsSageIdProduction;
+                    configSettingsProd.Containers["ConfigurationSettingsContainer"].Values["SelectedType"] =
+                        Constants.SelectedType;
+                }
+            }
+#else
 
             Constants.ClientId = @"xeQaIFwQvbDjKZvwzb92kFOLzDCd9CCc";
             Constants.Url = "http://ashmsalessdcweb.cloudapp.net/sdata/api/msales/1.0/";
@@ -99,8 +117,6 @@ namespace SageMobileSales.UILogic.Common
             Constants.IsSageIdProduction = false;
             Constants.SelectedType = "Ash";
             Constants.RedirectUrl = "https://signon.sso.staging.services.sage.com/oauth/native";
-
-#endif
 
             ApplicationDataContainer configSettings = ApplicationData.Current.LocalSettings;
             if (configSettings.Containers != null)
@@ -121,6 +137,9 @@ namespace SageMobileSales.UILogic.Common
                         configSettings.Containers["ConfigurationSettingsContainer"].Values["SelectedType"].ToString();
                 }
             }
+#endif
+
+
         }
 
         public static void ResetLocalVariables()
