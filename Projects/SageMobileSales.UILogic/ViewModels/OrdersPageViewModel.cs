@@ -396,6 +396,13 @@ namespace SageMobileSales.UILogic.ViewModels
                     {
                         _navigationService.Navigate("CreateQuote", arg.OrderId);
                     }
+                    else
+                    {
+                        cameFromOrderDetail = true;
+                        orderSortSettings.Containers["OrderSortSettingsContainer"].Values["cameFromOrderDetail"] = cameFromOrderDetail;
+                        PageUtils.CameFromOrderDetail = cameFromOrderDetail;
+                        _navigationService.Navigate("OrderDetails", arg);
+                    }
                 }
                 else
                 {
