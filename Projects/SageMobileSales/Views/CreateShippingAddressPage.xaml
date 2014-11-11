@@ -263,6 +263,10 @@
                         </core:EventTriggerBehavior>
                     </interactivity:Interaction.Behaviors>
                 </Button>
+                <ProgressRing Grid.Row="13" Height="70" Width="70" Grid.Column="2" HorizontalAlignment="Center"
+                      IsActive="{Binding InProgress, Mode=TwoWay}"
+                      Visibility="{Binding InProgress, Mode=TwoWay,Converter={StaticResource InProgessVisibilityConverter}}"
+                      Style="{StaticResource GridViewProgressRingStyle}" />
             </Grid>
         </Grid>
     </Grid>
