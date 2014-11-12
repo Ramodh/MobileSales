@@ -616,11 +616,12 @@ namespace SageMobileSales.UILogic.ViewModels
                     SalesRep salesRep = (await _salesRepRepository.GetSalesRepDtlsAsync()).FirstOrDefault();
 
                     DiscountPercent = Convert.ToDecimal(((TextBox)args).Text);
-
-                    if (DiscountPercent < 100)
+                    if (salesRep.MaximumDiscountPercent == null)
                     {
-                        if (salesRep.MaximumDiscountPercent != null)
-                        {
+                        DiscountPercent = 0;
+                    }
+                    if (DiscountPercent>=0 && DiscountPercent <= 100)
+                    {                                    
                             if (DiscountPercent > Convert.ToDecimal(salesRep.MaximumDiscountPercent))
                             {
                                 var maxDiscountMesDialog =
@@ -631,10 +632,17 @@ namespace SageMobileSales.UILogic.ViewModels
                                             .GetString("MesDialogDiscountPercentageTitle"));
                                 await maxDiscountMesDialog.ShowAsync();
                                 DiscountPercent = Convert.ToDecimal(salesRep.MaximumDiscountPercent);
-                            }
-                        }
+                            }                        
                         // DiscountPercentageValue = Math.Round(((_discountPercent / 100) * SubTotal), 2);
                     }
+                    else
+                    {
+                        DiscountPercent = 0;
+                    }
+                }
+                else
+                {
+                    DiscountPercent = 0;
                 }
 
                 OnPropertyChanged("DiscountPercent");

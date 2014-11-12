@@ -200,7 +200,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 {
                     await _quoteService.UpdateQuoteShippingAddressKey(_quote);
                 }
-
+                InProgress = false;
                 _navigationService.Navigate("QuoteDetails", _quoteDetails.QuoteId);
             }
             catch (Exception ex)
