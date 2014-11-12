@@ -204,11 +204,15 @@ namespace SageMobileSales
         // Logout Settings Command Handler
         private async void LogoutHandler()
         {
-            var oAuthService = _container.Resolve<IOAuthService>();
-            ApplicationDataContainer configSettings = ApplicationData.Current.LocalSettings;
-            configSettings.Containers["ConfigurationSettingsContainer"].Values["IsServerChanged"] = false;
-            await oAuthService.Cleanup();
-            NavigationService.Navigate("Signin", null);
+            try
+            {
+                var oAuthService = _container.Resolve<IOAuthService>();
+                ApplicationDataContainer configSettings = ApplicationData.Current.LocalSettings;
+                configSettings.Containers["ConfigurationSettingsContainer"].Values["IsServerChanged"] = false;
+                await oAuthService.Cleanup();
+                NavigationService.Navigate("Signin", null);
+            }
+            catch { }
         }
 
 
