@@ -845,6 +845,15 @@ namespace SageMobileSales.UILogic.ViewModels
         public override async void OnNavigatedTo(object navigationParameter, NavigationMode navigationMode,
             Dictionary<string, object> viewModelState)
         {
+            // Hidding bottom appbar buttons while data is loading.
+            IsAddItemVisible = Visibility.Collapsed;
+            IsSubmitQuoteVisible = Visibility.Collapsed;
+            IsPlaceOrderVisible = Visibility.Collapsed;
+            IsChangeAddressVisible = Visibility.Collapsed;
+            IsEditQuoteVisible = Visibility.Collapsed;
+            IsDeleteQuoteVisible = Visibility.Collapsed;
+            IsEditQuoteLineItemVisible = Visibility.Collapsed;
+
             IsSubmitQuoteEnabled = true;
             _quoteId = navigationParameter as string;
             //  await _addressRepository.GetShippingAddressForCustomer(QuoteDetails.CustomerId);
@@ -1237,7 +1246,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 AppEventSource.Log.Error(_log);
             }
         }
-
+        
         public void CatalogButton_Click(object sender, object parameter)
         {
             _navigationService.ClearHistory();
