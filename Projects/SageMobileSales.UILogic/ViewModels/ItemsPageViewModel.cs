@@ -14,6 +14,7 @@ using SageMobileSales.DataAccess.Model;
 using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
 using SageMobileSales.UILogic.Helpers;
+using Windows.UI.Xaml;
 
 namespace SageMobileSales.UILogic.ViewModels
 {
@@ -31,6 +32,7 @@ namespace SageMobileSales.UILogic.ViewModels
         private ProductCollection _productCollection;
         private ProductCollection _productsList;
         private bool _syncProgress;
+        private Visibility _isTextChanged;
 
         public ItemsPageViewModel(INavigationService navigationService, IProductRepository productRepository,
             IEventAggregator eventAggregator)
@@ -69,7 +71,15 @@ namespace SageMobileSales.UILogic.ViewModels
             get { return _inProgress; }
             private set { SetProperty(ref _inProgress, value); }
         }
-
+        /// <summary>
+        /// Visibility property for Filter icon in Filetritems textbox
+        /// </summary>
+        public Visibility IsTextChanged
+        {
+            get { return _isTextChanged; }
+            private set { SetProperty(ref _isTextChanged, value); }
+        }
+        
         /// <summary>
         ///     Data  syncing indicator
         /// </summary>
@@ -218,14 +228,14 @@ namespace SageMobileSales.UILogic.ViewModels
         /// </summary>
         /// <param name="searchText"></param>
         private void TextBoxTextChanged(object args)
-        {
+       {
             EmptyText = false;
-
+            IsTextChanged = Visibility.Collapsed;
             if (!InProgress)
             {
-                if (((TextBox) args).Text != null)
+                if (((TextBox) args).Text != null&&((TextBox) args).Text!=string.Empty)
                 {
-                    string searchTerm = ((TextBox) args).Text.Trim();
+                    string searchTerm = ((TextBox) args).Text.Trim();                  
                     EmptyText = !searchTerm.Any();
                     if (!string.IsNullOrEmpty(searchTerm))
                     {
@@ -238,6 +248,12 @@ namespace SageMobileSales.UILogic.ViewModels
                     if (ProductsList.ProductList.Count > 0)
 
                         EmptyFilteredProductList = !ProductCollection.ProductList.Any();
+                }
+                else
+                {
+                    ProductCollection = ProductsList;
+                    IsTextChanged = Visibility.Visible;
+
                 }
             }
         }
