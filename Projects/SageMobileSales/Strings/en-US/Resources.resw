@@ -796,4 +796,10 @@
     <value>No Internet Connection</value>
     <comment>Display connection unavailable message Title</comment>
   </data>
+  <data name="UnableToLogoutText" xml:space="preserve">
+    <value>Unable to logout at the moment. Please try again later.</value>
+  </data>
+  <data name="UnableToLogoutTitle" xml:space="preserve">
+    <value>Logout</value>
+  </data>
 </root>

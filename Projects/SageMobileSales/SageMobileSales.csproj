@@ -124,6 +124,7 @@
     <Compile Include="Common\FlipViewIndicator.cs" />
     <Compile Include="Common\ScrollViewerUtilities.cs" />
     <Compile Include="Common\VisualTreeUtilities.cs" />
+    <Compile Include="Converters\BackgroundConverter.cs" />
     <Compile Include="Converters\ErrorConverter.cs" />
     <Compile Include="Converters\StringFormatConverter.cs" />
     <Compile Include="Converters\TextHeaderVisibilityConverter.cs" />

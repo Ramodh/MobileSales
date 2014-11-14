@@ -45,8 +45,10 @@ namespace SageMobileSales.UILogic.Common
         public static bool CamefromQuoteDetails = false;
         public static bool CamefromItemDetails = false;
         public static string CustomerDetailPage = "CustomerDetailPage";
-        public static string OrdersPage = "OrdersPage";        
+        public static string OrdersPage = "OrdersPage";
         public static string QuotesPage = "QuotesPage";
+        public static string SignInPage = "SigninPage";
+        public static string LoadingIndicatorPage = "LoadingIndicatorPage";
         public static string SeeMore = "See More";
         public static bool CamefromCustomerDetails = false;
         public static Customer SelectedCustomer = null;
@@ -72,7 +74,7 @@ namespace SageMobileSales.UILogic.Common
             ApplicationDataContainer settingsLocal = ApplicationData.Current.LocalSettings;
             if (settingsLocal.Containers.ContainsKey("SageSalesContainer"))
             {
-                Constants.AccessToken = settingsLocal.Containers["SageSalesContainer"].Values["AccessToken"]==null?null:settingsLocal.Containers["SageSalesContainer"].Values["AccessToken"].ToString();
+                Constants.AccessToken = settingsLocal.Containers["SageSalesContainer"].Values["AccessToken"] == null ? null : settingsLocal.Containers["SageSalesContainer"].Values["AccessToken"].ToString();
                 Constants.TrackingId = settingsLocal.Containers["SageSalesContainer"].Values["TrackingId"] == null ? null : settingsLocal.Containers["SageSalesContainer"].Values["TrackingId"].ToString();
                 if (settingsLocal.Containers["SageSalesContainer"].Values["syncQueryEntity"] != null)
                 {
@@ -92,7 +94,7 @@ namespace SageMobileSales.UILogic.Common
             Constants.RedirectUrl = "https://signon.sso.services.sage.com/oauth/native";
             Constants.IsSageIdProduction = true;
             Constants.SelectedType = "Production";
-      #else
+#else
 
             Constants.ClientId = @"xeQaIFwQvbDjKZvwzb92kFOLzDCd9CCc";
             Constants.Url = "http://ashmsalessdcweb.cloudapp.net/sdata/api/msales/1.0/";

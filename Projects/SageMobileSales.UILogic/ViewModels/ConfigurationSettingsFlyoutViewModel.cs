@@ -46,6 +46,8 @@ namespace SageMobileSales.UILogic.ViewModels
             Servers.Add("Master");
             Servers.Add("Release");
             Servers.Add("Staging");
+            Servers.Add("Maple");
+            Servers.Add("Juniper");
             Servers.Add("Production");
             Servers.Add("SharedComponents");
             Servers.Add("CE Nephos QA");
@@ -186,7 +188,27 @@ namespace SageMobileSales.UILogic.ViewModels
             //    SelectedType = "Staging";
             //    SetConfigurationValues();
             //}
+            if (selected.SelectedItem.ToString() == "Maple")
+            {
+                ClientId = @"GzOfBLtepw6PHv9ciGjbvqr302jNbIYh";
+                Url = "https://MapleMSales.sagedatacloud.com/sdata/api/msales/1.0/";
+                Scope = @"bmihcmhs();";
+                IsSageIdProduction = false;
+                SelectedType = "Maple";
+                RedirectUrl = "https://signon.sso.staging.services.sage.com/oauth/native";
+                SetConfigurationValues();
+            }
 
+            if (selected.SelectedItem.ToString() == "Juniper")
+            {
+                ClientId = @"2wNC1Vj5usFAcBp9A035qtyfeql7JwKk";
+                Url = "https://JuniperMSales.sagedatacloud.com/sdata/api/msales/1.0/";
+                Scope = @"sbrm2fi1();";
+                IsSageIdProduction = false;
+                SelectedType = "Juniper";
+                RedirectUrl = "https://signon.sso.staging.services.sage.com/oauth/native";
+                SetConfigurationValues();
+            }
 
             if (selected.SelectedItem.ToString() == "Production")
             {

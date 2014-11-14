@@ -22,6 +22,7 @@ using SageMobileSales.ServiceAgents.Services;
 using SageMobileSales.UILogic.Common;
 using SageMobileSales.Views;
 using Windows.UI.Popups;
+using Windows.UI.Xaml.Controls;
 
 // The Blank Application template is documented at http://go.microsoft.com/fwlink/?LinkId=234227
 
@@ -205,17 +206,37 @@ namespace SageMobileSales
         // Logout Settings Command Handler
         private async void LogoutHandler()
         {
-            var oAuthService = _container.Resolve<IOAuthService>();
-            ApplicationDataContainer configSettings = ApplicationData.Current.LocalSettings;
-            configSettings.Containers["ConfigurationSettingsContainer"].Values["IsServerChanged"] = false;
-            await oAuthService.Cleanup();
+            try
+            {
+                MessageDialog msgDialog;
+                var oAuthService = _container.Resolve<IOAuthService>();
+                ApplicationDataContainer configSettings = ApplicationData.Current.LocalSettings;
+                if (configSettings.Containers["ConfigurationSettingsContainer"].Values["IsServerChanged"] != null)
+                {
+                    configSettings.Containers["ConfigurationSettingsContainer"].Values["IsServerChanged"] = false;
+                    await oAuthService.Cleanup();
+                }
 
-            MessageDialog msgDialog = new MessageDialog(
-                              ResourceLoader.GetForCurrentView("Resources").GetString("LogoutText"),
-                              ResourceLoader.GetForCurrentView("Resources").GetString("LogoutTitle"));
-            msgDialog.Commands.Add(new UICommand("Ok", (UICommandInvokedHandler) => { NavigationService.Navigate("Signin", null); }));
-            msgDialog.Commands.Add(new UICommand("Cancel"));
-            await msgDialog.ShowAsync();
+                var frame = Window.Current.Content as Frame;
+                if (frame.SourcePageType.Name == PageUtils.SignInPage || frame.SourcePageType.Name == PageUtils.LoadingIndicatorPage)
+                {
+                    msgDialog = new MessageDialog(
+                                      ResourceLoader.GetForCurrentView("Resources").GetString("UnableToLogoutText"),
+                                      ResourceLoader.GetForCurrentView("Resources").GetString("UnableToLogoutTitle"));
+                    msgDialog.Commands.Add(new UICommand("Ok"));
+                }
+                else
+                {
+                    msgDialog = new MessageDialog(
+                                      ResourceLoader.GetForCurrentView("Resources").GetString("LogoutText"),
+                                      ResourceLoader.GetForCurrentView("Resources").GetString("LogoutTitle"));
+                    msgDialog.Commands.Add(new UICommand("Ok", (UICommandInvokedHandler) => { NavigationService.Navigate("Signin", null); }));
+                    msgDialog.Commands.Add(new UICommand("Cancel"));
+                }
+
+                await msgDialog.ShowAsync();
+            }
+            catch { }
         }
 
 

@@ -18,6 +18,7 @@ using SageMobileSales.ServiceAgents.Common;
 using SageMobileSales.ServiceAgents.Services;
 using SageMobileSales.UILogic.Common;
 using Windows.UI.Popups;
+using System.ComponentModel;
 
 namespace SageMobileSales.UILogic.ViewModels
 {
@@ -295,7 +296,7 @@ namespace SageMobileSales.UILogic.ViewModels
                     }
                     else if (pageStack.SourcePageType.Name == PageUtils.OrdersPage)
                     {
-                        _orderId = navigationParameter as string;                        
+                        _orderId = navigationParameter as string;
                         _orderDetails = await _orderRepository.GetOrderDetailsAsync(_orderId);
                         CustomerId = _orderDetails.CustomerId;
                         SelectedType = CreateQuoteFrom[1];
@@ -509,6 +510,10 @@ namespace SageMobileSales.UILogic.ViewModels
                         }
                         _navigationService.Navigate("Orders", customerId);
                     }
+                    else if (SelectedType.createFrom == PageUtils.Scratch || SelectedType.createFrom == PageUtils.PreviousPurchasedItems)
+                    {
+                        _createQuoteFrom[1].createFromText = PageUtils.PreviousOrderText;
+                    }
                 }
             }
             catch (Exception ex)
@@ -522,9 +527,39 @@ namespace SageMobileSales.UILogic.ViewModels
     /// <summary>
     ///     class for method of creating quote
     /// </summary>
-    public class QuoteType
+    public class QuoteType : INotifyPropertyChanged
     {
-        public string createFrom { get; set; }
-        public string createFromText { get; set; }
+        private string _createFrom;
+        private string _createFromText;
+
+        public string createFrom
+        {
+            get { return _createFrom; }
+            set
+            {
+                _createFrom = value;
+                OnPropertyChanged("createFrom");
+            }
+        }
+
+        public string createFromText
+        {
+            get { return _createFromText; }
+            set
+            {
+                _createFromText = value;
+                OnPropertyChanged("createFromText");
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        public void OnPropertyChanged(string Property)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(Property));
+            }
+        }
+
     }
 }
