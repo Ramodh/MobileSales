@@ -150,8 +150,8 @@ namespace SageMobileSales.UILogic.ViewModels
                 }
                 else
                 {
-                    suggestionCollection.AppendQuerySuggestion(
-                        ResourceLoader.GetForCurrentView("Resources").GetString("NoSuggestions"));
+                    //suggestionCollection.AppendQuerySuggestion(
+                    //    ResourceLoader.GetForCurrentView("Resources").GetString("NoSuggestions"));
                     NoSuggestions = true;
                 }
             }
