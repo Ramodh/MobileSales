@@ -29,7 +29,7 @@
     <Page.BottomAppBar>
         <CommandBar Style="{StaticResource BottomAppBarStyle}"
                     IsOpen="{Binding IsBottomAppBarOpened, Mode=TwoWay}"
-                    IsSticky="True"
+                    IsSticky="False"
                     AutomationProperties.AutomationId="BottomAppBar"
                     x:Uid="BottomAppBar">
             <CommandBar.PrimaryCommands>

@@ -108,7 +108,7 @@
                      Grid.Column="1"
                      HorizontalAlignment="Right"
                      PlaceholderText=""
-                     AcceptsReturn="True"
+                     AcceptsReturn="False"                  
                      Style="{StaticResource FilterTextBoxStyle}" Height="Auto">
 
                 <interactivity:Interaction.Behaviors>
@@ -119,7 +119,7 @@
                 </interactivity:Interaction.Behaviors>
             </TextBox>
             <SymbolIcon Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center"
-                        Style="{StaticResource SymbolIconStyle}" />
+                        Style="{StaticResource SymbolIconStyle}" Visibility="{Binding IsTextChanged}" />
             <views:BackgroundSyncIndicatorUserControl Grid.Column="1" HorizontalAlignment="Right"
                                                       VerticalAlignment="Top"
                                                       Visibility="{Binding SyncProgress, Mode=TwoWay,Converter={StaticResource InProgessVisibilityConverter}}" />
