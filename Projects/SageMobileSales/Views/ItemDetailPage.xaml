@@ -203,7 +203,7 @@
                             <TextBox x:Name="quantityTextBox" x:Uid="quantityTextBox" 
                                      Text="{Binding EnteredQuantity,Mode=TwoWay}"
                                      Style="{StaticResource QuantityTextBoxStyle}" VerticalAlignment="Center"
-                                     PlaceholderText="0" InputScope="Number" PreventKeyboardDisplayOnProgrammaticFocus="True"
+                                     PlaceholderText="0" InputScope="Number" PreventKeyboardDisplayOnProgrammaticFocus="True" IsReadOnly = "False" TabIndex="0"
                                      MaxLength="9">
                                 <interactivity:Interaction.Behaviors>
                                     <behaviors:NumericTextBoxBehavior />

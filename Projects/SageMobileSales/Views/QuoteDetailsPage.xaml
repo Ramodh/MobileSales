@@ -277,7 +277,7 @@
                             <TextBox x:Uid="ShipAndHandlingTextBox" x:Name="ShipAndHandlingTextBox"
                                      Text="{Binding ShippingAndHandling, Mode=TwoWay}" IsEnabled="{Binding IsShippingAndHandlingEnabled}"
                                      Style="{StaticResource QuantityTextBoxStyle}" VerticalAlignment="Bottom" PlaceholderText="0"
-                                     PreventKeyboardDisplayOnProgrammaticFocus="True" MaxLength="9">
+                                     PreventKeyboardDisplayOnProgrammaticFocus="True" MaxLength="9" TabIndex="0">
                                 <interactivity:Interaction.Behaviors>
                                     <behaviors:NumericTextBoxBehavior AllowDecimal="True" />
                                     <core:EventTriggerBehavior EventName="LostFocus">
@@ -295,7 +295,7 @@
                             <TextBox x:Uid="DiscountTextBox" x:Name="DiscountTextBox"
                                      Text="{Binding DiscountPercent, Mode=TwoWay}" IsEnabled="{Binding IsDiscountEnabled}"
                                      Style="{StaticResource QuantityTextBoxStyle}" VerticalAlignment="Bottom" PlaceholderText="0"
-                                     PreventKeyboardDisplayOnProgrammaticFocus="True" MaxLength="9">
+                                     PreventKeyboardDisplayOnProgrammaticFocus="True" MaxLength="9" TabIndex="0">
                                 <interactivity:Interaction.Behaviors>
                                     <behaviors:NumericTextBoxBehavior AllowDecimal="True" />
                                     <core:EventTriggerBehavior EventName="LostFocus">
