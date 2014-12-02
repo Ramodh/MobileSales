@@ -68,10 +68,12 @@ namespace SageMobileSales.DataAccess.Repositories
             {
                 LineItemList =
                     await
-                        _sageSalesDB.QueryAsync<LineItemDetails>(
-                            "SELECT distinct OrderLT.Price as LineItemPrice,OrderLT.Quantity as LineItemQuantity, Product.ProductName, Product.Sku as ProductSku,(select PAB.url from  ProductAssociatedBlob as PAB where Product.ProductId=PAB.ProductId And PAB.IsPrimary=1) as Url from OrderLineItem as OrderLT Join Product  on OrderLT.ProductId=Product.ProductId where OrderLT.OrderId=?",
+                    //_sageSalesDB.QueryAsync<LineItemDetails>(
+                    //    "SELECT distinct OrderLT.Price as LineItemPrice,OrderLT.Quantity as LineItemQuantity, Product.ProductName, Product.ProductId, Product.Sku as ProductSku,(select PAB.url from  ProductAssociatedBlob as PAB where Product.ProductId=PAB.ProductId And PAB.IsPrimary=1) as Url from OrderLineItem as OrderLT Join Product  on OrderLT.ProductId=Product.ProductId where OrderLT.OrderId=?",
+                    //    orderId);
+                _sageSalesDB.QueryAsync<LineItemDetails>(
+                            "SELECT distinct Product.ProductId, OrderLT.OrderLineItemId as LineItemId, OrderLT.ProductId as ProductId, OrderLT.Price as LineItemPrice,OrderLT.Quantity as LineItemQuantity, Product.ProductName, Product.Sku as ProductSku, (select PAB.url from  ProductAssociatedBlob as PAB where Product.ProductId=PAB.ProductId And (PAB.IsPrimary=1 OR PAB.IsPrimary=0)) as Url  from OrderLineItem as OrderLT Join Product  on OrderLT.ProductId=Product.ProductId where OrderLT.OrderId=?",
                             orderId);
-                //LineItemList = await _sageSalesDB.QueryAsync<LineItemDetails>("SELECT distinct OrderLT.Price as LineItemPrice,OrderLT.Quantity as LineItemQuantity, Product.ProductName, Product.Sku as ProductSku, PAB.Url  from OrderLineItem as OrderLT Join Product  on OrderLT.ProductId=Product.ProductId join ProductAssociatedBlob as PAB on (Product.ProductId=PAB.ProductId And PAB.IsPrimary=1) where OrderLT.OrderId=?", orderId);                                                                                 
             }
             catch (SQLiteException ex)
             {
