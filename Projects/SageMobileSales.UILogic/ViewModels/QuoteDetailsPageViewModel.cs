@@ -61,6 +61,7 @@ namespace SageMobileSales.UILogic.ViewModels
         private Address _customerMailingAddress;
         private string _quoteId;
         private bool _isSubmitQuoteEnabled;
+        private int _quoteDetailsPageStackCount = 0;
 
         private ObservableCollection<QuoteLineItemViewModel> _quoteLineItemViewModels;
         private List<LineItemDetails> _quoteLineItemsList;
@@ -868,6 +869,17 @@ namespace SageMobileSales.UILogic.ViewModels
                 {
                     Frame.BackStack.RemoveAt(Frame.BackStack.Count - 1);
                 }
+                foreach (PageStackEntry pagestack in navigationHistory)
+                {
+                    if (pagestack.SourcePageType.Name == PageUtils.QuoteDetailsPage)
+                    {
+                        _quoteDetailsPageStackCount++;
+                    }
+                }
+                if (_quoteDetailsPageStackCount >= 1)
+                {
+                    Frame.BackStack.RemoveAt(Frame.BackStack.Count - 1);
+                }                       
             }
 
             // Register the current page as a share source.
