@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Q42.WinRT.Data;
+using System;
 using System.Net.Http;
 using Windows.Storage.Streams;
 using Windows.UI.Xaml;
@@ -16,14 +17,14 @@ namespace SageMobileSales.Views
         ///     ImagePlaceholder
         /// </summary>
         public static readonly DependencyProperty PlaceholderProperty =
-            DependencyProperty.Register("Placeholder", typeof (ImageSource), typeof (ImageplaceHolderUserControl),
+            DependencyProperty.Register("Placeholder", typeof(ImageSource), typeof(ImageplaceHolderUserControl),
                 new PropertyMetadata(default(ImageSource), PlaceHolderChanged));
 
         /// <summary>
         ///     Binding Real time Images to Source
         /// </summary>
         public static readonly DependencyProperty SourceProperty =
-            DependencyProperty.Register("Source", typeof (string), typeof (ImageplaceHolderUserControl),
+            DependencyProperty.Register("Source", typeof(Uri), typeof(ImageplaceHolderUserControl),
                 new PropertyMetadata(default(ImageSource), SourceChanged));
 
         public ImageplaceHolderUserControl()
@@ -33,19 +34,19 @@ namespace SageMobileSales.Views
 
         public ImageSource Placeholder
         {
-            get { return (ImageSource) GetValue(PlaceholderProperty); }
+            get { return (ImageSource)GetValue(PlaceholderProperty); }
             set { SetValue(PlaceholderProperty, value); }
         }
 
-        public string Source
+        public Uri Source
         {
-            get { return (string) GetValue(SourceProperty); }
+            get { return (Uri)GetValue(SourceProperty); }
             set { SetValue(SourceProperty, value); }
         }
 
         private static void PlaceHolderChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            (d as ImageplaceHolderUserControl).Image.Source = (ImageSource) e.NewValue;
+            (d as ImageplaceHolderUserControl).Image.Source = (ImageSource)e.NewValue;
         }
 
         /// <summary>
@@ -55,9 +56,9 @@ namespace SageMobileSales.Views
         /// <param name="e"></param>
         private static async void SourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var control = (ImageplaceHolderUserControl) d;
+            var control = (ImageplaceHolderUserControl)d;
             var bitmapImage = new BitmapImage();
-
+            Uri newCacheUri = (Uri)d.GetValue(SourceProperty);
             // HttpClientRequest Exception will be caused by failure of internet or invalid request/response
             var httpClient = new HttpClient();
             try
@@ -65,33 +66,44 @@ namespace SageMobileSales.Views
                 //if (Constants.ConnectedToInternet())
                 //{
                 byte[] contentBytes = null;
-                if (!string.IsNullOrEmpty(control.Source))
+
+                if (newCacheUri != null)
                 {
-                    contentBytes = await httpClient.GetByteArrayAsync(control.Source);
 
-                    var randomAccessStream = new InMemoryRandomAccessStream();
-                    var dataWriter = new DataWriter(randomAccessStream);
-                    dataWriter.WriteBytes(contentBytes);
-                    await dataWriter.StoreAsync();
-                    randomAccessStream.Seek(0);
 
-                    await bitmapImage.SetSourceAsync(randomAccessStream);
-                    //bitmapImage.ImageOpened += (sender, args) => control.LoadImage(bitmapImage);
-                    control.LoadImage(bitmapImage);
+                    //Get image from cache (download and set in cache if needed)
+                    var cacheUri = await WebDataCache.GetLocalUriAsync(newCacheUri);
+
+                    // Check if the wanted image uri has not changed while we were loading
+                    if (newCacheUri != (Uri)d.GetValue(SourceProperty)) return;
+
+#if NETFX_CORE
+                    //Set cache uri as source for the image
+                    control.LoadImage(new BitmapImage(cacheUri));
+                    //control.Source = newCacheUri;
+
+#elif WINDOWS_PHONE
+                        BitmapImage bimg = new BitmapImage();
+
+                        using (IsolatedStorageFile iso = IsolatedStorageFile.GetUserStoreForApplication())
+                        {
+                            using (IsolatedStorageFileStream stream = iso.OpenFile(cacheUri.PathAndQuery, FileMode.Open, FileAccess.Read))
+                            {
+                                bimg.SetSource(stream);
+                            }
+                        }
+                        //Set cache uri as source for the image
+                        image.Source = bimg;
+#endif
+
                 }
-                //else
-                //{
-                //    bitmapImage.UriSource=new Uri("ms-appx:/Assets/imagePlaceholder_100x100.png", UriKind.RelativeOrAbsolute);
-                //    control.Placeholder = bitmapImage;
-                //    //bitmapImage.UriSource = new Uri("ms-appx:/Assets/imagePlaceholder_100x100.png", UriKind.RelativeOrAbsolute);
-                //    ////bitmapImage.ImageOpened += (sender, args) => control.LoadImage(bitmapImage);
-                //    //control.LoadImage(bitmapImage);
-                //}
             }
-            catch
+            catch (Exception ex)
             {
+                control.LoadImage(new BitmapImage(newCacheUri));
             }
         }
+
 
 
         /// <summary>

@@ -203,12 +203,16 @@
                             <TextBox x:Name="quantityTextBox" x:Uid="quantityTextBox" 
                                      Text="{Binding EnteredQuantity,Mode=TwoWay}"
                                      Style="{StaticResource QuantityTextBoxStyle}" VerticalAlignment="Center"
-                                     InputScope="Number" PreventKeyboardDisplayOnProgrammaticFocus="True"
-                                     PlaceholderText="0" MaxLength="9" IsReadOnly = "False" TabIndex="0">
+                                     PlaceholderText="0" InputScope="Number" PreventKeyboardDisplayOnProgrammaticFocus="True" IsReadOnly = "False" TabIndex="0"
+                                     MaxLength="9">
                                 <interactivity:Interaction.Behaviors>
                                     <behaviors:NumericTextBoxBehavior />
-                                    <core:EventTriggerBehavior EventName="TextChanged">
-                                        <core:InvokeCommandAction Command="{Binding TextChangedCommand}"
+                                    <core:EventTriggerBehavior EventName="GotFocus">
+                                        <core:InvokeCommandAction Command="{Binding TextGotFocusCommand}"
+                                                                  CommandParameter="{Binding ElementName=quantityTextBox,UpdateSourceTrigger=PropertyChanged}" />
+                                    </core:EventTriggerBehavior>
+                                    <core:EventTriggerBehavior EventName="LostFocus">
+                                        <core:InvokeCommandAction Command="{Binding TextLostFocusCommand}"
                                                                   CommandParameter="{Binding ElementName=quantityTextBox,UpdateSourceTrigger=PropertyChanged}" />
                                     </core:EventTriggerBehavior>
                                 </interactivity:Interaction.Behaviors>
