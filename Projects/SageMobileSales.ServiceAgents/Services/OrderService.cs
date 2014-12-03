@@ -256,7 +256,7 @@ namespace SageMobileSales.ServiceAgents.Services
             //orderjson.Status = quote.QuoteStatus;
             //orderjson.Status = "Submitted";
             // Need confirmation here too
-            orderjson.TaxAmount = "0";
+            orderjson.TaxAmount = quote.Tax == null ? "0" : quote.Tax.ToString();
 
             //long milliseconds = DateTime.UtcNow.Ticks / TimeSpan.TicksPerMillisecond;
             //orderjson.TransactionDate = "/Date(" + milliseconds + ")/";
