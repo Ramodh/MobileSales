@@ -109,7 +109,7 @@ namespace SageMobileSales.UILogic.ViewModels
             {
                 eventAggregator.GetEvent<QuoteDetailsUpdatedEvent>().Subscribe(UpdateQuoteDetailsAsync);
             }
-        }     
+        }
         public List<LineItemDetails> QuoteLineItemsList
         {
             get { return _quoteLineItemsList; }
@@ -167,7 +167,7 @@ namespace SageMobileSales.UILogic.ViewModels
             get
             {
                 return Math.Round(CalculateSubTotal(), 2);
-        }
+            }
         }
 
         public bool IsBottomAppBarOpened
@@ -445,8 +445,8 @@ namespace SageMobileSales.UILogic.ViewModels
             {
                 if (IsSubmitQuoteEnabled)
                 {
-                MessageDialog msgDialog;
-                  
+                    MessageDialog msgDialog;
+
                     if (QuoteLineItemsList.Count > 0)
                     {
                         if (Constants.ConnectedToInternet())
@@ -484,10 +484,10 @@ namespace SageMobileSales.UILogic.ViewModels
                         }
                         else
                         {
-                           msgDialog = new MessageDialog(
-                          ResourceLoader.GetForCurrentView("Resources").GetString(" MesDialogConnectionUnavailableMessage"),
-                          ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogConnectionUnavailableTitle"));
-                            msgDialog.Commands.Add(new UICommand("Ok"));                     
+                            msgDialog = new MessageDialog(
+                           ResourceLoader.GetForCurrentView("Resources").GetString(" MesDialogConnectionUnavailableMessage"),
+                           ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogConnectionUnavailableTitle"));
+                            msgDialog.Commands.Add(new UICommand("Ok"));
                         }
                     }
                     else
@@ -498,8 +498,8 @@ namespace SageMobileSales.UILogic.ViewModels
                                 ResourceLoader.GetForCurrentView("Resources").GetString("SubmitQuoteErrorTitle"));
                         msgDialog.Commands.Add(new UICommand("Ok"));
                     }
-                await msgDialog.ShowAsync();
-            }
+                    await msgDialog.ShowAsync();
+                }
             }
             catch (Exception ex)
             {
@@ -620,19 +620,19 @@ namespace SageMobileSales.UILogic.ViewModels
                     {
                         DiscountPercent = 0;
                     }
-                    if (DiscountPercent>=0 && DiscountPercent <= 100)
-                    {                                    
-                            if (DiscountPercent > Convert.ToDecimal(salesRep.MaximumDiscountPercent))
-                            {
-                                var maxDiscountMesDialog =
-                                    new MessageDialog(
-                                        ResourceLoader.GetForCurrentView("Resources")
-                                            .GetString("MesDialogDiscountPercentageText"),
-                                        ResourceLoader.GetForCurrentView("Resources")
-                                            .GetString("MesDialogDiscountPercentageTitle"));
-                                await maxDiscountMesDialog.ShowAsync();
-                                DiscountPercent = Convert.ToDecimal(salesRep.MaximumDiscountPercent);
-                            }                        
+                    if (DiscountPercent >= 0 && DiscountPercent <= 100)
+                    {
+                        if (DiscountPercent > Convert.ToDecimal(salesRep.MaximumDiscountPercent))
+                        {
+                            var maxDiscountMesDialog =
+                                new MessageDialog(
+                                    ResourceLoader.GetForCurrentView("Resources")
+                                        .GetString("MesDialogDiscountPercentageText"),
+                                    ResourceLoader.GetForCurrentView("Resources")
+                                        .GetString("MesDialogDiscountPercentageTitle"));
+                            await maxDiscountMesDialog.ShowAsync();
+                            DiscountPercent = Convert.ToDecimal(salesRep.MaximumDiscountPercent);
+                        }
                         // DiscountPercentageValue = Math.Round(((_discountPercent / 100) * SubTotal), 2);
                     }
                     else
@@ -684,17 +684,17 @@ namespace SageMobileSales.UILogic.ViewModels
             bool succeeded = false;
             var objMail = new MailViewModel();
             QuoteDetails.ShippingAndHandling = ShippingAndHandling;
-            QuoteDetails.DiscountPercent = DiscountPercent;            
+            QuoteDetails.DiscountPercent = DiscountPercent;
             string HtmlContentString = objMail.BuildQuoteEmailContent(_tenant, CustomerDetails, _customerMailingAddress, QuoteDetails,
                 QuoteLineItemsList, SubTotal.ToString(), Total.ToString());
             if (!String.IsNullOrEmpty(HtmlContentString))
             {
                 DataPackage requestData = request.Data;
-                requestData.Properties.Title = "Quote";                         
+                requestData.Properties.Title = "Quote";
                 requestData.Properties.Description = CustomerDetails.CustomerName; // The description is optional.                
                 //requestData.SetData(HtmlContentString,HtmlContentString);
                 requestData.SetHtmlFormat(HtmlFormatHelper.CreateHtmlFormat(HtmlContentString));
-                
+
                 succeeded = true;
             }
             else
@@ -738,7 +738,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 new UICommand(ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogCancelbuttonText"),
                     command => { _isCancelled = true; }, 1));
             // Set the command that will be invoked by default
-           // messageDialog.DefaultCommandIndex = 1;
+            // messageDialog.DefaultCommandIndex = 1;
 
             // Show the message dialog and get the event that was invoked via the async operator
             await messageDialog.ShowAsync();
@@ -862,12 +862,28 @@ namespace SageMobileSales.UILogic.ViewModels
 
             if (Frame != null)
             {
-                List<PageStackEntry> navigationHistory = Frame.BackStack.ToList();
-                PageStackEntry pageStack = navigationHistory.LastOrDefault();
-                if (Frame.BackStack.Count >= 2 && pageStack.SourcePageType.Name != PageUtils.CustomerDetailPage)
+                //List<PageStackEntry> navigationHistory = Frame.BackStack.ToList();
+
+                //PageStackEntry pageStack = navigationHistory.LastOrDefault();
+
+                var contains = Frame.BackStack.Where(b => b.SourcePageType.Name == PageUtils.CreateQuotePage);
+                for (int j = 0; j <= contains.ToList().Count; j++)
                 {
-                    Frame.BackStack.RemoveAt(Frame.BackStack.Count - 1);
+                    for (int i = Frame.BackStack.Count; i > 0; i--)
+                    {
+                        if (Frame.BackStack.LastOrDefault().SourcePageType.Name != PageUtils.CreateQuotePage)
+                        {
+                            Frame.BackStack.Remove(Frame.BackStack.LastOrDefault());
+                            continue;
+                        }
+                        Frame.BackStack.Remove(Frame.BackStack.LastOrDefault());
+                        break;
+                    }
                 }
+                //if (Frame.BackStack.Count >= 2 && pageStack.SourcePageType.Name != PageUtils.CustomerDetailPage)
+                //{
+                //    Frame.BackStack.RemoveAt(Frame.BackStack.Count - 1);
+                //}
             }
 
             // Register the current page as a share source.
@@ -985,7 +1001,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 CustomerDetails =
                     await _customerRepository.GetCustomerDtlsForQuote(_quoteDetails.CustomerId, _quoteDetails.AddressId);
                 _customerMailingAddress = await _addressRepository.GetCustomerMailingAddress(CustomerDetails.CustomerId);
-                
+
                 _itemNotSelected = true;
                 // changes app bar buttons visibility based on quote quote status
                 ChangeVisibility();
@@ -1061,7 +1077,7 @@ namespace SageMobileSales.UILogic.ViewModels
             decimal Total = 0;
             if (_quoteDetails != null)
             {
-                if (_quoteDetails.QuoteStatus == DataAccessUtils.DraftQuote || _quoteDetails.QuoteStatus==DataAccessUtils.SubmitQuote)
+                if (_quoteDetails.QuoteStatus == DataAccessUtils.DraftQuote || _quoteDetails.QuoteStatus == DataAccessUtils.SubmitQuote)
                 {
                     Total += SubTotal - DiscountPercentageValue + _shippingAndHandling + _quoteDetails.Tax;
                 }
@@ -1201,7 +1217,7 @@ namespace SageMobileSales.UILogic.ViewModels
                     IsEditQuoteVisible = Visibility.Visible;
                     IsPlaceOrderVisible = Visibility.Collapsed;
                 }
-                else if((_quote.QuoteStatus==DataAccessUtils.Error))
+                else if ((_quote.QuoteStatus == DataAccessUtils.Error))
                 {
                     IsAddItemVisible = Visibility.Collapsed;
                     IsChangeAddressVisible = Visibility.Collapsed;
@@ -1238,7 +1254,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 OnPropertyChanged("IsPlaceOrderVisible");
                 OnPropertyChanged("IsShippingAndHandlingEnabled");
                 OnPropertyChanged("IsDiscountEnabled");
-                
+
             }
             catch (Exception ex)
             {
@@ -1246,7 +1262,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 AppEventSource.Log.Error(_log);
             }
         }
-        
+
         public void CatalogButton_Click(object sender, object parameter)
         {
             _navigationService.ClearHistory();
@@ -1344,8 +1360,8 @@ namespace SageMobileSales.UILogic.ViewModels
                 await _quoteService.UpdateDiscountOrShippingAndHandling(quote);
             }
             catch (Exception ex)
-            { 
-            
+            {
+
             }
         }
 
