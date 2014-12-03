@@ -867,7 +867,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 //PageStackEntry pageStack = navigationHistory.LastOrDefault();
 
                 var contains = Frame.BackStack.Where(b => b.SourcePageType.Name == PageUtils.CreateQuotePage);
-                for (int j = 0; j <= contains.ToList().Count; j++)
+                for (int j = 1; j <= contains.ToList().Count; j++)
                 {
                     for (int i = Frame.BackStack.Count; i > 0; i--)
                     {
