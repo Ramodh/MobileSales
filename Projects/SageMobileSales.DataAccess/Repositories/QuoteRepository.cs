@@ -23,12 +23,14 @@ namespace SageMobileSales.DataAccess.Repositories
         private readonly IQuoteLineItemRepository _quoteLineItemRepository;
         private readonly SQLiteAsyncConnection _sageSalesDB;
         private readonly ISalesRepRepository _salesRepRepository;
+        private readonly IFrequentlyPurchasedItemRepository _frequentlyPurchasedItemRepository;
+        private readonly ProductRepository _productRepository;
         private string _log = string.Empty;
 
         public QuoteRepository(IDatabase database, ILocalSyncDigestRepository localSyncDigestRepository,
             ICustomerRepository customerRepository,
-            IAddressRepository addressRepository, IQuoteLineItemRepository quoteLineItemRepository,
-            ISalesRepRepository salesRepRepository,
+            IAddressRepository addressRepository, IQuoteLineItemRepository quoteLineItemRepository, ProductRepository productRepository,
+            ISalesRepRepository salesRepRepository, IFrequentlyPurchasedItemRepository frequentlyPurchasedItemRepository,
             IOrderLineItemRepository orderLineItemRepository, IEventAggregator eventAggregator)
         {
             _database = database;
@@ -39,6 +41,8 @@ namespace SageMobileSales.DataAccess.Repositories
             _quoteLineItemRepository = quoteLineItemRepository;
             _orderLineItemRepository = orderLineItemRepository;
             _salesRepRepository = salesRepRepository;
+            _frequentlyPurchasedItemRepository = frequentlyPurchasedItemRepository;
+            _productRepository = productRepository;
             _eventAggregator = eventAggregator;
         }
 
@@ -512,7 +516,8 @@ namespace SageMobileSales.DataAccess.Repositories
                 //If selectedQuoteType is from previousPurchasedItems
                 if (selectedQuoteType.Equals(DataAccessUtils.PreviousPurchasedItems))
                 {
-                    return await AddQuoteLineItemsFromPreviousPurchasedProducts(quote);
+                    return await AddQuoteLineItemsFromFrequentlyPurchasedProducts(quote);
+                    //return await AddQuoteLineItemsFromPreviousPurchasedProducts(quote);
                 }
                 if (selectedQuoteType.Equals(DataAccessUtils.PreviousOrder))
                 {
@@ -684,6 +689,43 @@ namespace SageMobileSales.DataAccess.Repositories
         #endregion
 
         #region private methods
+
+        /// <summary>
+        ///     Add QuoteLineItems to Quote by selecting items/products for the customer
+        /// </summary>
+        /// <param name="quote"></param>
+        /// <returns></returns>
+        private async Task<Quote> AddQuoteLineItemsFromFrequentlyPurchasedProducts(Quote quote)
+        {
+            List<FrequentlyPurchasedItem> frequentlyPurchasedProductList = null;
+            QuoteLineItem quoteLineItem;
+            decimal amount = 0;
+            frequentlyPurchasedProductList =
+                await _frequentlyPurchasedItemRepository.GetFrequentlyPurchasedItems(quote.CustomerId);
+
+            foreach (FrequentlyPurchasedItem product in frequentlyPurchasedProductList)
+            {
+                quoteLineItem = new QuoteLineItem();
+                quoteLineItem.QuoteId = quote.QuoteId;
+                quoteLineItem.QuoteLineItemId = DataAccessUtils.Pending + Guid.NewGuid();
+                quoteLineItem.tenantId = quote.TenantId;
+                quoteLineItem.ProductId = product.ItemId;
+                Product productDtls= await _productRepository.GetProductdetailsAsync(product.ItemId);
+                quoteLineItem.Price = productDtls.PriceStd;
+                //For previously purchased products quantity is 0 by default
+                quoteLineItem.Quantity = 0;
+                quoteLineItem.IsPending = true;
+
+                amount = amount + CalculateAmount(quoteLineItem.Quantity, quoteLineItem.Price);
+
+                await _quoteLineItemRepository.AddQuoteLineItemToDbAsync(quoteLineItem);
+            }
+            //Amount is made '0' because from previous purchased items quantity is 0(Price * Quantity).
+            quote.Amount = amount;
+
+            await _sageSalesDB.InsertAsync(quote);
+            return quote;
+        }
 
         /// <summary>
         ///     Add QuoteLineItems to Quote by selecting items/products for the customer

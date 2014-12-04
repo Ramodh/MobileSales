@@ -802,4 +802,8 @@
   <data name="UnableToLogoutTitle" xml:space="preserve">
     <value>Logout</value>
   </data>
+  <data name="MesDialogUnableToSubmitdQuoteWithZeroQtyText" xml:space="preserve">
+    <value>At least one item must be added before you can submit the quote.</value>
+    <comment>At least one item must be added before you can submit the quote.</comment>
+  </data>
 </root>

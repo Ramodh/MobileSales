@@ -446,15 +446,20 @@ namespace SageMobileSales.UILogic.ViewModels
             {
                 if (IsSubmitQuoteEnabled)
                 {
-                    MessageDialog msgDialog;
 
+
+                    bool _canSubmit = false;
+                    QuoteLineItemsList = await _quoteLineItemRepository.GetQuoteLineItemDetailsAsync(_quoteId);
+                    MessageDialog msgDialog;
                     if (QuoteLineItemsList.Count > 0)
                     {
-                        if (Constants.ConnectedToInternet())
-                        {
+                        _canSubmit = QuoteLineItemsList.Any(lineItem => lineItem.LineItemQuantity > 0);
 
+                        if (_canSubmit)
+                        {
                             InProgress = true;
                             _quote = await UpdateQuote(DataAccessUtils.SubmitQuote);
+
 
                             if (Constants.ConnectedToInternet())
                             {
@@ -485,12 +490,15 @@ namespace SageMobileSales.UILogic.ViewModels
                         }
                         else
                         {
-                            msgDialog = new MessageDialog(
-                           ResourceLoader.GetForCurrentView("Resources").GetString(" MesDialogConnectionUnavailableMessage"),
-                           ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogConnectionUnavailableTitle"));
+                            msgDialog =
+                                  new MessageDialog(
+                                      ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogUnableToSubmitdQuoteWithZeroQtyText"),
+                                      ResourceLoader.GetForCurrentView("Resources").GetString("SubmitQuoteErrorTitle"));
                             msgDialog.Commands.Add(new UICommand("Ok"));
+
                         }
                     }
+
                     else
                     {
                         msgDialog =
