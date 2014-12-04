@@ -49,6 +49,8 @@ namespace SageMobileSales.UILogic.Common
         public static string QuotesPage = "QuotesPage";
         public static string SignInPage = "SigninPage";
         public static string LoadingIndicatorPage = "LoadingIndicatorPage";
+        public static string OtherAddressesPage = "OtherAddressesPage";
+        public static string CreateShippingAddressPage = "CreateShippingAddressPage";
         public static string SeeMore = "See More";
         public static bool CamefromCustomerDetails = false;
         public static Customer SelectedCustomer = null;

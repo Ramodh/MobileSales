@@ -226,11 +226,16 @@ namespace SageMobileSales.DataAccess.Repositories
             try
             {
                 // Retrieve the search suggestions from LocalDB
-                List<ProductDetails> searchSuggestions =
-                    await
+                List<ProductDetails> searchSuggestions =                   
+                      await
                         _sageSalesDB.QueryAsync<ProductDetails>(
-                            "SELECT distinct PAB.Url,PRD.ProductName,PRD.ProductId,PRD.Sku,PRD.PriceStd from ProductAssociatedBlob as PAB JOIN Product as PRD ON PRD.productid = PAB.productid where PAB.IsPrimary='1' AND ProductName like '%" +
-                            searchTerm + "%'");
+                         "select distinct PRD.ProductId, PRD.ProductName, PRD.Sku, PRD.PriceStd, (select Url from ProductAssociatedBlob as PAB where PAB.ProductId = PRD.ProductId AND (PAB.IsPrimary='1' OR PAB.IsPrimary='0')) as Url from Product as PRD join ProductCategoryLink as PCL on PRD.ProductId = PCL.ProductId and PRD.EntityStatus='Active' AND (ProductName like '%" +
+                            searchTerm + "%') OR (SKU like '%" +
+                searchTerm + "%') order by ProductName asc");
+                    //await
+                    //    _sageSalesDB.QueryAsync<ProductDetails>(
+                    //        "SELECT distinct PAB.Url,PRD.ProductName,PRD.ProductId,PRD.Sku,PRD.PriceStd from ProductAssociatedBlob as PAB JOIN Product as PRD ON PRD.productid = PAB.productid where PAB.IsPrimary='1' AND ProductName like '%" +
+                    //        searchTerm + "%'");
                 return searchSuggestions;
             }
             catch (SQLiteException ex)
