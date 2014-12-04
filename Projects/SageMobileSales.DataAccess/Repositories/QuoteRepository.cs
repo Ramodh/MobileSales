@@ -503,7 +503,7 @@ namespace SageMobileSales.DataAccess.Repositories
                 //Saving quote in local dB
                 quote.QuoteId = DataAccessUtils.Pending + Guid.NewGuid();
                 quote.QuoteStatus = DataAccessUtils.DraftQuote;
-                quote.CreatedOn = DateTime.Now;
+                quote.CreatedOn = DateTime.UtcNow;
                 quote.SubmittedDate = DateTime.Now;
                 quote.QuoteDescription = quoteDtls.QuoteDescription;
                 quote.CustomerId = quoteDtls.CustomerId;
