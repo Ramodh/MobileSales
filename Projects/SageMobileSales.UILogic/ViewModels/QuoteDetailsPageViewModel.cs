@@ -61,6 +61,7 @@ namespace SageMobileSales.UILogic.ViewModels
         private Address _customerMailingAddress;
         private string _quoteId;
         private bool _isSubmitQuoteEnabled;
+        private int _quoteDetailsPageStackCount = 0;
 
         private ObservableCollection<QuoteLineItemViewModel> _quoteLineItemViewModels;
         private List<LineItemDetails> _quoteLineItemsList;
@@ -862,9 +863,9 @@ namespace SageMobileSales.UILogic.ViewModels
 
             if (Frame != null)
             {
-                //List<PageStackEntry> navigationHistory = Frame.BackStack.ToList();
+                List<PageStackEntry> navigationHistory = Frame.BackStack.ToList();
 
-                //PageStackEntry pageStack = navigationHistory.LastOrDefault();
+                PageStackEntry pageStack = navigationHistory.LastOrDefault();
 
                 var contains = Frame.BackStack.Where(b => b.SourcePageType.Name == PageUtils.CreateQuotePage);
                 for (int j = 0; j <= contains.ToList().Count; j++)
@@ -880,6 +881,27 @@ namespace SageMobileSales.UILogic.ViewModels
                         break;
                     }
                 }
+                if (contains.ToList().Count == 0)
+                {
+                 
+                    foreach (PageStackEntry pagestack in navigationHistory)
+                    {
+                        if (pagestack.SourcePageType.Name == PageUtils.QuoteDetailsPage)
+                        {
+                            _quoteDetailsPageStackCount++;
+                        }
+                        if (pagestack.SourcePageType.Name == PageUtils.OtherAddressesPage || pagestack.SourcePageType.Name == PageUtils.CreateShippingAddressPage)
+                        {
+                            Frame.BackStack.RemoveAt(Frame.BackStack.Count - 1);
+                        }
+                    }
+                    if (_quoteDetailsPageStackCount >= 1)
+                    {
+                        Frame.BackStack.RemoveAt(Frame.BackStack.Count - 1);
+                    }
+                }
+               
+              
                 //if (Frame.BackStack.Count >= 2 && pageStack.SourcePageType.Name != PageUtils.CustomerDetailPage)
                 //{
                 //    Frame.BackStack.RemoveAt(Frame.BackStack.Count - 1);
