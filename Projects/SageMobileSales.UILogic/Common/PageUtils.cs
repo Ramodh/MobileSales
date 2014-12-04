@@ -28,7 +28,7 @@ namespace SageMobileSales.UILogic.Common
         public static string ItemDetailPage = "ItemDetailPage";
         public static string CreateQuotePage = "CreateQuotePage";
         public static string PreviousOrder = "Previous order";
-        public static string PreviousPurchasedItems = "Previously purchased items";
+        public static string FrequentlyPurchasedItems = "Frequently purchased items";
         public static string ScratchText = "Create the quote from scratch";
         public static string PreviousOrderText = "Use an existing order as a template";
 
