@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest">
-  <Identity Name="F60E5379.SageMobileSales" Publisher="CN=42E6EAEC-9438-4377-A59D-B5F8154DC3A7" Version="3.0.0.0" />
+  <Identity Name="F60E5379.4614720F181E2" Publisher="CN=42E6EAEC-9438-4377-A59D-B5F8154DC3A7" Version="3.0.0.0" />
   <Properties>
     <DisplayName>Sage Mobile Sales</DisplayName>
     <PublisherDisplayName>Sage Software Inc.</PublisherDisplayName>

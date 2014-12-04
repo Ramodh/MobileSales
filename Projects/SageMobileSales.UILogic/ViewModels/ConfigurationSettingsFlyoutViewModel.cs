@@ -42,24 +42,19 @@ namespace SageMobileSales.UILogic.ViewModels
             SelectionChangedCommand = new DelegateCommand<object>(ServerSelectionchnaged);
             LogOutInCommand = DelegateCommand.FromAsyncHandler(LogoutHandler);
             Servers = new List<string>();
-            Servers.Add("Mobile Sales");
-            Servers.Add("Master");
-            Servers.Add("Release");
-            Servers.Add("Staging");
+            Servers.Add("Preview");
             Servers.Add("Maple");
             Servers.Add("Juniper");
+            Servers.Add("Larch");
             Servers.Add("Production");
-            Servers.Add("SharedComponents");
-            Servers.Add("CE Nephos QA");
-            Servers.Add("Performance1");
-            Servers.Add("Performance2");
-            Servers.Add("End to End Testing");
             Servers.Add("Ash");
-            Servers.Add("Local Machine 1");
-            Servers.Add("Local Machine 2");
+            //Servers.Add("Local Machine 1");
+            //Servers.Add("Local Machine 2");
             Servers.Add("Willow");
             Servers.Add("Elm");
             Servers.Add("Teak");
+            Servers.Add("Preview");
+            
             SelectedType = Constants.SelectedType;
         }
 
@@ -144,50 +139,17 @@ namespace SageMobileSales.UILogic.ViewModels
 
             var selected = ((ComboBox)args);
 
-            //if (selected.SelectedItem.ToString() == "Master")
-            //{
-            //    ClientId = @"TO3afnij1xMZrsH8akholwxvcJFlFc1N";
-            //    Scope = @"gvb7lu14();";
-            //    Url = "https://mobilesales-master.sagenephos.com/sdata/api/dynamic/-/";
-            //    RedirectUrl = "https://signon.sso.staging.services.sage.com/oauth/native";
-            //    IsSageIdProduction = false;
-            //    SelectedType = "Master";
-            //    SetConfigurationValues();
-            //}
+            if (selected.SelectedItem.ToString() == "Preview")
+            {
+                ClientId = @"RAHGBa7mZz5BZB5JmJqn42Ydl1IuHn5Q";
+                Scope = @"bgtvnjmd();";
+                Url = "https://PreviewMSales.sagedatacloud.com";
+                RedirectUrl = "https://signon.sso.staging.services.sage.com/oauth/native";
+                IsSageIdProduction = false;
+                SelectedType = "Preview";
+                SetConfigurationValues();
+            }
 
-
-            //if (selected.SelectedItem.ToString() == "Mobile Sales")
-            //{
-            //    ClientId = @"TO3afnij1xMZrsH8akholwxvcJFlFc1N";
-            //    Scope = @"gvb7lu14();";
-            //    Url = "https://mobilesales.sagenephos.com/sdata/api/dynamic/-/";
-            //    RedirectUrl = "https://signon.sso.staging.services.sage.com/oauth/native";
-            //    IsSageIdProduction = false;
-            //    SelectedType = "Mobile Sales";
-            //    SetConfigurationValues();
-            //}
-            //if (selected.SelectedItem.ToString() == "Release")
-            //{
-            //    ClientId = @"TO3afnij1xMZrsH8akholwxvcJFlFc1N";
-            //    Url = "https://mobilesales-release.sagenephos.com/sdata/api/dynamic/-/";
-            //    Scope = @"gvb7lu14();";
-            //    RedirectUrl = "https://signon.sso.staging.services.sage.com/oauth/native";
-            //    IsSageIdProduction = false;
-            //    SelectedType = "Release";
-            //    SetConfigurationValues();
-            //}
-
-
-            //if (selected.SelectedItem.ToString() == "Staging")
-            //{
-            //    ClientId = @"j2sak5nIN2YZ6szKaqx0hv66tLW0Mku0";
-            //    Url = "https://mobilesales-staging.na.sage.com/sdata/api/dynamic/-/";
-            //    Scope = @"kbyemk8m();";
-            //    RedirectUrl = "https://signon.sso.services.sage.com/oauth/native";
-            //    IsSageIdProduction = true;
-            //    SelectedType = "Staging";
-            //    SetConfigurationValues();
-            //}
             if (selected.SelectedItem.ToString() == "Maple")
             {
                 ClientId = @"GzOfBLtepw6PHv9ciGjbvqr302jNbIYh";
@@ -210,6 +172,17 @@ namespace SageMobileSales.UILogic.ViewModels
                 SetConfigurationValues();
             }
 
+            if (selected.SelectedItem.ToString() == "Larch")
+            {
+                ClientId = @"rCGEjRlv9G3ofvZ8rY0KUuKBInTWD08K";
+                Url = "https://LarchMSales.sagedatacloud.com/sdata/api/msales/1.0/";
+                Scope = @"zlrcw7qa();";
+                IsSageIdProduction = false;
+                SelectedType = "Larch";
+                RedirectUrl = "https://signon.sso.staging.services.sage.com/oauth/native";
+                SetConfigurationValues();
+            }
+
             if (selected.SelectedItem.ToString() == "Production")
             {
                 ClientId = @"fRt7TgcUAzq9y0b3BLCTUM4Y0wwcWC51";
@@ -221,64 +194,6 @@ namespace SageMobileSales.UILogic.ViewModels
                 SetConfigurationValues();
             }
 
-
-            //if (selected.SelectedItem.ToString() == "SharedComponents")
-            //{
-            //    ClientId = @"TO3afnij1xMZrsH8akholwxvcJFlFc1N";
-            //    Url = "https://shared-mobilesales.sagenephos.com/sdata/api/dynamic/-/";
-            //    Scope = @"gvb7lu14();";
-            //    RedirectUrl = "https://signon.sso.staging.services.sage.com/oauth/native";
-            //    IsSageIdProduction = false;
-            //    SelectedType = "SharedComponents";
-            //    SetConfigurationValues();
-            //}
-
-            //if (selected.SelectedItem.ToString() == "CE Nephos QA")
-            //{
-            //    ClientId = @"8zEOHQQ8HdGzLzx6ZnlV64vJi3tUqnPr";
-            //    Url = "https://mobilesales-ceqa.sagenephos.com/sdata/api/dynamic/-/";
-            //    Scope = @"sm9euv5c();";
-            //    RedirectUrl = "https://signon.sso.staging.services.sage.com/oauth/native";
-            //    IsSageIdProduction = false;
-            //    SelectedType = "CE Nephos QA";
-            //    SetConfigurationValues();
-            //}
-
-
-            //if (selected.SelectedItem.ToString() == "Performance1")
-            //{
-            //    ClientId = @"TO3afnij1xMZrsH8akholwxvcJFlFc1N";
-            //    Url = "https://mobilesales-perf.sagenephos.com/sdata/api/dynamic/-/";
-            //    Scope = @"gvb7lu14();";
-            //    IsSageIdProduction = false;
-            //    SelectedType = "Performance1";
-            //    RedirectUrl = "https://signon.sso.staging.services.sage.com/oauth/native";
-            //    SetConfigurationValues();
-            //}
-
-
-            //if (selected.SelectedItem.ToString() == "Performance2")
-            //{
-            //    ClientId = @"TO3afnij1xMZrsH8akholwxvcJFlFc1N";
-            //    Url = "https://mobilesales-perf-p2.sagenephos.com/sdata/api/dynamic/-/";
-            //    Scope = @"gvb7lu14();";
-            //    IsSageIdProduction = false;
-            //    SelectedType = "Performance2";
-            //    RedirectUrl = "https://signon.sso.staging.services.sage.com/oauth/native";
-            //    SetConfigurationValues();
-            //}
-
-
-            //if (selected.SelectedItem.ToString() == "End to End Testing")
-            //{
-            //    ClientId = @"CnBPqowEZXRMShWKMHnXoXTiylLRsDL7";
-            //    Url = "https://mobilesales-e2e.na.sage.com/sdata/api/dynamic/-/";
-            //    Scope = @"fuz0r3lt();";
-            //    IsSageIdProduction = false;
-            //    SelectedType = "End to End Testing";
-            //    RedirectUrl = "https://signon.sso.staging.services.sage.com/oauth/native";
-            //    SetConfigurationValues();
-            //}
             if (selected.SelectedItem.ToString() == "Ash")
             {
                 //ClientId = @"xeQaIFwQvbDjKZvwzb92kFOLzDCd9CCc";
@@ -291,26 +206,27 @@ namespace SageMobileSales.UILogic.ViewModels
                 SetConfigurationValues();
             }
 
-            if (selected.SelectedItem.ToString() == "Local Machine 1")
-            {
-                ClientId = @"FhVDZU7p11pFRItTweZsh8XSGdEeFZ0g";
-                Url = "http://172.29.59.122:8080/sdata/api/msales/1.0/";
-                Scope = @"kipgf40h();";
-                IsSageIdProduction = false;
-                SelectedType = "Local Machine 1";
-                RedirectUrl = "https://signon.sso.staging.services.sage.com/oauth/native";
-                SetConfigurationValues();
-            }
-            if (selected.SelectedItem.ToString() == "Local Machine 2")
-            {
-                ClientId = @"FhVDZU7p11pFRItTweZsh8XSGdEeFZ0g";
-                Url = "http://172.25.19.4:8080/sdata/api/msales/1.0/";
-                Scope = @"kipgf40h();";
-                IsSageIdProduction = false;
-                SelectedType = "Local Machine 2";
-                RedirectUrl = "https://signon.sso.staging.services.sage.com/oauth/native";
-                SetConfigurationValues();
-            }
+            //if (selected.SelectedItem.ToString() == "Local Machine 1")
+            //{
+            //    ClientId = @"FhVDZU7p11pFRItTweZsh8XSGdEeFZ0g";
+            //    Url = "http://172.29.59.122:8080/sdata/api/msales/1.0/";
+            //    Scope = @"kipgf40h();";
+            //    IsSageIdProduction = false;
+            //    SelectedType = "Local Machine 1";
+            //    RedirectUrl = "https://signon.sso.staging.services.sage.com/oauth/native";
+            //    SetConfigurationValues();
+            //}
+            //if (selected.SelectedItem.ToString() == "Local Machine 2")
+            //{
+            //    ClientId = @"FhVDZU7p11pFRItTweZsh8XSGdEeFZ0g";
+            //    Url = "http://172.25.19.4:8080/sdata/api/msales/1.0/";
+            //    Scope = @"kipgf40h();";
+            //    IsSageIdProduction = false;
+            //    SelectedType = "Local Machine 2";
+            //    RedirectUrl = "https://signon.sso.staging.services.sage.com/oauth/native";
+            //    SetConfigurationValues();
+            //}
+
             if (selected.SelectedItem.ToString() == "Willow")
             {
                 ClientId = @"8iP7gBk2buVFtY1ymKNYkghS44f408sZ";
@@ -340,6 +256,16 @@ namespace SageMobileSales.UILogic.ViewModels
                 Scope = @"s99fetln();";
                 IsSageIdProduction = false;
                 SelectedType = "Teak";
+                RedirectUrl = "https://signon.sso.staging.services.sage.com/oauth/native";
+                SetConfigurationValues();
+            }
+            if (selected.SelectedItem.ToString() == "Preview")
+            {
+                ClientId = @"RAHGBa7mZz5BZB5JmJqn42Ydl1IuHn5Q";
+                Url = "https://PreviewMSales.sagedatacloud.com/sdata/api/msales/1.0/";
+                Scope = @"bgtvnjmd();";
+                IsSageIdProduction = false;
+                SelectedType = "Preview";
                 RedirectUrl = "https://signon.sso.staging.services.sage.com/oauth/native";
                 SetConfigurationValues();
             }
