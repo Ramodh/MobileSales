@@ -45,6 +45,7 @@ namespace SageMobileSales
         }
 
         public IEventAggregator EventAggregator { get; set; }
+        private string _log = String.Empty;
 
         protected override Task OnLaunchApplication(LaunchActivatedEventArgs args)
         {
@@ -214,12 +215,15 @@ namespace SageMobileSales
                     {
                         configSettings.Containers["ConfigurationSettingsContainer"].Values["IsServerChanged"] = false;
                     }
-                    await oAuthService.Cleanup();
                 }
                 await oAuthService.Cleanup();
                 NavigationService.Navigate("Signin", null);
             }
-            catch { }
+            catch(Exception ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
         }
 
 
