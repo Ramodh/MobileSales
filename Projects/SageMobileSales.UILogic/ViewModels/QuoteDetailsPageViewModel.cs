@@ -876,22 +876,25 @@ namespace SageMobileSales.UILogic.ViewModels
                 PageStackEntry pageStack = navigationHistory.LastOrDefault();
 
                 var contains = Frame.BackStack.Where(b => b.SourcePageType.Name == PageUtils.CreateQuotePage);
-                for (int j = 1; j <= contains.ToList().Count; j++)
+                if (contains.ToList().Count > 0)
                 {
-                    for (int i = Frame.BackStack.Count; i > 0; i--)
+                    for (int j = 0; j <= contains.ToList().Count; j++)
                     {
-                        if (Frame.BackStack.LastOrDefault().SourcePageType.Name != PageUtils.CreateQuotePage)
+                        for (int i = Frame.BackStack.Count; i > 0; i--)
                         {
+                            if (Frame.BackStack.LastOrDefault().SourcePageType.Name != PageUtils.CreateQuotePage)
+                            {
+                                Frame.BackStack.Remove(Frame.BackStack.LastOrDefault());
+                                continue;
+                            }
                             Frame.BackStack.Remove(Frame.BackStack.LastOrDefault());
-                            continue;
+                            break;
                         }
-                        Frame.BackStack.Remove(Frame.BackStack.LastOrDefault());
-                        break;
                     }
                 }
                 if (contains.ToList().Count == 0)
                 {
-                 
+
                     foreach (PageStackEntry pagestack in navigationHistory)
                     {
                         if (pagestack.SourcePageType.Name == PageUtils.QuoteDetailsPage)
@@ -908,8 +911,8 @@ namespace SageMobileSales.UILogic.ViewModels
                         Frame.BackStack.RemoveAt(Frame.BackStack.Count - 1);
                     }
                 }
-               
-              
+
+
                 //if (Frame.BackStack.Count >= 2 && pageStack.SourcePageType.Name != PageUtils.CustomerDetailPage)
                 //{
                 //    Frame.BackStack.RemoveAt(Frame.BackStack.Count - 1);

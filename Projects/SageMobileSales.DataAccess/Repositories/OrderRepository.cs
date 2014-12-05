@@ -163,7 +163,7 @@ namespace SageMobileSales.DataAccess.Repositories
                     await
                         _sageSalesDB.QueryAsync<OrderDetails>(
                             "SELECT distinct customer.customerName, orders.CustomerId,orders.OrderNumber, orders.AddressId, orders.TenantId, orders.OrderId, orders.CreatedOn, orders.amount, orders.DiscountPercent, orders.ShippingAndHandling, orders.Tax, orders.OrderStatus,orders.OrderDescription,(select RepName from SalesRep as RP where RP.RepId='" +
-                            salesRepId + "') as RepName FROM customer, orders where Orders.OrderStatus!='IsOrder'  And Orders.OrderStatus!='Temporary' and customer.customerId=orders.customerId and customer.IsActive=1 and orders.customerId=? order by orders.createdOn desc",
+                            salesRepId + "') as RepName FROM customer, orders where Orders.OrderStatus!='IsOrder' And Orders.OrderStatus!='Error' And Orders.OrderStatus!='Temporary' and customer.customerId=orders.customerId and customer.IsActive=1 and orders.customerId=? order by orders.createdOn desc",
                             customerId);                    
                     //await
                     //    _sageSalesDB.QueryAsync<OrderDetails>(
