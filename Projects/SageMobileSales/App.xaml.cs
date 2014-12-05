@@ -210,7 +210,11 @@ namespace SageMobileSales
                 ApplicationDataContainer configSettings = ApplicationData.Current.LocalSettings;
                 if (configSettings.Containers.ContainsKey("ConfigurationSettingsContainer"))
                 {
-                    configSettings.Containers["ConfigurationSettingsContainer"].Values["IsServerChanged"] = false;
+                    if (configSettings.Containers["ConfigurationSettingsContainer"].Values["IsServerChanged"] != null)
+                    {
+                        configSettings.Containers["ConfigurationSettingsContainer"].Values["IsServerChanged"] = false;
+                    }
+                    await oAuthService.Cleanup();
                 }
                 await oAuthService.Cleanup();
                 NavigationService.Navigate("Signin", null);
