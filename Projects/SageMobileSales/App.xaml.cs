@@ -206,8 +206,15 @@ namespace SageMobileSales
         {
             var oAuthService = _container.Resolve<IOAuthService>();
             ApplicationDataContainer configSettings = ApplicationData.Current.LocalSettings;
-            configSettings.Containers["ConfigurationSettingsContainer"].Values["IsServerChanged"] = false;
-            await oAuthService.Cleanup();
+
+            if (configSettings.Containers.ContainsKey("ConfigurationSettingsContainer"))
+            {
+                if (configSettings.Containers["ConfigurationSettingsContainer"].Values["IsServerChanged"] != null)
+                {
+                    configSettings.Containers["ConfigurationSettingsContainer"].Values["IsServerChanged"] = false;
+                }
+            }
+            await oAuthService.Cleanup();            
             NavigationService.Navigate("Signin", null);
         }
 

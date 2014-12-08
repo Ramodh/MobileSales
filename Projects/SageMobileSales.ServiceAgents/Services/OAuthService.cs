@@ -138,14 +138,22 @@ namespace SageMobileSales.ServiceAgents.Services
                 Constants.IsDbDeleted = true;
                 ApplicationDataContainer settingsLocal = ApplicationData.Current.LocalSettings;
                 settingsLocal.DeleteContainer("SageSalesContainer");
+                bool isServerChanged = false;
                 if (_client == null)
                 {
                     _client = new OAuthClient(ClientId);
                 }
 
-                await _client.CleanupAsync(settingsLocal.Containers["ConfigurationSettingsContainer"].Values["IsServerChanged"]!=null?Convert.ToBoolean(settingsLocal.Containers["ConfigurationSettingsContainer"].Values["IsServerChanged"]):false);
+                if (settingsLocal.Containers.ContainsKey("ConfigurationSettingsContainer"))
+                {
+                    if (settingsLocal.Containers["ConfigurationSettingsContainer"].Values["IsServerChanged"] != null)
+                    {
+                        isServerChanged = Convert.ToBoolean(settingsLocal.Containers["ConfigurationSettingsContainer"].Values["IsServerChanged"]);
+                    }
+                }
+                await _client.CleanupAsync(isServerChanged);
                 _client.LogEvent += onLogEvent;
-                Token = String.Empty;               
+                Token = String.Empty;
                 //  await _database.Delete();
             }
             catch (NullReferenceException ex)
