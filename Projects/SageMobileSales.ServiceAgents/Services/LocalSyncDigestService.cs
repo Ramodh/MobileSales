@@ -89,7 +89,6 @@ namespace SageMobileSales.ServiceAgents.Services
                 {
                     parameters.Add("LocalTick", "0");
                 }
-                ;
             }
             catch (Exception ex)
             {
