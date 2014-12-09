@@ -211,11 +211,15 @@ namespace SageMobileSales
                 MessageDialog msgDialog;
                 var oAuthService = _container.Resolve<IOAuthService>();
                 ApplicationDataContainer configSettings = ApplicationData.Current.LocalSettings;
-                if (configSettings.Containers["ConfigurationSettingsContainer"].Values["IsServerChanged"] != null)
+                if (configSettings.Containers.ContainsKey("ConfigurationSettingsContainer"))
                 {
-                    configSettings.Containers["ConfigurationSettingsContainer"].Values["IsServerChanged"] = false;
-                    await oAuthService.Cleanup();
+                    if (configSettings.Containers["ConfigurationSettingsContainer"].Values["IsServerChanged"] != null)
+                    {
+                        configSettings.Containers["ConfigurationSettingsContainer"].Values["IsServerChanged"] = false;
+
+                    }
                 }
+                await oAuthService.Cleanup();
 
                 var frame = Window.Current.Content as Frame;
                 if (frame.SourcePageType.Name == PageUtils.SignInPage || frame.SourcePageType.Name == PageUtils.LoadingIndicatorPage)
@@ -236,8 +240,9 @@ namespace SageMobileSales
 
                 await msgDialog.ShowAsync();
             }
-            catch { }
+            catch (Exception e) { AppEventSource.Log.Error(e.Message); }
         }
+
 
 
         //protected override Type GetPageType(string pageToken)
