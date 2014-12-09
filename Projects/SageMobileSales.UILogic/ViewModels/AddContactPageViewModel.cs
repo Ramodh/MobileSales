@@ -12,6 +12,8 @@ using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
 using SageMobileSales.ServiceAgents.Services;
 using SageMobileSales.UILogic.Common;
+using Windows.UI.Popups;
+using Windows.ApplicationModel.Resources;
 
 namespace SageMobileSales.UILogic.ViewModels
 {
@@ -163,8 +165,16 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             try
             {
-                if (!(string.IsNullOrEmpty(Contact.FirstName) && string.IsNullOrEmpty(Contact.LastName)) &&
+                if ((string.IsNullOrEmpty(Contact.FirstName) && string.IsNullOrEmpty(Contact.LastName)) &&
                     IsSaveEnabled)
+                {
+                    MessageDialog msgDialog = new MessageDialog(
+                          ResourceLoader.GetForCurrentView("Resources").GetString(" MesDialogAddContactSaveMessage"),
+                          ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogAddContactTitle"));
+                        msgDialog.Commands.Add(new UICommand("Ok"));
+                        await msgDialog.ShowAsync();
+                }
+                else
                 {
                     if (ValidateForm())
                     {
@@ -180,7 +190,7 @@ namespace SageMobileSales.UILogic.ViewModels
                         InProgress = false;
 
                         _navigationService.GoBack();
-                    }
+                    }                
                 }
             }
             catch (EntityValidationException ex)

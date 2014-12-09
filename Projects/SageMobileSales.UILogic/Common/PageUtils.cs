@@ -26,8 +26,9 @@ namespace SageMobileSales.UILogic.Common
         public static string Invoice = "Invoice";
         public static string QuoteDetailsPage = "QuoteDetailsPage";
         public static string ItemDetailPage = "ItemDetailPage";
+        public static string CreateQuotePage = "CreateQuotePage";
         public static string PreviousOrder = "Previous order";
-        public static string PreviousPurchasedItems = "Previously purchased items";
+        public static string FrequentlyPurchasedItems = "Frequently purchased items";
         public static string ScratchText = "Create the quote from scratch";
         public static string PreviousOrderText = "Use an existing order as a template";
 
@@ -45,7 +46,11 @@ namespace SageMobileSales.UILogic.Common
         public static bool CamefromItemDetails = false;
         public static string CustomerDetailPage = "CustomerDetailPage";
         public static string OrdersPage = "OrdersPage";
-        public static string CreateQuotePage = "CreateQuotePage";
+        public static string QuotesPage = "QuotesPage";
+        public static string SignInPage = "SigninPage";
+        public static string LoadingIndicatorPage = "LoadingIndicatorPage";
+        public static string OtherAddressesPage = "OtherAddressesPage";
+        public static string CreateShippingAddressPage = "CreateShippingAddressPage";
         public static string SeeMore = "See More";
         public static bool CamefromCustomerDetails = false;
         public static Customer SelectedCustomer = null;
@@ -71,7 +76,7 @@ namespace SageMobileSales.UILogic.Common
             ApplicationDataContainer settingsLocal = ApplicationData.Current.LocalSettings;
             if (settingsLocal.Containers.ContainsKey("SageSalesContainer"))
             {
-                Constants.AccessToken = settingsLocal.Containers["SageSalesContainer"].Values["AccessToken"]==null?null:settingsLocal.Containers["SageSalesContainer"].Values["AccessToken"].ToString();
+                Constants.AccessToken = settingsLocal.Containers["SageSalesContainer"].Values["AccessToken"] == null ? null : settingsLocal.Containers["SageSalesContainer"].Values["AccessToken"].ToString();
                 Constants.TrackingId = settingsLocal.Containers["SageSalesContainer"].Values["TrackingId"] == null ? null : settingsLocal.Containers["SageSalesContainer"].Values["TrackingId"].ToString();
                 if (settingsLocal.Containers["SageSalesContainer"].Values["syncQueryEntity"] != null)
                 {
@@ -83,8 +88,8 @@ namespace SageMobileSales.UILogic.Common
 
         public static void GetConfigurationSettings()
         {
-#if(PRODUCTION)  
-             
+#if(PRODUCTION)
+
             Constants.ClientId = @"fRt7TgcUAzq9y0b3BLCTUM4Y0wwcWC51";
             Constants.Url = "https://sagemobilesales.na.sage.com/sdata/api/msales/1.0/";
             Constants.Scope = @"kmt6bhzz();";
@@ -138,8 +143,6 @@ namespace SageMobileSales.UILogic.Common
                 }
             }
 #endif
-
-
         }
 
         public static void ResetLocalVariables()

@@ -13,5 +13,7 @@ namespace SageMobileSales.DataAccess.Repositories
         Task<List<OrderDetails>> GetOrdersForCustomerAsync(string customerId);
         Task<OrderDetails> GetOrderDetailsAsync(string orderId);
         Task<List<OrderDetails>> GetOrdersListAsync(string salesRepId);
+        Task<List<OrderDetails>> GetOrderStatusListForCustomerAsync(string customerId);
+        Task<List<OrderDetails>> GetOrdersStatusListForSalesRepAsync(string salesRepId);
     }
 }

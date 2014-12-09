@@ -124,6 +124,7 @@
     <Compile Include="Common\FlipViewIndicator.cs" />
     <Compile Include="Common\ScrollViewerUtilities.cs" />
     <Compile Include="Common\VisualTreeUtilities.cs" />
+    <Compile Include="Converters\BackgroundConverter.cs" />
     <Compile Include="Converters\ErrorConverter.cs" />
     <Compile Include="Converters\StringFormatConverter.cs" />
     <Compile Include="Converters\TextHeaderVisibilityConverter.cs" />
@@ -407,6 +408,15 @@
     </Reference>
     <Reference Include="Microsoft.Practices.Unity.NetCore">
       <HintPath>..\..\Solutions\SageMobileSales\packages\Unity.3.0.1304.1\lib\NetCore45\Microsoft.Practices.Unity.NetCore.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\Solutions\SageMobileSales\packages\Newtonsoft.Json.6.0.6\lib\netcore45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Q42.WinRT">
+      <HintPath>..\..\Solutions\SageMobileSales\packages\Q42.WinRT.1.2.6.42\lib\portable-win81+wpa81\Q42.WinRT.dll</HintPath>
+    </Reference>
+    <Reference Include="Q42.WinRT.Portable">
+      <HintPath>..\..\Solutions\SageMobileSales\packages\Q42.WinRT.Portable.1.2.3.42\lib\portable-net45+win+wpa81+wp80\Q42.WinRT.Portable.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

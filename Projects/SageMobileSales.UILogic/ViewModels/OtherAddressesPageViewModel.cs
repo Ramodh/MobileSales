@@ -200,7 +200,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 {
                     await _quoteService.UpdateQuoteShippingAddressKey(_quote);
                 }
-
+                InProgress = false;
                 _navigationService.Navigate("QuoteDetails", _quoteDetails.QuoteId);
             }
             catch (Exception ex)
@@ -219,13 +219,13 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             var Frame = Window.Current.Content as Frame;
 
-            if (Frame != null)
-            {
-                if (Frame.BackStack.Count >= 2)
-                {
-                    Frame.BackStack.RemoveAt(Frame.BackStack.Count - 1);
-                }
-            }
+            //if (Frame != null)
+            //{
+            //    if (Frame.BackStack.Count >= 2)
+            //    {
+            //        Frame.BackStack.RemoveAt(Frame.BackStack.Count - 1);
+            //    }
+            //}
             _navigationService.Navigate("CreateShippingAddress", _quoteDetails.QuoteId);
         }
     }

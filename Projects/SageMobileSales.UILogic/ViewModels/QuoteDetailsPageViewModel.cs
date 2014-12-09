@@ -61,6 +61,7 @@ namespace SageMobileSales.UILogic.ViewModels
         private Address _customerMailingAddress;
         private string _quoteId;
         private bool _isSubmitQuoteEnabled;
+        private int _quoteDetailsPageStackCount = 0;
 
         private ObservableCollection<QuoteLineItemViewModel> _quoteLineItemViewModels;
         private List<LineItemDetails> _quoteLineItemsList;
@@ -443,22 +444,22 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             try
             {
-
                 if (IsSubmitQuoteEnabled)
                 {
-                    MessageDialog msgDialog;
+
 
                     bool _canSubmit = false;
                     QuoteLineItemsList = await _quoteLineItemRepository.GetQuoteLineItemDetailsAsync(_quoteId);
+                    MessageDialog msgDialog;
                     if (QuoteLineItemsList.Count > 0)
                     {
                         _canSubmit = QuoteLineItemsList.Any(lineItem => lineItem.LineItemQuantity > 0);
 
                         if (_canSubmit)
                         {
-                            IsSubmitQuoteEnabled = false;
                             InProgress = true;
                             _quote = await UpdateQuote(DataAccessUtils.SubmitQuote);
+
 
                             if (Constants.ConnectedToInternet())
                             {
@@ -467,6 +468,7 @@ namespace SageMobileSales.UILogic.ViewModels
                             }
 
                             InProgress = false;
+                            IsSubmitQuoteEnabled = false;
                             //if (_quote.QuoteStatus == DataAccessUtils.SubmitQuote)
                             //{
                             //    IsSubmitQuote = Visibility.Collapsed;
@@ -496,6 +498,7 @@ namespace SageMobileSales.UILogic.ViewModels
 
                         }
                     }
+
                     else
                     {
                         msgDialog =
@@ -504,8 +507,6 @@ namespace SageMobileSales.UILogic.ViewModels
                                 ResourceLoader.GetForCurrentView("Resources").GetString("SubmitQuoteErrorTitle"));
                         msgDialog.Commands.Add(new UICommand("Ok"));
                     }
-
-
                     await msgDialog.ShowAsync();
                 }
             }
@@ -624,12 +625,10 @@ namespace SageMobileSales.UILogic.ViewModels
                     SalesRep salesRep = (await _salesRepRepository.GetSalesRepDtlsAsync()).FirstOrDefault();
 
                     DiscountPercent = Convert.ToDecimal(((TextBox)args).Text);
-
                     if (salesRep.MaximumDiscountPercent == null)
                     {
                         DiscountPercent = 0;
                     }
-
                     if (DiscountPercent >= 0 && DiscountPercent <= 100)
                     {
                         if (DiscountPercent > Convert.ToDecimal(salesRep.MaximumDiscountPercent))
@@ -724,30 +723,29 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             var messageDialog = new MessageDialog(messageText, messageTitle);
 
-            // Add commands and set their command ids
-            messageDialog.Commands.Add(
-                new UICommand(ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogCancelbuttonText"),
-                    command => { _isCancelled = true; }, 0));
             if (deleteQuote)
             {
                 messageDialog.Commands.Add(
                     new UICommand(ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogDeletebuttonText"),
-                        DeleteQuoteCommandInvokedHandler, 1));
+                        DeleteQuoteCommandInvokedHandler, 0));
             }
             else if (isChangeStatus)
             {
                 messageDialog.Commands.Add(
                     new UICommand(
                         ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogChangeStatusbuttonText"),
-                        RevertQuoteStatusCommandInvokedHandler, 1));
+                        RevertQuoteStatusCommandInvokedHandler, 0));
             }
             else
             {
                 messageDialog.Commands.Add(
                     new UICommand(ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogDeletebuttonText"),
-                        DeleteQuoteLineItemCommandInvokedHandler, 1));
+                        DeleteQuoteLineItemCommandInvokedHandler, 0));
             }
-
+            // Add commands and set their command ids
+            messageDialog.Commands.Add(
+                new UICommand(ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogCancelbuttonText"),
+                    command => { _isCancelled = true; }, 1));
             // Set the command that will be invoked by default
             // messageDialog.DefaultCommandIndex = 1;
 
@@ -856,6 +854,15 @@ namespace SageMobileSales.UILogic.ViewModels
         public override async void OnNavigatedTo(object navigationParameter, NavigationMode navigationMode,
             Dictionary<string, object> viewModelState)
         {
+            // Hidding bottom appbar buttons while data is loading.
+            IsAddItemVisible = Visibility.Collapsed;
+            IsSubmitQuoteVisible = Visibility.Collapsed;
+            IsPlaceOrderVisible = Visibility.Collapsed;
+            IsChangeAddressVisible = Visibility.Collapsed;
+            IsEditQuoteVisible = Visibility.Collapsed;
+            IsDeleteQuoteVisible = Visibility.Collapsed;
+            IsEditQuoteLineItemVisible = Visibility.Collapsed;
+
             IsSubmitQuoteEnabled = true;
             _quoteId = navigationParameter as string;
             //  await _addressRepository.GetShippingAddressForCustomer(QuoteDetails.CustomerId);
@@ -864,10 +871,52 @@ namespace SageMobileSales.UILogic.ViewModels
 
             if (Frame != null)
             {
-                if (Frame.BackStack.Count >= 2)
+                List<PageStackEntry> navigationHistory = Frame.BackStack.ToList();
+
+                PageStackEntry pageStack = navigationHistory.LastOrDefault();
+
+                var contains = Frame.BackStack.Where(b => b.SourcePageType.Name == PageUtils.CreateQuotePage);
+                if (contains.ToList().Count > 0)
                 {
-                    Frame.BackStack.RemoveAt(Frame.BackStack.Count - 1);
+                    for (int j = 0; j <= contains.ToList().Count; j++)
+                    {
+                        for (int i = Frame.BackStack.Count; i > 0; i--)
+                        {
+                            if (Frame.BackStack.LastOrDefault().SourcePageType.Name != PageUtils.CreateQuotePage)
+                            {
+                                Frame.BackStack.Remove(Frame.BackStack.LastOrDefault());
+                                continue;
+                            }
+                            Frame.BackStack.Remove(Frame.BackStack.LastOrDefault());
+                            break;
+                        }
+                    }
                 }
+                if (contains.ToList().Count == 0)
+                {
+
+                    foreach (PageStackEntry pagestack in navigationHistory)
+                    {
+                        if (pagestack.SourcePageType.Name == PageUtils.QuoteDetailsPage)
+                        {
+                            _quoteDetailsPageStackCount++;
+                        }
+                        if (pagestack.SourcePageType.Name == PageUtils.OtherAddressesPage || pagestack.SourcePageType.Name == PageUtils.CreateShippingAddressPage)
+                        {
+                            Frame.BackStack.RemoveAt(Frame.BackStack.Count - 1);
+                        }
+                    }
+                    if (_quoteDetailsPageStackCount >= 1)
+                    {
+                        Frame.BackStack.RemoveAt(Frame.BackStack.Count - 1);
+                    }
+                }
+
+
+                //if (Frame.BackStack.Count >= 2 && pageStack.SourcePageType.Name != PageUtils.CustomerDetailPage)
+                //{
+                //    Frame.BackStack.RemoveAt(Frame.BackStack.Count - 1);
+                //}
             }
 
             // Register the current page as a share source.
@@ -1159,7 +1208,7 @@ namespace SageMobileSales.UILogic.ViewModels
                     IsChangeAddressVisible = Visibility.Collapsed;
                     IsSubmitQuoteVisible = Visibility.Collapsed;
                     IsSendmailVisible = Visibility.Visible;
-                    IsDeleteQuoteVisible = Visibility.Collapsed;
+                    IsDeleteQuoteVisible = Visibility.Visible;
                     IsEditQuoteLineItemVisible = Visibility.Collapsed;
                     IsEditQuoteVisible = Visibility.Visible;
                     IsPlaceOrderVisible = Visibility.Visible;

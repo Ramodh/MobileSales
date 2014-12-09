@@ -21,6 +21,8 @@ using SageMobileSales.ServiceAgents.Common;
 using SageMobileSales.ServiceAgents.Services;
 using SageMobileSales.UILogic.Common;
 using SageMobileSales.Views;
+using Windows.UI.Popups;
+using Windows.UI.Xaml.Controls;
 
 // The Blank Application template is documented at http://go.microsoft.com/fwlink/?LinkId=234227
 
@@ -207,17 +209,37 @@ namespace SageMobileSales
         {
             try
             {
+                MessageDialog msgDialog;
                 var oAuthService = _container.Resolve<IOAuthService>();
                 ApplicationDataContainer configSettings = ApplicationData.Current.LocalSettings;
                 if (configSettings.Containers.ContainsKey("ConfigurationSettingsContainer"))
                 {
                     if (configSettings.Containers["ConfigurationSettingsContainer"].Values["IsServerChanged"] != null)
                     {
-                        configSettings.Containers["ConfigurationSettingsContainer"].Values["IsServerChanged"] = false;
+                configSettings.Containers["ConfigurationSettingsContainer"].Values["IsServerChanged"] = false;
+
                     }
                 }
                 await oAuthService.Cleanup();
-                NavigationService.Navigate("Signin", null);
+
+                var frame = Window.Current.Content as Frame;
+                if (frame.SourcePageType.Name == PageUtils.SignInPage || frame.SourcePageType.Name == PageUtils.LoadingIndicatorPage)
+                {
+                    msgDialog = new MessageDialog(
+                                      ResourceLoader.GetForCurrentView("Resources").GetString("UnableToLogoutText"),
+                                      ResourceLoader.GetForCurrentView("Resources").GetString("UnableToLogoutTitle"));
+                    msgDialog.Commands.Add(new UICommand("Ok"));
+                }
+                else
+                {
+                    msgDialog = new MessageDialog(
+                                      ResourceLoader.GetForCurrentView("Resources").GetString("LogoutText"),
+                                      ResourceLoader.GetForCurrentView("Resources").GetString("LogoutTitle"));
+                    msgDialog.Commands.Add(new UICommand("Ok", (UICommandInvokedHandler) => { NavigationService.Navigate("Signin", null); }));
+                    msgDialog.Commands.Add(new UICommand("Cancel"));
+                }
+
+                await msgDialog.ShowAsync();
             }
             catch(Exception ex)
             {
@@ -225,6 +247,7 @@ namespace SageMobileSales
                 AppEventSource.Log.Error(_log);
             }
         }
+
 
 
         //protected override Type GetPageType(string pageToken)

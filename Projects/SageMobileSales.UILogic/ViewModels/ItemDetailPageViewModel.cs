@@ -58,12 +58,16 @@ namespace SageMobileSales.UILogic.ViewModels
             _quoteRepository = quoteRepository;
             _salesHistoryService = salesHistoryService;
             _salesHistoryRepository = salesHistoryRepository;
-            TextChangedCommand = new DelegateCommand<object>(TextBoxTextChanged);
+            //TextChangedCommand = new DelegateCommand<object>(TextBoxTextChanged);
+            TextGotFocusCommand = new DelegateCommand<object>(QunatityTextBoxGotFocus);
+            TextLostFocusCommand = new DelegateCommand<object>(QunatityTextBoxLostFocus);
             IncrementCountCommand = DelegateCommand.FromAsyncHandler(IncrementCount);
             DecrementCountCommand = DelegateCommand.FromAsyncHandler(DecrementCount);
         }
 
-        public DelegateCommand<object> TextChangedCommand { get; set; }
+        //public DelegateCommand<object> TextChangedCommand { get; set; }
+        public DelegateCommand<object> TextGotFocusCommand { get; set; }
+        public DelegateCommand<object> TextLostFocusCommand { get; set; }
         public DelegateCommand IncrementCountCommand { get; private set; }
 
         public DelegateCommand DecrementCountCommand { get; private set; }
@@ -72,7 +76,7 @@ namespace SageMobileSales.UILogic.ViewModels
 
         private Visibility _camefromCatalog;
         private Visibility _camefromCreateQuote;
-        private int _enteredQuantity;
+        private string _enteredQuantity;
         private bool _inProgress;
         private string _log = string.Empty;
         private Product _productDetail;
@@ -168,7 +172,7 @@ namespace SageMobileSales.UILogic.ViewModels
             private set { SetProperty(ref _camefromCatalog, value); }
         }
 
-        public int EnteredQuantity
+        public string EnteredQuantity
         {
             get { return _enteredQuantity; }
             private set { SetProperty(ref _enteredQuantity, value); }
@@ -286,16 +290,28 @@ namespace SageMobileSales.UILogic.ViewModels
         /// <param name="parameter"></param>
         public async void GridViewItemClick(object sender, object parameter)
         {
-            _productId = (((parameter as ItemClickEventArgs).ClickedItem as ProductDetails).ProductId);
+            try
+            {
+                var selectedProduct= (parameter as ItemClickEventArgs).ClickedItem as ProductDetails;
+                if(selectedProduct!=null)
+                {
+                _productId = selectedProduct.ProductId;
 
-            //Display data from LocalDB
-            DisplayProductDetails(_productId);
-            // Making Service request to get complete details- images, product, other products
-            await _productDetailsService.SyncProductDetails(_productId);
+                //Display data from LocalDB
+                DisplayProductDetails(_productId);
+                // Making Service request to get complete details- images, product, other products
+                await _productDetailsService.SyncProductDetails(_productId);
 
-            //Need to implement caching for images
-            //Display Updated from Web Service
-            DisplayProductDetails(_productId);
+                //Need to implement caching for images
+                //Display Updated from Web Service
+                DisplayProductDetails(_productId);
+                }
+            }
+            catch (Exception ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
         }
 
         private async void DisplayProductDetails(string productId)
@@ -343,14 +359,16 @@ namespace SageMobileSales.UILogic.ViewModels
         /// <param name="parameter"></param>
         public void AddToExistingQuoteButton_Click(object sender, object parameter)
         {
-            ProductDetails.Quantity = EnteredQuantity;
+            //ProductDetails.Quantity = EnteredQuantity;
+            ProductDetails.Quantity = Convert.ToInt32(EnteredQuantity);
             PageUtils.SelectedProduct = ProductDetails;
             _navigationService.Navigate("Quotes", null);
         }
 
         public void addToNewQuoteButton_Click(object sender, object parameter)
         {
-            ProductDetails.Quantity = EnteredQuantity;
+            //ProductDetails.Quantity = EnteredQuantity;
+            ProductDetails.Quantity = Convert.ToInt32(EnteredQuantity);
             PageUtils.SelectedProduct = ProductDetails;
             _navigationService.Navigate("CreateQuote", null);
         }
@@ -369,7 +387,7 @@ namespace SageMobileSales.UILogic.ViewModels
 
                     if (quoteLineItemExists != null)
                     {
-                        quoteLineItemExists.Quantity = quoteLineItemExists.Quantity + EnteredQuantity;
+                        quoteLineItemExists.Quantity = quoteLineItemExists.Quantity + Convert.ToInt32(EnteredQuantity);
                         await _quoteLineItemRepository.UpdateQuoteLineItemToDbAsync(quoteLineItemExists);
 
                         quote.Amount = quote.Amount +
@@ -404,7 +422,8 @@ namespace SageMobileSales.UILogic.ViewModels
                         quoteLineItem.ProductId = _productId;
                         quoteLineItem.tenantId = ProductDetails.TenantId;
                         quoteLineItem.Price = ProductDetails.PriceStd;
-                        quoteLineItem.Quantity = EnteredQuantity;
+                        //quoteLineItem.Quantity = EnteredQuantity;
+                        quoteLineItem.Quantity = Convert.ToInt32(EnteredQuantity);
                         quoteLineItem.IsPending = true;
 
                         await _quoteLineItemRepository.AddQuoteLineItemToDbAsync(quoteLineItem);
@@ -483,17 +502,68 @@ namespace SageMobileSales.UILogic.ViewModels
 
         //}
 
+        // Need to remove commented code.
+        ///// <summary>
+        /////     TextChanged event to get entered quantity
+        ///// </summary>
+        ///// <param name="args"></param>
+        //private void TextBoxTextChanged(object args)
+        //{
+        //    EmptyText = false;
+        //    if (((TextBox) args).Text != null && ((TextBox) args).Text != string.Empty)
+        //    {
+        //       // EnteredQuantity = Convert.ToInt32(((TextBox) args).Text.Trim());
+        //        EnteredQuantity = ((TextBox)args).Text.Trim();
+        //        ProductDetails.Quantity = Convert.ToInt32(EnteredQuantity);
+        //    }
+        //}
+
         /// <summary>
         ///     TextChanged event to get entered quantity
         /// </summary>
         /// <param name="args"></param>
-        private void TextBoxTextChanged(object args)
+        private void QunatityTextBoxGotFocus(object args)
         {
             EmptyText = false;
-            if (((TextBox) args).Text != null && ((TextBox) args).Text != string.Empty)
+            if (((TextBox)args).Text != null && ((TextBox)args).Text != string.Empty)
             {
-                EnteredQuantity = Convert.ToInt32(((TextBox) args).Text.Trim());
-                ProductDetails.Quantity = EnteredQuantity;
+                int enteredQnty = Convert.ToInt32(((TextBox)args).Text.Trim());
+                if (enteredQnty > 0)
+                {
+                    //EnteredQuantity = Convert.ToInt32(((TextBox)args).Text.Trim());
+                    //ProductDetails.Quantity = EnteredQuantity;
+
+                    EnteredQuantity = ((TextBox)args).Text.Trim();
+                    ProductDetails.Quantity = Convert.ToInt32(EnteredQuantity);
+                }
+                else
+                {
+                    EnteredQuantity = string.Empty;
+                }
+            }
+            else
+            {
+                EnteredQuantity = string.Empty;
+            }
+        }
+        
+              /// <summary>
+        ///     TextChanged event to get entered quantity
+        /// </summary>
+        /// <param name="args"></param>
+        private void QunatityTextBoxLostFocus(object args)
+        {
+            EmptyText = false;
+            if (((TextBox)args).Text != null && ((TextBox)args).Text != string.Empty)
+            {
+            //    EnteredQuantity = Convert.ToInt32(((TextBox)args).Text.Trim());
+            //    ProductDetails.Quantity = EnteredQuantity;
+                EnteredQuantity = ((TextBox)args).Text.Trim();
+                ProductDetails.Quantity = Convert.ToInt32(EnteredQuantity);
+            }
+            else
+            {
+                EnteredQuantity = "0";
             }
         }
 
@@ -501,11 +571,16 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             try
             {
-                if (EnteredQuantity > 0)
+                if (!string.IsNullOrEmpty(EnteredQuantity))
                 {
-                    EnteredQuantity -= 1;
+                    int enteredQnty = Convert.ToInt32(EnteredQuantity);
+                    if (enteredQnty > 0)
+                    {
+                        enteredQnty -= 1;
+                        EnteredQuantity = enteredQnty.ToString();
+                    }
+                    DecrementCountCommand.RaiseCanExecuteChanged();
                 }
-                DecrementCountCommand.RaiseCanExecuteChanged();
             }
             catch (Exception ex)
             {
@@ -518,7 +593,9 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             try
             {
-                EnteredQuantity += 1;
+                int enteredQnty = Convert.ToInt32(EnteredQuantity);
+                enteredQnty += 1;
+                EnteredQuantity = enteredQnty.ToString();
                 DecrementCountCommand.RaiseCanExecuteChanged();
             }
             catch (Exception ex)

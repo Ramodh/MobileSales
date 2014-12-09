@@ -26,6 +26,8 @@ namespace SageMobileSales.UILogic.ViewModels
         private string _log = string.Empty;
         private Quote _quote;
         private string _quoteId;
+        private bool _isSaveEnabled;
+        private bool _inProgress;
 
         public CreateShippingAddressPageViewModel(INavigationService navigationService,
             IAddressRepository addressRepository, IQuoteService quoteService, IQuoteRepository quoteRepository)
@@ -51,6 +53,19 @@ namespace SageMobileSales.UILogic.ViewModels
         /// <summary>
         ///     evaluate validation
         /// </summary>
+        public bool IsSaveEnabled
+        {
+            get { return _isSaveEnabled; }
+            set
+            {
+                SetProperty(ref _isSaveEnabled, value);
+                OnPropertyChanged("IsSaveEnabled");
+            }
+        }
+
+        /// <summary>
+        ///     evaluate validation
+        /// </summary>
         public bool IsEnabled
         {
             get { return _isEnabled; }
@@ -62,6 +77,14 @@ namespace SageMobileSales.UILogic.ViewModels
                     _address.IsValidationEnabled = IsEnabled;
                 }
             }
+        }
+        /// <summary>
+        ///     Data loading indicator
+        /// </summary>
+        public bool InProgress
+        {
+            get { return _inProgress; }
+            private set { SetProperty(ref _inProgress, value); }
         }
 
         /// <summary>
@@ -75,6 +98,7 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             try
             {
+                IsSaveEnabled = true;
                 _quoteId = navigationParameter as string;
                 _address.AddressId = PageUtils.Pending + Guid.NewGuid();
                 //   _address.AddressType = "Shipping";
@@ -135,50 +159,56 @@ namespace SageMobileSales.UILogic.ViewModels
 
                 try
                 {
-                    _quote = await _quoteRepository.GetQuoteAsync(_quoteId);
-
-                    _address.CustomerId = _quote.CustomerId;
-                    _address.AddressType = PageUtils.Other;
-                    _address.IsPending = true;
-                    await _addressRepository.AddAddressToDbAsync(_address);
-                    _quote.AddressId = _address.AddressId;
-                    await _quoteRepository.UpdateQuoteToDbAsync(_quote);
-
-                    if (Constants.ConnectedToInternet())
+                    if (IsSaveEnabled)
                     {
-                        Address address = await _quoteService.UpdateQuoteShippingAddress(_quote, _address.AddressId);
+                        InProgress = true;
+                        IsSaveEnabled = false;
+                        _quote = await _quoteRepository.GetQuoteAsync(_quoteId);
 
-                        if ((_quote.QuoteId.Contains(PageUtils.Pending)))
+                        _address.CustomerId = _quote.CustomerId;
+                        _address.AddressType = PageUtils.Other;
+                        _address.IsPending = true;
+                        await _addressRepository.AddAddressToDbAsync(_address);
+                        _quote.AddressId = _address.AddressId;
+                        await _quoteRepository.UpdateQuoteToDbAsync(_quote);
+
+                        if (Constants.ConnectedToInternet())
                         {
-                            if (address != null && address.AddressId.Contains(PageUtils.Pending))
+                            Address address = await _quoteService.UpdateQuoteShippingAddress(_quote, _address.AddressId);
+
+                            if ((_quote.QuoteId.Contains(PageUtils.Pending)))
                             {
-                                _quote.AddressId = string.Empty;
-                                await _quoteRepository.UpdateQuoteToDbAsync(_quote);
+                                if (address != null && address.AddressId.Contains(PageUtils.Pending))
+                                {
+                                    _quote.AddressId = string.Empty;
+                                    await _quoteRepository.UpdateQuoteToDbAsync(_quote);
+                                }
+                                else if (address != null)
+                                {
+                                    _quote.AddressId = address.AddressId;
+                                    _quote = await _quoteService.PostDraftQuote(_quote);
+                                }
+                                //if (quote != null)
+                                //    await _quoteService.UpdateQuoteShippingAddress(quote, _address);
+                                //await _quoteService.PostQuoteShippingAddress(_quote, _address);
                             }
-                            else if (address != null)
+                            else
                             {
-                                _quote.AddressId = address.AddressId;
-                                _quote = await _quoteService.PostDraftQuote(_quote);
+                                if (address != null && address.AddressId.Contains(PageUtils.Pending))
+                                {
+                                    _quote.AddressId = string.Empty;
+                                    await _quoteRepository.UpdateQuoteToDbAsync(_quote);
+                                }
+                                else if (address != null)
+                                {
+                                    _quote.AddressId = address.AddressId;
+                                    await _quoteService.UpdateQuoteShippingAddressKey(_quote);
+                                }
                             }
-                            //if (quote != null)
-                            //    await _quoteService.UpdateQuoteShippingAddress(quote, _address);
-                            //await _quoteService.PostQuoteShippingAddress(_quote, _address);
                         }
-                        else
-                        {
-                            if (address != null && address.AddressId.Contains(PageUtils.Pending))
-                            {
-                                _quote.AddressId = string.Empty;
-                                await _quoteRepository.UpdateQuoteToDbAsync(_quote);
-                            }
-                            else if (address != null)
-                            {
-                                _quote.AddressId = address.AddressId;
-                                await _quoteService.UpdateQuoteShippingAddressKey(_quote);
-                            }
-                        }
+                        InProgress = false;
+                        _navigationService.Navigate("QuoteDetails", _quoteId);
                     }
-                    _navigationService.Navigate("QuoteDetails", _quoteId);
                 }
                 catch (EntityValidationException ex)
                 {

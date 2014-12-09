@@ -29,7 +29,7 @@
     <Page.BottomAppBar>
         <CommandBar Style="{StaticResource BottomAppBarStyle}"
                     IsOpen="{Binding IsBottomAppBarOpened, Mode=TwoWay}"
-                    IsSticky="True"
+                    IsSticky="False"
                     AutomationProperties.AutomationId="BottomAppBar"
                     x:Uid="BottomAppBar">
             <CommandBar.PrimaryCommands>
@@ -237,7 +237,7 @@
                             <TextBlock x:Uid="Description" Text="{Binding QuoteDetails.QuoteDescription}"
                                        Style="{StaticResource DetailsPageTextblockTextStyle}"
                                        HorizontalAlignment="Left" VerticalAlignment="Bottom" TextWrapping="NoWrap"
-                                       Width="500" />
+                                       Width="500" MaxHeight="80" />
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock x:Uid="StatusText" Text="Status:" FontWeight="Bold"
@@ -277,7 +277,7 @@
                             <TextBox x:Uid="ShipAndHandlingTextBox" x:Name="ShipAndHandlingTextBox"
                                      Text="{Binding ShippingAndHandling, Mode=TwoWay}" IsEnabled="{Binding IsShippingAndHandlingEnabled}"
                                      Style="{StaticResource QuantityTextBoxStyle}" VerticalAlignment="Bottom" PlaceholderText="0"
-                                     PreventKeyboardDisplayOnProgrammaticFocus="True">
+                                     PreventKeyboardDisplayOnProgrammaticFocus="True" MaxLength="9" TabIndex="0">
                                 <interactivity:Interaction.Behaviors>
                                     <behaviors:NumericTextBoxBehavior AllowDecimal="True" />
                                     <core:EventTriggerBehavior EventName="LostFocus">
@@ -295,7 +295,7 @@
                             <TextBox x:Uid="DiscountTextBox" x:Name="DiscountTextBox"
                                      Text="{Binding DiscountPercent, Mode=TwoWay}" IsEnabled="{Binding IsDiscountEnabled}"
                                      Style="{StaticResource QuantityTextBoxStyle}" VerticalAlignment="Bottom" PlaceholderText="0"
-                                     PreventKeyboardDisplayOnProgrammaticFocus="True">
+                                     PreventKeyboardDisplayOnProgrammaticFocus="True" MaxLength="9" TabIndex="0">
                                 <interactivity:Interaction.Behaviors>
                                     <behaviors:NumericTextBoxBehavior AllowDecimal="True" />
                                     <core:EventTriggerBehavior EventName="LostFocus">

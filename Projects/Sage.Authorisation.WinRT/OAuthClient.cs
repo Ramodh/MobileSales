@@ -5,6 +5,7 @@ using Windows.ApplicationModel.Resources;
 using Windows.Foundation;
 using Sage.Authorisation.WinRT.Exceptions;
 using Sage.Authorisation.WinRT.Storage;
+using Windows.UI.Popups;
 
 namespace Sage.Authorisation.WinRT
 {
@@ -353,12 +354,15 @@ namespace Sage.Authorisation.WinRT
                 // no parameters on returned uri
                 if (resultUri.Query.Length == 0)
                 {
+                    await ShowMessageDialogAsync("Sign in failed","There was a problem contacting the sign in server");
                     throw new AuthorisationException(currentAuthorisation.State);
                 }
 
                 // returned uri contains error details
                 if (formDecoder.Any(x => x.Name == Configuration.RedirectUriError))
                 {
+
+                    await ShowMessageDialogAsync("Unable to sign in","The user has not been granted sufficient permission to proceed.");
                     // if these other parameters are not present in the query this will throw an index out of bounds exception (or something like that)
                     // but they should always be here.
                     throw new AuthorisationErrorResponseException(currentAuthorisation.State
@@ -370,6 +374,7 @@ namespace Sage.Authorisation.WinRT
                     formDecoder.FirstOrDefault(x => x.Name == _configuration.StartAuthorisationResponseType);
                 if (accessCodeParameter == null || String.IsNullOrEmpty(accessCodeParameter.Value))
                 {
+                    await ShowMessageDialogAsync("Authorisation failed", "The user has not been granted sufficient permission to proceed.");
                     // no authorisation result returned
                     throw new AuthorisationException(currentAuthorisation.State);
                 }
@@ -578,6 +583,38 @@ namespace Sage.Authorisation.WinRT
 
                 throw;
             }
+        }
+
+        private async Task ShowMessageDialogAsync(string errorTitle, string errorText)
+        {
+
+            //switch (result.StatusCode)
+            //{
+            //    case HttpStatusCode.BadRequest:
+            //        errorText = "There was a problem contacting the sign in server.";
+            //        break;
+
+            //    case HttpStatusCode.Unauthorized:
+            //    case HttpStatusCode.Forbidden:
+            //        errorText = "Unable to sign in. The user has not been granted sufficient permission to proceed.";
+            //        break;
+
+            //    case HttpStatusCode.NotFound:
+            //        errorText = "Unable to connect to the site. Verify the correct server is selected in app settings.";
+            //        break;
+
+            //    case HttpStatusCode.InternalServerError:
+            //        errorText = "Cannot contact server. Please try again in a few minutes.";
+            //        break;
+
+            //    default:
+            //        errorText = "Sign in failed. There was a problem contacting the sign in server.";
+            //        break;
+            //}
+            var msgDialog = new MessageDialog(errorText, errorTitle);
+            //msgDialog.Commands.Add(new UICommand("Ok", (UICommandInvokedHandler) => { ResetData(); }));
+            //var msgDialog = new MessageDialog(errorText);
+            await msgDialog.ShowAsync();
         }
     }
 }

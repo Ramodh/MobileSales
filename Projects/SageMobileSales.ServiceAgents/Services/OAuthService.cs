@@ -143,6 +143,7 @@ namespace SageMobileSales.ServiceAgents.Services
                 {
                     _client = new OAuthClient(ClientId);
                 }
+
                 if (settingsLocal.Containers.ContainsKey("ConfigurationSettingsContainer"))
                 {
                     if (settingsLocal.Containers["ConfigurationSettingsContainer"].Values["IsServerChanged"] != null)
@@ -152,7 +153,7 @@ namespace SageMobileSales.ServiceAgents.Services
                 }
                 await _client.CleanupAsync(isServerChanged);
                 _client.LogEvent += onLogEvent;
-                Token = String.Empty;
+                Token = String.Empty;               
                 //  await _database.Delete();
             }
             catch (NullReferenceException ex)
@@ -172,6 +173,7 @@ namespace SageMobileSales.ServiceAgents.Services
                 _client.LogEvent -= onLogEvent;
             }
         }
+
 
         private void onLogEvent(object sender, LogEvent e)
         {

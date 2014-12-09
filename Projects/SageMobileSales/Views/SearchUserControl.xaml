@@ -27,7 +27,7 @@
                    PlaceholderText=""
                    VerticalAlignment="Center"
                    SearchHistoryEnabled="False"
-                   Style="{StaticResource SearchBoxStyle}" FocusOnKeyboardInput="True" ChooseSuggestionOnEnter="False">
+                   Style="{StaticResource SearchBoxStyle}" ChooseSuggestionOnEnter="False">
             <Interactivity:Interaction.Behaviors>
                 <Core:EventTriggerBehavior EventName="QuerySubmitted">
                     <Core:InvokeCommandAction Command="{Binding SearchCommand}" />
