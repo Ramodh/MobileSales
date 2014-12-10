@@ -134,7 +134,12 @@ namespace SageMobileSales.UILogic.ViewModels
                         }
                         if (string.IsNullOrWhiteSpace(ImageUrl))
                         {
-                            suggestionCollection.AppendQuerySuggestion(suggestion.ProductName);
+                            var uri = new Uri("ms-appx:///Assets/searchImagePlaceholder_100x100.png", UriKind.Absolute);
+                            var imageSource = RandomAccessStreamReference.CreateFromUri(uri);
+                            suggestionCollection.AppendResultSuggestion(suggestion.ProductName, suggestion.Sku,
+                                suggestion.ProductId, imageSource,
+                                ResourceLoader.GetForCurrentView("Resources").GetString("NoImage"));
+                            //suggestionCollection.AppendQuerySuggestion(suggestion.ProductName);
                         }
                         else
                         {
@@ -150,8 +155,8 @@ namespace SageMobileSales.UILogic.ViewModels
                 }
                 else
                 {
-                    //suggestionCollection.AppendQuerySuggestion(
-                    //    ResourceLoader.GetForCurrentView("Resources").GetString("NoSuggestions"));
+                    suggestionCollection.AppendQuerySuggestion(
+                        ResourceLoader.GetForCurrentView("Resources").GetString("NoSuggestions"));
                     NoSuggestions = true;
                 }
             }

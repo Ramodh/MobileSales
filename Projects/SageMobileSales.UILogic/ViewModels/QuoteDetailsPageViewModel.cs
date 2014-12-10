@@ -338,7 +338,7 @@ namespace SageMobileSales.UILogic.ViewModels
 
         private bool CanDecrementCount()
         {
-            if (SelectedItem != null && SelectedItem.LineItemQuantity > 1)
+            if (SelectedItem != null &&Convert.ToInt32(SelectedItem.LineItemQuantity) > 1)
             {
                 return true;
             }
@@ -1062,11 +1062,18 @@ namespace SageMobileSales.UILogic.ViewModels
 
         private async void quoteLineItemViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == "LineItemQuantity")
+            QuoteLineItemViewModel objQuoteLineItem = sender as QuoteLineItemViewModel;
+            if (objQuoteLineItem != null)
             {
-                OnPropertyChanged("Amount");
-                OnPropertyChanged("SubTotal");
-                OnPropertyChanged("Total");
+                if (!string.IsNullOrEmpty(objQuoteLineItem.LineItemQuantity))
+                {
+                    if (e.PropertyName == "LineItemQuantity")
+                    {
+                        OnPropertyChanged("Amount");
+                        OnPropertyChanged("SubTotal");
+                        OnPropertyChanged("Total");
+                    }
+                }
             }
             //await UpdateQuote(string.Empty);    
         }
