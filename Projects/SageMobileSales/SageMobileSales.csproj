@@ -263,6 +263,9 @@
     <Content Include="Assets\SageMobileSales_Splash_620x300.png" />
     <Content Include="Assets\SaleMobileSales_310x150.png" />
     <Content Include="Assets\SaleMobileSales_558x270.png" />
+    <Content Include="Assets\searchImagePlaceholder_100x100.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Common\ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>

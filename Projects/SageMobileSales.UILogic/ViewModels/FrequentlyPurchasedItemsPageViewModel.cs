@@ -136,7 +136,7 @@ namespace SageMobileSales.UILogic.ViewModels
         public void CustomersButton_Click(object sender, object parameter)
         {
             _navigationService.ClearHistory();
-            _navigationService.Navigate("Customers", null);
+            _navigationService.Navigate("CustomersGroup", null);
         }
 
         /// TODO

@@ -174,7 +174,7 @@ namespace SageMobileSales.UILogic.ViewModels
                         msgDialog.Commands.Add(new UICommand("Ok"));
                         await msgDialog.ShowAsync();
                 }
-                else
+                else if(IsSaveEnabled)
                 {
                     if (ValidateForm())
                     {

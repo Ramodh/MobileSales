@@ -234,7 +234,7 @@ namespace SageMobileSales.UILogic.ViewModels
             else if (navigationParameter != null && pageStack.SourcePageType.Name == PageUtils.QuoteDetailsPage)
             {
                 LineItemDetail = navigationParameter as QuoteLineItemViewModel;
-                ProductQuantity = LineItemDetail.LineItemQuantity;
+                ProductQuantity = Convert.ToInt32(LineItemDetail.LineItemQuantity);
                 ProductName = LineItemDetail.ProductName;
                 LineItemPrice = LineItemDetail.LineItemPrice;
                 ProductSku = LineItemDetail.ProductSku;

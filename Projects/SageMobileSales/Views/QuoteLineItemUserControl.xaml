@@ -95,15 +95,22 @@
                                      Text="{Binding LineItemQuantity,Mode=TwoWay}"
                                      Style="{StaticResource QuantityTextBoxStyle}" VerticalAlignment="Center"
                                      InputScope="Number" PreventKeyboardDisplayOnProgrammaticFocus="True"
-                                     PlaceholderText="0" IsEnabled="{Binding IsEnabled}" FontWeight="Bold">
+                                     PlaceholderText="0" IsEnabled="{Binding IsEnabled}" FontWeight="Bold" MaxLength="9">
                         <interactivity:Interaction.Behaviors>
                             <behaviors:NumericTextBoxBehavior />
+                            <core:EventTriggerBehavior EventName="GotFocus">
+                                <core:CallMethodAction MethodName="QunatityTextBoxGotFocus" TargetObject="{Binding Mode=TwoWay}"></core:CallMethodAction>
+                            </core:EventTriggerBehavior>
                             <core:EventTriggerBehavior EventName="LostFocus">
-                                <core:CallMethodAction MethodName="QuanityTextChanged" TargetObject="{Binding Mode=TwoWay}"></core:CallMethodAction>
-                                <!--<core:InvokeCommandAction Command="{Binding QuanityTextChanged}"
-                                                                  CommandParameter="{Binding ElementName=QuantityTextBox,UpdateSourceTrigger=PropertyChanged}" />-->
+                                <core:CallMethodAction MethodName="QunatityTextBoxLostFocus" TargetObject="{Binding Mode=TwoWay}"></core:CallMethodAction>
                             </core:EventTriggerBehavior>
                         </interactivity:Interaction.Behaviors>
+                        <!--<core:EventTriggerBehavior EventName="LostFocus">
+                                <core:CallMethodAction MethodName="QuanityTextChanged" TargetObject="{Binding Mode=TwoWay}"></core:CallMethodAction>
+                                --><!--<core:InvokeCommandAction Command="{Binding QuanityTextChanged}"
+                                                                  CommandParameter="{Binding ElementName=QuantityTextBox,UpdateSourceTrigger=PropertyChanged}" />--><!--
+                            </core:EventTriggerBehavior>
+                        </interactivity:Interaction.Behaviors>-->
                     </TextBox>
                     <Button Content="+" Style="{StaticResource RoundButtonStyle}" VerticalAlignment="Bottom" Background="White" Foreground="Black" IsEnabled="{Binding IsEnabled}" Height="37">
                         <interactivity:Interaction.Behaviors>

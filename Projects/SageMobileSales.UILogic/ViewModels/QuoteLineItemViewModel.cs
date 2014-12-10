@@ -33,7 +33,7 @@ namespace SageMobileSales.UILogic.ViewModels
         private readonly int _productQuantity;
         private readonly string _productSku;
         private readonly string _quoteId;
-        private int _lineItemQuantity;
+        private string _lineItemQuantity;
         private int _enteredQuantity;
         private bool _isEnabled;
         private bool _isCancelled;
@@ -54,7 +54,7 @@ namespace SageMobileSales.UILogic.ViewModels
             }
 
             _lineItemId = quoteLineItemDetails.LineItemId;
-            _lineItemQuantity = quoteLineItemDetails.LineItemQuantity;
+            _lineItemQuantity = quoteLineItemDetails.LineItemQuantity.ToString();
             _lineItemPrice = quoteLineItemDetails.LineItemPrice;
             _imageUri = quoteLineItemDetails.Url;
             _productName = quoteLineItemDetails.ProductName;
@@ -102,7 +102,7 @@ namespace SageMobileSales.UILogic.ViewModels
             get { return _lineItemPrice; }
         }
 
-        public int LineItemQuantity
+        public string LineItemQuantity
         {
             get { return _lineItemQuantity; }
             set
@@ -124,7 +124,7 @@ namespace SageMobileSales.UILogic.ViewModels
 
         public decimal Amount
         {
-            get { return Math.Round(LineItemQuantity * _lineItemPrice, 2); }
+            get { return Math.Round(Convert.ToInt32(LineItemQuantity) * _lineItemPrice, 2); }
         }
 
         //public decimal Total
@@ -190,11 +190,22 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             try
             {
-                if (LineItemQuantity > 0)
+                if (!string.IsNullOrEmpty(LineItemQuantity))
                 {
-                    LineItemQuantity -= 1;
-                    await UpdateQuoteLineItemToLocalDB(sender as QuoteLineItemViewModel);
+                    int lineItemQnty = Convert.ToInt32(LineItemQuantity);
+
+                    if (lineItemQnty > 0)
+                    {
+                        lineItemQnty -= 1;
+                        LineItemQuantity = lineItemQnty.ToString();
+                        await UpdateQuoteLineItemToLocalDB(sender as QuoteLineItemViewModel);
+                    }
                 }
+                //if (LineItemQuantity > 0)
+                //{
+                //    LineItemQuantity -= 1;
+                //    await UpdateQuoteLineItemToLocalDB(sender as QuoteLineItemViewModel);
+                //}
             }
             catch (Exception ex)
             {
@@ -207,8 +218,15 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             try
             {
-                LineItemQuantity += 1;
-                await UpdateQuoteLineItemToLocalDB(sender as QuoteLineItemViewModel);
+                if (!string.IsNullOrEmpty(LineItemQuantity))
+                {
+                    int lineItemQnty = Convert.ToInt32(LineItemQuantity);
+                    lineItemQnty += 1;
+                    LineItemQuantity = lineItemQnty.ToString();
+                    await UpdateQuoteLineItemToLocalDB(sender as QuoteLineItemViewModel);
+                }
+               // LineItemQuantity += 1;
+               // await UpdateQuoteLineItemToLocalDB(sender as QuoteLineItemViewModel);
             }
             catch (Exception ex)
             {
@@ -218,7 +236,64 @@ namespace SageMobileSales.UILogic.ViewModels
         }
 
         /// <summary>
-        /// LostFocus event to get entered quantity
+        ///     TextChanged event to get entered quantity
+        /// </summary>
+        /// <param name="args"></param>
+        public void QunatityTextBoxGotFocus(object sender, object parameter)
+        {
+            TextBox quantity = (TextBox)(parameter as Windows.UI.Xaml.RoutedEventArgs).OriginalSource;
+
+            if (quantity.Text != null && (quantity.Text != string.Empty))
+            {
+                int enteredQnty = Convert.ToInt32(quantity.Text.Trim());
+                if (enteredQnty > 0)
+                {
+                    //QuoteLineItemViewModel obj=sender as QuoteLineItemViewModel;
+                    // obj.LineItemQuantity = enteredQnty.ToString();
+                    QuoteLineItemViewModel quotelineItemObj = sender as QuoteLineItemViewModel;
+                    if (quotelineItemObj != null)
+                    {
+                        LineItemQuantity = quotelineItemObj.LineItemQuantity;
+                        // await UpdateQuoteLineItemToLocalDB(quotelineItemObj);
+                    }
+
+                }
+                else
+                {
+                    LineItemQuantity = string.Empty;
+                }
+            }
+            else
+            {
+                LineItemQuantity = string.Empty;
+            }
+        }
+
+        /// <summary>
+        ///     TextChanged event to get Lineitem quantity
+        /// </summary>
+        /// <param name="args"></param>
+        public async void QunatityTextBoxLostFocus(object sender, object parameter)
+        {
+            TextBox quantity = (TextBox)(parameter as Windows.UI.Xaml.RoutedEventArgs).OriginalSource;
+
+            if (quantity.Text != null && (quantity.Text != string.Empty))
+            {
+                LineItemQuantity = quantity.Text.Trim();
+                QuoteLineItemViewModel quotelineItemObj = sender as QuoteLineItemViewModel;
+                if (quotelineItemObj != null)
+                {
+                    LineItemQuantity = quotelineItemObj.LineItemQuantity;
+                    await UpdateQuoteLineItemToLocalDB(quotelineItemObj);
+                }
+            }
+            else
+            {
+                LineItemQuantity = "0";
+            }
+        }
+        /// <summary>
+        /// LostFocus event to get lineitem quantity
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="parameter"></param>
@@ -264,7 +339,7 @@ namespace SageMobileSales.UILogic.ViewModels
 
                 QuoteLineItem selectedQuoteLineItem =
                   await _quoteLineItemRepository.GetQuoteLineAsync(selectedItem.LineItemId);
-                selectedQuoteLineItem.Quantity = selectedItem.LineItemQuantity;
+                selectedQuoteLineItem.Quantity = Convert.ToInt32(selectedItem.LineItemQuantity);
                 await _quoteLineItemRepository.UpdateQuoteLineItemToDbAsync(selectedQuoteLineItem);
                 _quote = await UpdateQuoteToLocalDB(string.Empty);
 
