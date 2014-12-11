@@ -94,10 +94,12 @@ namespace SageMobileSales.ServiceAgents.Common
             var hardwareId = token.Id;
             var dataReader = Windows.Storage.Streams.DataReader.FromBuffer(hardwareId);
 
-            var bytes = new byte[hardwareId.Length];
-            dataReader.ReadBytes(bytes);
+            //var bytes = new byte[hardwareId.Length];
+            //dataReader.ReadBytes(bytes);
+            var deviceId = dataReader.ReadGuid().ToString();
 
-            return BitConverter.ToString(bytes);
+            //return BitConverter.ToString(bytes);
+            return deviceId;
         }
 
         /// <summary>
