@@ -806,6 +806,10 @@ namespace SageMobileSales.UILogic.ViewModels
                 {
                     //Delete quote line item via service
                     await _quoteLineItemService.DeleteQuoteLineItem(selectedLineItem);
+
+                    // TODO
+                    // Temporary fix for Updating QuoteLineItem Qnty into Server
+                    await UpdateQuoteAndQuoteLineItemdetailsToServer(_quote);
                 }
             }
             await DisplayQuotedetails();
