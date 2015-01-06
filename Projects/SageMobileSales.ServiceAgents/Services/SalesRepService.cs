@@ -6,6 +6,8 @@ using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
 using SageMobileSales.DataAccess.Common;
 using System.Text.RegularExpressions;
+using SQLite;
+using System;
 
 namespace SageMobileSales.ServiceAgents.Services
 {
@@ -13,6 +15,7 @@ namespace SageMobileSales.ServiceAgents.Services
     {
         private readonly ISalesRepRepository _salesRepRepository;
         private readonly IServiceAgent _serviceAgent;
+        private string _log = string.Empty;
 
         public SalesRepService(IServiceAgent serviceAgent, ISalesRepRepository salesRepRepository)
         {
@@ -27,17 +30,36 @@ namespace SageMobileSales.ServiceAgents.Services
         /// <returns></returns>
         public async Task SyncSalesRep()
         {
-            HttpResponseMessage salesRepResponse =
-                await
-                    _serviceAgent.BuildAndSendRequest(null, Constants.CurrentUserEnitty, null, null,
-                        Constants.AccessToken,
-                        null);
-            if (salesRepResponse.IsSuccessStatusCode)
+            try
             {
-                JsonObject sDataSalesRep = await _serviceAgent.ConvertTosDataObject(salesRepResponse);
+                HttpResponseMessage salesRepResponse =
+                    await
+                        _serviceAgent.BuildAndSendRequest(null, Constants.CurrentUserEnitty, null, null,
+                            Constants.AccessToken,
+                            null);
+                if (salesRepResponse.IsSuccessStatusCode)
+                {
+                    JsonObject sDataSalesRep = await _serviceAgent.ConvertTosDataObject(salesRepResponse);
 
-                await SaveSalesRepDtls(sDataSalesRep);
+                    await SaveSalesRepDtls(sDataSalesRep);
+                }
             }
+            catch (HttpRequestException ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+            catch (SQLiteException ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+            catch (Exception e)
+            {
+                _log = AppEventSource.Log.WriteLine(e);
+                AppEventSource.Log.Error(_log);
+            }
+
         }
 
         public async Task UpdateSalesRep()
@@ -71,7 +93,7 @@ namespace SageMobileSales.ServiceAgents.Services
 
             string userId = await _salesRepRepository.SaveSalesRepDtlsAsync(sDataSalesRep);
             Constants.TrackingId = Constants.GetDeviceId() + userId;
-           
+
             //Constants.TrackingId = "BQCvYQYAAQAEAIPkAQCGJwIA/OUJALQY737208ec-d8a0-4388-b7f1-2d166bb8d28a";
             AppEventSource.Log.Info("Tracking Id : " + Constants.TrackingId);
 
