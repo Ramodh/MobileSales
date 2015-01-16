@@ -128,7 +128,7 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     productCategoriesList =
                         await
-                            _sageSalesDB.QueryAsync<ProductCategory>("select * from ProductCategory where ParentId=?",
+                            _sageSalesDB.QueryAsync<ProductCategory>("select * from ProductCategory where ParentId=? order by CategoryName",
                                 parentId);
                 }
                 else
@@ -136,7 +136,7 @@ namespace SageMobileSales.DataAccess.Repositories
                     productCategoriesList =
                         await
                             _sageSalesDB.QueryAsync<ProductCategory>(
-                                "select * from ProductCategory where ParentId is null");
+                                "select * from ProductCategory where ParentId is null order by CategoryName");
                 }
             }
 

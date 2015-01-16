@@ -92,6 +92,7 @@ namespace SageMobileSales.UILogic.ViewModels
             //DecrementCountCommand = DelegateCommand.FromAsyncHandler(DecrementCount, CanDecrementCount);
             AddItemCommand = DelegateCommand.FromAsyncHandler(NavigateToCatalogPage);
             SendMailCommand = DelegateCommand.FromAsyncHandler(SendQuoteDetailsMail);
+            StartSyncCommand = DelegateCommand.FromAsyncHandler(StartSync);
             SubmitQuoteCommand = DelegateCommand.FromAsyncHandler(SubmitQuote);
             PlaceOrderCommand = DelegateCommand.FromAsyncHandler(PlaceOrder);
             DeleteQuoteCommand = DelegateCommand.FromAsyncHandler(DeleteQuote);
@@ -290,6 +291,8 @@ namespace SageMobileSales.UILogic.ViewModels
 
         public DelegateCommand AddItemCommand { get; private set; }
 
+        public DelegateCommand StartSyncCommand { get; private set; }
+
         public DelegateCommand SendMailCommand { get; private set; }
 
         public DelegateCommand SubmitQuoteCommand { get; private set; }
@@ -338,7 +341,7 @@ namespace SageMobileSales.UILogic.ViewModels
 
         private bool CanDecrementCount()
         {
-            if (SelectedItem != null &&Convert.ToInt32(SelectedItem.LineItemQuantity) > 1)
+            if (SelectedItem != null && Convert.ToInt32(SelectedItem.LineItemQuantity) > 1)
             {
                 return true;
             }
@@ -1407,6 +1410,12 @@ namespace SageMobileSales.UILogic.ViewModels
             {
 
             }
+        }
+
+        private async Task StartSync()
+        {
+            InProgress = true;
+            await DisplayQuotedetails();
         }
 
     }

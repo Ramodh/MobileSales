@@ -81,6 +81,7 @@ namespace SageMobileSales.UILogic.ViewModels
             SortQuotesCommand = new DelegateCommand<object>(SortQuotes);
             SortByAscendingCommand = new DelegateCommand<object>(SortByAscending);
             SortByDescendingCommand = new DelegateCommand<object>(SortByDescending);
+            StartSyncCommand = DelegateCommand.FromAsyncHandler(StartSync);
             _eventAggregator.GetEvent<QuoteDataChangedEvent>().Subscribe(UpdateQuoteList, ThreadOption.UIThread);
             _eventAggregator.GetEvent<QuoteSyncChangedEvent>()
                 .Subscribe(QuotesSyncIndicator, ThreadOption.UIThread);
@@ -89,6 +90,7 @@ namespace SageMobileSales.UILogic.ViewModels
         public ICommand SortQuotesCommand { get; set; }
         public ICommand SortByAscendingCommand { get; set; }
         public ICommand SortByDescendingCommand { get; set; }
+        public DelegateCommand StartSyncCommand { get; private set; }
       
         /// <summary>
         ///     Checks whether grid view item is clickable or not
@@ -847,6 +849,26 @@ namespace SageMobileSales.UILogic.ViewModels
         public void QuotesSyncIndicator(bool sync)
         {
             SyncProgress = Constants.QuotesSyncProgress;
+        }
+
+        private async Task StartSync()
+        {
+            InProgress = true;
+
+            if (!Constants.QuotesSyncProgress)
+            {
+                IAsyncAction asyncAction = ThreadPool.RunAsync(
+                    IAsyncAction =>
+                    {
+                        // Data Sync will Start.
+                        _syncCoordinatorService.StartQuotesSync();
+                    });
+
+                PageUtils.asyncActionQuotes = asyncAction;
+            }
+            SyncProgress = Constants.QuotesSyncProgress;
+
+            await UpdateQuoteListInfo();
         }
     }
 }

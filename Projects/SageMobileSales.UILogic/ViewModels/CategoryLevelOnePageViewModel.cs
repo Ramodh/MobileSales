@@ -33,6 +33,7 @@ namespace SageMobileSales.UILogic.ViewModels
         private List<ProductCategory> _productCategoryList;
         private ISalesRepService _salesRepService;
         private bool _syncProgress;
+        public DelegateCommand StartSyncCommand { get; private set; }
 
         public CategoryLevelOnePageViewModel(INavigationService navigationService, ISalesRepService salesRepService,
             ISyncCoordinatorService syncCoordinatorService, IProductCategoryRepository productCategoryRepository,
@@ -44,6 +45,7 @@ namespace SageMobileSales.UILogic.ViewModels
             _productCategoryRepository = productCategoryRepository;
             _eventAggregator = eventAggregator;
             ProductCategoryList = new List<ProductCategory>();
+            StartSyncCommand = DelegateCommand.FromAsyncHandler(StartSync);
             _eventAggregator.GetEvent<ProductDataChangedEvent>()
                 .Subscribe(UpdateProductCategoryList, ThreadOption.UIThread);
             _eventAggregator.GetEvent<ProductSyncChangedEvent>()
@@ -115,46 +117,46 @@ namespace SageMobileSales.UILogic.ViewModels
         public override async void OnNavigatedTo(object navigationParameter, NavigationMode navigationMode,
             Dictionary<string, object> viewModelState)
         {
-            InProgress = true;
+            //InProgress = true;
             try
             {
-                if (!Constants.ProductsSyncProgress)
-                {
-                    IAsyncAction asyncAction = ThreadPool.RunAsync(
-                        IAsyncAction =>
-                        {
-                            // Data Sync will Start.
-                            _syncCoordinatorService.StartProductsSync();
-                        });
+            //    if (!Constants.ProductsSyncProgress)
+            //    {
+            //        IAsyncAction asyncAction = ThreadPool.RunAsync(
+            //            IAsyncAction =>
+            //            {
+            //                // Data Sync will Start.
+            //                _syncCoordinatorService.StartProductsSync();
+            //            });
 
-                    //    asyncAction.Completed = new AsyncActionCompletedHandler((IAsyncAction asyncInfo, AsyncStatus asyncStatus) =>
-                    //    {
-                    //        if (asyncStatus == AsyncStatus.Canceled)
-                    //            return;
+            //        //    asyncAction.Completed = new AsyncActionCompletedHandler((IAsyncAction asyncInfo, AsyncStatus asyncStatus) =>
+            //        //    {
+            //        //        if (asyncStatus == AsyncStatus.Canceled)
+            //        //            return;
 
-                    //Constants.ProductsSyncProgress = false;
-                    //    });
-                    PageUtils.asyncActionProducts = asyncAction;
-                }
+            //        //Constants.ProductsSyncProgress = false;
+            //        //    });
+            //        PageUtils.asyncActionProducts = asyncAction;
+            //    }
 
-                SyncProgress = Constants.ProductsSyncProgress;
-                ////ISupport Scroll incrementing
-                //ProductCategoryCollection = new ProductCategoryCollection()
-                //{
-                //    ProductCategoryList = await _productCategoryRepository.GetProductCategoryListDtlsAsync(null)
-                //};
+            //    SyncProgress = Constants.ProductsSyncProgress;
+            //    ////ISupport Scroll incrementing
+            //    //ProductCategoryCollection = new ProductCategoryCollection()
+            //    //{
+            //    //    ProductCategoryList = await _productCategoryRepository.GetProductCategoryListDtlsAsync(null)
+            //    //};
 
-                //ProductCategoryCollection = new ProductCategoryCollection();
-                //ProductCategoryCollection.ProductCategoryList = new List<ProductCategory>();
-                //ProductCategoryCollection.ProductCategoryList = await _productCategoryRepository.GetProductCategoryListDtlsAsync(null);
+            //    //ProductCategoryCollection = new ProductCategoryCollection();
+            //    //ProductCategoryCollection.ProductCategoryList = new List<ProductCategory>();
+            //    //ProductCategoryCollection.ProductCategoryList = await _productCategoryRepository.GetProductCategoryListDtlsAsync(null);
 
-                //if (ProductCategoryCollection.ProductCategoryList.Count > 0)
-                //    InProgress = false;
+            //    //if (ProductCategoryCollection.ProductCategoryList.Count > 0)
+            //    //    InProgress = false;
 
-                ProductCategoryList = await _productCategoryRepository.GetProductCategoryListDtlsAsync(null);
-                //if (ProductCategoryList.Count > 0)
-                //    InProgress = false;
-
+            //    ProductCategoryList = await _productCategoryRepository.GetProductCategoryListDtlsAsync(null);
+            //    //if (ProductCategoryList.Count > 0)
+            //    //    InProgress = false;
+                await StartSync();
                 base.OnNavigatedTo(navigationParameter, navigationMode, viewModelState);
             }
             catch (SQLiteException ex)
@@ -277,5 +279,67 @@ namespace SageMobileSales.UILogic.ViewModels
         //        throw (e);
         //    }
         //}
+
+        private async Task StartSync()
+        {
+            InProgress = true;
+            try
+            {
+                if (!Constants.ProductsSyncProgress)
+                {
+                    IAsyncAction asyncAction = ThreadPool.RunAsync(
+                        IAsyncAction =>
+                        {
+                            // Data Sync will Start.
+                            _syncCoordinatorService.StartProductsSync();
+                        });
+
+                    //    asyncAction.Completed = new AsyncActionCompletedHandler((IAsyncAction asyncInfo, AsyncStatus asyncStatus) =>
+                    //    {
+                    //        if (asyncStatus == AsyncStatus.Canceled)
+                    //            return;
+
+                    //Constants.ProductsSyncProgress = false;
+                    //    });
+                    PageUtils.asyncActionProducts = asyncAction;
+                }
+
+                SyncProgress = Constants.ProductsSyncProgress;
+                ////ISupport Scroll incrementing
+                //ProductCategoryCollection = new ProductCategoryCollection()
+                //{
+                //    ProductCategoryList = await _productCategoryRepository.GetProductCategoryListDtlsAsync(null)
+                //};
+
+                //ProductCategoryCollection = new ProductCategoryCollection();
+                //ProductCategoryCollection.ProductCategoryList = new List<ProductCategory>();
+                //ProductCategoryCollection.ProductCategoryList = await _productCategoryRepository.GetProductCategoryListDtlsAsync(null);
+
+                //if (ProductCategoryCollection.ProductCategoryList.Count > 0)
+                //    InProgress = false;
+
+                ProductCategoryList = await _productCategoryRepository.GetProductCategoryListDtlsAsync(null);
+                //if (ProductCategoryList.Count > 0)
+                //    InProgress = false;
+
+            }
+            catch (SQLiteException ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+                _navigationService.Navigate("Signin", null);
+            }
+
+            catch (NullReferenceException ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+            catch (Exception ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+        }
     }
 }

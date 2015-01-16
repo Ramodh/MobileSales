@@ -68,6 +68,14 @@
                 <AppBarButton x:Name="MailAppBarButton" Label="Mail" Icon="MailForward"/>-->
             </CommandBar.PrimaryCommands>
             <CommandBar.SecondaryCommands>
+                <AppBarButton x:Name="RefreshAppBarButton"
+                              x:Uid="RefreshAppBarButton"
+                              AutomationProperties.AutomationId="RefreshAppBarButton"
+                              Label="Refresh"
+                              Icon="Refresh"
+                              Margin="0,1,0,-1"
+                              Command="{Binding StartSyncCommand}">
+                </AppBarButton>
                 <AppBarButton x:Name="MailAppBarButton"
                               x:Uid="MailAppBarButton"
                               AutomationProperties.AutomationId="MailAppBarButton"

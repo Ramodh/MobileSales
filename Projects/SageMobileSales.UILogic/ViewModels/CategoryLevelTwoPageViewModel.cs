@@ -10,6 +10,11 @@ using SageMobileSales.DataAccess.Entities;
 using SageMobileSales.DataAccess.Events;
 using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
+using System.Threading.Tasks;
+using Windows.Foundation;
+using Windows.System.Threading;
+using SageMobileSales.UILogic.Common;
+using SageMobileSales.ServiceAgents.Services;
 
 namespace SageMobileSales.UILogic.ViewModels
 {
@@ -18,9 +23,11 @@ namespace SageMobileSales.UILogic.ViewModels
         private readonly IEventAggregator _eventAggregator;
         private readonly INavigationService _navigationService;
         private readonly IProductCategoryRepository _productCategoryRepository;
+        private readonly ISyncCoordinatorService _syncCoordinatorService;
         private string _catalogLevelTwoPageTitle;
         private bool _inProgress;
         private string _log = string.Empty;
+        public DelegateCommand StartSyncCommand { get; private set; }
 
         ///// <summary>
         ///// Collection to support incremental scrolling
@@ -37,14 +44,17 @@ namespace SageMobileSales.UILogic.ViewModels
         //}
 
         private List<ProductCategory> _productCategoryList;
+        private ProductCategory ProductCategory;
         private bool _syncProgress;
 
         public CategoryLevelTwoPageViewModel(INavigationService navigationService,
-            IProductCategoryRepository productCategoryRepository, IEventAggregator eventAggregator)
+            IProductCategoryRepository productCategoryRepository, IEventAggregator eventAggregator, ISyncCoordinatorService syncCoordinatorService)
         {
             _navigationService = navigationService;
             _productCategoryRepository = productCategoryRepository;
             _eventAggregator = eventAggregator;
+            _syncCoordinatorService = syncCoordinatorService;
+            StartSyncCommand = DelegateCommand.FromAsyncHandler(StartSync);
             ProductCategoryList = new List<ProductCategory>();
             _eventAggregator.GetEvent<ProductSyncChangedEvent>()
                 .Subscribe(ProductsSyncIndicator, ThreadOption.UIThread);
@@ -102,8 +112,8 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             InProgress = true;
             SyncProgress = Constants.ProductsSyncProgress;
-            var productCategory = navigationParameter as ProductCategory;
-            CatalogLevelTwoPageTitle = productCategory.CategoryName;
+            ProductCategory = navigationParameter as ProductCategory;
+            CatalogLevelTwoPageTitle = ProductCategory.CategoryName;
 
             try
             {
@@ -112,7 +122,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 //    ProductCategoryList = await _productCategoryRepository.GetProductCategoryListDtlsAsync(productCategory.CategoryId)
                 //};
                 ProductCategoryList =
-                    await _productCategoryRepository.GetProductCategoryListDtlsAsync(productCategory.CategoryId);
+                    await _productCategoryRepository.GetProductCategoryListDtlsAsync(ProductCategory.CategoryId);
             }
             catch (Exception ex)
             {
@@ -172,6 +182,34 @@ namespace SageMobileSales.UILogic.ViewModels
         public void ProductsSyncIndicator(bool sync)
         {
             SyncProgress = Constants.ProductsSyncProgress;
+        }
+
+        private async Task StartSync()
+        {
+            try
+            {
+                InProgress = true;
+                if (!Constants.ProductsSyncProgress)
+                {
+                    IAsyncAction asyncAction = ThreadPool.RunAsync(
+                        IAsyncAction =>
+                        {
+                            // Data Sync will Start.
+                            _syncCoordinatorService.StartProductsSync();
+                        });
+
+                    PageUtils.asyncActionProducts = asyncAction;
+                }
+                SyncProgress = Constants.ProductsSyncProgress;
+
+                ProductCategoryList =
+                    await _productCategoryRepository.GetProductCategoryListDtlsAsync(ProductCategory.CategoryId);
+            }
+            catch (Exception ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
         }
     }
 }

@@ -15,6 +15,11 @@ using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
 using SageMobileSales.UILogic.Helpers;
 using Windows.UI.Xaml;
+using System.Threading.Tasks;
+using Windows.Foundation;
+using Windows.System.Threading;
+using SageMobileSales.UILogic.Common;
+using SageMobileSales.ServiceAgents.Services;
 
 namespace SageMobileSales.UILogic.ViewModels
 {
@@ -23,6 +28,7 @@ namespace SageMobileSales.UILogic.ViewModels
         private readonly IEventAggregator _eventAggregator;
         private readonly INavigationService _navigationService;
         private readonly IProductRepository _productRepository;
+        private readonly ISyncCoordinatorService _syncCoordinatorService;
         private bool _emptyFilteredProductList;
         private string _emptyProducts;
         private bool _emptyText;
@@ -33,14 +39,18 @@ namespace SageMobileSales.UILogic.ViewModels
         private ProductCollection _productsList;
         private bool _syncProgress;
         private Visibility _isTextChanged;
+        private string CategoryId;
+        public DelegateCommand StartSyncCommand { get; private set; }
 
         public ItemsPageViewModel(INavigationService navigationService, IProductRepository productRepository,
-            IEventAggregator eventAggregator)
+            IEventAggregator eventAggregator, ISyncCoordinatorService syncCoordinatorService)
         {
             _navigationService = navigationService;
             _productRepository = productRepository;
             _eventAggregator = eventAggregator;
+            _syncCoordinatorService = syncCoordinatorService;
             TextChangedCommand = new DelegateCommand<object>(TextBoxTextChanged);
+            StartSyncCommand = DelegateCommand.FromAsyncHandler(StartSync);
             _eventAggregator.GetEvent<ProductSyncChangedEvent>()
                 .Subscribe(ProductsSyncIndicator, ThreadOption.UIThread);
         }
@@ -144,12 +154,12 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             EmptyFilteredProductList = false;
             EmptyText = true;
-            var categoryId = navigationParameter as string;
+            CategoryId = navigationParameter as string;
             InProgress = true;
             SyncProgress = Constants.ProductsSyncProgress;
             ProductCollection = new ProductCollection
             {
-                ProductList = await _productRepository.GetCategoryProductsAsync(categoryId)
+                ProductList = await _productRepository.GetCategoryProductsAsync(CategoryId)
             };
 
             if (!(ProductCollection.ProductList.Count > 0))
@@ -285,6 +295,43 @@ namespace SageMobileSales.UILogic.ViewModels
         public void ProductsSyncIndicator(bool sync)
         {
             SyncProgress = Constants.ProductsSyncProgress;
+        }
+
+        private async Task StartSync()
+        {
+            InProgress = true;
+            if (!Constants.ProductsSyncProgress)
+            {
+                IAsyncAction asyncAction = ThreadPool.RunAsync(
+                    IAsyncAction =>
+                    {
+                        // Data Sync will Start.
+                        _syncCoordinatorService.StartProductsSync();
+                    });
+
+                //    asyncAction.Completed = new AsyncActionCompletedHandler((IAsyncAction asyncInfo, AsyncStatus asyncStatus) =>
+                //    {
+                //        if (asyncStatus == AsyncStatus.Canceled)
+                //            return;
+
+                //Constants.ProductsSyncProgress = false;
+                //    });
+                PageUtils.asyncActionProducts = asyncAction;
+            }
+
+            SyncProgress = Constants.ProductsSyncProgress;
+
+            ProductCollection = new ProductCollection
+            {
+                ProductList = await _productRepository.GetCategoryProductsAsync(CategoryId)
+            };
+
+            if (!(ProductCollection.ProductList.Count > 0))
+            {
+                Debug.WriteLine("Items Not Present");
+                EmptyProducts = ResourceLoader.GetForCurrentView("Resources").GetString("EmptyProductsText");
+            }
+            ProductsList = ProductCollection;
         }
     }
 }

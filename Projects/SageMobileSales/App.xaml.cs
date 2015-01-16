@@ -23,6 +23,8 @@ using SageMobileSales.UILogic.Common;
 using SageMobileSales.Views;
 using Windows.UI.Popups;
 using Windows.UI.Xaml.Controls;
+using Windows.Networking.Connectivity;
+using System.Diagnostics;
 
 // The Blank Application template is documented at http://go.microsoft.com/fwlink/?LinkId=234227
 
@@ -35,7 +37,8 @@ namespace SageMobileSales
     {
         // Create the singleton container that will be used for type resolution in the app
         private readonly IUnityContainer _container = new UnityContainer();
-
+        NetworkStatusChangedEventHandler networkStatusCallback;
+        bool registeredNetworkStatusNotify;
         /// <summary>
         ///     Initializes the singleton application object.  This is the first line of authored code
         ///     executed, and as such is the logical equivalent of main() or WinMain().
@@ -248,7 +251,56 @@ namespace SageMobileSales
             }
         }
 
+        void NetworkStatusChange()
+        {
+            // register for network status change notifications
+            try
+            {
+                networkStatusCallback = new NetworkStatusChangedEventHandler(OnNetworkStatusChange);
+                if (!registeredNetworkStatusNotify)
+                {
+                    NetworkInformation.NetworkStatusChanged += networkStatusCallback;
+                    registeredNetworkStatusNotify = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                //rootPage.NotifyUser("Unexpected exception occured: " + ex.ToString(), NotifyType.ErrorMessage);
+            }
+        }
 
+        void OnNetworkStatusChange(object sender)
+        {
+            try
+            {
+                // get the ConnectionProfile that is currently used to connect to the Internet                
+                ConnectionProfile InternetConnectionProfile = NetworkInformation.GetInternetConnectionProfile();
+
+                if (InternetConnectionProfile == null)
+                {
+                    Debug.WriteLine("if :  Not connected to internet");
+                    //await _cd.RunAsync(CoreDispatcherPriority.Normal, () =>
+                    //{
+                    //    rootPage.NotifyUser("Not connected to Internet\n", NotifyType.StatusMessage);
+                    //});
+                }
+                else
+                {
+                    //var connectionProfileInfo = GetConnectionProfile(InternetConnectionProfile);
+                    var connectionProfileInfo = InternetConnectionProfile.GetNetworkConnectivityLevel();
+                    Debug.WriteLine("else :  connected to internet");
+                    //await _cd.RunAsync(CoreDispatcherPriority.Normal, () =>
+                    //{
+                    //    rootPage.NotifyUser(connectionProfileInfo, NotifyType.StatusMessage);
+                    //});
+                }
+                //internetProfileInfo = "";
+            }
+            catch (Exception ex)
+            {
+                //rootPage.NotifyUser("Unexpected exception occured: " + ex.ToString(), NotifyType.ErrorMessage);
+            }
+        }
 
         //protected override Type GetPageType(string pageToken)
         //{

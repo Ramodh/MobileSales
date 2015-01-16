@@ -38,7 +38,7 @@
                 </interactivity:Interaction.Behaviors>
             </AppBarButton>
             <!--<AppBarButton x:Name="appButtonQuotes"  Label="Quotes" Content="&#x1f4b2;" FontFamily="Segoe UI Symbol" FontSize="26"/>-->
-            <AppBarButton x:Name="appButtonQuotes" Label="Quotes">
+            <AppBarButton x:Name="appButtonQuotes" Label="MyQuotes">
                 <AppBarButton.Content>
                     <Image Source="/Assets/appBar_Quotes.png" Height="25" />
                 </AppBarButton.Content>
@@ -54,7 +54,7 @@
                     </core:EventTriggerBehavior>
                 </interactivity:Interaction.Behaviors>
             </AppBarButton>
-            <AppBarButton x:Name="appButtonOrders" Label="Orders">
+            <AppBarButton x:Name="appButtonOrders" Label="MyOrders">
                 <AppBarButton.Content>
                     <Image Source="/Assets/appBar_Orders.png" Height="25" />
                 </AppBarButton.Content>

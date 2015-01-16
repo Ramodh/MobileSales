@@ -82,7 +82,16 @@
                             </MenuFlyout>
                         </AppBarButton.Flyout>
                     </AppBarButton>
-
+                </StackPanel>
+                <StackPanel  Grid.Column="0">
+                    <AppBarButton x:Name="RefreshAppBarButton"
+                              x:Uid="RefreshAppBarButton"
+                              AutomationProperties.AutomationId="RefreshAppBarButton"
+                              Label="Refresh"
+                              Icon="Refresh"
+                              Margin="0,1,0,-1"
+                              Command="{Binding StartSyncCommand}">
+                    </AppBarButton>
                 </StackPanel>
             </Grid>
         </AppBar>

@@ -10,6 +10,11 @@ using SageMobileSales.DataAccess.Entities;
 using SageMobileSales.DataAccess.Events;
 using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
+using System.Threading.Tasks;
+using Windows.Foundation;
+using SageMobileSales.UILogic.Common;
+using Windows.System.Threading;
+using SageMobileSales.ServiceAgents.Services;
 
 namespace SageMobileSales.UILogic.ViewModels
 {
@@ -18,19 +23,23 @@ namespace SageMobileSales.UILogic.ViewModels
         private readonly IEventAggregator _eventAggregator;
         private readonly INavigationService _navigationService;
         private readonly IProductCategoryRepository _productCategoryRepository;
+        private readonly ISyncCoordinatorService _syncCoordinatorService;
         private string _catalogLevelThreePageTitle;
         private bool _inProgress;
         private string _log;
         private List<ProductCategory> _productCategoryList;
-
         private bool _syncProgress;
+        private ProductCategory ProductCategory;
+        public DelegateCommand StartSyncCommand { get; private set; }
 
         public CategoryLevelThreePageViewModel(INavigationService navigationService,
-            IProductCategoryRepository productCategoryRepository, IEventAggregator eventAggregator)
+            IProductCategoryRepository productCategoryRepository, IEventAggregator eventAggregator, ISyncCoordinatorService syncCoordinatorService)
         {
             _navigationService = navigationService;
             _productCategoryRepository = productCategoryRepository;
+            _syncCoordinatorService = syncCoordinatorService;
             _eventAggregator = eventAggregator;
+            StartSyncCommand = DelegateCommand.FromAsyncHandler(StartSync);
             ProductCategoryList = new List<ProductCategory>();
             _eventAggregator.GetEvent<ProductSyncChangedEvent>()
                 .Subscribe(ProductsSyncIndicator, ThreadOption.UIThread);
@@ -102,8 +111,8 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             InProgress = true;
             SyncProgress = Constants.ProductsSyncProgress;
-            var productCategory = navigationParameter as ProductCategory;
-            CatalogLevelThreePageTitle = productCategory.CategoryName;
+            ProductCategory = navigationParameter as ProductCategory;
+            CatalogLevelThreePageTitle = ProductCategory.CategoryName;
 
             try
             {
@@ -112,7 +121,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 //    ProductCategoryList = await _productCategoryRepository.GetProductCategoryListDtlsAsync(productCategory.CategoryId)
                 //};
                 ProductCategoryList =
-                    await _productCategoryRepository.GetProductCategoryListDtlsAsync(productCategory.CategoryId);
+                    await _productCategoryRepository.GetProductCategoryListDtlsAsync(ProductCategory.CategoryId);
             }
             catch (NullReferenceException ex)
             {
@@ -176,6 +185,39 @@ namespace SageMobileSales.UILogic.ViewModels
         public void ProductsSyncIndicator(bool sync)
         {
             SyncProgress = Constants.ProductsSyncProgress;
+        }
+
+        private async Task StartSync()
+        {
+            try
+            {
+                InProgress = true;
+                if (!Constants.ProductsSyncProgress)
+                {
+                    IAsyncAction asyncAction = ThreadPool.RunAsync(
+                        IAsyncAction =>
+                        {
+                            // Data Sync will Start.
+                            _syncCoordinatorService.StartProductsSync();
+                        });
+
+                    PageUtils.asyncActionProducts = asyncAction;
+                }
+                SyncProgress = Constants.ProductsSyncProgress;
+
+                ProductCategoryList =
+                    await _productCategoryRepository.GetProductCategoryListDtlsAsync(ProductCategory.CategoryId);
+            }
+            catch (NullReferenceException ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+            catch (Exception ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
         }
     }
 }

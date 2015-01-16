@@ -28,7 +28,26 @@
             <views:TopAppBarUserControl />
         </AppBar>
     </prism:VisualStateAwarePage.TopAppBar>
+    <Page.BottomAppBar>
+        <CommandBar Style="{StaticResource BottomAppBarStyle}"
+                    IsOpen="{Binding IsBottomAppBarOpened, Mode=TwoWay}"
+                    IsSticky="False"
+                    AutomationProperties.AutomationId="BottomAppBar"
+                    x:Uid="BottomAppBar">
 
+            <CommandBar.SecondaryCommands>
+                <AppBarButton x:Name="RefreshAppBarButton"
+                              x:Uid="RefreshAppBarButton"
+                              AutomationProperties.AutomationId="RefreshAppBarButton"
+                              Label="Refresh"
+                              Icon="Refresh"
+                              Margin="0,1,0,-1"
+                              Command="{Binding StartSyncCommand}">
+                </AppBarButton>
+            </CommandBar.SecondaryCommands>
+
+        </CommandBar>
+    </Page.BottomAppBar>
     <!--
         This grid acts as a root panel for the page that defines two rows:
         * Row 0 contains the back button and page title

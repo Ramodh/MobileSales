@@ -74,6 +74,7 @@ namespace SageMobileSales.UILogic.ViewModels
             SortOrdersCommand = new DelegateCommand<object>(SortOrders);
             SortByAscendingCommand = new DelegateCommand<object>(SortByAscending);
             SortByDescendingCommand = new DelegateCommand<object>(SortByDescending);
+            StartSyncCommand = DelegateCommand.FromAsyncHandler(StartSync);
             _eventAggregator.GetEvent<OrderDataChangedEvent>().Subscribe(UpdateOrderList, ThreadOption.UIThread);
             _eventAggregator.GetEvent<OrderSyncChangedEvent>()
                 .Subscribe(OrdersSyncIndicator, ThreadOption.UIThread);
@@ -82,7 +83,7 @@ namespace SageMobileSales.UILogic.ViewModels
         public ICommand SortOrdersCommand { get; set; }
         public ICommand SortByAscendingCommand { get; set; }
         public ICommand SortByDescendingCommand { get; set; }
-
+        public DelegateCommand StartSyncCommand { get; private set; }
         /// <summary>
         ///     Display empty results text
         /// </summary>
@@ -730,6 +731,58 @@ namespace SageMobileSales.UILogic.ViewModels
         public void OrdersSyncIndicator(bool sync)
         {
             SyncProgress = Constants.OrdersSyncProgress;
+        }
+
+        private async Task StartSync()
+        {
+            try
+            {
+                InProgress = true;
+                if (!Constants.OrdersSyncProgress)
+                {
+                    IAsyncAction asyncAction = ThreadPool.RunAsync(
+                        IAsyncAction =>
+                        {
+                            // Data Sync will Start.
+                            _syncCoordinatorService.StartOrdersSync();
+                        });
+
+                    PageUtils.asyncActionOrders = asyncAction;
+                }
+
+                SyncProgress = Constants.OrdersSyncProgress;
+
+                await UpdateOrderListInfo();
+
+                //if (navigationParameter != null)
+                //{
+                //    _customerId = navigationParameter as string;
+                //    Customer customer = await _customerRepository.GetCustomerDataAsync(_customerId);
+                //    OrdersList = new List<OrderDetails>();
+                    
+                //    OrdersList = await _orderRepository.GetOrdersForCustomerAsync(customer.CustomerId);
+                    
+                //    CustomerName = ResourceLoader.GetForCurrentView("Resources").GetString("SeperatorSymbol") +
+                //                   customer.CustomerName;
+                //}
+                //else
+                //{
+                //    OrdersPageTitle = "Orders";
+
+                //    //if (!Constants.ConnectedToInternet())
+                //    //{
+                //    OrdersList = await _orderRepository.GetOrdersListAsync(await _salesRepRepository.GetSalesRepId());
+
+                //    //GetSortSetings();
+                //    //}                        
+                //}
+                //GetSortSetings();
+            }
+            catch (Exception ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
         }
     }
 }

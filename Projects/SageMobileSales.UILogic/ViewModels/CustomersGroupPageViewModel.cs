@@ -40,6 +40,7 @@ namespace SageMobileSales.UILogic.ViewModels
         private string _log = string.Empty;
         private bool _syncProgress;
         private bool _tenantSync = true;
+        public DelegateCommand StartSyncCommand { get; private set; }
 
         public CustomersGroupPageViewModel(INavigationService navigationService, ICustomerRepository customerRepository,
             ISyncCoordinatorService syncCoordinatorService, IEventAggregator eventAggregator,
@@ -54,6 +55,7 @@ namespace SageMobileSales.UILogic.ViewModels
             _tenantService = tenantService;
             _tenantRepository = tenantRepository;
             _localSyncDigestRepository = localSyncDigestRepository;
+            StartSyncCommand = DelegateCommand.FromAsyncHandler(StartSync);
             _eventAggregator.GetEvent<CustomerDataChangedEvent>().Subscribe(UpdateCustomerList, ThreadOption.UIThread);
             _eventAggregator.GetEvent<CustomerSyncChangedEvent>()
                 .Subscribe(CustomersSyncIndicator, ThreadOption.UIThread);
@@ -137,62 +139,63 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             try
             {
-                InProgress = true;
+                await StartSync();
+                //InProgress = true;
 
-                if (!Constants.SyncProgress)
-                {
-                    IAsyncAction asyncActionCommon = ThreadPool.RunAsync(
-                        IAsyncAction => { _syncCoordinatorService.StartSync(); });
+                //if (!Constants.SyncProgress)
+                //{
+                //    IAsyncAction asyncActionCommon = ThreadPool.RunAsync(
+                //        IAsyncAction => { _syncCoordinatorService.StartSync(); });
 
-                    //asyncActionCommon.Completed = new AsyncActionCompletedHandler((IAsyncAction asyncInfo, AsyncStatus asyncStatus) =>
-                    //{
-                    //    if (asyncStatus == AsyncStatus.Canceled)
-                    //        return;
+                //    //asyncActionCommon.Completed = new AsyncActionCompletedHandler((IAsyncAction asyncInfo, AsyncStatus asyncStatus) =>
+                //    //{
+                //    //    if (asyncStatus == AsyncStatus.Canceled)
+                //    //        return;
 
-                    //    Constants.SyncProgress = false;
-                    //});
-                    PageUtils.asyncActionCommon = asyncActionCommon;
-                }
+                //    //    Constants.SyncProgress = false;
+                //    //});
+                //    PageUtils.asyncActionCommon = asyncActionCommon;
+                //}
 
-                SyncProgress = Constants.CustomersSyncProgress;
-                List<CustomerDetails> CustomerAdressList = await _customerRepository.GetCustomerListDtlsAsync();
+                //SyncProgress = Constants.CustomersSyncProgress;
+                //List<CustomerDetails> CustomerAdressList = await _customerRepository.GetCustomerListDtlsAsync();
 
-                //var queryFirstLetters = from item in CustomerAdressList
-                //                        orderby ((CustomerAddress)item).CustomerName
-                //                        group item by item.CustomerName[0];                   
+                ////var queryFirstLetters = from item in CustomerAdressList
+                ////                        orderby ((CustomerAddress)item).CustomerName
+                ////                        group item by item.CustomerName[0];                   
 
-                //var query = from item in CustomerAdressList
-                //            orderby ((CustomerAddress)item).CustomerName
-                //            group item by new { ((CustomerAddress)item).CustomerName } into g
-                //            select new { GroupName = g.Key.CustomerName[0], Items = g };
+                ////var query = from item in CustomerAdressList
+                ////            orderby ((CustomerAddress)item).CustomerName
+                ////            group item by new { ((CustomerAddress)item).CustomerName } into g
+                ////            select new { GroupName = g.Key.CustomerName[0], Items = g };
 
-                //var query = from customer in CustomerAdressList
-                //            let c = customer.CustomerName[0]
-                //            group customer by c >= '0' && c <= '9' ? '0' : char.ToUpper(c);
+                ////var query = from customer in CustomerAdressList
+                ////            let c = customer.CustomerName[0]
+                ////            group customer by c >= '0' && c <= '9' ? '0' : char.ToUpper(c);
+
+                ////List<CustomerGroupByAlphabet> sortedCustomerAdressList = CustomerAdressList
+                ////    .GroupBy(alphabet => alphabet.CustomerName[0])
+                ////    .OrderBy(g => g.Key)
+                ////    .Select(g => new CustomerGroupByAlphabet { GroupName = g.Key, CustomerAddressList = g.ToList() })
+                ////    .ToList();
 
                 //List<CustomerGroupByAlphabet> sortedCustomerAdressList = CustomerAdressList
-                //    .GroupBy(alphabet => alphabet.CustomerName[0])
+                //    .GroupBy(alphabet => char.ToUpper(alphabet.CustomerName[0]))
                 //    .OrderBy(g => g.Key)
                 //    .Select(g => new CustomerGroupByAlphabet { GroupName = g.Key, CustomerAddressList = g.ToList() })
                 //    .ToList();
 
-                List<CustomerGroupByAlphabet> sortedCustomerAdressList = CustomerAdressList
-                    .GroupBy(alphabet => char.ToUpper(alphabet.CustomerName[0]))
-                    .OrderBy(g => g.Key)
-                    .Select(g => new CustomerGroupByAlphabet { GroupName = g.Key, CustomerAddressList = g.ToList() })
-                    .ToList();
+                //GroupedCustomerList = sortedCustomerAdressList;
 
-                GroupedCustomerList = sortedCustomerAdressList;
+                ////CustomerCollection = new CustomerCollection()
+                ////{
+                ////    CustomerAdressList = sortedCustomerAdressList
+                ////};
 
-                //CustomerCollection = new CustomerCollection()
-                //{
-                //    CustomerAdressList = sortedCustomerAdressList
-                //};
-
-                //if (!(CustomerCollection.CustomerAdressList.Count > 0))
-                //{
-                //    EmptyCustomers = ResourceLoader.GetForCurrentView("Resources").GetString("EmptyProductsText");
-                //}            
+                ////if (!(CustomerCollection.CustomerAdressList.Count > 0))
+                ////{
+                ////    EmptyCustomers = ResourceLoader.GetForCurrentView("Resources").GetString("EmptyProductsText");
+                ////}            
 
                 base.OnNavigatedTo(navigationParameter, navigationMode, viewModelState);
             }
@@ -263,6 +266,38 @@ namespace SageMobileSales.UILogic.ViewModels
         public void CustomersSyncIndicator(bool sync)
         {
             SyncProgress = Constants.CustomersSyncProgress;
+        }
+
+        private async Task StartSync()
+        {
+            try
+            {
+                InProgress = true;
+
+                if (!Constants.SyncProgress)
+                {
+                    IAsyncAction asyncActionCommon = ThreadPool.RunAsync(
+                        IAsyncAction => { _syncCoordinatorService.StartSync(); });
+
+                    PageUtils.asyncActionCommon = asyncActionCommon;
+                }
+
+                SyncProgress = Constants.CustomersSyncProgress;
+                List<CustomerDetails> CustomerAdressList = await _customerRepository.GetCustomerListDtlsAsync();
+
+                List<CustomerGroupByAlphabet> sortedCustomerAdressList = CustomerAdressList
+                    .GroupBy(alphabet => char.ToUpper(alphabet.CustomerName[0]))
+                    .OrderBy(g => g.Key)
+                    .Select(g => new CustomerGroupByAlphabet { GroupName = g.Key, CustomerAddressList = g.ToList() })
+                    .ToList();
+
+                GroupedCustomerList = sortedCustomerAdressList;
+            }
+            catch (Exception ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
         }
     }
 }
