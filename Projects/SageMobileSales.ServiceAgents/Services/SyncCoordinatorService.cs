@@ -3,6 +3,7 @@ using Windows.ApplicationModel.Resources;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Events;
 using SageMobileSales.ServiceAgents.Common;
+using Microsoft.Practices.Prism.PubSubEvents;
 
 namespace SageMobileSales.ServiceAgents.Services
 {

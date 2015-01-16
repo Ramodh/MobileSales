@@ -8,6 +8,7 @@ using SageMobileSales.DataAccess.Entities;
 using SageMobileSales.DataAccess.Events;
 using SageMobileSales.DataAccess.Model;
 using SQLite;
+using Microsoft.Practices.Prism.PubSubEvents;
 
 namespace SageMobileSales.DataAccess.Repositories
 {

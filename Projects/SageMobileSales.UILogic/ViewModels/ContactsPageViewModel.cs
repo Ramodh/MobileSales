@@ -5,6 +5,8 @@ using Windows.UI.Xaml.Navigation;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Entities;
 using SageMobileSales.DataAccess.Repositories;
+using Microsoft.Practices.Prism.StoreApps.Interfaces;
+using Microsoft.Practices.Prism.StoreApps;
 
 namespace SageMobileSales.UILogic.ViewModels
 {

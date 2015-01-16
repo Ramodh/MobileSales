@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Microsoft.Practices.Prism.PubSubEvents;
+using Microsoft.Practices.Prism.StoreApps;
+using Microsoft.Practices.Prism.StoreApps.Interfaces;
+using System;
 using Windows.ApplicationModel;
 
 namespace SageMobileSales.UILogic.ViewModels

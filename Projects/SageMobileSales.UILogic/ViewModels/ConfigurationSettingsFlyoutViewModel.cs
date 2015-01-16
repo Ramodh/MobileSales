@@ -8,6 +8,10 @@ using SageMobileSales.ServiceAgents.Common;
 using SageMobileSales.ServiceAgents.Services;
 using SageMobileSales.UILogic.Common;
 using BindableBase = Microsoft.Practices.Prism.StoreApps.BindableBase;
+using Microsoft.Practices.Prism.StoreApps.Interfaces;
+using Microsoft.Practices.Unity;
+using Microsoft.Practices.Prism.PubSubEvents;
+using Microsoft.Practices.Prism.StoreApps;
 
 namespace SageMobileSales.UILogic.ViewModels
 {

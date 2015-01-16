@@ -8,6 +8,7 @@ using SageMobileSales.DataAccess.Events;
 using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
 using SQLite;
+using Microsoft.Practices.Prism.PubSubEvents;
 
 namespace SageMobileSales.ServiceAgents.Services
 {

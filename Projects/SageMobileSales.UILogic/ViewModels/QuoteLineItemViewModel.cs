@@ -10,6 +10,8 @@ using SageMobileSales.DataAccess.Entities;
 using SageMobileSales.DataAccess.Model;
 using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Services;
+using Microsoft.Practices.Prism.StoreApps;
+using Microsoft.Practices.Prism.StoreApps.Interfaces;
 
 namespace SageMobileSales.UILogic.ViewModels
 {

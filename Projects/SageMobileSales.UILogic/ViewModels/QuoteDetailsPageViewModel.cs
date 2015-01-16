@@ -19,6 +19,9 @@ using SageMobileSales.ServiceAgents.Common;
 using SageMobileSales.ServiceAgents.Services;
 using SageMobileSales.UILogic.Common;
 using SageMobileSales.UILogic.Model;
+using Microsoft.Practices.Prism.StoreApps;
+using Microsoft.Practices.Prism.StoreApps.Interfaces;
+using Microsoft.Practices.Prism.PubSubEvents;
 
 namespace SageMobileSales.UILogic.ViewModels
 {

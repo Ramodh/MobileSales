@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using SageMobileSales.DataAccess.Common;
+using Microsoft.Practices.Prism.StoreApps;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 

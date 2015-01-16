@@ -21,6 +21,10 @@ using SageMobileSales.ServiceAgents.Common;
 using SageMobileSales.ServiceAgents.Services;
 using SageMobileSales.UILogic.Common;
 using SageMobileSales.Views;
+using Microsoft.Practices.Unity;
+using Microsoft.Practices.Prism.StoreApps;
+using Microsoft.Practices.Prism.PubSubEvents;
+using Microsoft.Practices.Prism.StoreApps.Interfaces;
 
 // The Blank Application template is documented at http://go.microsoft.com/fwlink/?LinkId=234227
 

@@ -1,6 +1,7 @@
 ﻿ // TODO: Connect the Search Results Page to your in-app search.
 // The Search Results Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234240
 
+using Microsoft.Practices.Prism.StoreApps;
 namespace SageMobileSales.Views
 {
     /// <summary>
