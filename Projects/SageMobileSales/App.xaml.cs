@@ -181,6 +181,8 @@ namespace SageMobileSales
             var settingsCommands = new List<SettingsCommand>();
             var resourceLoader = _container.Resolve<IResourceLoader>();
 
+            settingsCommands.Add(new SettingsCommand(Guid.NewGuid().ToString(), resourceLoader.GetString("CurrentUser"),
+                c => new LoggedInUserSettingsFlyout(eventAggregator).Show()));
             settingsCommands.Add(new SettingsCommand(Guid.NewGuid().ToString(), resourceLoader.GetString("Logout"),
                 c => LogoutHandler()));
             settingsCommands.Add(new SettingsCommand(Guid.NewGuid().ToString(), resourceLoader.GetString("HelpText"),

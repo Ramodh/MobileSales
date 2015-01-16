@@ -13,5 +13,6 @@ namespace SageMobileSales.DataAccess.Repositories
         Task<List<SalesRep>> GetSalesRepDtlsAsync();
         Task<string> GetSalesRepId();
         Task<SalesRep> AddOrUpdateSalesRepJsonToDbAsync(JsonObject sDataSalesRep);
+        Task<string> GetSalesRepName();
     }
 }

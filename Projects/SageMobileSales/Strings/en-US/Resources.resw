@@ -806,4 +806,7 @@
     <value>At least one item must be added before you can submit the quote.</value>
     <comment>At least one item must be added before you can submit the quote.</comment>
   </data>
+  <data name="CurrentUser" xml:space="preserve">
+    <value>LoggedIn User</value>
+  </data>
 </root>

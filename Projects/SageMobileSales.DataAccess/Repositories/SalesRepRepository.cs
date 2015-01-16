@@ -306,6 +306,27 @@ namespace SageMobileSales.DataAccess.Repositories
             return isSameUser;
         }
 
+        /// <summary>
+        /// Gets Current Sales RepName
+        /// </summary>
+        /// <returns></returns>
+        public async Task<string> GetSalesRepName()
+        {
+            try
+            {
+                List<SalesRep> UserDtls = await _sageSalesDB.Table<SalesRep>().ToListAsync();
+                var repName = UserDtls.FirstOrDefault().RepName;
+                return repName;
+            }
+
+            catch (SQLiteException ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+            return null;
+        }
+
         #endregion
 
         #region private methods
