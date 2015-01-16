@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
-using Microsoft.Practices.Prism.StoreApps;
-using Microsoft.Practices.Prism.StoreApps.Interfaces;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Model;
 using SageMobileSales.DataAccess.Repositories;
@@ -38,7 +36,6 @@ namespace SageMobileSales.UILogic.ViewModels
             get { return _productsList; }
             private set { SetProperty(ref _productsList, value); }
         }
-
 
         /// <summary>
         ///     Holds previous Search term
@@ -168,7 +165,7 @@ namespace SageMobileSales.UILogic.ViewModels
                     {
                         queryText = queryText.Trim().Replace("'", string.Empty);
                     }
-                    List<ProductDetails> searchResults = await _productRepository.GetSearchSuggestionsAsync(queryText);
+                    var searchResults = await _productRepository.GetSearchSuggestionsAsync(queryText);
                     ProductsList = searchResults;
                     PreviousSearchResults = ProductsList;
                     TotalCount = ProductsList.Count();
@@ -176,7 +173,7 @@ namespace SageMobileSales.UILogic.ViewModels
 
 
                 var productDetails = new List<ProductDetails>();
-                foreach (ProductDetails product in ProductsList)
+                foreach (var product in ProductsList)
                 {
                     productDetails.Add(product);
                 }

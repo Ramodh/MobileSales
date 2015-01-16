@@ -4,7 +4,6 @@ using System.IO;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using Windows.Storage;
-using Windows.Storage.Streams;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -83,11 +82,11 @@ namespace SageMobileSales.Common
                 serializer.WriteObject(sessionData, _sessionState);
 
                 // Get an output stream for the SessionState file and write the state asynchronously
-                StorageFile file =
+                var file =
                     await
                         ApplicationData.Current.LocalFolder.CreateFileAsync(sessionStateFilename,
                             CreationCollisionOption.ReplaceExisting);
-                using (Stream fileStream = await file.OpenStreamForWriteAsync())
+                using (var fileStream = await file.OpenStreamForWriteAsync())
                 {
                     sessionData.Seek(0, SeekOrigin.Begin);
                     await sessionData.CopyToAsync(fileStream);
@@ -117,8 +116,8 @@ namespace SageMobileSales.Common
             try
             {
                 // Get the input stream for the SessionState file
-                StorageFile file = await ApplicationData.Current.LocalFolder.GetFileAsync(sessionStateFilename);
-                using (IInputStream inStream = await file.OpenSequentialReadAsync())
+                var file = await ApplicationData.Current.LocalFolder.GetFileAsync(sessionStateFilename);
+                using (var inStream = await file.OpenSequentialReadAsync())
                 {
                     // Deserialize the Session State
                     var serializer = new DataContractSerializer(typeof (Dictionary<string, object>), _knownTypes);
@@ -246,7 +245,7 @@ namespace SageMobileSales.Common
 
         private static void RestoreFrameNavigationState(Frame frame)
         {
-            Dictionary<string, object> frameState = SessionStateForFrame(frame);
+            var frameState = SessionStateForFrame(frame);
             if (frameState.ContainsKey("Navigation"))
             {
                 frame.SetNavigationState((String) frameState["Navigation"]);
@@ -255,7 +254,7 @@ namespace SageMobileSales.Common
 
         private static void SaveFrameNavigationState(Frame frame)
         {
-            Dictionary<string, object> frameState = SessionStateForFrame(frame);
+            var frameState = SessionStateForFrame(frame);
             frameState["Navigation"] = frame.GetNavigationState();
         }
     }

@@ -8,7 +8,6 @@ using Windows.ApplicationModel.Resources;
 using Windows.Security.Cryptography;
 using Windows.Security.Cryptography.Core;
 using Windows.Storage;
-using Windows.Storage.Streams;
 
 namespace Sage.Authorisation.WinRT.Storage
 {
@@ -17,25 +16,6 @@ namespace Sage.Authorisation.WinRT.Storage
     /// </summary>
     internal class TokenStore
     {
-        #region Fields
-
-        private const string RefreshTokenFileNameFormat = "{0}.rt";
-        private const string RefreshTokenFolderName = "SIDRTS";
-
-        /// <summary>
-        ///     Static dictionary of access tokens
-        /// </summary>
-        private static readonly Dictionary<string, AccessToken> _accessTokens = new Dictionary<string, AccessToken>();
-
-        private readonly string _clientId;
-
-        private readonly SymmetricEncryptor _encryptor = new SymmetricEncryptor();
-        private readonly HttpHelper _httpHelper;
-        private readonly ResourceLoader _loader = new ResourceLoader("Sage.Authorisation.WinRT/Resources");
-        private readonly Logger _logger;
-
-        #endregion
-
         /// <summary>
         ///     Initializes a new instance of the <see cref="TokenStore" /> class.
         /// </summary>
@@ -56,7 +36,7 @@ namespace Sage.Authorisation.WinRT.Storage
         {
             _accessTokens.Clear();
 
-            StorageFolder tokenFolder = await GetRefreshTokenFolderAsync();
+            var tokenFolder = await GetRefreshTokenFolderAsync();
 
             await tokenFolder.DeleteAsync();
 
@@ -70,7 +50,7 @@ namespace Sage.Authorisation.WinRT.Storage
         /// <param name="scope">The scope with which to search for a refresh token</param>
         internal void ClearAccessToken(string scope)
         {
-            string hashedScope = HashScope(scope);
+            var hashedScope = HashScope(scope);
 
             _accessTokens.Remove(hashedScope);
         }
@@ -81,7 +61,7 @@ namespace Sage.Authorisation.WinRT.Storage
         /// <param name="scope">The scope with which to search for a refresh token</param>
         internal void ClearRefreshToken(string scope)
         {
-            string hashedScope = HashScope(scope);
+            var hashedScope = HashScope(scope);
 
             ClearValueAsync(String.Format(RefreshTokenFileNameFormat, hashedScope));
         }
@@ -111,7 +91,7 @@ namespace Sage.Authorisation.WinRT.Storage
 
             #endregion
 
-            TokenResponse response = await _httpHelper.ExchangeAccessCodeAsync(code, redirectUri);
+            var response = await _httpHelper.ExchangeAccessCodeAsync(code, redirectUri);
 
             // Store refresh token in encrypted store.
             var refreshToken = new RefreshToken
@@ -145,9 +125,9 @@ namespace Sage.Authorisation.WinRT.Storage
         /// <returns>True if refresh token was found</returns>
         internal async Task<RefreshToken> GetRefreshTokenAsync(string scope)
         {
-            string hashedScope = HashScope(scope);
+            var hashedScope = HashScope(scope);
 
-            RefreshToken token =
+            var token =
                 await GetValueAsync<RefreshToken>(String.Format(RefreshTokenFileNameFormat, hashedScope));
 
             return token;
@@ -160,7 +140,7 @@ namespace Sage.Authorisation.WinRT.Storage
         /// <returns>The access token or null</returns>
         internal AccessToken GetValidAccessToken(string scope)
         {
-            AccessToken token = GetAccessToken(scope);
+            var token = GetAccessToken(scope);
 
             if (token != null)
             {
@@ -184,7 +164,7 @@ namespace Sage.Authorisation.WinRT.Storage
         /// <returns></returns>
         internal async Task<AccessToken> RefreshAccessTokenAsync(AuthorisationInfo currentAuthorisationInfo)
         {
-            RefreshToken refreshToken = await GetRefreshTokenAsync(currentAuthorisationInfo.Scope);
+            var refreshToken = await GetRefreshTokenAsync(currentAuthorisationInfo.Scope);
 
             if (refreshToken == null)
             {
@@ -196,7 +176,7 @@ namespace Sage.Authorisation.WinRT.Storage
                 throw new InvalidOperationException(_loader.GetString("ExceptionTokenStoreHttpHelperNull"));
             }
 
-            TokenResponse response =
+            var response =
                 await _httpHelper.RefreshAccessTokenAsync(refreshToken, currentAuthorisationInfo.State);
 
             // Store refresh token in encrypted store.
@@ -230,7 +210,7 @@ namespace Sage.Authorisation.WinRT.Storage
         /// <returns></returns>
         private static async Task<StorageFolder> GetRefreshTokenFolderAsync()
         {
-            StorageFolder tokenFolder =
+            var tokenFolder =
                 await
                     ApplicationData.Current.LocalFolder.CreateFolderAsync(RefreshTokenFolderName,
                         CreationCollisionOption.OpenIfExists);
@@ -244,8 +224,8 @@ namespace Sage.Authorisation.WinRT.Storage
         /// <returns></returns>
         private async void ClearValueAsync(string key)
         {
-            StorageFolder tokenFolder = await GetRefreshTokenFolderAsync();
-            StorageFile file = await tokenFolder.GetFileAsync(key);
+            var tokenFolder = await GetRefreshTokenFolderAsync();
+            var file = await tokenFolder.GetFileAsync(key);
             await file.DeleteAsync();
         }
 
@@ -258,7 +238,7 @@ namespace Sage.Authorisation.WinRT.Storage
         /// </returns>
         private AccessToken GetAccessToken(string scope)
         {
-            string hashedScope = HashScope(scope);
+            var hashedScope = HashScope(scope);
             AccessToken token = null;
 
             if (_accessTokens.ContainsKey(hashedScope))
@@ -281,16 +261,16 @@ namespace Sage.Authorisation.WinRT.Storage
 
             try
             {
-                StorageFolder tokenFolder = await GetRefreshTokenFolderAsync();
-                StorageFile sessionFile = await tokenFolder.GetFileAsync(key);
+                var tokenFolder = await GetRefreshTokenFolderAsync();
+                var sessionFile = await tokenFolder.GetFileAsync(key);
 
                 var serializer = new DataContractSerializer(typeof (T));
 
-                IBuffer refreshTokenFileBuffer = await FileIO.ReadBufferAsync(sessionFile);
-                string refreshTokenDecrypted = await _encryptor.DecryptAsync(refreshTokenFileBuffer);
-                IBuffer binaryToken = CryptographicBuffer.ConvertStringToBinary(refreshTokenDecrypted,
+                var refreshTokenFileBuffer = await FileIO.ReadBufferAsync(sessionFile);
+                var refreshTokenDecrypted = await _encryptor.DecryptAsync(refreshTokenFileBuffer);
+                var binaryToken = CryptographicBuffer.ConvertStringToBinary(refreshTokenDecrypted,
                     BinaryStringEncoding.Utf8);
-                Stream objectStream = binaryToken.AsStream();
+                var objectStream = binaryToken.AsStream();
                 var token1 = (T) serializer.ReadObject(objectStream);
                 return token1;
             }
@@ -310,8 +290,8 @@ namespace Sage.Authorisation.WinRT.Storage
         {
             _logger.Diagnostic(LogEventType.PersistValue, String.Format(_loader.GetString("LogPersistValue"), key));
 
-            StorageFolder tokenFolder = await GetRefreshTokenFolderAsync();
-            StorageFile sessionFile = await tokenFolder.CreateFileAsync(key, CreationCollisionOption.ReplaceExisting);
+            var tokenFolder = await GetRefreshTokenFolderAsync();
+            var sessionFile = await tokenFolder.CreateFileAsync(key, CreationCollisionOption.ReplaceExisting);
 
             var sessionSerializer = new DataContractSerializer(typeof (Token));
             var stream = new MemoryStream();
@@ -320,7 +300,7 @@ namespace Sage.Authorisation.WinRT.Storage
             // reset the stream back to the start so we can read it
             stream.Position = 0;
             var sr = new StreamReader(stream);
-            string encrypted = await _encryptor.EncryptAsync(sr.ReadToEnd());
+            var encrypted = await _encryptor.EncryptAsync(sr.ReadToEnd());
 
             await FileIO.WriteTextAsync(sessionFile, encrypted);
         }
@@ -332,11 +312,11 @@ namespace Sage.Authorisation.WinRT.Storage
         /// <returns></returns>
         private string HashScope(string scope)
         {
-            HashAlgorithmProvider p = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Sha1);
-            IBuffer hashBuffer = p.HashData(CryptographicBuffer.ConvertStringToBinary(scope, BinaryStringEncoding.Utf8));
+            var p = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Sha1);
+            var hashBuffer = p.HashData(CryptographicBuffer.ConvertStringToBinary(scope, BinaryStringEncoding.Utf8));
 
             // Base32 encode this, base64 might have invalid characters
-            string encoded = Base32Encoder.Base32Encode(hashBuffer);
+            var encoded = Base32Encoder.Base32Encode(hashBuffer);
             return encoded;
         }
 
@@ -346,7 +326,7 @@ namespace Sage.Authorisation.WinRT.Storage
         /// <param name="token">the refresh token instance</param>
         private void StoreAccessToken(AccessToken token)
         {
-            string hashedScope = HashScope(token.Scope);
+            var hashedScope = HashScope(token.Scope);
 
             _accessTokens[hashedScope] = token;
         }
@@ -357,9 +337,28 @@ namespace Sage.Authorisation.WinRT.Storage
         /// <param name="refreshToken">the refresh token instance</param>
         private async void StoreRefreshTokenAsync(RefreshToken refreshToken)
         {
-            string hashedScope = HashScope(refreshToken.Scope);
+            var hashedScope = HashScope(refreshToken.Scope);
 
             await StoreValueAsync(String.Format(RefreshTokenFileNameFormat, hashedScope), refreshToken);
         }
+
+        #region Fields
+
+        private const string RefreshTokenFileNameFormat = "{0}.rt";
+        private const string RefreshTokenFolderName = "SIDRTS";
+
+        /// <summary>
+        ///     Static dictionary of access tokens
+        /// </summary>
+        private static readonly Dictionary<string, AccessToken> _accessTokens = new Dictionary<string, AccessToken>();
+
+        private readonly string _clientId;
+
+        private readonly SymmetricEncryptor _encryptor = new SymmetricEncryptor();
+        private readonly HttpHelper _httpHelper;
+        private readonly ResourceLoader _loader = new ResourceLoader("Sage.Authorisation.WinRT/Resources");
+        private readonly Logger _logger;
+
+        #endregion
     }
 }

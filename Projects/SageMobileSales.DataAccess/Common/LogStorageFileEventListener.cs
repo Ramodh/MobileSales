@@ -18,14 +18,14 @@ namespace SageMobileSales.DataAccess.Common
         private readonly SemaphoreSlim _mSemaphoreSlim = new SemaphoreSlim(1);
 
         /// <summary>
+        ///     The format to be used by logging.
+        /// </summary>
+        private readonly string m_Format = "{0:yyyy-MM-dd HH\\:mm\\:ss\\:ffff}\tType: {1}\tId: {2}\tMessage: '{3}'";
+
+        /// <summary>
         ///     Storage file to be used to write logs
         /// </summary>
         private StorageFile _mStorageFile;
-
-        /// <summary>
-        ///     The format to be used by logging.
-        /// </summary>
-        private string m_Format = "{0:yyyy-MM-dd HH\\:mm\\:ss\\:ffff}\tType: {1}\tId: {2}\tMessage: '{3}'";
 
         public LogStorageFileEventListener(string name)
         {
@@ -69,7 +69,7 @@ namespace SageMobileSales.DataAccess.Common
 
             var lines = new List<string>();
 
-            string newFormatedLine = string.Format(m_Format, DateTime.Now, eventData.Level, eventData.EventId,
+            var newFormatedLine = string.Format(m_Format, DateTime.Now, eventData.Level, eventData.EventId,
                 eventData.Payload[0]);
 
             Debug.WriteLine(newFormatedLine);

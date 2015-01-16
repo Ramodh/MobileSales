@@ -20,7 +20,6 @@ namespace SageMobileSales.DataAccess.Common
 
         private readonly INotifyPropertyChanged _entityToValidate;
 
-
         private readonly IDictionary<string, ReadOnlyCollection<string>> _errors =
             new Dictionary<string, ReadOnlyCollection<string>>();
 
@@ -55,7 +54,7 @@ namespace SageMobileSales.DataAccess.Common
             IsValidationEnabled = true;
             _getResourceDelegate = (mapId, key) =>
             {
-                ResourceLoader resourceLoader = ResourceLoader.GetForCurrentView(mapId);
+                var resourceLoader = ResourceLoader.GetForCurrentView(mapId);
                 return resourceLoader.GetString(key);
             };
         }
@@ -151,18 +150,18 @@ namespace SageMobileSales.DataAccess.Common
                 throw new ArgumentNullException("propertyName");
             }
 
-            PropertyInfo propertyInfo = _entityToValidate.GetType().GetRuntimeProperty(propertyName);
+            var propertyInfo = _entityToValidate.GetType().GetRuntimeProperty(propertyName);
             if (propertyInfo == null)
             {
-                string errorString = _getResourceDelegate(DataAccessUtils.StoreAppsInfrastructureResourceMapId,
+                var errorString = _getResourceDelegate(DataAccessUtils.StoreAppsInfrastructureResourceMapId,
                     ResourceLoader.GetForCurrentView("Resources").GetString("InvalidPropertyNameException"));
 
                 throw new ArgumentException(errorString, propertyName);
             }
 
             var propertyErrors = new List<string>();
-            bool isValid = TryValidateProperty(propertyInfo, propertyErrors);
-            bool errorsChanged = SetPropertyErrors(propertyInfo.Name, propertyErrors);
+            var isValid = TryValidateProperty(propertyInfo, propertyErrors);
+            var errorsChanged = SetPropertyErrors(propertyInfo.Name, propertyErrors);
 
             if (errorsChanged)
             {
@@ -183,17 +182,17 @@ namespace SageMobileSales.DataAccess.Common
             var propertiesWithChangedErrors = new List<string>();
 
             // Get all the properties decorated with the ValidationAttribute attribute.
-            IEnumerable<PropertyInfo> propertiesToValidate = _entityToValidate.GetType()
+            var propertiesToValidate = _entityToValidate.GetType()
                 .GetRuntimeProperties()
                 .Where(c => c.GetCustomAttributes(typeof (ValidationAttribute)).Any());
 
-            foreach (PropertyInfo propertyInfo in propertiesToValidate)
+            foreach (var propertyInfo in propertiesToValidate)
             {
                 var propertyErrors = new List<string>();
                 TryValidateProperty(propertyInfo, propertyErrors);
 
                 // If the errors have changed, save the property name to notify the update at the end of this method.
-                bool errorsChanged = SetPropertyErrors(propertyInfo.Name, propertyErrors);
+                var errorsChanged = SetPropertyErrors(propertyInfo.Name, propertyErrors);
                 if (errorsChanged && !propertiesWithChangedErrors.Contains(propertyInfo.Name))
                 {
                     propertiesWithChangedErrors.Add(propertyInfo.Name);
@@ -201,7 +200,7 @@ namespace SageMobileSales.DataAccess.Common
             }
 
             // Notify each property whose set of errors has changed since the last validation.  
-            foreach (string propertyName in propertiesWithChangedErrors)
+            foreach (var propertyName in propertiesWithChangedErrors)
             {
                 OnErrorsChanged(propertyName);
                 OnPropertyChanged(string.Format(CultureInfo.CurrentCulture, "Item[{0}]", propertyName));
@@ -220,10 +219,10 @@ namespace SageMobileSales.DataAccess.Common
         {
             var results = new List<ValidationResult>();
             var context = new ValidationContext(_entityToValidate) {MemberName = propertyInfo.Name};
-            object propertyValue = propertyInfo.GetValue(_entityToValidate);
+            var propertyValue = propertyInfo.GetValue(_entityToValidate);
 
             // Validate the property
-            bool isValid = Validator.TryValidateProperty(propertyValue, context, results);
+            var isValid = Validator.TryValidateProperty(propertyValue, context, results);
 
             if (results.Any())
             {
@@ -241,7 +240,7 @@ namespace SageMobileSales.DataAccess.Common
         /// <returns>True if the property errors have changed. Otherwise, false.</returns>
         private bool SetPropertyErrors(string propertyName, IList<string> propertyNewErrors)
         {
-            bool errorsChanged = false;
+            var errorsChanged = false;
 
             // If the property does not have errors, simply add them
             if (!_errors.ContainsKey(propertyName))
@@ -281,7 +280,7 @@ namespace SageMobileSales.DataAccess.Common
         /// <param name="propertyName">Name of the property used to notify listeners.</param>
         private void OnPropertyChanged(string propertyName)
         {
-            PropertyChangedEventHandler eventHandler = PropertyChanged;
+            var eventHandler = PropertyChanged;
             if (eventHandler != null)
             {
                 eventHandler(this, new PropertyChangedEventArgs(propertyName));
@@ -294,7 +293,7 @@ namespace SageMobileSales.DataAccess.Common
         /// <param name="propertyName">Name of the property used to notify listeners.</param>
         private void OnErrorsChanged(string propertyName)
         {
-            EventHandler<DataErrorsChangedEventArgs> eventHandler = ErrorsChanged;
+            var eventHandler = ErrorsChanged;
             if (eventHandler != null)
             {
                 eventHandler(this, new DataErrorsChangedEventArgs(propertyName));

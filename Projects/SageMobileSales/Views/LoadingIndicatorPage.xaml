@@ -9,7 +9,7 @@
     prism:ViewModelLocator.AutoWireViewModel="true"
     mc:Ignorable="d">
 
-    <Grid Style="{StaticResource LayoutRootStyle}"> 
+    <Grid Style="{StaticResource LayoutRootStyle}">
 
         <!--<StackPanel Orientation="Vertical" VerticalAlignment="Center">
             <Image Source="\Assets\SageMobileSales_Splash_620x300.png" Height="300" Width="620"/>
@@ -23,14 +23,14 @@
                           IsActive="{Binding InProgress, Mode=TwoWay}"
                           Visibility="{Binding InProgress, Mode=TwoWay,Converter={StaticResource InProgessVisibilityConverter}}"
                           Style="{StaticResource GridViewProgressRingStyle}" />
-        </StackPanel>--> 
+        </StackPanel>-->
 
-        <Image Source="/Assets/SageMobileSales_Splash_620x300.png" Height="300" Width="620"/>
+        <Image Source="/Assets/SageMobileSales_Splash_620x300.png" Height="300" Width="620" />
         <!--<Button x:Uid="SignIn" HorizontalAlignment="Center" VerticalAlignment="Center" Command="{Binding SignInCommand}" FontSize="20"
                     Background="#4EB04C" FontWeight="Bold" BorderBrush="#4EB04C" IsEnabled="{Binding isSignInDisabled}" Margin="0,120,0,0"/>-->
         <ProgressRing Grid.Row="1" Height="40" Width="40"
-                          IsActive="{Binding InProgress, Mode=TwoWay}"
-                          Style="{StaticResource GridViewProgressRingStyle}" Margin="0,120,0,0"/>
+                      IsActive="{Binding InProgress, Mode=TwoWay}"
+                      Style="{StaticResource GridViewProgressRingStyle}" Margin="0,120,0,0" />
         <!--Visibility="{Binding InProgress, Mode=TwoWay,Converter={StaticResource InProgessVisibilityConverter}}"-->
 
     </Grid>

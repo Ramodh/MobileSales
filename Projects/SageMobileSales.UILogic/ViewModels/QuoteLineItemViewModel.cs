@@ -1,18 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
-using Microsoft.Practices.Prism.StoreApps;
-using Microsoft.Practices.Prism.StoreApps.Interfaces;
+using Windows.ApplicationModel.Resources;
+using Windows.UI.Popups;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Entities;
 using SageMobileSales.DataAccess.Model;
 using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Services;
-using SageMobileSales.ServiceAgents.Common;
-using Windows.UI.Popups;
-using Windows.ApplicationModel.Resources;
-using Windows.UI.Xaml.Controls;
 
 namespace SageMobileSales.UILogic.ViewModels
 {
@@ -23,24 +20,25 @@ namespace SageMobileSales.UILogic.ViewModels
         private readonly string _lineItemId;
         private readonly decimal _lineItemPrice;
         private readonly INavigationService _navigationService;
-        private readonly IQuoteLineItemRepository _quoteLineItemRepository;
-        private readonly IQuoteLineItemService _quoteLineItemService;
-        private readonly IQuoteRepository _quoteRepository;
-        private readonly IQuoteService _quoteService;
-        private Quote _quote;
         private readonly string _productId;
         private readonly string _productName;
         private readonly int _productQuantity;
         private readonly string _productSku;
         private readonly string _quoteId;
-        private string _lineItemQuantity;
+        private readonly IQuoteLineItemRepository _quoteLineItemRepository;
+        private readonly IQuoteLineItemService _quoteLineItemService;
+        private readonly IQuoteRepository _quoteRepository;
+        private readonly IQuoteService _quoteService;
         private int _enteredQuantity;
-        private bool _isEnabled;
         private bool _isCancelled;
+        private bool _isEnabled;
+        private string _lineItemQuantity;
         private string _log = string.Empty;
+        private Quote _quote;
 
-
-        public QuoteLineItemViewModel(INavigationService navigationService, LineItemDetails quoteLineItemDetails, IQuoteService quoteService, IQuoteRepository quoteRepository, IQuoteLineItemService quoteLineItemService, IQuoteLineItemRepository quoteLineItemRepository)
+        public QuoteLineItemViewModel(INavigationService navigationService, LineItemDetails quoteLineItemDetails,
+            IQuoteService quoteService, IQuoteRepository quoteRepository, IQuoteLineItemService quoteLineItemService,
+            IQuoteLineItemRepository quoteLineItemRepository)
         {
             _navigationService = navigationService;
             _quoteService = quoteService;
@@ -72,7 +70,6 @@ namespace SageMobileSales.UILogic.ViewModels
                 SetProperty(ref _enteredQuantity, value);
                 OnPropertyChanged("EnteredQuantity");
             }
-
         }
 
         public string QuoteId
@@ -124,7 +121,7 @@ namespace SageMobileSales.UILogic.ViewModels
 
         public decimal Amount
         {
-            get { return Math.Round(Convert.ToInt32(LineItemQuantity) * _lineItemPrice, 2); }
+            get { return Math.Round(Convert.ToInt32(LineItemQuantity)*_lineItemPrice, 2); }
         }
 
         //public decimal Total
@@ -144,7 +141,6 @@ namespace SageMobileSales.UILogic.ViewModels
 
         public bool IsEnabled
         {
-
             get { return _isEnabled; }
             set { SetProperty(ref _isEnabled, value); }
         }
@@ -192,7 +188,7 @@ namespace SageMobileSales.UILogic.ViewModels
             {
                 if (!string.IsNullOrEmpty(LineItemQuantity))
                 {
-                    int lineItemQnty = Convert.ToInt32(LineItemQuantity);
+                    var lineItemQnty = Convert.ToInt32(LineItemQuantity);
 
                     if (lineItemQnty > 0)
                     {
@@ -220,13 +216,13 @@ namespace SageMobileSales.UILogic.ViewModels
             {
                 if (!string.IsNullOrEmpty(LineItemQuantity))
                 {
-                    int lineItemQnty = Convert.ToInt32(LineItemQuantity);
+                    var lineItemQnty = Convert.ToInt32(LineItemQuantity);
                     lineItemQnty += 1;
                     LineItemQuantity = lineItemQnty.ToString();
                     await UpdateQuoteLineItemToLocalDB(sender as QuoteLineItemViewModel);
                 }
-               // LineItemQuantity += 1;
-               // await UpdateQuoteLineItemToLocalDB(sender as QuoteLineItemViewModel);
+                // LineItemQuantity += 1;
+                // await UpdateQuoteLineItemToLocalDB(sender as QuoteLineItemViewModel);
             }
             catch (Exception ex)
             {
@@ -241,22 +237,21 @@ namespace SageMobileSales.UILogic.ViewModels
         /// <param name="args"></param>
         public void QunatityTextBoxGotFocus(object sender, object parameter)
         {
-            TextBox quantity = (TextBox)(parameter as Windows.UI.Xaml.RoutedEventArgs).OriginalSource;
+            var quantity = (TextBox) (parameter as RoutedEventArgs).OriginalSource;
 
             if (quantity.Text != null && (quantity.Text != string.Empty))
             {
-                int enteredQnty = Convert.ToInt32(quantity.Text.Trim());
+                var enteredQnty = Convert.ToInt32(quantity.Text.Trim());
                 if (enteredQnty > 0)
                 {
                     //QuoteLineItemViewModel obj=sender as QuoteLineItemViewModel;
                     // obj.LineItemQuantity = enteredQnty.ToString();
-                    QuoteLineItemViewModel quotelineItemObj = sender as QuoteLineItemViewModel;
+                    var quotelineItemObj = sender as QuoteLineItemViewModel;
                     if (quotelineItemObj != null)
                     {
                         LineItemQuantity = quotelineItemObj.LineItemQuantity;
                         // await UpdateQuoteLineItemToLocalDB(quotelineItemObj);
                     }
-
                 }
                 else
                 {
@@ -275,12 +270,12 @@ namespace SageMobileSales.UILogic.ViewModels
         /// <param name="args"></param>
         public async void QunatityTextBoxLostFocus(object sender, object parameter)
         {
-            TextBox quantity = (TextBox)(parameter as Windows.UI.Xaml.RoutedEventArgs).OriginalSource;
+            var quantity = (TextBox) (parameter as RoutedEventArgs).OriginalSource;
 
             if (quantity.Text != null && (quantity.Text != string.Empty))
             {
                 LineItemQuantity = quantity.Text.Trim();
-                QuoteLineItemViewModel quotelineItemObj = sender as QuoteLineItemViewModel;
+                var quotelineItemObj = sender as QuoteLineItemViewModel;
                 if (quotelineItemObj != null)
                 {
                     LineItemQuantity = quotelineItemObj.LineItemQuantity;
@@ -292,8 +287,9 @@ namespace SageMobileSales.UILogic.ViewModels
                 LineItemQuantity = "0";
             }
         }
+
         /// <summary>
-        /// LostFocus event to get lineitem quantity
+        ///     LostFocus event to get lineitem quantity
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="parameter"></param>
@@ -301,7 +297,7 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             try
             {
-                QuoteLineItemViewModel quotelineItemObj = sender as QuoteLineItemViewModel;
+                var quotelineItemObj = sender as QuoteLineItemViewModel;
                 if (quotelineItemObj != null)
                 {
                     LineItemQuantity = quotelineItemObj.LineItemQuantity;
@@ -320,9 +316,9 @@ namespace SageMobileSales.UILogic.ViewModels
             try
             {
                 await
-              ShowMessageDialog(
-                  ResourceLoader.GetForCurrentView("Resources").GetString("DeleteQuoteLineItemMessageDialog"),
-                  string.Empty, false, false);
+                    ShowMessageDialog(
+                        ResourceLoader.GetForCurrentView("Resources").GetString("DeleteQuoteLineItemMessageDialog"),
+                        string.Empty, false, false);
             }
             catch (Exception ex)
             {
@@ -335,10 +331,8 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             try
             {
-
-
-                QuoteLineItem selectedQuoteLineItem =
-                  await _quoteLineItemRepository.GetQuoteLineAsync(selectedItem.LineItemId);
+                var selectedQuoteLineItem =
+                    await _quoteLineItemRepository.GetQuoteLineAsync(selectedItem.LineItemId);
                 selectedQuoteLineItem.Quantity = Convert.ToInt32(selectedItem.LineItemQuantity);
                 await _quoteLineItemRepository.UpdateQuoteLineItemToDbAsync(selectedQuoteLineItem);
                 _quote = await UpdateQuoteToLocalDB(string.Empty);
@@ -361,8 +355,8 @@ namespace SageMobileSales.UILogic.ViewModels
             {
                 _quote = await _quoteRepository.GetQuoteAsync(_quoteId);
                 decimal subTotal = 0;
-                List<LineItemDetails> quoteLineItemsList = await _quoteLineItemRepository.GetQuoteLineItemDetailsAsync(_quoteId);
-                foreach (LineItemDetails lineItem in quoteLineItemsList)
+                var quoteLineItemsList = await _quoteLineItemRepository.GetQuoteLineItemDetailsAsync(_quoteId);
+                foreach (var lineItem in quoteLineItemsList)
                 {
                     subTotal += lineItem.Amount;
                 }
@@ -371,7 +365,7 @@ namespace SageMobileSales.UILogic.ViewModels
                     _quote.QuoteStatus = quoteStatus;
                 }
                 _quote.SubTotal = subTotal;
-                decimal discountPercentageValue = Math.Round(((_quote.DiscountPercent / 100) * subTotal), 2);
+                var discountPercentageValue = Math.Round(((_quote.DiscountPercent/100)*subTotal), 2);
                 _quote.Amount = subTotal - discountPercentageValue + _quote.ShippingAndHandling + _quote.Tax;
                 _quote = await _quoteRepository.UpdateQuoteToDbAsync(_quote);
                 if (quoteStatus != string.Empty && quoteStatus == DataAccessUtils.DraftQuote)
@@ -417,8 +411,7 @@ namespace SageMobileSales.UILogic.ViewModels
             await messageDialog.ShowAsync();
         }
 
-        ///     Callback function for the invocation of the dialog commands.
-
+        /// Callback function for the invocation of the dialog commands.
         private async void RevertQuoteStatusCommandInvokedHandler(IUICommand command)
         {
             try

@@ -1,17 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Resources;
-using Windows.Foundation;
-using Windows.Storage;
 using Windows.System.Threading;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
-using Microsoft.Practices.Prism.PubSubEvents;
-using Microsoft.Practices.Prism.StoreApps;
-using Microsoft.Practices.Prism.StoreApps.Interfaces;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Events;
 using SageMobileSales.DataAccess.Model;
@@ -27,12 +21,12 @@ namespace SageMobileSales.UILogic.ViewModels
     {
         private readonly ICustomerRepository _customerRepository;
         private readonly IEventAggregator _eventAggregator;
+        private readonly ILocalSyncDigestRepository _localSyncDigestRepository;
         private readonly INavigationService _navigationService;
         private readonly ISalesRepService _salesRepService;
         //private CustomerCollection _customerCollection;
         private readonly ISyncCoordinatorService _syncCoordinatorService;
         private readonly ITenantRepository _tenantRepository;
-        private readonly ILocalSyncDigestRepository _localSyncDigestRepository;
         private readonly ITenantService _tenantService;
         private string _emptyCustomers;
         private List<CustomerGroupByAlphabet> _groupedCustomerList;
@@ -40,7 +34,6 @@ namespace SageMobileSales.UILogic.ViewModels
         private string _log = string.Empty;
         private bool _syncProgress;
         private bool _tenantSync = true;
-        public DelegateCommand StartSyncCommand { get; private set; }
 
         public CustomersGroupPageViewModel(INavigationService navigationService, ICustomerRepository customerRepository,
             ISyncCoordinatorService syncCoordinatorService, IEventAggregator eventAggregator,
@@ -61,19 +54,11 @@ namespace SageMobileSales.UILogic.ViewModels
                 .Subscribe(CustomersSyncIndicator, ThreadOption.UIThread);
         }
 
+        public DelegateCommand StartSyncCommand { get; private set; }
+
         /// <summary>
         ///     Collection to support incremental scrolling
         /// </summary>
-        //public CustomerCollection CustomerCollection
-        //{
-        //    get { return _customerCollection; }
-        //    private set
-        //    {
-        //        SetProperty(ref _customerCollection, value);
-        //        InProgress = false;
-        //    }
-        //}
-
         /// <summary>
         ///     Customer list
         /// </summary>
@@ -243,12 +228,12 @@ namespace SageMobileSales.UILogic.ViewModels
 
         public async Task UpdateCustomerListInfo()
         {
-            List<CustomerDetails> CustomerAdressList = await _customerRepository.GetCustomerListDtlsAsync();
+            var CustomerAdressList = await _customerRepository.GetCustomerListDtlsAsync();
 
-            List<CustomerGroupByAlphabet> sortedCustomerAdressList = CustomerAdressList
+            var sortedCustomerAdressList = CustomerAdressList
                 .GroupBy(alphabet => char.ToUpper(alphabet.CustomerName[0]))
                 .OrderBy(g => g.Key)
-                .Select(g => new CustomerGroupByAlphabet { GroupName = g.Key, CustomerAddressList = g.ToList() })
+                .Select(g => new CustomerGroupByAlphabet {GroupName = g.Key, CustomerAddressList = g.ToList()})
                 .ToList();
 
             GroupedCustomerList = sortedCustomerAdressList;
@@ -276,19 +261,19 @@ namespace SageMobileSales.UILogic.ViewModels
 
                 if (!Constants.SyncProgress)
                 {
-                    IAsyncAction asyncActionCommon = ThreadPool.RunAsync(
+                    var asyncActionCommon = ThreadPool.RunAsync(
                         IAsyncAction => { _syncCoordinatorService.StartSync(); });
 
                     PageUtils.asyncActionCommon = asyncActionCommon;
                 }
 
                 SyncProgress = Constants.CustomersSyncProgress;
-                List<CustomerDetails> CustomerAdressList = await _customerRepository.GetCustomerListDtlsAsync();
+                var CustomerAdressList = await _customerRepository.GetCustomerListDtlsAsync();
 
-                List<CustomerGroupByAlphabet> sortedCustomerAdressList = CustomerAdressList
+                var sortedCustomerAdressList = CustomerAdressList
                     .GroupBy(alphabet => char.ToUpper(alphabet.CustomerName[0]))
                     .OrderBy(g => g.Key)
-                    .Select(g => new CustomerGroupByAlphabet { GroupName = g.Key, CustomerAddressList = g.ToList() })
+                    .Select(g => new CustomerGroupByAlphabet {GroupName = g.Key, CustomerAddressList = g.ToList()})
                     .ToList();
 
                 GroupedCustomerList = sortedCustomerAdressList;

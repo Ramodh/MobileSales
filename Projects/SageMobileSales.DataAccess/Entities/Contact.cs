@@ -8,7 +8,6 @@ namespace SageMobileSales.DataAccess.Entities
     public class Contact : ValidatableBindableBase
     {
         private const string NamesRegexPattern = @"^[a-zA-Z0-9]*$";
-
         private const string NumbersRegexPattern = @"\A\p{N}+([\p{N}\-][\p{N}]+)*\z";
 
         private const string EmailRegexPattern =
@@ -20,15 +19,12 @@ namespace SageMobileSales.DataAccess.Entities
 
         public string ContactId { get; set; }
         public string CustomerId { get; set; }
-
         // [Required(ErrorMessageResourceType = typeof(ErrorMessages), ErrorMessageResourceName = "RequiredErrorMessage")]
         // [RegularExpression(NamesRegexPattern, ErrorMessageResourceType = typeof (ErrorMessages),ErrorMessageResourceName = "RegexErrorMessage")]
         public string FirstName { get; set; }
-
         //[Required(ErrorMessageResourceType = typeof(ErrorMessages), ErrorMessageResourceName = "RequiredErrorMessage")]
         //[RegularExpression(NamesRegexPattern, ErrorMessageResourceType = typeof (ErrorMessages),ErrorMessageResourceName = "RegexErrorMessage")]
         public string LastName { get; set; }
-
         public string Title { get; set; }
 
         [RegularExpression(NumbersRegexPattern, ErrorMessageResourceType = typeof (ErrorMessages),

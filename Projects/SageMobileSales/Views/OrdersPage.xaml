@@ -83,15 +83,14 @@
                         </AppBarButton.Flyout>
                     </AppBarButton>
                 </StackPanel>
-                <StackPanel  Grid.Column="0">
+                <StackPanel Grid.Column="0">
                     <AppBarButton x:Name="RefreshAppBarButton"
-                              x:Uid="RefreshAppBarButton"
-                              AutomationProperties.AutomationId="RefreshAppBarButton"
-                              Label="Refresh"
-                              Icon="Refresh"
-                              Margin="0,1,0,-1"
-                              Command="{Binding StartSyncCommand}">
-                    </AppBarButton>
+                                  x:Uid="RefreshAppBarButton"
+                                  AutomationProperties.AutomationId="RefreshAppBarButton"
+                                  Label="Refresh"
+                                  Icon="Refresh"
+                                  Margin="0,1,0,-1"
+                                  Command="{Binding StartSyncCommand}" />
                 </StackPanel>
             </Grid>
         </AppBar>
@@ -141,7 +140,7 @@
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="120" />
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <Button x:Name="backButton" Command="{Binding GoBackCommand, ElementName=pageRoot}"
@@ -153,9 +152,13 @@
             <TextBlock x:Name="ordersPageTitle" x:Uid="ordersPageTitle" Text=""
                        Style="{StaticResource PageTitleTextStyle}" Grid.Column="1"
                        IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="0,0,30,40" />
-            <TextBlock x:Name="CustomerName" Text="{Binding CustomerName}" Style="{StaticResource PageTitleTextStyle}" Grid.Column="2" Foreground="Black" 
-                        IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="0,0,30,40" FontSize="45"/>
-            <views:BackgroundSyncIndicatorUserControl Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Top" Visibility="{Binding SyncProgress, Mode=TwoWay,Converter={StaticResource InProgessVisibilityConverter}}" />
+            <TextBlock x:Name="CustomerName" Text="{Binding CustomerName}" Style="{StaticResource PageTitleTextStyle}"
+                       Grid.Column="2" Foreground="Black"
+                       IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="0,0,30,40"
+                       FontSize="45" />
+            <views:BackgroundSyncIndicatorUserControl Grid.Column="2" HorizontalAlignment="Right"
+                                                      VerticalAlignment="Top"
+                                                      Visibility="{Binding SyncProgress, Mode=TwoWay,Converter={StaticResource InProgessVisibilityConverter}}" />
         </Grid>
     </Grid>
 </prism:VisualStateAwarePage>

@@ -21,8 +21,7 @@
         <!-- Collection of items displayed by this page -->
         <CollectionViewSource
             x:Name="itemsViewSource"
-            Source="{Binding QuoteDetails}"
-          />
+            Source="{Binding QuoteDetails}" />
 
     </prism:VisualStateAwarePage.Resources>
 
@@ -38,34 +37,34 @@
 
                         <MenuFlyout x:Name="sortMenuFlyout">
                             <ToggleMenuFlyoutItem x:Name="customerName" x:Uid="customerName" Text=""
-                                                      Command="{Binding SortQuotesCommand}"
-                                                      CommandParameter="{Binding ElementName=customerName,UpdateSourceTrigger=PropertyChanged}"
-                                                      IsChecked="{Binding CustomerNamesort,Mode=TwoWay}" />
+                                                  Command="{Binding SortQuotesCommand}"
+                                                  CommandParameter="{Binding ElementName=customerName,UpdateSourceTrigger=PropertyChanged}"
+                                                  IsChecked="{Binding CustomerNamesort,Mode=TwoWay}" />
                             <ToggleMenuFlyoutItem x:Name="quoteDate" x:Uid="quoteDate" Text=""
-                                                      Command="{Binding SortQuotesCommand}"
-                                                      CommandParameter="{Binding ElementName=quoteDate,UpdateSourceTrigger=PropertyChanged}"
-                                                      IsChecked="{Binding QuoteDate,Mode=TwoWay}" />
+                                                  Command="{Binding SortQuotesCommand}"
+                                                  CommandParameter="{Binding ElementName=quoteDate,UpdateSourceTrigger=PropertyChanged}"
+                                                  IsChecked="{Binding QuoteDate,Mode=TwoWay}" />
                             <ToggleMenuFlyoutItem Text="" x:Name="salesPerson" x:Uid="salesPerson"
-                                                      Command="{Binding SortQuotesCommand}"
-                                                      CommandParameter="{Binding ElementName=salesPerson,UpdateSourceTrigger=PropertyChanged}"
-                                                      IsChecked="{Binding SalesPerson,Mode=TwoWay}" />
+                                                  Command="{Binding SortQuotesCommand}"
+                                                  CommandParameter="{Binding ElementName=salesPerson,UpdateSourceTrigger=PropertyChanged}"
+                                                  IsChecked="{Binding SalesPerson,Mode=TwoWay}" />
                             <ToggleMenuFlyoutItem Text="" x:Name="quoteStatus" x:Uid="quoteStatus"
-                                                      Command="{Binding SortQuotesCommand}"
-                                                      CommandParameter="{Binding ElementName=quoteStatus,UpdateSourceTrigger=PropertyChanged}"
-                                                      IsChecked="{Binding QuoteStatus,Mode=TwoWay}" />
+                                                  Command="{Binding SortQuotesCommand}"
+                                                  CommandParameter="{Binding ElementName=quoteStatus,UpdateSourceTrigger=PropertyChanged}"
+                                                  IsChecked="{Binding QuoteStatus,Mode=TwoWay}" />
                             <ToggleMenuFlyoutItem Text="" x:Name="quoteAmount" x:Uid="quoteAmount"
-                                                      Command="{Binding SortQuotesCommand}"
-                                                      CommandParameter="{Binding ElementName=quoteAmount,UpdateSourceTrigger=PropertyChanged}"
-                                                      IsChecked="{Binding QuoteAmount,Mode=TwoWay}" />
+                                                  Command="{Binding SortQuotesCommand}"
+                                                  CommandParameter="{Binding ElementName=quoteAmount,UpdateSourceTrigger=PropertyChanged}"
+                                                  IsChecked="{Binding QuoteAmount,Mode=TwoWay}" />
                             <MenuFlyoutSeparator />
                             <ToggleMenuFlyoutItem x:Name="sortByAscending" x:Uid="sortByAscending" Text=""
-                                                      IsChecked="{Binding IsAscending, Mode=TwoWay}"
-                                                      Command="{Binding SortByAscendingCommand}"
-                                                      CommandParameter="{Binding ElementName=sortByAscending,UpdateSourceTrigger=PropertyChanged}" />
+                                                  IsChecked="{Binding IsAscending, Mode=TwoWay}"
+                                                  Command="{Binding SortByAscendingCommand}"
+                                                  CommandParameter="{Binding ElementName=sortByAscending,UpdateSourceTrigger=PropertyChanged}" />
                             <ToggleMenuFlyoutItem x:Name="sortByDescending" x:Uid="sortByDescending" Text=""
-                                                      IsChecked="{Binding IsDescending, Mode=TwoWay}"
-                                                      Command="{Binding SortByDescendingCommand}"
-                                                      CommandParameter="{Binding ElementName=sortByDescending,UpdateSourceTrigger=PropertyChanged}" />
+                                                  IsChecked="{Binding IsDescending, Mode=TwoWay}"
+                                                  Command="{Binding SortByDescendingCommand}"
+                                                  CommandParameter="{Binding ElementName=sortByDescending,UpdateSourceTrigger=PropertyChanged}" />
                         </MenuFlyout>
                     </AppBarButton.Flyout>
                 </AppBarButton>
@@ -73,7 +72,7 @@
                     <interactivity:Interaction.Behaviors>
                         <core:EventTriggerBehavior EventName="Click">
                             <core:CallMethodAction MethodName="CreateQuoteButton_Click"
-                                                       TargetObject="{Binding Mode=OneWay}" />
+                                                   TargetObject="{Binding Mode=OneWay}" />
                         </core:EventTriggerBehavior>
                     </interactivity:Interaction.Behaviors>
                 </AppBarButton>
@@ -85,11 +84,10 @@
                               Label="Refresh"
                               Icon="Refresh"
                               Margin="0,1,0,-1"
-                              Command="{Binding StartSyncCommand}">
-                </AppBarButton>
+                              Command="{Binding StartSyncCommand}" />
             </CommandBar.SecondaryCommands>
         </CommandBar>
-    
+
     </Page.BottomAppBar>
     <prism:VisualStateAwarePage.TopAppBar>
         <AppBar x:Name="TopAppBar1" Style="{StaticResource TopAppBarUserControlStyle}" x:Uid="TopAppBar1">
@@ -131,9 +129,9 @@
             ItemsSource="{Binding Source={StaticResource itemsViewSource}}"
             SelectionMode="None"
             IsSwipeEnabled="false"
-            IsItemClickEnabled="{Binding GridViewItemClickable}"          
+            IsItemClickEnabled="{Binding GridViewItemClickable}"
             ItemTemplate="{StaticResource QuotesTemplate}"
-             Loaded="itemsGridView_Loaded">
+            Loaded="itemsGridView_Loaded">
             <interactivity:Interaction.Behaviors>
                 <core:EventTriggerBehavior EventName="ItemClick">
                     <core:CallMethodAction MethodName="GridViewItemClick"
@@ -145,11 +143,11 @@
             </interactivity:Interaction.Behaviors>
         </GridView>
 
-        <!-- Back button and page title -->       
+        <!-- Back button and page title -->
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="120" />
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <Button x:Name="backButton" Command="{Binding GoBackCommand, ElementName=pageRoot}"
@@ -161,9 +159,13 @@
             <TextBlock x:Name="quotePageTitle" x:Uid="quotesPageTitle" Text=""
                        Style="{StaticResource PageTitleTextStyle}" Grid.Column="1"
                        IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" />
-            <TextBlock x:Name="CustomerName" Text="{Binding CustomerName}" Style="{StaticResource PageTitleTextStyle}" Grid.Column="2" Foreground="Black" 
-                        IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="0,0,30,40" FontSize="45"/>
-            <views:BackgroundSyncIndicatorUserControl Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Top" Visibility="{Binding SyncProgress, Mode=TwoWay,Converter={StaticResource InProgessVisibilityConverter}}" />
+            <TextBlock x:Name="CustomerName" Text="{Binding CustomerName}" Style="{StaticResource PageTitleTextStyle}"
+                       Grid.Column="2" Foreground="Black"
+                       IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="0,0,30,40"
+                       FontSize="45" />
+            <views:BackgroundSyncIndicatorUserControl Grid.Column="2" HorizontalAlignment="Right"
+                                                      VerticalAlignment="Top"
+                                                      Visibility="{Binding SyncProgress, Mode=TwoWay,Converter={StaticResource InProgessVisibilityConverter}}" />
         </Grid>
     </Grid>
 </prism:VisualStateAwarePage>

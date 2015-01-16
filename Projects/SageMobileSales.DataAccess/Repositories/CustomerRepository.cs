@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Data.Json;
-using Microsoft.Practices.Prism.PubSubEvents;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Entities;
 using SageMobileSales.DataAccess.Events;
@@ -39,18 +38,18 @@ namespace SageMobileSales.DataAccess.Repositories
         ///     Extracts customer data from json, save and update LocalSyncDigest(local tick) in Local dB
         /// </summary>
         /// <param name="sDataCustomers"></param>
-        /// <param name="localSyncDigest"></param> 
+        /// <param name="localSyncDigest"></param>
         /// <returns></returns>
         public async Task SaveCustomersAsync(JsonObject sDataCustomers, LocalSyncDigest localSyncDigest)
         {
             try
             {
-                JsonArray sDataCustomersArray = sDataCustomers.GetNamedArray("$resources");
+                var sDataCustomersArray = sDataCustomers.GetNamedArray("$resources");
                 DataAccessUtils.CustomerReturnedCount += sDataCustomersArray.Count;
 
-                for (int customer = 0; customer < sDataCustomersArray.Count; customer++)
+                for (var customer = 0; customer < sDataCustomersArray.Count; customer++)
                 {
-                    JsonObject sDataCustomer = sDataCustomersArray[customer].GetObject();
+                    var sDataCustomer = sDataCustomersArray[customer].GetObject();
 
                     // Extracting CustomerJson and adding it into Customer Table and passing the same to Address Table to store addresses
                     await
@@ -96,7 +95,7 @@ namespace SageMobileSales.DataAccess.Repositories
         /// <returns></returns>
         public async Task SaveCustomerAsync(JsonObject sDataCustomer)
         {
-            Customer customer = await SaveCustomerDetailsAsync(sDataCustomer);
+            var customer = await SaveCustomerDetailsAsync(sDataCustomer);
             await _addressRepository.SaveAddressesAsync(sDataCustomer, customer.CustomerId);
             await _contactRepository.SaveContactsAsync(sDataCustomer, customer.CustomerId);
         }
@@ -148,7 +147,10 @@ namespace SageMobileSales.DataAccess.Repositories
             try
             {
                 //Need to implement "where IsActive='1'" on completion of Entity Status handling
-                customer = await _sageSalesDB.QueryAsync<Customer>("SELECT * FROM Customer WHERE IsActive='1' ORDER BY customerName ASC");
+                customer =
+                    await
+                        _sageSalesDB.QueryAsync<Customer>(
+                            "SELECT * FROM Customer WHERE IsActive='1' ORDER BY customerName ASC");
             }
             catch (Exception ex)
             {
@@ -193,10 +195,11 @@ namespace SageMobileSales.DataAccess.Repositories
             try
             {
                 // Retrieve the search suggestions from LocalDB
-                List<Customer> searchSuggestions =
+                var searchSuggestions =
                     await
-                        _sageSalesDB.QueryAsync<Customer>("SELECT * from customer where IsActive=1 and CustomerName like '%" +
-                                                          searchTerm + "%'");
+                        _sageSalesDB.QueryAsync<Customer>(
+                            "SELECT * from customer where IsActive=1 and CustomerName like '%" +
+                            searchTerm + "%'");
                 return searchSuggestions;
             }
             catch (Exception ex)
@@ -265,7 +268,9 @@ namespace SageMobileSales.DataAccess.Repositories
             try
             {
                 customer =
-                    await _sageSalesDB.QueryAsync<Customer>("SELECT * FROM Customer where CustomerId=? and IsActive=1", customerId);
+                    await
+                        _sageSalesDB.QueryAsync<Customer>("SELECT * FROM Customer where CustomerId=? and IsActive=1",
+                            customerId);
             }
             catch (Exception ex)
             {
@@ -276,7 +281,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Delete inactive customers
+        ///     Delete inactive customers
         /// </summary>
         /// <returns></returns>
         public async Task DeleteInActiveCustomer()
@@ -297,9 +302,10 @@ namespace SageMobileSales.DataAccess.Repositories
         #endregion
 
         # region Private Methods
+
         /// <summary>
         ///     Extracts customer from Json, update the same
-        /// </summary>        
+        /// </summary>
         /// <param name="sDataCustomer"></param>
         /// <returns></returns>
         private async Task<Customer> SaveCustomerDetailsAsync(JsonObject sDataCustomer)
@@ -427,7 +433,7 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        JsonObject sDataPeriodToDateSales = sDataCustomer.GetNamedObject("PeriodToDateSales");
+                        var sDataPeriodToDateSales = sDataCustomer.GetNamedObject("PeriodToDateSales");
                         if (sDataPeriodToDateSales.TryGetValue("YearToDate", out value))
                         {
                             if (value.ValueType.ToString() != DataAccessUtils.Null)

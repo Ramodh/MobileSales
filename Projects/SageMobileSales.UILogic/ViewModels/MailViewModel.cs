@@ -17,7 +17,6 @@ namespace SageMobileSales.UILogic.ViewModels
         private decimal _discountPercentageValue;
         private string _finalHtmlTable = string.Empty;
         private string _lineItemDetailsTable = string.Empty;
-
         private string _log = string.Empty;
         private decimal _subTotal;
         private string _subTotalDetailsTable = string.Empty;
@@ -26,8 +25,8 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             var html = new StringBuilder();
 
-            StorageFile file3 = await StorageFile.GetFileFromPathAsync(@"Htmls/QuoteEmail.html");
-            string r = await FileIO.ReadTextAsync(file3);
+            var file3 = await StorageFile.GetFileFromPathAsync(@"Htmls/QuoteEmail.html");
+            var r = await FileIO.ReadTextAsync(file3);
 
             //var rs = Application.GetResourceStream(new Uri("abc.html", UriKind.Relative));
             //StreamReader sr = new StreamReader(rs.Stream);
@@ -45,7 +44,8 @@ namespace SageMobileSales.UILogic.ViewModels
         /// <param name="subTotal"></param>
         /// <param name="total"></param>
         /// <returns></returns>
-        public string BuildQuoteEmailContent(Tenant tenant, CustomerDetails customerDetails, Address customerMailingAddress, QuoteDetails quoteDetails,
+        public string BuildQuoteEmailContent(Tenant tenant, CustomerDetails customerDetails,
+            Address customerMailingAddress, QuoteDetails quoteDetails,
             List<LineItemDetails> quoteLineItemsList, string subTotal, string total)
         {
             try
@@ -115,10 +115,10 @@ namespace SageMobileSales.UILogic.ViewModels
         /// <returns></returns>
         private string CreateQuoteLineItemRows(List<LineItemDetails> quoteLineItemsList)
         {
-            string quoteLineItemDetailsTable = string.Empty;
+            var quoteLineItemDetailsTable = string.Empty;
 
-            string quoteLineItem = string.Empty;
-            foreach (LineItemDetails lineItem in quoteLineItemsList)
+            var quoteLineItem = string.Empty;
+            foreach (var lineItem in quoteLineItemsList)
             {
                 quoteLineItem += "<tr><td><b>" + lineItem.ProductName + "</b><br />" + lineItem.ProductDescription +
                                  "</td><td>" + lineItem.ProductSku + "</td><td>" + lineItem.LineItemQuantity +
@@ -139,7 +139,8 @@ namespace SageMobileSales.UILogic.ViewModels
         /// <param name="subTotal"></param>
         /// <param name="total"></param>
         /// <returns></returns>
-        public string BuildOrderEmailContent(Tenant tenant, CustomerDetails customerDetails, Address customerMailingAddress, OrderDetails orderDetails,
+        public string BuildOrderEmailContent(Tenant tenant, CustomerDetails customerDetails,
+            Address customerMailingAddress, OrderDetails orderDetails,
             List<LineItemDetails> orderLineItemsList, string subTotal, string total)
         {
             try

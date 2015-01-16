@@ -41,7 +41,7 @@ namespace SageMobileSales.DataAccess.Repositories
                     //JsonObject sDataOrdeLineItems = sDataOrder.GetNamedObject("Details");
                     if (sDataOrder.ContainsKey("Details"))
                     {
-                        JsonArray sDataOrderLineItemArray = sDataOrder.GetNamedArray("Details");
+                        var sDataOrderLineItemArray = sDataOrder.GetNamedArray("Details");
                         if (sDataOrderLineItemArray.Count > 0)
                         {
                             await SaveOrderLineItemDetailsAsync(sDataOrderLineItemArray, orderId);
@@ -68,10 +68,10 @@ namespace SageMobileSales.DataAccess.Repositories
             {
                 LineItemList =
                     await
-                    //_sageSalesDB.QueryAsync<LineItemDetails>(
-                    //    "SELECT distinct OrderLT.Price as LineItemPrice,OrderLT.Quantity as LineItemQuantity, Product.ProductName, Product.ProductId, Product.Sku as ProductSku,(select PAB.url from  ProductAssociatedBlob as PAB where Product.ProductId=PAB.ProductId And PAB.IsPrimary=1) as Url from OrderLineItem as OrderLT Join Product  on OrderLT.ProductId=Product.ProductId where OrderLT.OrderId=?",
-                    //    orderId);
-                _sageSalesDB.QueryAsync<LineItemDetails>(
+                        //_sageSalesDB.QueryAsync<LineItemDetails>(
+                        //    "SELECT distinct OrderLT.Price as LineItemPrice,OrderLT.Quantity as LineItemQuantity, Product.ProductName, Product.ProductId, Product.Sku as ProductSku,(select PAB.url from  ProductAssociatedBlob as PAB where Product.ProductId=PAB.ProductId And PAB.IsPrimary=1) as Url from OrderLineItem as OrderLT Join Product  on OrderLT.ProductId=Product.ProductId where OrderLT.OrderId=?",
+                        //    orderId);
+                        _sageSalesDB.QueryAsync<LineItemDetails>(
                             "SELECT distinct Product.ProductId, OrderLT.OrderLineItemId as LineItemId, OrderLT.ProductId as ProductId, OrderLT.Price as LineItemPrice,OrderLT.Quantity as LineItemQuantity, Product.ProductName, Product.Sku as ProductSku, (select PAB.url from  ProductAssociatedBlob as PAB where Product.ProductId=PAB.ProductId And (PAB.IsPrimary=1 OR PAB.IsPrimary=0)) as Url  from OrderLineItem as OrderLT Join Product  on OrderLT.ProductId=Product.ProductId where OrderLT.OrderId=?",
                             orderId);
             }
@@ -205,9 +205,9 @@ namespace SageMobileSales.DataAccess.Repositories
         {
             //await DeleteOrderLineItemsFromDbAsync(sDataOrderLineItemArray, orderId);
 
-            foreach (IJsonValue orderLineItem in sDataOrderLineItemArray)
+            foreach (var orderLineItem in sDataOrderLineItemArray)
             {
-                JsonObject sDataOrderLineItem = orderLineItem.GetObject();
+                var sDataOrderLineItem = orderLineItem.GetObject();
                 await AddOrUpdateOrderLineItemJsonToDbAsync(sDataOrderLineItem, orderId);
             }
         }
@@ -313,7 +313,7 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        List<Product> productDb =
+                        var productDb =
                             await
                                 _sageSalesDB.QueryAsync<Product>("SELECT * FROM Product WHERE ProductId=?",
                                     sDataOrderLineItem.GetNamedString("InventoryItemId"));

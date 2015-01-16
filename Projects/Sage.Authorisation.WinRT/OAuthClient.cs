@@ -3,9 +3,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Resources;
 using Windows.Foundation;
+using Windows.UI.Popups;
 using Sage.Authorisation.WinRT.Exceptions;
 using Sage.Authorisation.WinRT.Storage;
-using Windows.UI.Popups;
 
 namespace Sage.Authorisation.WinRT
 {
@@ -41,61 +41,6 @@ namespace Sage.Authorisation.WinRT
     /// </example>
     public sealed class OAuthClient
     {
-        #region Fields
-
-        private readonly CredentialStore _certificateStore;
-        private readonly string _clientId;
-        private readonly ResourceLoader _loader = new ResourceLoader("Sage.Authorisation.WinRT/Resources");
-        private readonly Logger _log;
-        private readonly TokenStore _tokenStore;
-        private volatile bool _busy;
-        private Configuration _configuration = new Configuration();
-        private HttpHelper _httpHelper;
-        private bool _suppressInteractive;
-
-        #endregion
-
-        #region Constructors
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="OAuthClient" /> class.
-        /// </summary>
-        /// <param name="clientId">The client id.</param>
-        public OAuthClient(string clientId)
-        {
-            _clientId = clientId;
-
-            // duplicating this initialisation to keep fields readonly
-            _log = new Logger();
-            _log.LogMessage += SurfaceLogEvent;
-
-            _httpHelper = new HttpHelper(_log, _configuration);
-            _tokenStore = new TokenStore(_clientId, _log, _httpHelper);
-            _certificateStore = new CredentialStore(clientId, _httpHelper);
-        }
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="OAuthClient" /> class.
-        /// </summary>
-        /// <param name="clientId">The client id.</param>
-        /// <param name="supressInteractive">
-        ///     if set to <c>true</c> then the client will throw an exception if the authorisation
-        ///     needs user intervention (i.e. access token and refresh token are expired).
-        /// </param>
-        public OAuthClient(string clientId, bool supressInteractive)
-        {
-            _clientId = clientId;
-            _suppressInteractive = supressInteractive;
-
-            // duplicating this initialisation to keep fields readonly
-            _log = new Logger();
-            _log.LogMessage += SurfaceLogEvent;
-            _tokenStore = new TokenStore(_clientId, _log, _httpHelper);
-            _certificateStore = new CredentialStore(clientId, _httpHelper);
-        }
-
-        #endregion
-
         /// <summary>
         ///     <para>
         ///         The client ID you were provided with on registration. Please contact SSDPDeveloperSupport@sage.com to obtain a
@@ -288,7 +233,7 @@ namespace Sage.Authorisation.WinRT
             }
             if (isServerChanged)
             {
-                CredentialStore credentialStore = new CredentialStore(_clientId, new HttpHelper(_log, _configuration));
+                var credentialStore = new CredentialStore(_clientId, new HttpHelper(_log, _configuration));
 
                 _log.Info(LogEventType.ClearingClientCredential, _loader.GetString("LogClearingClientCredential"));
 
@@ -332,12 +277,12 @@ namespace Sage.Authorisation.WinRT
         /// <exception cref="System.Exception"></exception>
         private async Task<AuthorisationResult> AuthoriseUserAsync(AuthorisationInfo currentAuthorisation)
         {
-            bool hasCert = _certificateStore.HasValidCredential();
+            var hasCert = _certificateStore.HasValidCredential();
 
             // gets uri using mutually authenticated initial call if necessary
-            Uri brokerUri = await _httpHelper.StartAuthorisationAttemptAsync(currentAuthorisation, hasCert);
+            var brokerUri = await _httpHelper.StartAuthorisationAttemptAsync(currentAuthorisation, hasCert);
 
-            Uri resultUri =
+            var resultUri =
                 await _httpHelper.AuthenticateUsingBrokerAsync(brokerUri, new Uri(_configuration.RedirectUri));
 
             var formDecoder = new WwwFormUrlDecoder(resultUri.Query);
@@ -354,15 +299,16 @@ namespace Sage.Authorisation.WinRT
                 // no parameters on returned uri
                 if (resultUri.Query.Length == 0)
                 {
-                    await ShowMessageDialogAsync("Sign in failed","There was a problem contacting the sign in server");
+                    await ShowMessageDialogAsync("Sign in failed", "There was a problem contacting the sign in server");
                     throw new AuthorisationException(currentAuthorisation.State);
                 }
 
                 // returned uri contains error details
                 if (formDecoder.Any(x => x.Name == Configuration.RedirectUriError))
                 {
-
-                    await ShowMessageDialogAsync("Unable to sign in","The user has not been granted sufficient permission to proceed.");
+                    await
+                        ShowMessageDialogAsync("Unable to sign in",
+                            "The user has not been granted sufficient permission to proceed.");
                     // if these other parameters are not present in the query this will throw an index out of bounds exception (or something like that)
                     // but they should always be here.
                     throw new AuthorisationErrorResponseException(currentAuthorisation.State
@@ -370,17 +316,19 @@ namespace Sage.Authorisation.WinRT
                         , formDecoder.GetFirstValueByName(Configuration.RedirectUriErrorDescription));
                 }
 
-                IWwwFormUrlDecoderEntry accessCodeParameter =
+                var accessCodeParameter =
                     formDecoder.FirstOrDefault(x => x.Name == _configuration.StartAuthorisationResponseType);
                 if (accessCodeParameter == null || String.IsNullOrEmpty(accessCodeParameter.Value))
                 {
-                    await ShowMessageDialogAsync("Authorisation failed", "The user has not been granted sufficient permission to proceed.");
+                    await
+                        ShowMessageDialogAsync("Authorisation failed",
+                            "The user has not been granted sufficient permission to proceed.");
                     // no authorisation result returned
                     throw new AuthorisationException(currentAuthorisation.State);
                 }
 
-                bool requestCredential = false;
-                IWwwFormUrlDecoderEntry requestCredentialParameter =
+                var requestCredential = false;
+                var requestCredentialParameter =
                     formDecoder.FirstOrDefault(x => x.Name == Configuration.RedirectUriCred);
                 if (requestCredentialParameter != null &&
                     bool.TryParse(requestCredentialParameter.Value, out requestCredential))
@@ -390,7 +338,7 @@ namespace Sage.Authorisation.WinRT
                             currentAuthorisation.DeviceName, currentAuthorisation.State);
                 }
 
-                AccessToken accessToken =
+                var accessToken =
                     await
                         _tokenStore.GetAndStoreTokensAsync(accessCodeParameter.Value, currentAuthorisation.Scope,
                             _configuration.RedirectUri, currentAuthorisation.State);
@@ -400,7 +348,7 @@ namespace Sage.Authorisation.WinRT
                     AccessToken = accessToken.Token,
                     Expiry = accessToken.ExpiryUtc,
                     State = currentAuthorisation.State,
-                    Success = true,
+                    Success = true
                 };
 
                 return result;
@@ -501,7 +449,7 @@ namespace Sage.Authorisation.WinRT
 
             _log.Info(LogEventType.InteractiveAuthentication, _loader.GetString("LogInteractiveAuthentication"));
 
-            AuthorisationResult result = await AuthoriseUserAsync(currentAuthorisationInfo);
+            var result = await AuthoriseUserAsync(currentAuthorisationInfo);
 
             return result;
         }
@@ -529,7 +477,7 @@ namespace Sage.Authorisation.WinRT
         {
             result = null;
 
-            AccessToken token = _tokenStore.GetValidAccessToken(currentAuthorisation.Scope);
+            var token = _tokenStore.GetValidAccessToken(currentAuthorisation.Scope);
 
             if (token != null)
             {
@@ -553,7 +501,7 @@ namespace Sage.Authorisation.WinRT
         {
             try
             {
-                AccessToken accessToken = await _tokenStore.RefreshAccessTokenAsync(currentAuthorisationInfo);
+                var accessToken = await _tokenStore.RefreshAccessTokenAsync(currentAuthorisationInfo);
 
                 if (accessToken != null)
                 {
@@ -562,7 +510,7 @@ namespace Sage.Authorisation.WinRT
                         AccessToken = accessToken.Token,
                         Expiry = accessToken.ExpiryUtc,
                         State = currentAuthorisationInfo.State,
-                        Success = true,
+                        Success = true
                     };
 
                     return result;
@@ -587,7 +535,6 @@ namespace Sage.Authorisation.WinRT
 
         private async Task ShowMessageDialogAsync(string errorTitle, string errorText)
         {
-
             //switch (result.StatusCode)
             //{
             //    case HttpStatusCode.BadRequest:
@@ -616,5 +563,60 @@ namespace Sage.Authorisation.WinRT
             //var msgDialog = new MessageDialog(errorText);
             await msgDialog.ShowAsync();
         }
+
+        #region Fields
+
+        private readonly CredentialStore _certificateStore;
+        private readonly string _clientId;
+        private readonly ResourceLoader _loader = new ResourceLoader("Sage.Authorisation.WinRT/Resources");
+        private readonly Logger _log;
+        private readonly TokenStore _tokenStore;
+        private volatile bool _busy;
+        private Configuration _configuration = new Configuration();
+        private HttpHelper _httpHelper;
+        private bool _suppressInteractive;
+
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="OAuthClient" /> class.
+        /// </summary>
+        /// <param name="clientId">The client id.</param>
+        public OAuthClient(string clientId)
+        {
+            _clientId = clientId;
+
+            // duplicating this initialisation to keep fields readonly
+            _log = new Logger();
+            _log.LogMessage += SurfaceLogEvent;
+
+            _httpHelper = new HttpHelper(_log, _configuration);
+            _tokenStore = new TokenStore(_clientId, _log, _httpHelper);
+            _certificateStore = new CredentialStore(clientId, _httpHelper);
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="OAuthClient" /> class.
+        /// </summary>
+        /// <param name="clientId">The client id.</param>
+        /// <param name="supressInteractive">
+        ///     if set to <c>true</c> then the client will throw an exception if the authorisation
+        ///     needs user intervention (i.e. access token and refresh token are expired).
+        /// </param>
+        public OAuthClient(string clientId, bool supressInteractive)
+        {
+            _clientId = clientId;
+            _suppressInteractive = supressInteractive;
+
+            // duplicating this initialisation to keep fields readonly
+            _log = new Logger();
+            _log.LogMessage += SurfaceLogEvent;
+            _tokenStore = new TokenStore(_clientId, _log, _httpHelper);
+            _certificateStore = new CredentialStore(clientId, _httpHelper);
+        }
+
+        #endregion
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Windows.ApplicationModel.Resources;
-using Microsoft.Practices.Prism.PubSubEvents;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Events;
 using SageMobileSales.ServiceAgents.Common;
@@ -17,7 +16,6 @@ namespace SageMobileSales.ServiceAgents.Services
         private readonly IProductService _productService;
         private readonly IQuoteService _quoteService;
         private string _log = string.Empty;
-
 
         public SyncCoordinatorService(IProductCategoryService productCategoryService, IProductService productService,
             IProductAssociatedBlobService productAssociatedBlobService, ICustomerService customerService,

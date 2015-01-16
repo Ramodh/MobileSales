@@ -1,8 +1,5 @@
 ﻿using System;
 using Windows.ApplicationModel;
-using Microsoft.Practices.Prism.PubSubEvents;
-using Microsoft.Practices.Prism.StoreApps;
-using Microsoft.Practices.Prism.StoreApps.Interfaces;
 
 namespace SageMobileSales.UILogic.ViewModels
 {
@@ -28,7 +25,7 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             get
             {
-                PackageVersion version = Package.Current.Id.Version;
+                var version = Package.Current.Id.Version;
                 return String.Format("Version {0}.{1}.{2}.{3}", version.Major, version.Minor, version.Build,
                     version.Revision);
             }

@@ -21,10 +21,8 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-using Q42.WinRT.Data;
 using System;
 using System.Net.Http;
-using Windows.Storage.Streams;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -36,20 +34,6 @@ namespace SageMobileSales.Views
 {
     public sealed partial class ImageplaceHolderUserControl : UserControl
     {
-        /// <summary>
-        ///     ImagePlaceholder
-        /// </summary>
-        public static readonly DependencyProperty PlaceholderProperty =
-            DependencyProperty.Register("Placeholder", typeof(ImageSource), typeof(ImageplaceHolderUserControl),
-                new PropertyMetadata(default(ImageSource), PlaceHolderChanged));
-
-        /// <summary>
-        ///     Binding Real time Images to Source
-        /// </summary>
-        public static readonly DependencyProperty SourceProperty =
-            DependencyProperty.Register("Source", typeof(Uri), typeof(ImageplaceHolderUserControl),
-                new PropertyMetadata(default(ImageSource), SourceChanged));
-
         public ImageplaceHolderUserControl()
         {
             InitializeComponent();
@@ -57,19 +41,19 @@ namespace SageMobileSales.Views
 
         public ImageSource Placeholder
         {
-            get { return (ImageSource)GetValue(PlaceholderProperty); }
+            get { return (ImageSource) GetValue(PlaceholderProperty); }
             set { SetValue(PlaceholderProperty, value); }
         }
 
         public Uri Source
         {
-            get { return (Uri)GetValue(SourceProperty); }
+            get { return (Uri) GetValue(SourceProperty); }
             set { SetValue(SourceProperty, value); }
         }
 
         private static void PlaceHolderChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            (d as ImageplaceHolderUserControl).Image.Source = (ImageSource)e.NewValue;
+            (d as ImageplaceHolderUserControl).Image.Source = (ImageSource) e.NewValue;
         }
 
         /// <summary>
@@ -79,9 +63,9 @@ namespace SageMobileSales.Views
         /// <param name="e"></param>
         private static async void SourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var control = (ImageplaceHolderUserControl)d;
+            var control = (ImageplaceHolderUserControl) d;
             var bitmapImage = new BitmapImage();
-            Uri newCacheUri = (Uri)d.GetValue(SourceProperty);
+            var newCacheUri = (Uri) d.GetValue(SourceProperty);
             // HttpClientRequest Exception will be caused by failure of internet or invalid request/response
             var httpClient = new HttpClient();
             try
@@ -92,13 +76,11 @@ namespace SageMobileSales.Views
 
                 if (newCacheUri != null)
                 {
-
-
                     //Get image from cache (download and set in cache if needed)
                     var cacheUri = await WebDataCache.GetLocalUriAsync(newCacheUri);
 
                     // Check if the wanted image uri has not changed while we were loading
-                    if (newCacheUri != (Uri)d.GetValue(SourceProperty)) return;
+                    if (newCacheUri != (Uri) d.GetValue(SourceProperty)) return;
 
 #if NETFX_CORE
                     //Set cache uri as source for the image
@@ -118,7 +100,6 @@ namespace SageMobileSales.Views
                         //Set cache uri as source for the image
                         image.Source = bimg;
 #endif
-
                 }
             }
             catch (Exception ex)
@@ -126,8 +107,6 @@ namespace SageMobileSales.Views
                 control.LoadImage(new BitmapImage(newCacheUri));
             }
         }
-
-
 
         /// <summary>
         ///     Loading images with animation
@@ -142,5 +121,19 @@ namespace SageMobileSales.Views
             };
             ImageFadeOut.Begin();
         }
+
+        /// <summary>
+        ///     ImagePlaceholder
+        /// </summary>
+        public static readonly DependencyProperty PlaceholderProperty =
+            DependencyProperty.Register("Placeholder", typeof (ImageSource), typeof (ImageplaceHolderUserControl),
+                new PropertyMetadata(default(ImageSource), PlaceHolderChanged));
+
+        /// <summary>
+        ///     Binding Real time Images to Source
+        /// </summary>
+        public static readonly DependencyProperty SourceProperty =
+            DependencyProperty.Register("Source", typeof (Uri), typeof (ImageplaceHolderUserControl),
+                new PropertyMetadata(default(ImageSource), SourceChanged));
     }
 }

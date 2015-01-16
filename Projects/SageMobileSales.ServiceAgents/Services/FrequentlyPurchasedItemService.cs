@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Windows.Data.Json;
 using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
 
@@ -27,7 +26,7 @@ namespace SageMobileSales.ServiceAgents.Services
             parameters = new Dictionary<string, string>();
             customerId = "CustomerId eq guid" + "'" + customerId + "'";
             parameters.Add("where", customerId);
-            parameters.Add("orderBy","NumberOfInvoices desc");
+            parameters.Add("orderBy", "NumberOfInvoices desc");
 
             //string frequentlyPurchasedItemByCustomerEntityId = Constants.FrequentlyPurchasedItem + "('" + customerId + "')";
             HttpResponseMessage frequentlyPurchasedItemResponse = null;
@@ -39,7 +38,7 @@ namespace SageMobileSales.ServiceAgents.Services
 
             if (frequentlyPurchasedItemResponse != null && frequentlyPurchasedItemResponse.IsSuccessStatusCode)
             {
-                JsonObject sDataFrequentlyPurchasedItem =
+                var sDataFrequentlyPurchasedItem =
                     await _serviceAgent.ConvertTosDataObject(frequentlyPurchasedItemResponse);
                 await _frequentlyPurchasedItemRepository.SaveFrequentlyPurchasedItemsAsync(sDataFrequentlyPurchasedItem);
             }

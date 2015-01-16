@@ -18,7 +18,7 @@
     x:Uid="Page">
 
     <prism:VisualStateAwarePage.Resources>
-        <converter:BackgroundConverter x:Key="BackgroundConverter"/>
+        <converter:BackgroundConverter x:Key="BackgroundConverter" />
     </prism:VisualStateAwarePage.Resources>
 
     <!--<prism:VisualStateAwarePage.TopAppBar>
@@ -91,13 +91,13 @@
             <!--<TextBox Grid.Column="2" Height="50" Width="300" Margin="5,59,-5,31">            
             </TextBox>-->
             <Button x:Name="searchButton"
-                VerticalAlignment="Center"
-                HorizontalAlignment="Right"
-                Padding="0"
-                Height="40"
-                Width="40"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Right"
+                    Padding="0"
+                    Height="40"
+                    Width="40"
                     Grid.Column="3"
-                BorderThickness="0"/>
+                    BorderThickness="0" />
             <SearchBox x:Name="CreateQuoteCustomerSearchBox" Grid.Column="3" Grid.Row="0"
                        x:Uid="CreateCustomerSearchBox"
                        PlaceholderText="{Binding CustomerSearchBoxText}"
@@ -138,7 +138,8 @@
                       SelectionMode="Single">
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                        <StackPanel Style="{StaticResource ListViewStackpnlStyle}" MaxWidth="375" Background="{Binding createFromText,Converter={StaticResource BackgroundConverter}}">
+                        <StackPanel Style="{StaticResource ListViewStackpnlStyle}" MaxWidth="375"
+                                    Background="{Binding createFromText,Converter={StaticResource BackgroundConverter}}">
                             <TextBlock Text="{Binding createFrom}" Style="{StaticResource ListviewTextblkStyle}"
                                        Margin="5,0,0,0" Padding="3" />
                             <TextBlock Text="{Binding createFromText}" Style="{StaticResource AddressTextStyle}"
@@ -163,7 +164,8 @@
             <TextBox HorizontalAlignment="Left" Grid.Row="1" Grid.Column="3" VerticalAlignment="Top"
                      Style="{StaticResource createQuoteEditBlockStyle}" Text="{Binding QuoteDescription, Mode=TwoWay}"
                      AcceptsReturn="True" TextWrapping="Wrap" />
-            <Button x:Uid="saveQuote" Content="" Grid.Column="5" Grid.Row="1" VerticalAlignment="Bottom" IsTapEnabled="{Binding IsSaveEnabled,Mode=TwoWay}"
+            <Button x:Uid="saveQuote" Content="" Grid.Column="5" Grid.Row="1" VerticalAlignment="Bottom"
+                    IsTapEnabled="{Binding IsSaveEnabled,Mode=TwoWay}"
                     Style="{StaticResource ButtonNormalStyle}">
                 <interactivity:Interaction.Behaviors>
                     <core:EventTriggerBehavior EventName="Click">

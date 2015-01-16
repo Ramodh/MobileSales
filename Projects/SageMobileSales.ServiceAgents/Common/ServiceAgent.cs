@@ -18,19 +18,19 @@ namespace SageMobileSales.ServiceAgents.Common
     {
         private readonly IOAuthService _oAuthService;
 
+        public ServiceAgent(IOAuthService oAuthService)
+        {
+            var configSettings = ApplicationData.Current.LocalSettings;
+            _oAuthService = oAuthService;
+            //  _requestUrl = Constants.Url;
+        }
+
         # region Local Variables
 
         private string _log = string.Empty;
         private string _requestUrl;
 
         # endregion
-
-        public ServiceAgent(IOAuthService oAuthService)
-        {
-            ApplicationDataContainer configSettings = ApplicationData.Current.LocalSettings;
-            _oAuthService = oAuthService;
-            //  _requestUrl = Constants.Url;
-        }
 
         #region public methods
 
@@ -53,8 +53,8 @@ namespace SageMobileSales.ServiceAgents.Common
                 {
                     if (Constants.ConnectedToInternet())
                     {
-                        string _url = string.Empty;
-                        string _parameters = string.Empty;
+                        var _url = string.Empty;
+                        var _parameters = string.Empty;
                         HttpRequestMessage req = null;
 
                         if (!string.IsNullOrEmpty(tenantId))
@@ -76,7 +76,7 @@ namespace SageMobileSales.ServiceAgents.Common
                         }
                         if (parameters != null)
                         {
-                            for (int parameter = 0; parameter < parameters.Count; parameter++)
+                            for (var parameter = 0; parameter < parameters.Count; parameter++)
                             {
                                 if (parameter == parameters.Count - 1)
                                 {
@@ -121,7 +121,8 @@ namespace SageMobileSales.ServiceAgents.Common
                             {
                                 if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == 0)
                                 {
-                                    return response = await GetRefreshTokenAndMakeRequest(req, _url, HttpMethod.Get, null);
+                                    return
+                                        response = await GetRefreshTokenAndMakeRequest(req, _url, HttpMethod.Get, null);
                                 }
                             }
                         }
@@ -165,8 +166,8 @@ namespace SageMobileSales.ServiceAgents.Common
             {
                 if (!Constants.IsDbDeleted)
                 {
-                    string _url = string.Empty;
-                    string _parameters = string.Empty;
+                    var _url = string.Empty;
+                    var _parameters = string.Empty;
 
                     if (!string.IsNullOrEmpty(tenantId))
                     {
@@ -192,7 +193,7 @@ namespace SageMobileSales.ServiceAgents.Common
                         "Mozilla/5.0 (Windows NT 6.2; WOW64; rv:19.0) Gecko/20100101 Firefox/19.0");
                     httpClient.DefaultRequestHeaders.TryAddWithoutValidation("AppProtocolVersion", "1.0.0.0");
 
-                    string serialized = JsonConvert.SerializeObject(parameters);
+                    var serialized = JsonConvert.SerializeObject(parameters);
                     if (Constants.ConnectedToInternet())
                     {
                         response =
@@ -203,7 +204,10 @@ namespace SageMobileSales.ServiceAgents.Common
                         {
                             if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == 0)
                             {
-                                response = await GetRefreshTokenAndMakeRequest(null, _url, HttpMethod.Post, new StringContent(serialized, Encoding.UTF8, "application/json"));
+                                response =
+                                    await
+                                        GetRefreshTokenAndMakeRequest(null, _url, HttpMethod.Post,
+                                            new StringContent(serialized, Encoding.UTF8, "application/json"));
                                 return response.IsSuccessStatusCode;
                             }
                         }
@@ -253,8 +257,8 @@ namespace SageMobileSales.ServiceAgents.Common
             HttpResponseMessage response = null;
             try
             {
-                string _url = string.Empty;
-                string _parameters = string.Empty;
+                var _url = string.Empty;
+                var _parameters = string.Empty;
 
                 if (!string.IsNullOrEmpty(tenantId))
                 {
@@ -272,7 +276,7 @@ namespace SageMobileSales.ServiceAgents.Common
 
                 if (parameters != null)
                 {
-                    for (int parameter = 0; parameter < parameters.Count; parameter++)
+                    for (var parameter = 0; parameter < parameters.Count; parameter++)
                     {
                         if (parameter == parameters.Count - 1)
                         {
@@ -300,7 +304,7 @@ namespace SageMobileSales.ServiceAgents.Common
                     "Mozilla/5.0 (Windows NT 6.2; WOW64; rv:19.0) Gecko/20100101 Firefox/19.0");
                 httpClient.DefaultRequestHeaders.TryAddWithoutValidation("AppProtocolVersion", "1.0.0.0");
 
-                string serialized = GetSerializedObject(obj);
+                var serialized = GetSerializedObject(obj);
 
                 if (Constants.ConnectedToInternet())
                 {
@@ -311,7 +315,10 @@ namespace SageMobileSales.ServiceAgents.Common
                     {
                         if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == 0)
                         {
-                            response = await GetRefreshTokenAndMakeRequest(null, _url, HttpMethod.Post, new StringContent(serialized, Encoding.UTF8, "application/json"));
+                            response =
+                                await
+                                    GetRefreshTokenAndMakeRequest(null, _url, HttpMethod.Post,
+                                        new StringContent(serialized, Encoding.UTF8, "application/json"));
                             return response;
                         }
                     }
@@ -357,8 +364,8 @@ namespace SageMobileSales.ServiceAgents.Common
             HttpResponseMessage response = null;
             try
             {
-                string _url = string.Empty;
-                string _parameters = string.Empty;
+                var _url = string.Empty;
+                var _parameters = string.Empty;
                 if (queryEntity != null)
                 {
                     _url += _requestUrl + entity + "/" + queryEntity;
@@ -370,7 +377,7 @@ namespace SageMobileSales.ServiceAgents.Common
 
                 if (parameters != null)
                 {
-                    for (int parameter = 0; parameter < parameters.Count; parameter++)
+                    for (var parameter = 0; parameter < parameters.Count; parameter++)
                     {
                         if (parameter == parameters.Count - 1)
                         {
@@ -398,7 +405,7 @@ namespace SageMobileSales.ServiceAgents.Common
                     "Mozilla/5.0 (Windows NT 6.2; WOW64; rv:19.0) Gecko/20100101 Firefox/19.0");
                 httpClient.DefaultRequestHeaders.TryAddWithoutValidation("AppProtocolVersion", "1.0.0.0");
 
-                string serialized = GetSerializedObject(obj);
+                var serialized = GetSerializedObject(obj);
 
                 if (Constants.ConnectedToInternet())
                 {
@@ -409,7 +416,10 @@ namespace SageMobileSales.ServiceAgents.Common
                     {
                         if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == 0)
                         {
-                            response = await GetRefreshTokenAndMakeRequest(null, _url, HttpMethod.Put, new StringContent(serialized, Encoding.UTF8, "application/json"));
+                            response =
+                                await
+                                    GetRefreshTokenAndMakeRequest(null, _url, HttpMethod.Put,
+                                        new StringContent(serialized, Encoding.UTF8, "application/json"));
                             return response;
                         }
                     }
@@ -447,8 +457,8 @@ namespace SageMobileSales.ServiceAgents.Common
             HttpResponseMessage response = null;
             try
             {
-                string _url = string.Empty;
-                string _parameters = string.Empty;
+                var _url = string.Empty;
+                var _parameters = string.Empty;
 
                 if (!string.IsNullOrEmpty(tenantId))
                 {
@@ -466,7 +476,7 @@ namespace SageMobileSales.ServiceAgents.Common
 
                 if (parameters != null)
                 {
-                    for (int parameter = 0; parameter < parameters.Count; parameter++)
+                    for (var parameter = 0; parameter < parameters.Count; parameter++)
                     {
                         if (parameter == parameters.Count - 1)
                         {
@@ -499,7 +509,7 @@ namespace SageMobileSales.ServiceAgents.Common
                 //{
                 var method = new HttpMethod("PATCH");
 
-                string serialized = GetSerializedObject(obj);
+                var serialized = GetSerializedObject(obj);
 
                 var request = new HttpRequestMessage(method, _url)
                 {
@@ -567,8 +577,8 @@ namespace SageMobileSales.ServiceAgents.Common
             HttpResponseMessage response = null;
             try
             {
-                string _url = string.Empty;
-                string _parameters = string.Empty;
+                var _url = string.Empty;
+                var _parameters = string.Empty;
 
                 if (!string.IsNullOrEmpty(tenantId))
                 {
@@ -642,8 +652,8 @@ namespace SageMobileSales.ServiceAgents.Common
         {
             try
             {
-                string responseBodyAsText = await sDataResponse.Content.ReadAsStringAsync();
-                JsonObject responsesDataObject = JsonValue.Parse(responseBodyAsText).GetObject();
+                var responseBodyAsText = await sDataResponse.Content.ReadAsStringAsync();
+                var responsesDataObject = JsonValue.Parse(responseBodyAsText).GetObject();
                 return responsesDataObject;
             }
 
@@ -666,7 +676,7 @@ namespace SageMobileSales.ServiceAgents.Common
         /// <returns></returns>
         private string GetSerializedObject(Object obj)
         {
-            string serialized = JsonConvert.SerializeObject(obj);
+            var serialized = JsonConvert.SerializeObject(obj);
             serialized = serialized.Replace("\"key\"", "\"$key\"");
             serialized = serialized.Replace("\"resources", "\"$resources");
 
@@ -699,14 +709,16 @@ namespace SageMobileSales.ServiceAgents.Common
         }
 
         /// <summary>
-        /// Get Refresh token from WINRT library and sending request again to the server.
+        ///     Get Refresh token from WINRT library and sending request again to the server.
         /// </summary>
         /// <param name="request"></param>
         /// <param name="url"></param>
         /// <param name="requestType"></param>
-        /// /// <param name="requestConent"></param>
+        /// ///
+        /// <param name="requestConent"></param>
         /// <returns></returns>
-        private async Task<HttpResponseMessage> GetRefreshTokenAndMakeRequest(HttpRequestMessage request, string url, HttpMethod requestType, HttpContent requestConent)
+        private async Task<HttpResponseMessage> GetRefreshTokenAndMakeRequest(HttpRequestMessage request, string url,
+            HttpMethod requestType, HttpContent requestConent)
         {
             HttpResponseMessage response = null;
             try
@@ -717,7 +729,7 @@ namespace SageMobileSales.ServiceAgents.Common
                 var httpClient = new HttpClient();
 
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer",
-                     Constants.AccessToken);
+                    Constants.AccessToken);
 
                 httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Accept", "application/json");
                 httpClient.DefaultRequestHeaders.TryAddWithoutValidation("AppProtocol", "Mobile Sales");
@@ -733,14 +745,14 @@ namespace SageMobileSales.ServiceAgents.Common
                 else if (requestType == HttpMethod.Post)
                 {
                     response =
-                          await
-                              httpClient.PostAsync(url, requestConent);
+                        await
+                            httpClient.PostAsync(url, requestConent);
                 }
                 else if (requestType == HttpMethod.Put)
                 {
                     response =
-                          await
-                              httpClient.PutAsync(url, requestConent);
+                        await
+                            httpClient.PutAsync(url, requestConent);
                 }
                 else if (requestType == HttpMethod.Delete)
                 {
@@ -756,7 +768,6 @@ namespace SageMobileSales.ServiceAgents.Common
                 }
                 else
                 {
-
                     response = null;
                 }
             }
@@ -767,6 +778,7 @@ namespace SageMobileSales.ServiceAgents.Common
             }
             return response;
         }
+
         #endregion
     }
 }

@@ -43,8 +43,7 @@
                               Label="Refresh"
                               Icon="Refresh"
                               Margin="0,1,0,-1"
-                              Command="{Binding StartSyncCommand}">
-                </AppBarButton>
+                              Command="{Binding StartSyncCommand}" />
             </CommandBar.SecondaryCommands>
 
         </CommandBar>

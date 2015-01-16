@@ -3,55 +3,20 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Resources;
 using Windows.Storage;
+using Windows.UI.Popups;
 using Windows.UI.Xaml.Navigation;
-using Microsoft.Practices.Prism.StoreApps;
-using Microsoft.Practices.Prism.StoreApps.Interfaces;
 using SageMobileSales.DataAccess;
 using SageMobileSales.DataAccess.Common;
+using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
 using SageMobileSales.ServiceAgents.Services;
 using SageMobileSales.UILogic.Common;
 using SQLite;
-using SageMobileSales.DataAccess.Repositories;
-using Windows.UI.Popups;
 
 namespace SageMobileSales.UILogic.ViewModels
 {
     public class SigninPageViewModel : ViewModel
     {
-        #region Fields
-
-        private readonly IDatabase _database;
-        private readonly INavigationService _navigationService;
-        private readonly ISalesRepService _salesRepService;
-        private readonly ITenantRepository _tenantRepository;
-        private readonly ILocalSyncDigestRepository _localSyncDigestRepository;
-        private readonly ITenantService _tenantService;
-        private readonly IOAuthService _oAuthService;
-
-
-        private string _accessToken;
-        private bool _inProgress;
-        private bool _isSignInDisabled;
-        private string _log = string.Empty;
-        private SQLiteAsyncConnection _sageSalesDB;
-        public DelegateCommand SignInCommand { get; private set; }
-        ApplicationDataContainer settingsLocal;
-
-        public bool InProgress
-        {
-            get { return _inProgress; }
-            private set { SetProperty(ref _inProgress, value); }
-        }
-
-        public bool isSignInDisabled
-        {
-            get { return _isSignInDisabled; }
-            private set { SetProperty(ref _isSignInDisabled, value); }
-        }
-
-        #endregion
-
         public SigninPageViewModel(IOAuthService oAuthService, INavigationService navigationService, IDatabase database,
             ISalesRepService salesRepService,
             ITenantRepository tenantRepository, ITenantService tenantService,
@@ -96,7 +61,7 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             settingsLocal = ApplicationData.Current.LocalSettings;
             settingsLocal.CreateContainer("SageSalesContainer", ApplicationDataCreateDisposition.Always);
-            object _isAuthorised = settingsLocal.Containers["SageSalesContainer"].Values[PageUtils.IsAuthorised];
+            var _isAuthorised = settingsLocal.Containers["SageSalesContainer"].Values[PageUtils.IsAuthorised];
 
             try
             {
@@ -161,7 +126,41 @@ namespace SageMobileSales.UILogic.ViewModels
 
         #endregion
 
+        #region Fields
+
+        private readonly IDatabase _database;
+        private readonly INavigationService _navigationService;
+        private readonly ISalesRepService _salesRepService;
+        private readonly ITenantRepository _tenantRepository;
+        private readonly ILocalSyncDigestRepository _localSyncDigestRepository;
+        private readonly ITenantService _tenantService;
+        private readonly IOAuthService _oAuthService;
+
+
+        private string _accessToken;
+        private bool _inProgress;
+        private bool _isSignInDisabled;
+        private string _log = string.Empty;
+        private SQLiteAsyncConnection _sageSalesDB;
+        public DelegateCommand SignInCommand { get; private set; }
+        private ApplicationDataContainer settingsLocal;
+
+        public bool InProgress
+        {
+            get { return _inProgress; }
+            private set { SetProperty(ref _inProgress, value); }
+        }
+
+        public bool isSignInDisabled
+        {
+            get { return _isSignInDisabled; }
+            private set { SetProperty(ref _isSignInDisabled, value); }
+        }
+
+        #endregion
+
         #region private methods
+
         private async Task SyncUserData()
         {
             // Sync SalesRep(Loggedin User) data
@@ -172,10 +171,10 @@ namespace SageMobileSales.UILogic.ViewModels
             {
                 InProgress = false;
                 isSignInDisabled = true;
-                MessageDialog msgDialog = new MessageDialog(
-                              ResourceLoader.GetForCurrentView("Resources").GetString("InternalServerErrorText"),
-                              ResourceLoader.GetForCurrentView("Resources").GetString("InternalServerErrorTitle"));
-                msgDialog.Commands.Add(new UICommand("Ok", (UICommandInvokedHandler) => { ResetData(); }));
+                var msgDialog = new MessageDialog(
+                    ResourceLoader.GetForCurrentView("Resources").GetString("InternalServerErrorText"),
+                    ResourceLoader.GetForCurrentView("Resources").GetString("InternalServerErrorTitle"));
+                msgDialog.Commands.Add(new UICommand("Ok", UICommandInvokedHandler => { ResetData(); }));
                 await msgDialog.ShowAsync();
 
                 await _oAuthService.Cleanup();
@@ -183,7 +182,7 @@ namespace SageMobileSales.UILogic.ViewModels
             else
             {
                 //Company Settings/SalesTeamMember
-                bool salesPersonChanged = await _tenantService.SyncTenant();
+                var salesPersonChanged = await _tenantService.SyncTenant();
 
                 //Delete localSyncDigest for Customer and set all customers isActive to false
                 if (salesPersonChanged)
@@ -246,6 +245,7 @@ namespace SageMobileSales.UILogic.ViewModels
             await _database.Initialize();
             _sageSalesDB = _database.GetAsyncConnection();
         }
+
         #endregion
     }
 }

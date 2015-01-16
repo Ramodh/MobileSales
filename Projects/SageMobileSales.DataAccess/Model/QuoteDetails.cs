@@ -7,7 +7,6 @@ namespace SageMobileSales.DataAccess.Model
         private static readonly char[] NewLineChars = Environment.NewLine.ToCharArray();
         private DateTime _expiredOn;
         private string _quotedescription;
-
         public int Id { get; set; }
         public string QuoteId { get; set; }
         public string CustomerName { get; set; }

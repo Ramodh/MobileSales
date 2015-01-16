@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Windows.Foundation.Metadata;
 using Windows.System;
 using Windows.UI.Core;
-using Windows.UI.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
@@ -92,6 +91,13 @@ namespace SageMobileSales.Common
                 Window.Current.CoreWindow.PointerPressed -=
                     CoreWindow_PointerPressed;
             };
+        }
+
+        private Page Page { get; set; }
+
+        private Frame Frame
+        {
+            get { return Page.Frame; }
         }
 
         #region Navigation support
@@ -195,7 +201,7 @@ namespace SageMobileSales.Common
         private void CoreDispatcher_AcceleratorKeyActivated(CoreDispatcher sender,
             AcceleratorKeyEventArgs e)
         {
-            VirtualKey virtualKey = e.VirtualKey;
+            var virtualKey = e.VirtualKey;
 
             // Only investigate further when Left, Right, or the dedicated Previous or Next keys
             // are pressed
@@ -204,13 +210,13 @@ namespace SageMobileSales.Common
                 (virtualKey == VirtualKey.Left || virtualKey == VirtualKey.Right ||
                  (int) virtualKey == 166 || (int) virtualKey == 167))
             {
-                CoreWindow coreWindow = Window.Current.CoreWindow;
+                var coreWindow = Window.Current.CoreWindow;
                 var downState = CoreVirtualKeyStates.Down;
-                bool menuKey = (coreWindow.GetKeyState(VirtualKey.Menu) & downState) == downState;
-                bool controlKey = (coreWindow.GetKeyState(VirtualKey.Control) & downState) == downState;
-                bool shiftKey = (coreWindow.GetKeyState(VirtualKey.Shift) & downState) == downState;
-                bool noModifiers = !menuKey && !controlKey && !shiftKey;
-                bool onlyAlt = menuKey && !controlKey && !shiftKey;
+                var menuKey = (coreWindow.GetKeyState(VirtualKey.Menu) & downState) == downState;
+                var controlKey = (coreWindow.GetKeyState(VirtualKey.Control) & downState) == downState;
+                var shiftKey = (coreWindow.GetKeyState(VirtualKey.Shift) & downState) == downState;
+                var noModifiers = !menuKey && !controlKey && !shiftKey;
+                var onlyAlt = menuKey && !controlKey && !shiftKey;
 
                 if (((int) virtualKey == 166 && noModifiers) ||
                     (virtualKey == VirtualKey.Left && onlyAlt))
@@ -239,15 +245,15 @@ namespace SageMobileSales.Common
         private void CoreWindow_PointerPressed(CoreWindow sender,
             PointerEventArgs e)
         {
-            PointerPointProperties properties = e.CurrentPoint.Properties;
+            var properties = e.CurrentPoint.Properties;
 
             // Ignore button chords with the left, right, and middle buttons
             if (properties.IsLeftButtonPressed || properties.IsRightButtonPressed ||
                 properties.IsMiddleButtonPressed) return;
 
             // If back or foward are pressed (but not both) navigate appropriately
-            bool backPressed = properties.IsXButton1Pressed;
-            bool forwardPressed = properties.IsXButton2Pressed;
+            var backPressed = properties.IsXButton1Pressed;
+            var forwardPressed = properties.IsXButton2Pressed;
             if (backPressed ^ forwardPressed)
             {
                 e.Handled = true;
@@ -288,15 +294,15 @@ namespace SageMobileSales.Common
         /// </param>
         public void OnNavigatedTo(NavigationEventArgs e)
         {
-            Dictionary<string, object> frameState = SuspensionManager.SessionStateForFrame(Frame);
+            var frameState = SuspensionManager.SessionStateForFrame(Frame);
             _pageKey = "Page-" + Frame.BackStackDepth;
 
             if (e.NavigationMode == NavigationMode.New)
             {
                 // Clear existing state for forward navigation when adding a new page to the
                 // navigation stack
-                string nextPageKey = _pageKey;
-                int nextPageIndex = Frame.BackStackDepth;
+                var nextPageKey = _pageKey;
+                var nextPageIndex = Frame.BackStackDepth;
                 while (frameState.Remove(nextPageKey))
                 {
                     nextPageIndex++;
@@ -333,7 +339,7 @@ namespace SageMobileSales.Common
         /// </param>
         public void OnNavigatedFrom(NavigationEventArgs e)
         {
-            Dictionary<string, object> frameState = SuspensionManager.SessionStateForFrame(Frame);
+            var frameState = SuspensionManager.SessionStateForFrame(Frame);
             var pageState = new Dictionary<String, Object>();
             if (SaveState != null)
             {
@@ -343,13 +349,6 @@ namespace SageMobileSales.Common
         }
 
         #endregion
-
-        private Page Page { get; set; }
-
-        private Frame Frame
-        {
-            get { return Page.Frame; }
-        }
     }
 
     /// <summary>

@@ -46,7 +46,7 @@ namespace SageMobileSales.DataAccess.Common
         /// </param>
         protected void OnPropertyChanged(string propertyName)
         {
-            PropertyChangedEventHandler eventHandler = PropertyChanged;
+            var eventHandler = PropertyChanged;
             if (eventHandler != null)
             {
                 eventHandler(this, new PropertyChangedEventArgs(propertyName));

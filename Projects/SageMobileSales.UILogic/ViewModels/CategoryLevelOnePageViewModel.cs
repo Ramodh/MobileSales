@@ -2,13 +2,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Resources;
-using Windows.Foundation;
 using Windows.System.Threading;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
-using Microsoft.Practices.Prism.PubSubEvents;
-using Microsoft.Practices.Prism.StoreApps;
-using Microsoft.Practices.Prism.StoreApps.Interfaces;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Entities;
 using SageMobileSales.DataAccess.Events;
@@ -33,7 +29,6 @@ namespace SageMobileSales.UILogic.ViewModels
         private List<ProductCategory> _productCategoryList;
         private ISalesRepService _salesRepService;
         private bool _syncProgress;
-        public DelegateCommand StartSyncCommand { get; private set; }
 
         public CategoryLevelOnePageViewModel(INavigationService navigationService, ISalesRepService salesRepService,
             ISyncCoordinatorService syncCoordinatorService, IProductCategoryRepository productCategoryRepository,
@@ -51,6 +46,8 @@ namespace SageMobileSales.UILogic.ViewModels
             _eventAggregator.GetEvent<ProductSyncChangedEvent>()
                 .Subscribe(ProductsSyncIndicator, ThreadOption.UIThread);
         }
+
+        public DelegateCommand StartSyncCommand { get; private set; }
 
         /// <summary>
         ///     Display empty results text
@@ -120,42 +117,42 @@ namespace SageMobileSales.UILogic.ViewModels
             //InProgress = true;
             try
             {
-            //    if (!Constants.ProductsSyncProgress)
-            //    {
-            //        IAsyncAction asyncAction = ThreadPool.RunAsync(
-            //            IAsyncAction =>
-            //            {
-            //                // Data Sync will Start.
-            //                _syncCoordinatorService.StartProductsSync();
-            //            });
+                //    if (!Constants.ProductsSyncProgress)
+                //    {
+                //        IAsyncAction asyncAction = ThreadPool.RunAsync(
+                //            IAsyncAction =>
+                //            {
+                //                // Data Sync will Start.
+                //                _syncCoordinatorService.StartProductsSync();
+                //            });
 
-            //        //    asyncAction.Completed = new AsyncActionCompletedHandler((IAsyncAction asyncInfo, AsyncStatus asyncStatus) =>
-            //        //    {
-            //        //        if (asyncStatus == AsyncStatus.Canceled)
-            //        //            return;
+                //        //    asyncAction.Completed = new AsyncActionCompletedHandler((IAsyncAction asyncInfo, AsyncStatus asyncStatus) =>
+                //        //    {
+                //        //        if (asyncStatus == AsyncStatus.Canceled)
+                //        //            return;
 
-            //        //Constants.ProductsSyncProgress = false;
-            //        //    });
-            //        PageUtils.asyncActionProducts = asyncAction;
-            //    }
+                //        //Constants.ProductsSyncProgress = false;
+                //        //    });
+                //        PageUtils.asyncActionProducts = asyncAction;
+                //    }
 
-            //    SyncProgress = Constants.ProductsSyncProgress;
-            //    ////ISupport Scroll incrementing
-            //    //ProductCategoryCollection = new ProductCategoryCollection()
-            //    //{
-            //    //    ProductCategoryList = await _productCategoryRepository.GetProductCategoryListDtlsAsync(null)
-            //    //};
+                //    SyncProgress = Constants.ProductsSyncProgress;
+                //    ////ISupport Scroll incrementing
+                //    //ProductCategoryCollection = new ProductCategoryCollection()
+                //    //{
+                //    //    ProductCategoryList = await _productCategoryRepository.GetProductCategoryListDtlsAsync(null)
+                //    //};
 
-            //    //ProductCategoryCollection = new ProductCategoryCollection();
-            //    //ProductCategoryCollection.ProductCategoryList = new List<ProductCategory>();
-            //    //ProductCategoryCollection.ProductCategoryList = await _productCategoryRepository.GetProductCategoryListDtlsAsync(null);
+                //    //ProductCategoryCollection = new ProductCategoryCollection();
+                //    //ProductCategoryCollection.ProductCategoryList = new List<ProductCategory>();
+                //    //ProductCategoryCollection.ProductCategoryList = await _productCategoryRepository.GetProductCategoryListDtlsAsync(null);
 
-            //    //if (ProductCategoryCollection.ProductCategoryList.Count > 0)
-            //    //    InProgress = false;
+                //    //if (ProductCategoryCollection.ProductCategoryList.Count > 0)
+                //    //    InProgress = false;
 
-            //    ProductCategoryList = await _productCategoryRepository.GetProductCategoryListDtlsAsync(null);
-            //    //if (ProductCategoryList.Count > 0)
-            //    //    InProgress = false;
+                //    ProductCategoryList = await _productCategoryRepository.GetProductCategoryListDtlsAsync(null);
+                //    //if (ProductCategoryList.Count > 0)
+                //    //    InProgress = false;
                 await StartSync();
                 base.OnNavigatedTo(navigationParameter, navigationMode, viewModelState);
             }
@@ -178,7 +175,6 @@ namespace SageMobileSales.UILogic.ViewModels
             }
         }
 
-
         public override void OnNavigatedFrom(Dictionary<string, object> viewModelState, bool suspending)
         {
             base.OnNavigatedFrom(viewModelState, suspending);
@@ -191,8 +187,8 @@ namespace SageMobileSales.UILogic.ViewModels
         /// <param name="parameter"></param>
         public async void GridViewItemClick(object sender, object parameter)
         {
-            string arg = ((parameter as ItemClickEventArgs).ClickedItem as ProductCategory).CategoryId;
-            bool moreLevels = await _productCategoryRepository.GetProductCategoryLevel(arg);
+            var arg = ((parameter as ItemClickEventArgs).ClickedItem as ProductCategory).CategoryId;
+            var moreLevels = await _productCategoryRepository.GetProductCategoryLevel(arg);
 
             if (moreLevels)
                 _navigationService.Navigate("CategoryLevelTwo", (parameter as ItemClickEventArgs).ClickedItem);
@@ -231,7 +227,7 @@ namespace SageMobileSales.UILogic.ViewModels
         public async Task UpdateProductCategoryListInfo()
         {
             ProductCategoryList = await _productCategoryRepository.GetProductCategoryListDtlsAsync(null);
-            List<ProductCategory> _totalProductsList = await _productCategoryRepository.GetProductCategoryListAsync();
+            var _totalProductsList = await _productCategoryRepository.GetProductCategoryListAsync();
             if (ProductCategoryList.Count == 0 && _totalProductsList.Count == 0)
             {
                 InProgress = false;
@@ -287,7 +283,7 @@ namespace SageMobileSales.UILogic.ViewModels
             {
                 if (!Constants.ProductsSyncProgress)
                 {
-                    IAsyncAction asyncAction = ThreadPool.RunAsync(
+                    var asyncAction = ThreadPool.RunAsync(
                         IAsyncAction =>
                         {
                             // Data Sync will Start.
@@ -321,7 +317,6 @@ namespace SageMobileSales.UILogic.ViewModels
                 ProductCategoryList = await _productCategoryRepository.GetProductCategoryListDtlsAsync(null);
                 //if (ProductCategoryList.Count > 0)
                 //    InProgress = false;
-
             }
             catch (SQLiteException ex)
             {

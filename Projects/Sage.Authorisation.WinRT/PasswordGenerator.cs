@@ -1,5 +1,4 @@
 ﻿using Windows.Security.Cryptography;
-using Windows.Storage.Streams;
 
 namespace Sage.Authorisation.WinRT
 {
@@ -16,10 +15,10 @@ namespace Sage.Authorisation.WinRT
             var password = new char[length];
             var randomBytes = new byte[length];
 
-            IBuffer random = CryptographicBuffer.GenerateRandom(length);
+            var random = CryptographicBuffer.GenerateRandom(length);
             CryptographicBuffer.CopyToByteArray(random, out randomBytes);
 
-            for (int i = 0; i < length; i++)
+            for (var i = 0; i < length; i++)
             {
                 password[i] = PasswordCharacters[randomBytes[i]%PasswordCharacters.Length];
             }

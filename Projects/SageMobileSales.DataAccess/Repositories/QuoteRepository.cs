@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Data.Json;
-using Microsoft.Practices.Prism.PubSubEvents;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Entities;
 using SageMobileSales.DataAccess.Events;
@@ -18,18 +17,19 @@ namespace SageMobileSales.DataAccess.Repositories
         private readonly ICustomerRepository _customerRepository;
         private readonly IDatabase _database;
         private readonly IEventAggregator _eventAggregator;
+        private readonly IFrequentlyPurchasedItemRepository _frequentlyPurchasedItemRepository;
         private readonly ILocalSyncDigestRepository _localSyncDigestRepository;
         private readonly IOrderLineItemRepository _orderLineItemRepository;
+        private readonly ProductRepository _productRepository;
         private readonly IQuoteLineItemRepository _quoteLineItemRepository;
         private readonly SQLiteAsyncConnection _sageSalesDB;
         private readonly ISalesRepRepository _salesRepRepository;
-        private readonly IFrequentlyPurchasedItemRepository _frequentlyPurchasedItemRepository;
-        private readonly ProductRepository _productRepository;
         private string _log = string.Empty;
 
         public QuoteRepository(IDatabase database, ILocalSyncDigestRepository localSyncDigestRepository,
             ICustomerRepository customerRepository,
-            IAddressRepository addressRepository, IQuoteLineItemRepository quoteLineItemRepository, ProductRepository productRepository,
+            IAddressRepository addressRepository, IQuoteLineItemRepository quoteLineItemRepository,
+            ProductRepository productRepository,
             ISalesRepRepository salesRepRepository, IFrequentlyPurchasedItemRepository frequentlyPurchasedItemRepository,
             IOrderLineItemRepository orderLineItemRepository, IEventAggregator eventAggregator)
         {
@@ -56,14 +56,14 @@ namespace SageMobileSales.DataAccess.Repositories
         /// <returns></returns>
         public async Task SaveQuotesAsync(JsonObject sDataQuotes, LocalSyncDigest localSyncDigest)
         {
-            JsonArray sDataQuotesArray = sDataQuotes.GetNamedArray("$resources");
+            var sDataQuotesArray = sDataQuotes.GetNamedArray("$resources");
             DataAccessUtils.QuotesReturnedCount += sDataQuotesArray.Count;
 
-            for (int quote = 0; quote < sDataQuotesArray.Count; quote++)
+            for (var quote = 0; quote < sDataQuotesArray.Count; quote++)
             {
-                JsonObject sDataQuote = sDataQuotesArray[quote].GetObject();
+                var sDataQuote = sDataQuotesArray[quote].GetObject();
 
-                Quote savedQuote = await SaveQuoteDetailsAsync(sDataQuote);
+                var savedQuote = await SaveQuoteDetailsAsync(sDataQuote);
                 if (savedQuote != null)
                     await _quoteLineItemRepository.SaveQuoteLineItemsAsync(sDataQuote, savedQuote.QuoteId);
 
@@ -144,7 +144,12 @@ namespace SageMobileSales.DataAccess.Repositories
                 quotesList =
                     await
                         _sageSalesDB.QueryAsync<QuoteDetails>(
-                            "SELECT distinct customer.customerName, quote.Id, quote.CustomerId, quote.QuoteId, quote.CreatedOn, quote.amount, quote.quoteStatus,quote.QuoteDescription,(select RepName from SalesRep as RP where RP.RepId='" + salesRepId + "') as RepName FROM quote INNER JOIN customer ON customer.customerID = quote.customerId And customer.IsActive=1 And Quote.QuoteStatus!='" + DataAccessUtils.IsOrderQuoteStatus + "' And Quote.QuoteStatus!='" + DataAccessUtils.TemporaryQuoteStatus + "' And Quote.QuoteStatus!='" + DataAccessUtils.SubmitQuote + "' And Quote.IsDeleted='0'");
+                            "SELECT distinct customer.customerName, quote.Id, quote.CustomerId, quote.QuoteId, quote.CreatedOn, quote.amount, quote.quoteStatus,quote.QuoteDescription,(select RepName from SalesRep as RP where RP.RepId='" +
+                            salesRepId +
+                            "') as RepName FROM quote INNER JOIN customer ON customer.customerID = quote.customerId And customer.IsActive=1 And Quote.QuoteStatus!='" +
+                            DataAccessUtils.IsOrderQuoteStatus + "' And Quote.QuoteStatus!='" +
+                            DataAccessUtils.TemporaryQuoteStatus + "' And Quote.QuoteStatus!='" +
+                            DataAccessUtils.SubmitQuote + "' And Quote.IsDeleted='0'");
             }
             catch (SQLiteException ex)
             {
@@ -174,14 +179,14 @@ namespace SageMobileSales.DataAccess.Repositories
         public async Task SaveQuoteAsync(JsonObject sDataQuote)
         {
             IJsonValue value;
-            Quote quote = await SaveQuoteDetailsAsync(sDataQuote);
+            var quote = await SaveQuoteDetailsAsync(sDataQuote);
 
             if (sDataQuote.TryGetValue("Customer", out value))
             {
                 if (value.ValueType.ToString() != DataAccessUtils.Null)
                 {
-                    JsonObject sDataCustomer = sDataQuote.GetNamedObject("Customer");
-                    Customer customer = await _customerRepository.AddOrUpdateCustomerJsonToDbAsync(sDataCustomer);
+                    var sDataCustomer = sDataQuote.GetNamedObject("Customer");
+                    var customer = await _customerRepository.AddOrUpdateCustomerJsonToDbAsync(sDataCustomer);
                     if (customer != null)
                     {
                         await _addressRepository.SaveAddressesAsync(sDataCustomer, customer.CustomerId);
@@ -263,7 +268,7 @@ namespace SageMobileSales.DataAccess.Repositories
             //    }
             //}
 
-            Quote quote = await SaveQuoteDetailsAsync(sDataQuote);
+            var quote = await SaveQuoteDetailsAsync(sDataQuote);
 
             // Commented below code as we are not getting Quote LineItem details in Quote response
 
@@ -282,7 +287,7 @@ namespace SageMobileSales.DataAccess.Repositories
         public async Task<QuoteDetails> GetQuoteDetailsAsync(string quoteId)
         {
             List<QuoteDetails> quote = null;
-            string salesRepId = await _salesRepRepository.GetSalesRepId();
+            var salesRepId = await _salesRepRepository.GetSalesRepId();
             try
             {
                 quote =
@@ -384,19 +389,20 @@ namespace SageMobileSales.DataAccess.Repositories
         public async Task<List<QuoteDetails>> GetQuotesForCustomerAsync(string customerId)
         {
             List<QuoteDetails> quote = null;
-            string salesRepId = await _salesRepRepository.GetSalesRepId();
+            var salesRepId = await _salesRepRepository.GetSalesRepId();
             try
             {
                 quote =
-                      await
+                    await
                         _sageSalesDB.QueryAsync<QuoteDetails>(
                             "SELECT distinct customer.customerName, quote.Id, quote.CustomerId, quote.QuoteId, quote.CreatedOn, quote.amount, quote.quoteStatus,quote.QuoteDescription,(select RepName from SalesRep as RP where RP.RepId='" +
-                            salesRepId + "') as RepName FROM customer, quote where Quote.QuoteStatus!='IsOrder'  And Quote.QuoteStatus!='Temporary' And Quote.IsDeleted!=1 and customer.customerId=quote.customerId and quote.customerId=? and customer.IsActive=1 order by quote.createdOn desc",
+                            salesRepId +
+                            "') as RepName FROM customer, quote where Quote.QuoteStatus!='IsOrder'  And Quote.QuoteStatus!='Temporary' And Quote.IsDeleted!=1 and customer.customerId=quote.customerId and quote.customerId=? and customer.IsActive=1 order by quote.createdOn desc",
                             customerId);
-                    //await
-                    //    _sageSalesDB.QueryAsync<QuoteDetails>(
-                    //        "SELECT distinct customer.customerName, quote.Id, quote.CustomerId, quote.QuoteId, quote.CreatedOn, quote.amount, quote.quoteStatus,quote.QuoteDescription, SalesRep.RepName FROM customer, quote left Join SalesRep On SalesRep.RepId=Quote.RepId where Quote.QuoteStatus!='IsOrder'  And Quote.QuoteStatus!='Temporary' And Quote.IsDeleted!=1 and customer.customerId=quote.customerId and quote.customerId=? and customer.IsActive=1 order by quote.createdOn desc",
-                    //        customerId);
+                //await
+                //    _sageSalesDB.QueryAsync<QuoteDetails>(
+                //        "SELECT distinct customer.customerName, quote.Id, quote.CustomerId, quote.QuoteId, quote.CreatedOn, quote.amount, quote.quoteStatus,quote.QuoteDescription, SalesRep.RepName FROM customer, quote left Join SalesRep On SalesRep.RepId=Quote.RepId where Quote.QuoteStatus!='IsOrder'  And Quote.QuoteStatus!='Temporary' And Quote.IsDeleted!=1 and customer.customerId=quote.customerId and quote.customerId=? and customer.IsActive=1 order by quote.createdOn desc",
+                //        customerId);
             }
             catch (SQLiteException ex)
             {
@@ -421,7 +427,7 @@ namespace SageMobileSales.DataAccess.Repositories
             try
             {
                 IJsonValue value;
-                bool entityStatusDeleted = false;
+                var entityStatusDeleted = false;
                 if (sDataQuote.TryGetValue("$key", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
@@ -493,7 +499,7 @@ namespace SageMobileSales.DataAccess.Repositories
             Quote quote = null;
             SalesRep salesRep = null;
             //Returns shipping address for that customerId
-            Address address = await _addressRepository.GetShippingAddressForCustomer(quoteDtls.CustomerId);
+            var address = await _addressRepository.GetShippingAddressForCustomer(quoteDtls.CustomerId);
             if (address != null)
             {
                 quote = new Quote();
@@ -703,14 +709,14 @@ namespace SageMobileSales.DataAccess.Repositories
             frequentlyPurchasedProductList =
                 await _frequentlyPurchasedItemRepository.GetFrequentlyPurchasedItems(quote.CustomerId);
 
-            foreach (FrequentlyPurchasedItem product in frequentlyPurchasedProductList)
+            foreach (var product in frequentlyPurchasedProductList)
             {
                 quoteLineItem = new QuoteLineItem();
                 quoteLineItem.QuoteId = quote.QuoteId;
                 quoteLineItem.QuoteLineItemId = DataAccessUtils.Pending + Guid.NewGuid();
                 quoteLineItem.tenantId = quote.TenantId;
                 quoteLineItem.ProductId = product.ItemId;
-                Product productDtls= await _productRepository.GetProductdetailsAsync(product.ItemId);
+                var productDtls = await _productRepository.GetProductdetailsAsync(product.ItemId);
                 quoteLineItem.Price = productDtls.PriceStd;
                 //For previously purchased products quantity is 0 by default
                 quoteLineItem.Quantity = 0;
@@ -740,7 +746,7 @@ namespace SageMobileSales.DataAccess.Repositories
             previouslyPurchasedProductList =
                 await _orderLineItemRepository.GetPreviouslyPurchasedProducts(quote.CustomerId);
 
-            foreach (OrderLineItem product in previouslyPurchasedProductList)
+            foreach (var product in previouslyPurchasedProductList)
             {
                 quoteLineItem = new QuoteLineItem();
                 quoteLineItem.QuoteId = quote.QuoteId;
@@ -777,7 +783,7 @@ namespace SageMobileSales.DataAccess.Repositories
             if (!string.IsNullOrEmpty(orderId))
             {
                 orderLineItemList = await _orderLineItemRepository.GetOrderLineItemForOrder(orderId);
-                foreach (OrderLineItem orderLineItem in orderLineItemList)
+                foreach (var orderLineItem in orderLineItemList)
                 {
                     quoteLineItem = new QuoteLineItem();
                     quoteLineItem.QuoteId = quote.QuoteId;
@@ -810,7 +816,7 @@ namespace SageMobileSales.DataAccess.Repositories
         private decimal CalculateAmount(int quantity, decimal price)
         {
             decimal amount;
-            amount = Convert.ToDecimal(quantity * price);
+            amount = Convert.ToDecimal(quantity*price);
             return amount;
         }
 
@@ -988,10 +994,10 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        JsonObject sDataSalesRep = sDataQuote.GetNamedObject("SalesRep");
+                        var sDataSalesRep = sDataQuote.GetNamedObject("SalesRep");
                         if (sDataSalesRep.GetNamedValue("$key").ValueType.ToString() != DataAccessUtils.Null)
                         {
-                            SalesRep salesRep =
+                            var salesRep =
                                 await _salesRepRepository.AddOrUpdateSalesRepJsonToDbAsync(sDataSalesRep);
                             quote.RepId = salesRep.RepId;
                         }

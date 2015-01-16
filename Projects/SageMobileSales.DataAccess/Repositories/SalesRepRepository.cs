@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Data.Json;
@@ -7,16 +8,15 @@ using Windows.Storage;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Entities;
 using SQLite;
-using System.Diagnostics;
 
 namespace SageMobileSales.DataAccess.Repositories
 {
     public class SalesRepRepository : ISalesRepRepository
     {
         private readonly IDatabase _database;
+        private readonly SQLiteAsyncConnection _sageSalesDB;
         private readonly ITenantRepository _tenantRepository;
         private string _log = string.Empty;
-        private SQLiteAsyncConnection _sageSalesDB;
 
         public SalesRepRepository(IDatabase database, ITenantRepository tenantRepository)
         {
@@ -27,6 +27,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         #region public methods
+
         /// <summary>
         ///     Extract and saves LoginUserdetails(SalesRep) into local dB
         /// </summary>
@@ -77,21 +78,21 @@ namespace SageMobileSales.DataAccess.Repositories
         /// <returns></returns>
         public async Task<bool> UpdateSalesRepDtlsAsync(JsonObject sDataSalesTeamMembers)
         {
-            bool isSalesPersonIdChanged = false;
+            var isSalesPersonIdChanged = false;
             try
             {
                 IJsonValue value;
                 JsonObject sDataSalesTeamMember = null;
                 JsonObject sDataSalesTeamMemberDetails = null;
 
-                SalesRep _salesRepDtls = await _sageSalesDB.Table<SalesRep>().FirstOrDefaultAsync();
+                var _salesRepDtls = await _sageSalesDB.Table<SalesRep>().FirstOrDefaultAsync();
 
                 if (sDataSalesTeamMembers.TryGetValue("$resources", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        JsonArray sDataSalesTeamMemberArray = sDataSalesTeamMembers.GetNamedArray("$resources");
-                        foreach (IJsonValue salesRep in sDataSalesTeamMemberArray)
+                        var sDataSalesTeamMemberArray = sDataSalesTeamMembers.GetNamedArray("$resources");
+                        foreach (var salesRep in sDataSalesTeamMemberArray)
                             sDataSalesTeamMember = salesRep.GetObject();
                     }
                 }
@@ -116,12 +117,13 @@ namespace SageMobileSales.DataAccess.Repositories
                         {
                             if (value.ValueType.ToString() != DataAccessUtils.Null)
                             {
-                                string salesPersonDb = _salesRepDtls.SalesPersonIds;
+                                var salesPersonDb = _salesRepDtls.SalesPersonIds;
                                 _salesRepDtls.SalesPersonIds = string.Empty;
 
-                                JsonArray salesPersonIdArray = sDataSalesTeamMemberDetails.GetNamedArray("SalespersonIds");
+                                var salesPersonIdArray = sDataSalesTeamMemberDetails.GetNamedArray("SalespersonIds");
                                 foreach (var salesPersonId in salesPersonIdArray)
-                                    _salesRepDtls.SalesPersonIds = _salesRepDtls.SalesPersonIds + salesPersonId.GetString();
+                                    _salesRepDtls.SalesPersonIds = _salesRepDtls.SalesPersonIds +
+                                                                   salesPersonId.GetString();
 
                                 //List<SalesRep> UserSalesPersonIds = await _sageSalesDB.Table<SalesRep>().ToListAsync();
                                 Debug.WriteLine("Json : " + _salesRepDtls.SalesPersonIds + "  =  dB : " + salesPersonDb);
@@ -155,24 +157,6 @@ namespace SageMobileSales.DataAccess.Repositories
         /// </summary>
         /// <param name="salesRep"></param>
         /// <returns></returns>
-        //public async Task DeleteSalesRepDtlsAsync(SalesRep salesRep)
-        //{
-        //    try
-        //    {
-        //        await _sageSalesDB.DeleteAsync(salesRep);
-        //    }
-        //    catch (SQLiteException ex)
-        //    {
-        //        _log = AppEventSource.Log.WriteLine(ex);
-        //        AppEventSource.Log.Error(_log);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _log = AppEventSource.Log.WriteLine(ex);
-        //        AppEventSource.Log.Error(_log);
-        //    }
-        //}
-
         /// <summary>
         ///     Gets LoginUserdetails(SalesRep) from LocalDB
         /// </summary>
@@ -181,7 +165,7 @@ namespace SageMobileSales.DataAccess.Repositories
         {
             try
             {
-                List<SalesRep> UserDtls = await _sageSalesDB.Table<SalesRep>().ToListAsync();
+                var UserDtls = await _sageSalesDB.Table<SalesRep>().ToListAsync();
                 return UserDtls;
             }
             catch (SQLiteException ex)
@@ -205,7 +189,7 @@ namespace SageMobileSales.DataAccess.Repositories
         {
             try
             {
-                List<SalesRep> UserDtls = await _sageSalesDB.Table<SalesRep>().ToListAsync();
+                var UserDtls = await _sageSalesDB.Table<SalesRep>().ToListAsync();
                 return UserDtls.FirstOrDefault().RepId;
             }
             catch (SQLiteException ex)
@@ -230,7 +214,7 @@ namespace SageMobileSales.DataAccess.Repositories
         {
             try
             {
-                ApplicationDataContainer configSettings = ApplicationData.Current.LocalSettings;
+                var configSettings = ApplicationData.Current.LocalSettings;
 
                 IJsonValue value;
                 if (sDataSalesRepDtls.TryGetValue("$key", out value))
@@ -299,10 +283,10 @@ namespace SageMobileSales.DataAccess.Repositories
         /// <returns></returns>
         public async Task<bool> CheckPreviousLoggedinUser(string repId)
         {
-            bool isSameUser = false;
+            var isSameUser = false;
             try
             {
-                List<SalesRep> salesRep =
+                var salesRep =
                     await _sageSalesDB.QueryAsync<SalesRep>("select * from SalesRep where RepId=?", repId);
                 if (salesRep != null && salesRep.Count > 0)
                 {
@@ -325,6 +309,7 @@ namespace SageMobileSales.DataAccess.Repositories
         #endregion
 
         #region private methods
+
         /// <summary>
         ///     Get Sales Rep data from json
         /// </summary>
@@ -381,7 +366,7 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        JsonArray sDataTenants = sDataSalesRep.GetNamedArray("Tenants");
+                        var sDataTenants = sDataSalesRep.GetNamedArray("Tenants");
                         _tenantRepository.SaveTenantAsync(sDataTenants, salesRepDBObj.RepId);
                     }
                 }
@@ -400,7 +385,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Add salesRep to local dB
+        ///     Add salesRep to local dB
         /// </summary>
         /// <param name="sDataSalesRep"></param>
         /// <returns></returns>
@@ -426,7 +411,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Update sales rep to local dB
+        ///     Update sales rep to local dB
         /// </summary>
         /// <param name="sDataSalesRep"></param>
         /// <param name="salesRep"></param>

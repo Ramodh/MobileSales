@@ -168,6 +168,12 @@ namespace Sage.Authorisation.WinRT.Exceptions
     /// </remarks>
     internal class AuthorisationErrorResponseException : AuthorisationException
     {
+        #region Error Response Constants
+
+        internal const string INVALID_GRANT = "invalid_grant";
+
+        #endregion
+
         internal AuthorisationErrorResponseException(string state, string error, string error_description)
             : base(loader.GetString("ExceptionErrorResponseException"), state)
         {
@@ -193,7 +199,6 @@ namespace Sage.Authorisation.WinRT.Exceptions
             Error = error;
             ErrorDescription = error_description;
         }
-
 
         /// <summary>
         ///     The OAuth specification defined error code representing the failure
@@ -372,11 +377,5 @@ namespace Sage.Authorisation.WinRT.Exceptions
             return String.Format("{0}\r\n\r\nError={1}, Description={2}.\r\n\r\n{3}", Message, Error, ErrorDescription,
                 base.ToString());
         }
-
-        #region Error Response Constants
-
-        internal const string INVALID_GRANT = "invalid_grant";
-
-        #endregion
     }
 }

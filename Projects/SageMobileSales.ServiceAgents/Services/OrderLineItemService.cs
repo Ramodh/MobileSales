@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Windows.Data.Json;
 using SageMobileSales.DataAccess.Common;
-using SageMobileSales.DataAccess.Entities;
 using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
 using SQLite;
@@ -41,9 +39,9 @@ namespace SageMobileSales.ServiceAgents.Services
                 parameters = new Dictionary<string, string>();
                 //parameters.Add("include", "Details");                               
 
-                string orderEntityId = Constants.OrderDetailEntity + "('" + orderId + "')";
+                var orderEntityId = Constants.OrderDetailEntity + "('" + orderId + "')";
 
-                List<OrderLineItem> orderLineItemList = await _orderLineItemRepository.GetOrderLineItemForOrder(orderId);
+                var orderLineItemList = await _orderLineItemRepository.GetOrderLineItemForOrder(orderId);
                 if (orderLineItemList != null && orderLineItemList.Count > 0)
                 {
                     parameters.Add("include", "Details,ShippingAddress");
@@ -61,7 +59,7 @@ namespace SageMobileSales.ServiceAgents.Services
                             Constants.AccessToken, parameters);
                 if (orderLineItemResponse != null && orderLineItemResponse.IsSuccessStatusCode)
                 {
-                    JsonObject sDataQuoteLineItem = await _serviceAgent.ConvertTosDataObject(orderLineItemResponse);
+                    var sDataQuoteLineItem = await _serviceAgent.ConvertTosDataObject(orderLineItemResponse);
                     //Saving or updating Order, OrderLineItem, Address table
                     await _orderRepository.SaveOrderAsync(sDataQuoteLineItem);
                 }

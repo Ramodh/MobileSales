@@ -69,10 +69,10 @@ namespace Sage.Authorisation.WinRT.Storage
             }
 
             // load the contents of the key material into a buffer
-            IBuffer encryptedKey = await FileIO.ReadBufferAsync(file);
+            var encryptedKey = await FileIO.ReadBufferAsync(file);
 
             // un-encrypt it using the DPAPI
-            IBuffer clearKey = await _dpProvider.UnprotectAsync(encryptedKey);
+            var clearKey = await _dpProvider.UnprotectAsync(encryptedKey);
 
             // re-create the key
             key = _provider.CreateSymmetricKey(clearKey);
@@ -86,12 +86,12 @@ namespace Sage.Authorisation.WinRT.Storage
         /// <returns>A CryptographicKey object</returns>
         private CryptographicKey CreateKey()
         {
-            IBuffer keyMaterial = CryptographicBuffer.GenerateRandom(KeyLength);
+            var keyMaterial = CryptographicBuffer.GenerateRandom(KeyLength);
 
             // not awaiting this - we don't need  to see it stored before we return the actual key for use
             StoreKeyMaterialAsync(keyMaterial);
 
-            CryptographicKey key = _provider.CreateSymmetricKey(keyMaterial);
+            var key = _provider.CreateSymmetricKey(keyMaterial);
 
             return key;
         }
@@ -104,10 +104,10 @@ namespace Sage.Authorisation.WinRT.Storage
         private async void StoreKeyMaterialAsync(IBuffer keyMaterial)
         {
             // protect the key material using the DPAPI
-            IBuffer protectedKey = await _dpProvider.ProtectAsync(keyMaterial);
+            var protectedKey = await _dpProvider.ProtectAsync(keyMaterial);
 
             // Create a file in application data area
-            StorageFile file =
+            var file =
                 await
                     ApplicationData.Current.LocalFolder.CreateFileAsync(EncryptionKeyKey,
                         CreationCollisionOption.ReplaceExisting);

@@ -45,7 +45,8 @@
                               AutomationProperties.AutomationId="SubmitQuoteAppBarButton"
                               Label="Submit quote"
                               Icon="Accept"
-                              Command="{Binding SubmitQuoteCommand}" IsTapEnabled="{Binding IsSubmitQuoteEnabled,Mode=TwoWay}"
+                              Command="{Binding SubmitQuoteCommand}"
+                              IsTapEnabled="{Binding IsSubmitQuoteEnabled,Mode=TwoWay}"
                               Visibility="{Binding IsSubmitQuoteVisible, Mode=TwoWay}" />
                 <AppBarButton x:Name="PlaceOrderAppBarButton" HorizontalAlignment="Right"
                               x:Uid="PlaceOrderAppBarButton"
@@ -74,14 +75,13 @@
                               Label="Refresh"
                               Icon="Refresh"
                               Margin="0,1,0,-1"
-                              Command="{Binding StartSyncCommand}">
-                </AppBarButton>
+                              Command="{Binding StartSyncCommand}" />
                 <AppBarButton x:Name="MailAppBarButton"
                               x:Uid="MailAppBarButton"
                               AutomationProperties.AutomationId="MailAppBarButton"
                               Label="Mail"
                               Icon="MailForward"
-                              Command="{Binding SendMailCommand}"                            
+                              Command="{Binding SendMailCommand}"
                               Margin="0,1,0,-1" />
                 <AppBarButton x:Name="EditAppBarButton"
                               x:Uid="EditAppBarButton"
@@ -283,8 +283,10 @@
                                        Style="{StaticResource DetailsPageTextblockTextStyle}"
                                        VerticalAlignment="Bottom" />
                             <TextBox x:Uid="ShipAndHandlingTextBox" x:Name="ShipAndHandlingTextBox"
-                                     Text="{Binding ShippingAndHandling, Mode=TwoWay}" IsEnabled="{Binding IsShippingAndHandlingEnabled}"
-                                     Style="{StaticResource QuantityTextBoxStyle}" VerticalAlignment="Bottom" PlaceholderText="0"
+                                     Text="{Binding ShippingAndHandling, Mode=TwoWay}"
+                                     IsEnabled="{Binding IsShippingAndHandlingEnabled}"
+                                     Style="{StaticResource QuantityTextBoxStyle}" VerticalAlignment="Bottom"
+                                     PlaceholderText="0"
                                      PreventKeyboardDisplayOnProgrammaticFocus="True" MaxLength="9" TabIndex="0">
                                 <interactivity:Interaction.Behaviors>
                                     <behaviors:NumericTextBoxBehavior AllowDecimal="True" />
@@ -301,8 +303,10 @@
                                        Style="{StaticResource DetailsPageTextblockTextStyle}"
                                        VerticalAlignment="Bottom" />
                             <TextBox x:Uid="DiscountTextBox" x:Name="DiscountTextBox"
-                                     Text="{Binding DiscountPercent, Mode=TwoWay}" IsEnabled="{Binding IsDiscountEnabled}"
-                                     Style="{StaticResource QuantityTextBoxStyle}" VerticalAlignment="Bottom" PlaceholderText="0"
+                                     Text="{Binding DiscountPercent, Mode=TwoWay}"
+                                     IsEnabled="{Binding IsDiscountEnabled}"
+                                     Style="{StaticResource QuantityTextBoxStyle}" VerticalAlignment="Bottom"
+                                     PlaceholderText="0"
                                      PreventKeyboardDisplayOnProgrammaticFocus="True" MaxLength="9" TabIndex="0">
                                 <interactivity:Interaction.Behaviors>
                                     <behaviors:NumericTextBoxBehavior AllowDecimal="True" />
@@ -397,13 +401,13 @@
                               TabIndex="1"
                               Grid.RowSpan="2"
                               Padding="0,0,116,36"
-                              ItemsSource="{Binding Source={StaticResource QuoteLineItemsViewSource}}"                          
+                              ItemsSource="{Binding Source={StaticResource QuoteLineItemsViewSource}}"
                               ItemTemplate="{StaticResource QuoteItemsTemplate}"
-                              SelectedItem="{Binding SelectedItem, Mode=TwoWay}">                         
+                              SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
                         <interactivity:Interaction.Behaviors>
                             <core:EventTriggerBehavior EventName="ItemClick">
                                 <core:CallMethodAction MethodName="GridViewItemClick"
-                TargetObject="{Binding Mode=OneWay}" />
+                                                       TargetObject="{Binding Mode=OneWay}" />
                             </core:EventTriggerBehavior>
                         </interactivity:Interaction.Behaviors>
                     </GridView>

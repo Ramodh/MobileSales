@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Windows.Data.Json;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
@@ -33,23 +32,24 @@ namespace SageMobileSales.ServiceAgents.Services
         /// <returns></returns>
         public async Task<bool> SyncTenant()
         {
-            bool salesPersonChanged = false;
+            var salesPersonChanged = false;
             try
             {
                 parameters = new Dictionary<string, string>();
                 parameters.Add("include", "CompanySettings,SalesTeamMember");
 
-                HttpResponseMessage tenantResponse =
+                var tenantResponse =
                     await
                         _serviceAgent.BuildAndSendRequest(Constants.TenantId, Constants.AppSalesUser, null, null,
                             Constants.AccessToken,
                             parameters);
                 if (tenantResponse.IsSuccessStatusCode)
                 {
-                    JsonObject sDataTenantSalesTeamMemberDtls = await _serviceAgent.ConvertTosDataObject(tenantResponse);
+                    var sDataTenantSalesTeamMemberDtls = await _serviceAgent.ConvertTosDataObject(tenantResponse);
                     //Changed by ramodh for pegausus
                     await _tenantRepository.UpdateTenantAsync(sDataTenantSalesTeamMemberDtls, Constants.TenantId);
-                    salesPersonChanged = await _salesRepRepository.UpdateSalesRepDtlsAsync(sDataTenantSalesTeamMemberDtls);
+                    salesPersonChanged =
+                        await _salesRepRepository.UpdateSalesRepDtlsAsync(sDataTenantSalesTeamMemberDtls);
                 }
             }
             catch (HttpRequestException ex)

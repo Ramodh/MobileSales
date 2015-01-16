@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Windows.Data.Json;
 using Windows.Storage;
-using Microsoft.Practices.Prism.PubSubEvents;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Entities;
 using SageMobileSales.DataAccess.Events;
@@ -35,7 +33,6 @@ namespace SageMobileSales.ServiceAgents.Services
             _eventAggregator = eventAggregator;
         }
 
-
         public async Task StartCategorySyncProcess()
         {
             Constants.IsSyncAvailable =
@@ -51,7 +48,6 @@ namespace SageMobileSales.ServiceAgents.Services
             //}
         }
 
-
         /// <summary>
         ///     makes call to BuildAndSendRequest method to make service call to get ProductCategory(Catalog's,Categories) data.
         ///     Once we get the response converts it into JsonObject.
@@ -64,7 +60,7 @@ namespace SageMobileSales.ServiceAgents.Services
         {
             try
             {
-                LocalSyncDigest digest =
+                var digest =
                     await _localSyncDigestRepository.GetLocalSyncDigestDtlsAsync(Constants.CategoryEntity);
                 parameters = new Dictionary<string, string>();
                 if (digest != null)
@@ -89,7 +85,7 @@ namespace SageMobileSales.ServiceAgents.Services
                 Constants.syncQueryEntity = Constants.syncSourceQueryEntity + "('" + Constants.TrackingId + "')";
                 // Adding syncQueryEntity to Applicationdata Container as we are using this in every Servicerequest.
                 // And this will be usefull when we are doing partial sync for particular Service.
-                ApplicationDataContainer settingsLocal = ApplicationData.Current.LocalSettings;
+                var settingsLocal = ApplicationData.Current.LocalSettings;
                 settingsLocal.Containers["SageSalesContainer"].Values["syncQueryEntity"] = Constants.syncQueryEntity;
 
 
@@ -100,7 +96,7 @@ namespace SageMobileSales.ServiceAgents.Services
                             Constants.AssociatedItems, Constants.AccessToken, parameters);
                 if (productCategoryResponse != null && productCategoryResponse.IsSuccessStatusCode)
                 {
-                    JsonObject sDataProductCategory = await _serviceAgent.ConvertTosDataObject(productCategoryResponse);
+                    var sDataProductCategory = await _serviceAgent.ConvertTosDataObject(productCategoryResponse);
                     if (Convert.ToInt32(sDataProductCategory.GetNamedNumber("$totalResults")) >
                         DataAccessUtils.ProductCategoryTotalCount)
                         DataAccessUtils.ProductCategoryTotalCount =
@@ -109,18 +105,18 @@ namespace SageMobileSales.ServiceAgents.Services
                     {
                         _eventAggregator.GetEvent<ProductDataChangedEvent>().Publish(true);
                     }
-                    int _totalCount = Convert.ToInt32(sDataProductCategory.GetNamedNumber("$totalResults"));
+                    var _totalCount = Convert.ToInt32(sDataProductCategory.GetNamedNumber("$totalResults"));
                     ErrorLog("Product Category total count : " + _totalCount);
-                    JsonArray categoriesObject = sDataProductCategory.GetNamedArray("$resources");
-                    int _returnedCount = categoriesObject.Count;
+                    var categoriesObject = sDataProductCategory.GetNamedArray("$resources");
+                    var _returnedCount = categoriesObject.Count;
                     ErrorLog("Product Category returned count : " + _returnedCount);
                     if (_returnedCount > 0 && _totalCount - _returnedCount >= 0 &&
                         !(DataAccessUtils.IsProductCategorySyncCompleted))
                     {
-                        JsonObject lastCategoryObject =
+                        var lastCategoryObject =
                             categoriesObject.GetObjectAt(Convert.ToUInt32(_returnedCount - 1));
                         digest.LastRecordId = lastCategoryObject.GetNamedString("$key");
-                        int _syncEndpointTick = Convert.ToInt32(lastCategoryObject.GetNamedNumber("SyncTick"));
+                        var _syncEndpointTick = Convert.ToInt32(lastCategoryObject.GetNamedNumber("SyncTick"));
                         ErrorLog("Product Category sync tick : " + _syncEndpointTick);
                         if (_syncEndpointTick > digest.localTick)
                         {
@@ -138,7 +134,6 @@ namespace SageMobileSales.ServiceAgents.Services
                         DataAccessUtils.IsProductCategorySyncCompleted = false;
                     }
                 }
-               
             }
             catch (SQLiteException ex)
             {
@@ -210,7 +205,7 @@ namespace SageMobileSales.ServiceAgents.Services
         */
 
         /// <summary>
-        /// Error log
+        ///     Error log
         /// </summary>
         /// <param name="message"></param>
         private void ErrorLog(string message)

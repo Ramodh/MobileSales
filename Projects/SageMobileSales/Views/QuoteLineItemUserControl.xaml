@@ -20,14 +20,14 @@
 
     <Border BorderThickness="1" BorderBrush="{StaticResource ItemBorderBrush}" Width="470">
         <Grid Margin="10"
-                  Height="200" Width="470"
-                  Background="#FF355B4E">
-            <Grid.RowDefinitions>              
-                <RowDefinition Height="160"/>
-                <RowDefinition Height="Auto"/>
+              Height="200" Width="470"
+              Background="#FF355B4E">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="160" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />                
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <!--<Image Source="/Assets/img_delete32x32.png" Grid.Row="0" Grid.ColumnSpan="2" HorizontalAlignment="Right"  Width="25" Height="25" IsTapEnabled="{Binding IsEnabled}">
@@ -37,13 +37,14 @@
                     </core:EventTriggerBehavior>
                 </interactivity:Interaction.Behaviors>
             </Image>-->
-            <Border Background="{StaticResource ListViewItemPlaceholderBackgroundThemeBrush}" Grid.Row="0"  Grid.Column="0" 
-                       Height="110" Width="110" Margin="10,0,0,0">
+            <Border Background="{StaticResource ListViewItemPlaceholderBackgroundThemeBrush}" Grid.Row="0"
+                    Grid.Column="0"
+                    Height="110" Width="110" Margin="10,0,0,0">
                 <!--<Image Source="{Binding Url}" Stretch="UniformToFill" Height="100" Width="100"/>-->
                 <controls:ImageplaceHolderUserControl Placeholder="/Assets/imagePlaceholder_100x100.png"
-                                                      Source="{Binding ImageUri}" Height="110" Width="110"/>
+                                                      Source="{Binding ImageUri}" Height="110" Width="110" />
             </Border>
-            <Grid Grid.Row="0" Grid.Column="1" >
+            <Grid Grid.Row="0" Grid.Column="1">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
@@ -56,53 +57,50 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="ProductName:" Grid.Row="0" TextWrapping="NoWrap" Grid.Column="0"
-                               Style="{StaticResource AddressTextStyle}" VerticalAlignment="Bottom"
-                               TextTrimming="WordEllipsis" Margin="10,10,0,0"/>
-                <TextBlock Text="{Binding ProductName}" Grid.Row="0" TextWrapping="NoWrap" Grid.Column="1" 
-                               Style="{StaticResource AddressTextStyle}" VerticalAlignment="Bottom"
-                             TextTrimming="WordEllipsis"  Width="200"/>
+                           Style="{StaticResource AddressTextStyle}" VerticalAlignment="Bottom"
+                           TextTrimming="WordEllipsis" Margin="10,10,0,0" />
+                <TextBlock Text="{Binding ProductName}" Grid.Row="0" TextWrapping="NoWrap" Grid.Column="1"
+                           Style="{StaticResource AddressTextStyle}" VerticalAlignment="Bottom"
+                           TextTrimming="WordEllipsis" Width="200" />
                 <TextBlock Text="Price : " Grid.Row="1" TextWrapping="NoWrap" Grid.Column="0"
-                                       Style="{StaticResource AddressTextStyle}" VerticalAlignment="Bottom" />
+                           Style="{StaticResource AddressTextStyle}" VerticalAlignment="Bottom" />
                 <TextBlock
-                                Text="{Binding LineItemPrice,Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:C}'}"
-                                Grid.Row="1" Grid.Column="1" TextWrapping="NoWrap"
-                                TextTrimming="WordEllipsis" Style="{StaticResource AddressTextStyle}"
-                               />
+                    Text="{Binding LineItemPrice,Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:C}'}"
+                    Grid.Row="1" Grid.Column="1" TextWrapping="NoWrap"
+                    TextTrimming="WordEllipsis" Style="{StaticResource AddressTextStyle}" />
                 <!--<TextBlock Text="{Binding RecentOrders}" Grid.Row="1" Grid.ColumnSpan="3" TextWrapping="NoWrap"
                                TextTrimming="WordEllipsis" Style="{StaticResource AddressTextStyle}"
                                VerticalAlignment="Bottom" />-->
                 <TextBlock Text="Item No:" Grid.Row="2" TextWrapping="NoWrap" Grid.Column="0"
-                                       Style="{StaticResource AddressTextStyle}"/>
+                           Style="{StaticResource AddressTextStyle}" />
                 <TextBlock Text="{Binding ProductSku}" Grid.Row="2" Grid.Column="1" TextWrapping="NoWrap"
-                               TextTrimming="WordEllipsis" Style="{StaticResource AddressTextStyle}"
-                              />
+                           TextTrimming="WordEllipsis" Style="{StaticResource AddressTextStyle}" />
                 <TextBlock Text="Stock on hand:" Grid.Row="3" Grid.Column="0" TextWrapping="NoWrap"
-                               TextTrimming="WordEllipsis" Style="{StaticResource AddressTextStyle}"
-                            />
+                           TextTrimming="WordEllipsis" Style="{StaticResource AddressTextStyle}" />
                 <TextBlock Text="{Binding ProductQuantity}" Grid.Row="3" Grid.Column="1" TextWrapping="NoWrap"
-                               TextTrimming="WordEllipsis" Style="{StaticResource AddressTextStyle}"
-                           />
+                           TextTrimming="WordEllipsis" Style="{StaticResource AddressTextStyle}" />
                 <!--<StackPanel Orientation="Horizontal">
                             <TextBlock Text="{Binding UnitPrice}" TextWrapping="NoWrap" TextTrimming="WordEllipsis" Style="{StaticResource AddressTextStyle}"  VerticalAlignment="Bottom"/>
                             <TextBlock Text="{Binding Quantity}" Foreground="White"  VerticalAlignment="Bottom"/>
                             <TextBlock Text="{Binding Amount}" TextWrapping="NoWrap" TextTrimming="WordEllipsis" Style="{StaticResource AddressTextStyle}"  VerticalAlignment="Bottom"/>
                         </StackPanel>-->
                 <TextBlock Text="Quantity:" Grid.Row="4" Grid.Column="0" TextWrapping="NoWrap"
-                               TextTrimming="WordEllipsis" Style="{StaticResource AddressTextStyle}"
-                               />
+                           TextTrimming="WordEllipsis" Style="{StaticResource AddressTextStyle}" />
                 <StackPanel Grid.Row="4" Grid.Column="1" Orientation="Horizontal">
-                    <TextBox x:Name="QuantityTextBox" x:Uid="quantityTextBox" 
-                                     Text="{Binding LineItemQuantity,Mode=TwoWay}"
-                                     Style="{StaticResource QuantityTextBoxStyle}" VerticalAlignment="Center"
-                                     InputScope="Number" PreventKeyboardDisplayOnProgrammaticFocus="True"
-                                     PlaceholderText="0" IsEnabled="{Binding IsEnabled}" FontWeight="Bold" MaxLength="9">
+                    <TextBox x:Name="QuantityTextBox" x:Uid="quantityTextBox"
+                             Text="{Binding LineItemQuantity,Mode=TwoWay}"
+                             Style="{StaticResource QuantityTextBoxStyle}" VerticalAlignment="Center"
+                             InputScope="Number" PreventKeyboardDisplayOnProgrammaticFocus="True"
+                             PlaceholderText="0" IsEnabled="{Binding IsEnabled}" FontWeight="Bold" MaxLength="9">
                         <interactivity:Interaction.Behaviors>
                             <behaviors:NumericTextBoxBehavior />
                             <core:EventTriggerBehavior EventName="GotFocus">
-                                <core:CallMethodAction MethodName="QunatityTextBoxGotFocus" TargetObject="{Binding Mode=TwoWay}"></core:CallMethodAction>
+                                <core:CallMethodAction MethodName="QunatityTextBoxGotFocus"
+                                                       TargetObject="{Binding Mode=TwoWay}" />
                             </core:EventTriggerBehavior>
                             <core:EventTriggerBehavior EventName="LostFocus">
-                                <core:CallMethodAction MethodName="QunatityTextBoxLostFocus" TargetObject="{Binding Mode=TwoWay}"></core:CallMethodAction>
+                                <core:CallMethodAction MethodName="QunatityTextBoxLostFocus"
+                                                       TargetObject="{Binding Mode=TwoWay}" />
                             </core:EventTriggerBehavior>
                         </interactivity:Interaction.Behaviors>
                         <!--<core:EventTriggerBehavior EventName="LostFocus">
@@ -112,17 +110,21 @@
                             </core:EventTriggerBehavior>
                         </interactivity:Interaction.Behaviors>-->
                     </TextBox>
-                    <Button Content="+" Style="{StaticResource RoundButtonStyle}" VerticalAlignment="Bottom" Background="White" Foreground="Black" IsEnabled="{Binding IsEnabled}" Height="37">
+                    <Button Content="+" Style="{StaticResource RoundButtonStyle}" VerticalAlignment="Bottom"
+                            Background="White" Foreground="Black" IsEnabled="{Binding IsEnabled}" Height="37">
                         <interactivity:Interaction.Behaviors>
                             <core:EventTriggerBehavior EventName="Click">
-                                <core:CallMethodAction MethodName="IncrementQuantity" TargetObject="{Binding Mode=TwoWay}"></core:CallMethodAction>
+                                <core:CallMethodAction MethodName="IncrementQuantity"
+                                                       TargetObject="{Binding Mode=TwoWay}" />
                             </core:EventTriggerBehavior>
                         </interactivity:Interaction.Behaviors>
                     </Button>
-                    <Button Content="-" Style="{StaticResource RoundButtonStyle}" VerticalAlignment="Bottom" Background="White" Foreground="Black" IsEnabled="{Binding IsEnabled}" Height="37">
+                    <Button Content="-" Style="{StaticResource RoundButtonStyle}" VerticalAlignment="Bottom"
+                            Background="White" Foreground="Black" IsEnabled="{Binding IsEnabled}" Height="37">
                         <interactivity:Interaction.Behaviors>
                             <core:EventTriggerBehavior EventName="Click">
-                                <core:CallMethodAction MethodName="DecrementQuantity" TargetObject="{Binding Mode=TwoWay}"></core:CallMethodAction>
+                                <core:CallMethodAction MethodName="DecrementQuantity"
+                                                       TargetObject="{Binding Mode=TwoWay}" />
                             </core:EventTriggerBehavior>
                         </interactivity:Interaction.Behaviors>
                     </Button>
@@ -130,23 +132,28 @@
             </Grid>
             <Grid Grid.Row="1" Grid.ColumnSpan="2">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="10"/>
-                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="10" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
-                <Line Grid.Row="0" Width="10"/>
+                <Line Grid.Row="0" Width="10" />
 
-                <Border Grid.Row="0" BorderThickness="1" Height="3" Margin="15,0,0,0" BorderBrush="{StaticResource QuoteLineItemBorderBrush}" Background="White" Width="420" HorizontalAlignment="Left"/>
-                <Button Grid.Row="1" x:Uid="QuoteLineRecentOrders" Foreground="{ThemeResource ApplicationHeaderForegroundThemeBrush}"  Style="{StaticResource TextBlockButtonStyle}" HorizontalAlignment="Left" >
+                <Border Grid.Row="0" BorderThickness="1" Height="3" Margin="15,0,0,0"
+                        BorderBrush="{StaticResource QuoteLineItemBorderBrush}" Background="White" Width="420"
+                        HorizontalAlignment="Left" />
+                <Button Grid.Row="1" x:Uid="QuoteLineRecentOrders"
+                        Foreground="{ThemeResource ApplicationHeaderForegroundThemeBrush}"
+                        Style="{StaticResource TextBlockButtonStyle}" HorizontalAlignment="Left">
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock x:Uid="RecentOrdersQuotelineitem" Style="{StaticResource AddressTextStyle}" Width="100"/>
+                        <TextBlock x:Uid="RecentOrdersQuotelineitem" Style="{StaticResource AddressTextStyle}"
+                                   Width="100" />
                         <TextBlock Text="{StaticResource ChevronGlyph}"
-                                       Style="{StaticResource SubHeaderGlyphStyle}" Margin="0,-6,0,0" Foreground="White"/>
+                                   Style="{StaticResource SubHeaderGlyphStyle}" Margin="0,-6,0,0" Foreground="White" />
                     </StackPanel>
                     <interactivity:Interaction.Behaviors>
                         <core:EventTriggerBehavior EventName="Click">
                             <core:CallMethodAction MethodName="RecentOrderClick"
-                                                       TargetObject="{Binding Mode=OneWay}" />
+                                                   TargetObject="{Binding Mode=OneWay}" />
                         </core:EventTriggerBehavior>
                     </interactivity:Interaction.Behaviors>
                 </Button>

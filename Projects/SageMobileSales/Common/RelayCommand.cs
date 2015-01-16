@@ -72,7 +72,7 @@ namespace SageMobileSales.Common
         /// </summary>
         public void RaiseCanExecuteChanged()
         {
-            EventHandler handler = CanExecuteChanged;
+            var handler = CanExecuteChanged;
             if (handler != null)
             {
                 handler(this, EventArgs.Empty);

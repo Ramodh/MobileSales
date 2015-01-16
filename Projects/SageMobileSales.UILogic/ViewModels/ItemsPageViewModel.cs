@@ -2,24 +2,20 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using Windows.ApplicationModel.Resources;
+using Windows.System.Threading;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
-using Microsoft.Practices.Prism.PubSubEvents;
-using Microsoft.Practices.Prism.StoreApps;
-using Microsoft.Practices.Prism.StoreApps.Interfaces;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Events;
 using SageMobileSales.DataAccess.Model;
 using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
-using SageMobileSales.UILogic.Helpers;
-using Windows.UI.Xaml;
-using System.Threading.Tasks;
-using Windows.Foundation;
-using Windows.System.Threading;
-using SageMobileSales.UILogic.Common;
 using SageMobileSales.ServiceAgents.Services;
+using SageMobileSales.UILogic.Common;
+using SageMobileSales.UILogic.Helpers;
 
 namespace SageMobileSales.UILogic.ViewModels
 {
@@ -34,13 +30,12 @@ namespace SageMobileSales.UILogic.ViewModels
         private bool _emptyText;
         private ProductCollection _filteredProductList;
         private bool _inProgress;
+        private Visibility _isTextChanged;
         private string _log = string.Empty;
         private ProductCollection _productCollection;
         private ProductCollection _productsList;
         private bool _syncProgress;
-        private Visibility _isTextChanged;
         private string CategoryId;
-        public DelegateCommand StartSyncCommand { get; private set; }
 
         public ItemsPageViewModel(INavigationService navigationService, IProductRepository productRepository,
             IEventAggregator eventAggregator, ISyncCoordinatorService syncCoordinatorService)
@@ -54,6 +49,8 @@ namespace SageMobileSales.UILogic.ViewModels
             _eventAggregator.GetEvent<ProductSyncChangedEvent>()
                 .Subscribe(ProductsSyncIndicator, ThreadOption.UIThread);
         }
+
+        public DelegateCommand StartSyncCommand { get; private set; }
 
         /// <summary>
         ///     Display empty results text
@@ -81,15 +78,16 @@ namespace SageMobileSales.UILogic.ViewModels
             get { return _inProgress; }
             private set { SetProperty(ref _inProgress, value); }
         }
+
         /// <summary>
-        /// Visibility property for Filter icon in Filetritems textbox
+        ///     Visibility property for Filter icon in Filetritems textbox
         /// </summary>
         public Visibility IsTextChanged
         {
             get { return _isTextChanged; }
             private set { SetProperty(ref _isTextChanged, value); }
         }
-        
+
         /// <summary>
         ///     Data  syncing indicator
         /// </summary>
@@ -102,7 +100,6 @@ namespace SageMobileSales.UILogic.ViewModels
                 OnPropertyChanged("SyncProgress");
             }
         }
-
 
         public bool EmptyFilteredProductList
         {
@@ -171,7 +168,6 @@ namespace SageMobileSales.UILogic.ViewModels
             base.OnNavigatedTo(navigationParameter, navigationMode, viewModelState);
         }
 
-
         /// <summary>
         ///     Grid View Item Click
         /// </summary>
@@ -213,7 +209,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 {
                     if (ProductsList.ProductList != null)
                     {
-                        foreach (ProductDetails item in ProductsList.ProductList)
+                        foreach (var item in ProductsList.ProductList)
                         {
                             if (item.ProductName != null)
                             {
@@ -238,14 +234,14 @@ namespace SageMobileSales.UILogic.ViewModels
         /// </summary>
         /// <param name="searchText"></param>
         private void TextBoxTextChanged(object args)
-       {
+        {
             EmptyText = false;
             IsTextChanged = Visibility.Collapsed;
             if (!InProgress)
             {
-                if (((TextBox) args).Text != null&&((TextBox) args).Text!=string.Empty)
+                if (((TextBox) args).Text != null && ((TextBox) args).Text != string.Empty)
                 {
-                    string searchTerm = ((TextBox) args).Text.Trim();                  
+                    var searchTerm = ((TextBox) args).Text.Trim();
                     EmptyText = !searchTerm.Any();
                     if (!string.IsNullOrEmpty(searchTerm))
                     {
@@ -263,7 +259,6 @@ namespace SageMobileSales.UILogic.ViewModels
                 {
                     ProductCollection = ProductsList;
                     IsTextChanged = Visibility.Visible;
-
                 }
             }
         }
@@ -302,7 +297,7 @@ namespace SageMobileSales.UILogic.ViewModels
             InProgress = true;
             if (!Constants.ProductsSyncProgress)
             {
-                IAsyncAction asyncAction = ThreadPool.RunAsync(
+                var asyncAction = ThreadPool.RunAsync(
                     IAsyncAction =>
                     {
                         // Data Sync will Start.

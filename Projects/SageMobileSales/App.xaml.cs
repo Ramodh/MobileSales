@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.Tracing;
 using System.Globalization;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.Resources;
+using Windows.Networking.Connectivity;
 using Windows.Storage;
 using Windows.System;
 using Windows.UI.ApplicationSettings;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
-using Microsoft.Practices.Prism.PubSubEvents;
-using Microsoft.Practices.Prism.StoreApps;
-using Microsoft.Practices.Prism.StoreApps.Interfaces;
-using Microsoft.Practices.Unity;
 using SageMobileSales.DataAccess;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Repositories;
@@ -21,10 +21,6 @@ using SageMobileSales.ServiceAgents.Common;
 using SageMobileSales.ServiceAgents.Services;
 using SageMobileSales.UILogic.Common;
 using SageMobileSales.Views;
-using Windows.UI.Popups;
-using Windows.UI.Xaml.Controls;
-using Windows.Networking.Connectivity;
-using System.Diagnostics;
 
 // The Blank Application template is documented at http://go.microsoft.com/fwlink/?LinkId=234227
 
@@ -37,8 +33,10 @@ namespace SageMobileSales
     {
         // Create the singleton container that will be used for type resolution in the app
         private readonly IUnityContainer _container = new UnityContainer();
-        NetworkStatusChangedEventHandler networkStatusCallback;
-        bool registeredNetworkStatusNotify;
+        private string _log = String.Empty;
+        private NetworkStatusChangedEventHandler networkStatusCallback;
+        private bool registeredNetworkStatusNotify;
+
         /// <summary>
         ///     Initializes the singleton application object.  This is the first line of authored code
         ///     executed, and as such is the logical equivalent of main() or WinMain().
@@ -50,14 +48,13 @@ namespace SageMobileSales
         }
 
         public IEventAggregator EventAggregator { get; set; }
-        private string _log = String.Empty;
 
         protected override Task OnLaunchApplication(LaunchActivatedEventArgs args)
         {
-            ApplicationDataContainer settingsLocal = ApplicationData.Current.LocalSettings;
+            var settingsLocal = ApplicationData.Current.LocalSettings;
             settingsLocal.CreateContainer("SageSalesContainer", ApplicationDataCreateDisposition.Always);
-            object _isAuthorised = settingsLocal.Containers["SageSalesContainer"].Values[PageUtils.IsAuthorised];
-            object _isLaunched = settingsLocal.Containers["SageSalesContainer"].Values[PageUtils.IsLaunched];
+            var _isAuthorised = settingsLocal.Containers["SageSalesContainer"].Values[PageUtils.IsAuthorised];
+            var _isLaunched = settingsLocal.Containers["SageSalesContainer"].Values[PageUtils.IsLaunched];
 
             // EventListener verboseListenerevent = new LogStorageFileEventListener("MyListenerVerbose");
             EventListener informationListener = new LogStorageFileEventListener("SageMobileSalesLog");
@@ -160,10 +157,10 @@ namespace SageMobileSales
 
             ViewModelLocator.SetDefaultViewTypeToViewModelTypeResolver(viewType =>
             {
-                string viewModelTypeName = string.Format(CultureInfo.InvariantCulture,
+                var viewModelTypeName = string.Format(CultureInfo.InvariantCulture,
                     "SageMobileSales.UILogic.ViewModels.{0}ViewModel, SageMobileSales.UILogic, Version=1.0.0.0, Culture=neutral",
                     viewType.Name);
-                Type viewModelType = Type.GetType(viewModelTypeName);
+                var viewModelType = Type.GetType(viewModelTypeName);
                 return viewModelType;
             });
             //var resourceLoader = _container.Resolve<IResourceLoader>();                       
@@ -214,49 +211,50 @@ namespace SageMobileSales
             {
                 MessageDialog msgDialog;
                 var oAuthService = _container.Resolve<IOAuthService>();
-                ApplicationDataContainer configSettings = ApplicationData.Current.LocalSettings;
+                var configSettings = ApplicationData.Current.LocalSettings;
                 if (configSettings.Containers.ContainsKey("ConfigurationSettingsContainer"))
                 {
                     if (configSettings.Containers["ConfigurationSettingsContainer"].Values["IsServerChanged"] != null)
                     {
-                configSettings.Containers["ConfigurationSettingsContainer"].Values["IsServerChanged"] = false;
-
+                        configSettings.Containers["ConfigurationSettingsContainer"].Values["IsServerChanged"] = false;
                     }
                 }
                 await oAuthService.Cleanup();
 
                 var frame = Window.Current.Content as Frame;
-                if (frame.SourcePageType.Name == PageUtils.SignInPage || frame.SourcePageType.Name == PageUtils.LoadingIndicatorPage)
+                if (frame.SourcePageType.Name == PageUtils.SignInPage ||
+                    frame.SourcePageType.Name == PageUtils.LoadingIndicatorPage)
                 {
                     msgDialog = new MessageDialog(
-                                      ResourceLoader.GetForCurrentView("Resources").GetString("UnableToLogoutText"),
-                                      ResourceLoader.GetForCurrentView("Resources").GetString("UnableToLogoutTitle"));
+                        ResourceLoader.GetForCurrentView("Resources").GetString("UnableToLogoutText"),
+                        ResourceLoader.GetForCurrentView("Resources").GetString("UnableToLogoutTitle"));
                     msgDialog.Commands.Add(new UICommand("Ok"));
                 }
                 else
                 {
                     msgDialog = new MessageDialog(
-                                      ResourceLoader.GetForCurrentView("Resources").GetString("LogoutText"),
-                                      ResourceLoader.GetForCurrentView("Resources").GetString("LogoutTitle"));
-                    msgDialog.Commands.Add(new UICommand("Ok", (UICommandInvokedHandler) => { NavigationService.Navigate("Signin", null); }));
+                        ResourceLoader.GetForCurrentView("Resources").GetString("LogoutText"),
+                        ResourceLoader.GetForCurrentView("Resources").GetString("LogoutTitle"));
+                    msgDialog.Commands.Add(new UICommand("Ok",
+                        UICommandInvokedHandler => { NavigationService.Navigate("Signin", null); }));
                     msgDialog.Commands.Add(new UICommand("Cancel"));
                 }
 
                 await msgDialog.ShowAsync();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _log = AppEventSource.Log.WriteLine(ex);
                 AppEventSource.Log.Error(_log);
             }
         }
 
-        void NetworkStatusChange()
+        private void NetworkStatusChange()
         {
             // register for network status change notifications
             try
             {
-                networkStatusCallback = new NetworkStatusChangedEventHandler(OnNetworkStatusChange);
+                networkStatusCallback = OnNetworkStatusChange;
                 if (!registeredNetworkStatusNotify)
                 {
                     NetworkInformation.NetworkStatusChanged += networkStatusCallback;
@@ -269,12 +267,12 @@ namespace SageMobileSales
             }
         }
 
-        void OnNetworkStatusChange(object sender)
+        private void OnNetworkStatusChange(object sender)
         {
             try
             {
                 // get the ConnectionProfile that is currently used to connect to the Internet                
-                ConnectionProfile InternetConnectionProfile = NetworkInformation.GetInternetConnectionProfile();
+                var InternetConnectionProfile = NetworkInformation.GetInternetConnectionProfile();
 
                 if (InternetConnectionProfile == null)
                 {
@@ -398,21 +396,5 @@ namespace SageMobileSales
         {
             throw new Exception("Failed to load Page " + e.SourcePageType.FullName);
         }
-
-        /*
-       /// <summary>
-       /// Invoked when application execution is being suspended.  Application state is saved
-       /// without knowing whether the application will be terminated or resumed with the contents
-       /// of memory still intact.
-       /// </summary>
-       /// <param name="sender">The source of the suspend request.</param>
-       /// <param name="e">Details about the suspend request.</param>
-       private void OnSuspending(object sender, SuspendingEventArgs e)
-       {
-           var deferral = e.SuspendingOperation.GetDeferral();
-           //TODO: Save application state and stop any background activity
-           deferral.Complete();
-       }
-          */
     }
 }

@@ -2,16 +2,14 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Resources;
+using Windows.UI.Popups;
 using Windows.UI.Xaml.Navigation;
-using Microsoft.Practices.Prism.StoreApps;
-using Microsoft.Practices.Prism.StoreApps.Interfaces;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Entities;
 using SageMobileSales.DataAccess.Model;
 using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
 using SageMobileSales.ServiceAgents.Services;
-using Windows.UI.Popups;
 
 namespace SageMobileSales.UILogic.ViewModels
 {
@@ -120,9 +118,7 @@ namespace SageMobileSales.UILogic.ViewModels
         }
 
         public DelegateCommand ConfirmCommand { get; private set; }
-
         public DelegateCommand<object> ShippingAndHandlingTextChangedCommand { get; private set; }
-
         public DelegateCommand<object> DiscountTextChangedCommand { get; private set; }
 
         public override async void OnNavigatedTo(object navigationParameter, NavigationMode navigationMode,
@@ -162,7 +158,7 @@ namespace SageMobileSales.UILogic.ViewModels
             decimal SubTotal = 0;
             if (_quoteLineItemsList != null)
             {
-                foreach (LineItemDetails quoteLineItem in _quoteLineItemsList)
+                foreach (var quoteLineItem in _quoteLineItemsList)
                 {
                     SubTotal += Math.Round((quoteLineItem.LineItemQuantity*quoteLineItem.LineItemPrice), 2);
                 }
@@ -201,20 +197,20 @@ namespace SageMobileSales.UILogic.ViewModels
                 InProgress = true;
                 if (Constants.ConnectedToInternet())
                 {
-                    Orders order = await _orderService.PostOrder(QuoteDtls);
+                    var order = await _orderService.PostOrder(QuoteDtls);
                     if (order != null)
                     {
                         InProgress = false;
                         _navigationService.ClearHistory();
-                        OrderDetails orderDtls = await _orderRepository.GetOrderDetailsAsync(order.OrderId);
+                        var orderDtls = await _orderRepository.GetOrderDetailsAsync(order.OrderId);
                         _navigationService.Navigate("OrderDetails", orderDtls);
                     }
                     else
                     {
                         InProgress = false;
-                        MessageDialog msgDialog = new MessageDialog(
-                                      ResourceLoader.GetForCurrentView("Resources").GetString("PlaceOrderErrorText"),
-                                      ResourceLoader.GetForCurrentView("Resources").GetString("PlaceOrderErrorTitle"));
+                        var msgDialog = new MessageDialog(
+                            ResourceLoader.GetForCurrentView("Resources").GetString("PlaceOrderErrorText"),
+                            ResourceLoader.GetForCurrentView("Resources").GetString("PlaceOrderErrorTitle"));
                         msgDialog.Commands.Add(new UICommand("Ok"));
                         await msgDialog.ShowAsync();
                     }

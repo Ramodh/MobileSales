@@ -12,11 +12,9 @@ namespace SageMobileSales.DataAccess.Repositories
     public class ProductAssociatedBlobsRepository : IProductAssociatedBlobsRepository
     {
         private readonly IDatabase _database;
-
         private readonly ILocalSyncDigestRepository _localSyncDigestRepository;
         private readonly SQLiteAsyncConnection _sageSalesDB;
         private string _log = string.Empty;
-
 
         public ProductAssociatedBlobsRepository(IDatabase database, ILocalSyncDigestRepository localSyncDigestRepository)
         {
@@ -39,15 +37,15 @@ namespace SageMobileSales.DataAccess.Repositories
         {
             try
             {
-                JsonArray sDataProductAssociatedBlobsArray = sDataProductAssociatedBlobs.GetNamedArray("$resources");
+                var sDataProductAssociatedBlobsArray = sDataProductAssociatedBlobs.GetNamedArray("$resources");
                 DataAccessUtils.ProductAssociatedBlobsReturnedCount += sDataProductAssociatedBlobsArray.Count;
 
                 var lstProductAssociatedBlobs = new List<ProductAssociatedBlob>();
-                for (int productAssociatedBlob = 0;
+                for (var productAssociatedBlob = 0;
                     productAssociatedBlob < sDataProductAssociatedBlobsArray.Count;
                     productAssociatedBlob++)
                 {
-                    JsonObject sDataProductAssociatedBlob =
+                    var sDataProductAssociatedBlob =
                         sDataProductAssociatedBlobsArray[productAssociatedBlob].GetObject();
                     // Adds or Updated ProductAssociatedBlob data from json to LocalDB
                     await AddOrUpdateProductAssociatedBlobJsonToDbAsync(sDataProductAssociatedBlob);
@@ -70,7 +68,7 @@ namespace SageMobileSales.DataAccess.Repositories
                         }
                         await _localSyncDigestRepository.AddOrUpdateLocalSyncDigestDtlsAsync(localSyncDigest);
                     }
-                }                
+                }
             }
             catch (SQLiteException ex)
             {
@@ -85,18 +83,18 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
 
-
         /// <summary>
         ///     Adds or updates ProductAssociatedBlob json response to dB
         /// </summary>
         /// <param name="sDataProductAssociatedBlob"></param>
         /// <returns></returns>
-        public async Task<ProductAssociatedBlob> AddOrUpdateProductAssociatedBlobJsonToDbAsync(JsonObject sDataProductAssociatedBlob)
+        public async Task<ProductAssociatedBlob> AddOrUpdateProductAssociatedBlobJsonToDbAsync(
+            JsonObject sDataProductAssociatedBlob)
         {
             try
             {
                 IJsonValue value;
-                bool entityStatusDeleted = false;
+                var entityStatusDeleted = false;
                 List<ProductAssociatedBlob> productAssociatedBlobsList = null;
 
                 if (sDataProductAssociatedBlob.TryGetValue("$key", out value))
@@ -105,7 +103,8 @@ namespace SageMobileSales.DataAccess.Repositories
                     {
                         productAssociatedBlobsList =
                             await
-                                _sageSalesDB.QueryAsync<ProductAssociatedBlob>("SELECT * FROM ProductAssociatedBlob where ProductAssociatedBlobId=?",
+                                _sageSalesDB.QueryAsync<ProductAssociatedBlob>(
+                                    "SELECT * FROM ProductAssociatedBlob where ProductAssociatedBlobId=?",
                                     sDataProductAssociatedBlob.GetNamedString("$key"));
                         if (sDataProductAssociatedBlob.TryGetValue("EntityStatus", out value))
                         {
@@ -123,8 +122,10 @@ namespace SageMobileSales.DataAccess.Repositories
                             }
                             else
                             {
-
-                                return await UpdateProductAssociatedBlobJsonToDbAsync(sDataProductAssociatedBlob, productAssociatedBlobsList.FirstOrDefault());
+                                return
+                                    await
+                                        UpdateProductAssociatedBlobJsonToDbAsync(sDataProductAssociatedBlob,
+                                            productAssociatedBlobsList.FirstOrDefault());
                             }
                         }
                         return await AddProductAssociatedBlobJsonToDbAsync(sDataProductAssociatedBlob);
@@ -137,7 +138,7 @@ namespace SageMobileSales.DataAccess.Repositories
                 AppEventSource.Log.Error(_log);
             }
             return null;
-        }              
+        }
 
         /// <summary>
         ///     Gets productAssociatedBlobs data from local dB
@@ -183,13 +184,15 @@ namespace SageMobileSales.DataAccess.Repositories
         /// </summary>
         /// <param name="sDataProductAssociatedBlob"></param>
         /// <returns></returns>
-        private async Task<ProductAssociatedBlob> AddProductAssociatedBlobJsonToDbAsync(JsonObject sDataProductAssociatedBlob)
+        private async Task<ProductAssociatedBlob> AddProductAssociatedBlobJsonToDbAsync(
+            JsonObject sDataProductAssociatedBlob)
         {
             var productAssociatedBlobObj = new ProductAssociatedBlob();
             try
             {
                 productAssociatedBlobObj.ProductAssociatedBlobId = sDataProductAssociatedBlob.GetNamedString("$key");
-                productAssociatedBlobObj = ExtractProductAssociatedBlobFromJsonAsync(sDataProductAssociatedBlob, productAssociatedBlobObj);
+                productAssociatedBlobObj = ExtractProductAssociatedBlobFromJsonAsync(sDataProductAssociatedBlob,
+                    productAssociatedBlobObj);
 
                 await _sageSalesDB.InsertAsync(productAssociatedBlobObj);
             }
@@ -207,11 +210,13 @@ namespace SageMobileSales.DataAccess.Repositories
         /// <param name="sDataProductAssociatedBlob"></param>
         /// <param name="productAssociatedBlobDbObj"></param>
         /// <returns></returns>
-        private async Task<ProductAssociatedBlob> UpdateProductAssociatedBlobJsonToDbAsync(JsonObject sDataProductAssociatedBlob, ProductAssociatedBlob productAssociatedBlobDbObj)
+        private async Task<ProductAssociatedBlob> UpdateProductAssociatedBlobJsonToDbAsync(
+            JsonObject sDataProductAssociatedBlob, ProductAssociatedBlob productAssociatedBlobDbObj)
         {
             try
             {
-                productAssociatedBlobDbObj = ExtractProductAssociatedBlobFromJsonAsync(sDataProductAssociatedBlob, productAssociatedBlobDbObj);
+                productAssociatedBlobDbObj = ExtractProductAssociatedBlobFromJsonAsync(sDataProductAssociatedBlob,
+                    productAssociatedBlobDbObj);
                 await _sageSalesDB.UpdateAsync(productAssociatedBlobDbObj);
             }
             catch (Exception ex)
@@ -227,7 +232,8 @@ namespace SageMobileSales.DataAccess.Repositories
         /// </summary>
         /// <param name="sDataProductAssociatedBlob"></param>
         /// <returns>Product</returns>
-        private ProductAssociatedBlob ExtractProductAssociatedBlobFromJsonAsync(JsonObject sDataProductAssociatedBlob, ProductAssociatedBlob productAssociatedBlobDbObj)
+        private ProductAssociatedBlob ExtractProductAssociatedBlobFromJsonAsync(JsonObject sDataProductAssociatedBlob,
+            ProductAssociatedBlob productAssociatedBlobDbObj)
         {
             try
             {
@@ -282,7 +288,8 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        productAssociatedBlobDbObj.ThumbnailUrl = sDataProductAssociatedBlob.GetNamedString("ThumbnailUrl");
+                        productAssociatedBlobDbObj.ThumbnailUrl =
+                            sDataProductAssociatedBlob.GetNamedString("ThumbnailUrl");
                     }
                 }
                 if (sDataProductAssociatedBlob.TryGetValue("ParentEntityId", out value))
@@ -325,7 +332,7 @@ namespace SageMobileSales.DataAccess.Repositories
         {
             try
             {
-                List<ProductAssociatedBlob> productsAssociatedBlob =
+                var productsAssociatedBlob =
                     await
                         _sageSalesDB.QueryAsync<ProductAssociatedBlob>(
                             "select * from ProductAssociatedBlob where ProductAssociatedBlobId=?",
@@ -345,7 +352,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Delete ProductAssociatedBlob from LocalDB
+        ///     Delete ProductAssociatedBlob from LocalDB
         /// </summary>
         /// <param name="productAssociatedBlobId"></param>
         /// <returns></returns>
@@ -353,7 +360,9 @@ namespace SageMobileSales.DataAccess.Repositories
         {
             try
             {
-                await _sageSalesDB.QueryAsync<ProductAssociatedBlob>("Delete From ProductAssociatedBlob where ProductAssociatedBlobId=?", productAssociatedBlobId);
+                await
+                    _sageSalesDB.QueryAsync<ProductAssociatedBlob>(
+                        "Delete From ProductAssociatedBlob where ProductAssociatedBlobId=?", productAssociatedBlobId);
             }
             catch (Exception ex)
             {
@@ -361,7 +370,6 @@ namespace SageMobileSales.DataAccess.Repositories
                 AppEventSource.Log.Error(_log);
             }
         }
-
 
         # endregion
     }

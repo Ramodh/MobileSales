@@ -7,21 +7,6 @@ namespace SageMobileSales.Behaviors
 {
     public class HighlightFormFieldOnErrors : Behavior<FrameworkElement>
     {
-        public static DependencyProperty PropertyErrorsProperty =
-            DependencyProperty.RegisterAttached("PropertyErrors", typeof (ReadOnlyCollection<string>),
-                typeof (HighlightFormFieldOnErrors),
-                new PropertyMetadata(BindableValidator.EmptyErrorsCollection, OnPropertyErrorsChanged));
-
-        // The default for this property only applies to TextBox controls.
-        public static DependencyProperty HighlightStyleNameProperty =
-            DependencyProperty.RegisterAttached("HighlightStyleName", typeof (string),
-                typeof (HighlightFormFieldOnErrors), new PropertyMetadata("HighlightTextBoxStyle"));
-
-        // The default for this property only applies to TextBox controls.
-        protected static DependencyProperty OriginalStyleNameProperty =
-            DependencyProperty.RegisterAttached("OriginalStyleName", typeof (Style), typeof (HighlightFormFieldOnErrors),
-                new PropertyMetadata("AddContactTextBoxStyle"));
-
         public ReadOnlyCollection<string> PropertyErrors
         {
             get { return (ReadOnlyCollection<string>) GetValue(PropertyErrorsProperty); }
@@ -47,10 +32,10 @@ namespace SageMobileSales.Behaviors
                 return;
             }
 
-            FrameworkElement control = ((Behavior<FrameworkElement>) d).AssociatedObject;
+            var control = ((Behavior<FrameworkElement>) d).AssociatedObject;
             var propertyErrors = (ReadOnlyCollection<string>) args.NewValue;
 
-            Style style = (propertyErrors.Any())
+            var style = (propertyErrors.Any())
                 ? (Style) Application.Current.Resources[((HighlightFormFieldOnErrors) d).HighlightStyleName]
                 : (Style) Application.Current.Resources[((HighlightFormFieldOnErrors) d).OriginalStyleName];
 
@@ -64,5 +49,20 @@ namespace SageMobileSales.Behaviors
         protected override void OnDetached()
         {
         }
+
+        public static DependencyProperty PropertyErrorsProperty =
+            DependencyProperty.RegisterAttached("PropertyErrors", typeof (ReadOnlyCollection<string>),
+                typeof (HighlightFormFieldOnErrors),
+                new PropertyMetadata(BindableValidator.EmptyErrorsCollection, OnPropertyErrorsChanged));
+
+        // The default for this property only applies to TextBox controls.
+        public static DependencyProperty HighlightStyleNameProperty =
+            DependencyProperty.RegisterAttached("HighlightStyleName", typeof (string),
+                typeof (HighlightFormFieldOnErrors), new PropertyMetadata("HighlightTextBoxStyle"));
+
+        // The default for this property only applies to TextBox controls.
+        protected static DependencyProperty OriginalStyleNameProperty =
+            DependencyProperty.RegisterAttached("OriginalStyleName", typeof (Style), typeof (HighlightFormFieldOnErrors),
+                new PropertyMetadata("AddContactTextBoxStyle"));
     }
 }

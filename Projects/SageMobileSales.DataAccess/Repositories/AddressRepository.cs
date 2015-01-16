@@ -50,7 +50,7 @@ namespace SageMobileSales.DataAccess.Repositories
                     {
                         if (value.ValueType.ToString() != DataAccessUtils.Null)
                         {
-                            JsonArray sDataAddressArray = sDataCustomer.GetNamedArray("Addresses");
+                            var sDataAddressArray = sDataCustomer.GetNamedArray("Addresses");
                             if (sDataAddressArray.Count > 0)
                             {
                                 await SaveAddressDetailsAsync(sDataAddressArray, customerId);
@@ -73,13 +73,14 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Save posted address to local dB
+        ///     Save posted address to local dB
         /// </summary>
         /// <param name="sDataAddress"></param>
         /// <param name="customerId"></param>
         /// <param name="addressPending"></param>
         /// <returns></returns>
-        public async Task<Address> SavePostedAddressToDbAsync(JsonObject sDataAddress, string customerId, string addressPendingId)
+        public async Task<Address> SavePostedAddressToDbAsync(JsonObject sDataAddress, string customerId,
+            string addressPendingId)
         {
             var addressResponse = new Address();
             addressResponse.CustomerId = customerId;
@@ -348,8 +349,8 @@ namespace SageMobileSales.DataAccess.Repositories
             await _sageSalesDB.InsertAsync(address);
         }
 
-        ///<summary>
-        /// Update address to localDb
+        /// <summary>
+        ///     Update address to localDb
         /// </summary>
         /// <param name="contact"></param>
         /// <returns></returns>
@@ -359,7 +360,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Delete address from local dB
+        ///     Delete address from local dB
         /// </summary>
         /// <param name="address"></param>
         /// <returns></returns>
@@ -395,7 +396,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Gets cutomer mailing address 
+        ///     Gets cutomer mailing address
         /// </summary>
         /// <param name="customerId"></param>
         /// <returns></returns>
@@ -411,7 +412,6 @@ namespace SageMobileSales.DataAccess.Repositories
             }
             catch (Exception ex)
             {
-
                 _log = AppEventSource.Log.WriteLine(ex);
                 AppEventSource.Log.Error(_log);
             }
@@ -432,9 +432,9 @@ namespace SageMobileSales.DataAccess.Repositories
             // Delete if any address exists in dB but not in Json by comparing addressId
             await DeleteAddressesFromDbAsync(sDataAddressArray, customerId);
 
-            foreach (IJsonValue adress in sDataAddressArray)
+            foreach (var adress in sDataAddressArray)
             {
-                JsonObject sDataAddress = adress.GetObject();
+                var sDataAddress = adress.GetObject();
                 await AddOrUpdateAddressJsonToDbAsync(sDataAddress, customerId);
             }
         }
@@ -498,7 +498,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Add or update pending contact
+        ///     Add or update pending contact
         /// </summary>
         /// <param name="addressResponse"></param>
         /// <param name="addressPending"></param>
@@ -507,7 +507,7 @@ namespace SageMobileSales.DataAccess.Repositories
         {
             try
             {
-                List<Address> addressList =
+                var addressList =
                     await
                         _sageSalesDB.QueryAsync<Address>("Select * from Address where AddressId=? and IsPending='1'",
                             addressPendingId);
@@ -669,7 +669,7 @@ namespace SageMobileSales.DataAccess.Repositories
         private async Task DeleteAddressesFromDbAsync(JsonArray sDataAddressArray, string customerId)
         {
             IJsonValue value;
-            bool idExists = false;
+            var idExists = false;
             List<Address> addressIdJsonList;
             List<Address> addressIdDbList;
             List<Address> addressRemoveList;
@@ -678,9 +678,9 @@ namespace SageMobileSales.DataAccess.Repositories
             {
                 // Retrieve list of addressId from Json
                 addressIdJsonList = new List<Address>();
-                foreach (IJsonValue adress in sDataAddressArray)
+                foreach (var adress in sDataAddressArray)
                 {
-                    JsonObject sDataAddress = adress.GetObject();
+                    var sDataAddress = adress.GetObject();
                     var adressJsonObj = new Address();
                     if (sDataAddress.TryGetValue("$key", out value))
                     {
@@ -698,10 +698,10 @@ namespace SageMobileSales.DataAccess.Repositories
                 addressIdDbList =
                     await _sageSalesDB.QueryAsync<Address>("SELECT * FROM Address where customerId=?", customerId);
 
-                for (int i = 0; i < addressIdDbList.Count; i++)
+                for (var i = 0; i < addressIdDbList.Count; i++)
                 {
                     idExists = false;
-                    for (int j = 0; j < addressIdJsonList.Count; j++)
+                    for (var j = 0; j < addressIdJsonList.Count; j++)
                     {
                         if (addressIdDbList[i].AddressId.Contains(DataAccessUtils.Pending))
                         {
@@ -721,7 +721,7 @@ namespace SageMobileSales.DataAccess.Repositories
                 //addressRemoveList = addressIdJsonList.Except(addressIdDbList, new AddressIdComparer()).ToList();
                 if (addressRemoveList.Count() > 0)
                 {
-                    foreach (Address addressRemove in addressRemoveList)
+                    foreach (var addressRemove in addressRemoveList)
                     {
                         await _sageSalesDB.DeleteAsync(addressRemove);
                     }

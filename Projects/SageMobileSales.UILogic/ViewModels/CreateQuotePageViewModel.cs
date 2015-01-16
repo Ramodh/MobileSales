@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Resources;
-using Windows.ApplicationModel.Search;
 using Windows.Storage.Streams;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
-using Microsoft.Practices.Prism.StoreApps;
-using Microsoft.Practices.Prism.StoreApps.Interfaces;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Entities;
 using SageMobileSales.DataAccess.Model;
@@ -17,22 +16,19 @@ using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
 using SageMobileSales.ServiceAgents.Services;
 using SageMobileSales.UILogic.Common;
-using Windows.UI.Popups;
-using System.ComponentModel;
 
 namespace SageMobileSales.UILogic.ViewModels
 {
     internal class CreateQuotePageViewModel : ViewModel
     {
         private readonly ICustomerRepository _customerRepository;
+        private readonly IFrequentlyPurchasedItemService _frequentlyPurchasedItemService;
         private readonly INavigationService _navigationService;
         private readonly IOrderRepository _orderRepository;
         private readonly IQuoteLineItemRepository _quoteLineItemRepository;
         private readonly IQuoteRepository _quoteRepository;
         private readonly IQuoteService _quoteService;
         private IContactRepository _contactRepository;
-        private IFrequentlyPurchasedItemService _frequentlyPurchasedItemService;
-
         private List<QuoteType> _createQuoteFrom;
         private CustomerDetails _customerAddress;
         private string _customerId;
@@ -41,6 +37,7 @@ namespace SageMobileSales.UILogic.ViewModels
         private string _customerSearchBoxText;
         private bool _inProgress;
         private Visibility _isCustomerSearchVisible;
+        private bool _isSaveEnabled;
         private Visibility _isTextBlockVisible;
         private string _log = string.Empty;
         private OrderDetails _orderDetails;
@@ -48,7 +45,6 @@ namespace SageMobileSales.UILogic.ViewModels
         private Product _productDetail;
         private string _quoteDescription;
         private QuoteType _selectedtype;
-        private bool _isSaveEnabled;
 
         public CreateQuotePageViewModel(INavigationService navigationService, IContactRepository contactRepository,
             IOrderRepository orderRepository, IFrequentlyPurchasedItemService frequentlyPurchasedItemService,
@@ -154,6 +150,7 @@ namespace SageMobileSales.UILogic.ViewModels
             get { return _inProgress; }
             private set { SetProperty(ref _inProgress, value); }
         }
+
         /// <summary>
         ///     evaluate validation
         /// </summary>
@@ -166,13 +163,12 @@ namespace SageMobileSales.UILogic.ViewModels
                 OnPropertyChanged("IsSaveEnabled");
             }
         }
-        public DelegateCommand CustomerCommand { get; private set; }
 
+        public DelegateCommand CustomerCommand { get; private set; }
         public DelegateCommand<SearchBoxQuerySubmittedEventArgs> SearchCommand { get; set; }
         public DelegateCommand<SearchBoxSuggestionsRequestedEventArgs> SearchSuggestionsCommand { get; set; }
         public DelegateCommand<SearchBoxResultSuggestionChosenEventArgs> ResultSuggestionChosenCommand { get; set; }
         public DelegateCommand<object> QuoteTypeListViewSelectionChanged { get; set; }
-
 
         /// <summary>
         ///     Navigate to ItemDetail page on choosing result suggestion
@@ -180,11 +176,11 @@ namespace SageMobileSales.UILogic.ViewModels
         /// <param name="args"></param>
         private async void OnResultSuggestionChosen(SearchBoxResultSuggestionChosenEventArgs eventArgs)
         {
-            string customerId = eventArgs.Tag != null ? eventArgs.Tag.Trim() : null;
+            var customerId = eventArgs.Tag != null ? eventArgs.Tag.Trim() : null;
             if (!string.IsNullOrEmpty(customerId))
             {
                 CustomerId = customerId;
-                Customer customer = await _customerRepository.GetCustomerDataAsync(CustomerId);
+                var customer = await _customerRepository.GetCustomerDataAsync(CustomerId);
                 PageUtils.SelectedCustomer = customer;
             }
         }
@@ -196,14 +192,14 @@ namespace SageMobileSales.UILogic.ViewModels
         private async Task SearchBoxSuggestionsRequested(SearchBoxSuggestionsRequestedEventArgs eventArgs)
         {
             IsSaveEnabled = true;
-            string queryText = eventArgs.QueryText != null ? eventArgs.QueryText.Trim() : null;
-            SearchSuggestionsRequestDeferral deferral = eventArgs.Request.GetDeferral();
-            RandomAccessStreamReference obj =
+            var queryText = eventArgs.QueryText != null ? eventArgs.QueryText.Trim() : null;
+            var deferral = eventArgs.Request.GetDeferral();
+            var obj =
                 RandomAccessStreamReference.CreateFromUri(
                     new Uri((ResourceLoader.GetForCurrentView("Resources").GetString("NoImageUrl"))));
             try
             {
-                SearchSuggestionCollection suggestionCollection = eventArgs.Request.SearchSuggestionCollection;
+                var suggestionCollection = eventArgs.Request.SearchSuggestionCollection;
                 //if (queryText == "")
                 //{
                 //    if (queryText == "")
@@ -227,10 +223,10 @@ namespace SageMobileSales.UILogic.ViewModels
                 {
                     queryText = queryText.Trim().Replace("'", string.Empty);
                 }
-                List<Customer> querySuggestions = await _customerRepository.GetCustomerSearchSuggestionsAsync(queryText);
+                var querySuggestions = await _customerRepository.GetCustomerSearchSuggestionsAsync(queryText);
                 if (querySuggestions != null && querySuggestions.Count > 0)
                 {
-                    foreach (Customer suggestion in querySuggestions)
+                    foreach (var suggestion in querySuggestions)
                     {
                         suggestionCollection.AppendResultSuggestion(suggestion.CustomerName, string.Empty,
                             suggestion.CustomerId, obj, string.Empty);
@@ -258,7 +254,6 @@ namespace SageMobileSales.UILogic.ViewModels
             deferral.Complete();
         }
 
-
         /// <summary>
         ///     Loading data
         /// </summary>
@@ -272,8 +267,8 @@ namespace SageMobileSales.UILogic.ViewModels
             {
                 IsSaveEnabled = true;
                 var rootFrame = Window.Current.Content as Frame;
-                List<PageStackEntry> navigationHistory = rootFrame.BackStack.ToList();
-                PageStackEntry pageStack = navigationHistory.LastOrDefault();
+                var navigationHistory = rootFrame.BackStack.ToList();
+                var pageStack = navigationHistory.LastOrDefault();
 
                 CustomerList = await _customerRepository.GetCustomerList();
                 SelectedType = CreateQuoteFrom.FirstOrDefault();
@@ -288,7 +283,8 @@ namespace SageMobileSales.UILogic.ViewModels
 
                 if (navigationParameter != null)
                 {
-                    if (pageStack.SourcePageType.Name == PageUtils.CustomerDetailPage || pageStack.SourcePageType.Name == PageUtils.QuotesPage)
+                    if (pageStack.SourcePageType.Name == PageUtils.CustomerDetailPage ||
+                        pageStack.SourcePageType.Name == PageUtils.QuotesPage)
                     {
                         _customerAddress = navigationParameter as CustomerDetails;
                         PageUtils.SelectedCustomerDetails = _customerAddress;
@@ -346,13 +342,13 @@ namespace SageMobileSales.UILogic.ViewModels
         public List<QuoteType> BindItemsToListView()
         {
             _createQuoteFrom = new List<QuoteType>();
-            _createQuoteFrom.Add(new QuoteType { createFrom = PageUtils.Scratch, createFromText = PageUtils.ScratchText });
+            _createQuoteFrom.Add(new QuoteType {createFrom = PageUtils.Scratch, createFromText = PageUtils.ScratchText});
             if (_orderDetails != null)
             {
                 _createQuoteFrom.Add(new QuoteType
                 {
                     createFrom = PageUtils.PreviousOrder,
-                    createFromText = _orderDetails.OrderNumber.ToString()
+                    createFromText = _orderDetails.OrderNumber
                 });
             }
             else
@@ -370,7 +366,6 @@ namespace SageMobileSales.UILogic.ViewModels
             });
             return _createQuoteFrom;
         }
-
 
         public override void OnNavigatedFrom(Dictionary<string, object> viewModelState, bool suspending)
         {
@@ -398,7 +393,7 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             try
             {
-                bool productExists = false;
+                var productExists = false;
 
                 if (IsSaveEnabled)
                 {
@@ -417,9 +412,9 @@ namespace SageMobileSales.UILogic.ViewModels
                     if (quote.CustomerId == null)
                     {
                         InProgress = false;
-                        MessageDialog msgDialog = new MessageDialog(
-                          ResourceLoader.GetForCurrentView("Resources").GetString(" MesDialogCreateQuoteSaveMessage"),
-                          ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogCreateQuoteTitle"));
+                        var msgDialog = new MessageDialog(
+                            ResourceLoader.GetForCurrentView("Resources").GetString(" MesDialogCreateQuoteSaveMessage"),
+                            ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogCreateQuoteTitle"));
                         msgDialog.Commands.Add(new UICommand("Ok"));
                         await msgDialog.ShowAsync();
                         IsSaveEnabled = true;
@@ -428,13 +423,14 @@ namespace SageMobileSales.UILogic.ViewModels
                     if (PageUtils.SelectedProduct != null)
                     {
                         ProductDetails = PageUtils.SelectedProduct;
-                        quote.Amount += Math.Round((ProductDetails.Quantity * ProductDetails.PriceStd), 2);
+                        quote.Amount += Math.Round((ProductDetails.Quantity*ProductDetails.PriceStd), 2);
                     }
                     //if (_orderId != null)
                     //{
                     //    SelectedType.createFrom = PageUtils.PreviousOrder;
                     //}
-                    if (SelectedType.createFrom == DataAccessUtils.PreviousPurchasedItems && Constants.ConnectedToInternet())
+                    if (SelectedType.createFrom == DataAccessUtils.PreviousPurchasedItems &&
+                        Constants.ConnectedToInternet())
                     {
                         //FrequentlyPurchasedItems
                         await _frequentlyPurchasedItemService.SyncFrequentlyPurchasedItems(quote.CustomerId);
@@ -444,10 +440,10 @@ namespace SageMobileSales.UILogic.ViewModels
                     if (ProductDetails != null)
                     {
                         // Check for any duplications of lineItems
-                        List<QuoteLineItem> quoteLineItemList =
+                        var quoteLineItemList =
                             await _quoteLineItemRepository.GetQuoteLineItemsForQuote(quote.QuoteId);
 
-                        foreach (QuoteLineItem quoteLineItem in quoteLineItemList)
+                        foreach (var quoteLineItem in quoteLineItemList)
                         {
                             if (quoteLineItem.ProductId == ProductDetails.ProductId)
                             {
@@ -476,10 +472,9 @@ namespace SageMobileSales.UILogic.ViewModels
 
                     if (quote != null && Constants.ConnectedToInternet())
                     {
-                        Quote postedQuote = await _quoteService.PostDraftQuote(quote);
+                        var postedQuote = await _quoteService.PostDraftQuote(quote);
                         if (postedQuote != null)
                             quote = postedQuote;
-
                     }
 
                     InProgress = false;
@@ -500,10 +495,10 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             try
             {
-                var quoteTypeListView = ((ListView)args);
+                var quoteTypeListView = ((ListView) args);
                 if (quoteTypeListView != null && quoteTypeListView.SelectedItem != null)
                 {
-                    SelectedType = (QuoteType)quoteTypeListView.SelectedItem;
+                    SelectedType = (QuoteType) quoteTypeListView.SelectedItem;
                     if (SelectedType.createFrom == PageUtils.PreviousOrder)
                     {
                         string customerId = null;
@@ -517,7 +512,8 @@ namespace SageMobileSales.UILogic.ViewModels
                         }
                         _navigationService.Navigate("Orders", customerId);
                     }
-                    else if (SelectedType.createFrom == PageUtils.Scratch || SelectedType.createFrom == PageUtils.FrequentlyPurchasedItems)
+                    else if (SelectedType.createFrom == PageUtils.Scratch ||
+                             SelectedType.createFrom == PageUtils.FrequentlyPurchasedItems)
                     {
                         _createQuoteFrom[1].createFromText = PageUtils.PreviousOrderText;
                     }
@@ -560,6 +556,7 @@ namespace SageMobileSales.UILogic.ViewModels
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+
         public void OnPropertyChanged(string Property)
         {
             if (PropertyChanged != null)
@@ -567,6 +564,5 @@ namespace SageMobileSales.UILogic.ViewModels
                 PropertyChanged(this, new PropertyChangedEventArgs(Property));
             }
         }
-
     }
 }

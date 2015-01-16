@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Windows.Data.Json;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Entities;
 using SageMobileSales.DataAccess.Repositories;
@@ -29,7 +28,6 @@ namespace SageMobileSales.ServiceAgents.Services
             _productRepository = productRepository;
         }
 
-
         public async Task StartProductsSyncProcess()
         {
             Constants.IsSyncAvailable =
@@ -53,7 +51,7 @@ namespace SageMobileSales.ServiceAgents.Services
         {
             try
             {
-                LocalSyncDigest digest =
+                var digest =
                     await _localSyncDigestRepository.GetLocalSyncDigestDtlsAsync(Constants.ItemsEntity);
                 parameters = new Dictionary<string, string>();
                 if (digest != null)
@@ -79,23 +77,23 @@ namespace SageMobileSales.ServiceAgents.Services
                             Constants.AccessToken, parameters);
                 if (productsResponse != null && productsResponse.IsSuccessStatusCode)
                 {
-                    JsonObject sDataProducts = await _serviceAgent.ConvertTosDataObject(productsResponse);
+                    var sDataProducts = await _serviceAgent.ConvertTosDataObject(productsResponse);
                     if (Convert.ToInt32(sDataProducts.GetNamedNumber("$totalResults")) >
                         DataAccessUtils.ProductTotalCount)
                         DataAccessUtils.ProductTotalCount =
                             Convert.ToInt32(sDataProducts.GetNamedNumber("$totalResults"));
 
-                    int _totalCount = Convert.ToInt32(sDataProducts.GetNamedNumber("$totalResults"));
+                    var _totalCount = Convert.ToInt32(sDataProducts.GetNamedNumber("$totalResults"));
                     ErrorLog("Product total count : " + _totalCount);
-                    JsonArray categoriesObject = sDataProducts.GetNamedArray("$resources");
-                    int _returnedCount = categoriesObject.Count;
+                    var categoriesObject = sDataProducts.GetNamedArray("$resources");
+                    var _returnedCount = categoriesObject.Count;
                     ErrorLog("Product returned count : " + _returnedCount);
                     if (_returnedCount > 0 && _totalCount - _returnedCount >= 0 &&
                         !(DataAccessUtils.IsProductSyncCompleted))
                     {
-                        JsonObject lastProductObject = categoriesObject.GetObjectAt(Convert.ToUInt32(_returnedCount - 1));
+                        var lastProductObject = categoriesObject.GetObjectAt(Convert.ToUInt32(_returnedCount - 1));
                         digest.LastRecordId = lastProductObject.GetNamedString("$key");
-                        int _syncEndpointTick = Convert.ToInt32(lastProductObject.GetNamedNumber("SyncTick"));
+                        var _syncEndpointTick = Convert.ToInt32(lastProductObject.GetNamedNumber("SyncTick"));
                         ErrorLog("Product sync tick : " + _syncEndpointTick);
                         if (_syncEndpointTick > digest.localTick)
                         {
@@ -138,7 +136,7 @@ namespace SageMobileSales.ServiceAgents.Services
         }
 
         /// <summary>
-        /// Error log
+        ///     Error log
         /// </summary>
         /// <param name="message"></param>
         private void ErrorLog(string message)

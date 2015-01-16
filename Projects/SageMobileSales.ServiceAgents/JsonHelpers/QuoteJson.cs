@@ -18,8 +18,6 @@ namespace SageMobileSales.ServiceAgents.JsonHelpers
         //public int QuoteNumber { get; set; }
         public decimal Tax { get; set; }
         public decimal SubTotal { get; set; }
-        //public DateTime ExpiryDate { get; set; }
-        //public DateTime SubmittedDate{get; set;}
     }
 
     public class QuoteDetailsShippingAddressKeyJson : QuoteJson
@@ -54,12 +52,9 @@ namespace SageMobileSales.ServiceAgents.JsonHelpers
         //public SalesKeyJson SalesRep { get; set; }
         //public QuoteDetailsJson Details { get; set; }
         public List<EditDetail> Details { get; set; }
-
         //public int QuoteNumber { get; set; }
         public decimal Tax { get; set; }
         public decimal SubTotal { get; set; }
-        //public DateTime ExpiryDate { get; set; }
-        //public DateTime SubmittedDate{get; set;}
     }
 
     public class EditQuoteDetailsShippingAddressKeyJson : EditQuoteJson

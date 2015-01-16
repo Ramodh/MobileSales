@@ -10,13 +10,12 @@ namespace SageMobileSales.DataAccess
     public class Database : IDatabase
     {
         private readonly SQLiteAsyncConnection _dbConnection;
-        private string _dbName = "SageMobileSales.db";
+        private readonly string _dbName = "SageMobileSales.db";
         private string _log = string.Empty;
-
 
         public Database()
         {
-            string datbasePath = ApplicationData.Current.LocalFolder.Path + "\\" + _dbName;
+            var datbasePath = ApplicationData.Current.LocalFolder.Path + "\\" + _dbName;
             _dbConnection = new SQLiteAsyncConnection(datbasePath);
         }
 

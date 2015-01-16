@@ -83,7 +83,7 @@
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="120" />
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <Button x:Name="backButton" Margin="39,59,39,0"
@@ -96,8 +96,10 @@
             <TextBlock x:Name="pageTitle" Text="Other Addresses" Style="{StaticResource PageTitleTextStyle}"
                        Grid.Column="1"
                        IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" />
-            <TextBlock x:Name="CustomerName" Text="{Binding CustomerName}" Style="{StaticResource PageTitleTextStyle}" Grid.Column="2" Foreground="Black" 
-                        IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="0,0,30,40" FontSize="45"/>
+            <TextBlock x:Name="CustomerName" Text="{Binding CustomerName}" Style="{StaticResource PageTitleTextStyle}"
+                       Grid.Column="2" Foreground="Black"
+                       IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="0,0,30,40"
+                       FontSize="45" />
         </Grid>
     </Grid>
 </prism:VisualStateAwarePage>

@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Windows.Data.Json;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Entities;
 using SQLite;
@@ -22,6 +20,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         # region public methods
+
         ///// <summary>
         /////     Extracts localSyncDigest data from json, save in local dB
         ///// </summary>
@@ -54,7 +53,7 @@ namespace SageMobileSales.DataAccess.Repositories
         {
             try
             {
-                LocalSyncDigest digest = await GetLocalSyncDigestDtlsAsync(localSyncDigest.SDataEntity);
+                var digest = await GetLocalSyncDigestDtlsAsync(localSyncDigest.SDataEntity);
                 if (digest != null)
                 {
                     digest.LastRecordId = localSyncDigest.LastRecordId;
@@ -80,11 +79,6 @@ namespace SageMobileSales.DataAccess.Repositories
         /// </summary>
         /// <param name="localSyncDigest"></param>
         /// <returns></returns>
-        //public async Task DeleteLocalSyncDigestDtlsAsync(LocalSyncDigest localSyncDigest)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
         /// <summary>
         ///     Gets LocalSyncDigest data from LocalDB
         /// </summary>
@@ -94,7 +88,7 @@ namespace SageMobileSales.DataAccess.Repositories
         {
             try
             {
-                List<LocalSyncDigest> result =
+                var result =
                     await
                         _sageSalesDB.QueryAsync<LocalSyncDigest>(
                             string.Format("select * from LocalSyncDigest where SDataEntity='{0}'", sDataEntity));
@@ -110,19 +104,20 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Delete localDigestSync for customer
+        ///     Delete localDigestSync for customer
         /// </summary>
         /// <returns></returns>
         public async Task DeleteLocalSyncDigestForCustomer()
         {
             try
             {
-                List<LocalSyncDigest> result =
+                var result =
                     await
-                        _sageSalesDB.QueryAsync<LocalSyncDigest>("DELETE FROM LocalSyncDigest WHERE SDataEntity LIKE 'MyCustomers'");
+                        _sageSalesDB.QueryAsync<LocalSyncDigest>(
+                            "DELETE FROM LocalSyncDigest WHERE SDataEntity LIKE 'MyCustomers'");
 
                 //Change Customers to inActive
-                List<Customer> customerList = await _sageSalesDB.QueryAsync<Customer>("UPDATE Customer SET IsActive='0'");
+                var customerList = await _sageSalesDB.QueryAsync<Customer>("UPDATE Customer SET IsActive='0'");
             }
             catch (Exception ex)
             {

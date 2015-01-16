@@ -1,18 +1,9 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 namespace Sage.Authorisation.WinRT
 {
     internal class Logger
     {
-        #region Events / Delegates
-
-        public delegate void LogEventHandler(LogEvent e);
-
-        public event LogEventHandler LogMessage;
-
-        #endregion
-
         /// <summary>
         ///     Logs a message for LogMessage event subscribers at Info level
         /// </summary>
@@ -59,8 +50,16 @@ namespace Sage.Authorisation.WinRT
                 LogMessage(newEvent);
             }
 
-            Debug.WriteLine(String.Format("{0}, {1}, {2}", level.ToString(), @event.ToString(), message));
+            Debug.WriteLine("{0}, {1}, {2}", level, @event, message);
         }
+
+        #endregion
+
+        #region Events / Delegates
+
+        public delegate void LogEventHandler(LogEvent e);
+
+        public event LogEventHandler LogMessage;
 
         #endregion
     }

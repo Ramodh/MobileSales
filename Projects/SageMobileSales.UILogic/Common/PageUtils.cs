@@ -53,8 +53,8 @@ namespace SageMobileSales.UILogic.Common
         public static string CreateShippingAddressPage = "CreateShippingAddressPage";
         public static string SeeMore = "See More";
         public static bool CamefromCustomerDetails = false;
-        public static Customer SelectedCustomer = null;
-        public static CustomerDetails SelectedCustomerDetails = null;
+        public static Customer SelectedCustomer;
+        public static CustomerDetails SelectedCustomerDetails;
         public static IAsyncAction asyncActionCommon;
         public static IAsyncAction asyncActionQuotes;
         public static IAsyncAction asyncActionOrders;
@@ -73,11 +73,15 @@ namespace SageMobileSales.UILogic.Common
 
         public static void GetApplicationData()
         {
-            ApplicationDataContainer settingsLocal = ApplicationData.Current.LocalSettings;
+            var settingsLocal = ApplicationData.Current.LocalSettings;
             if (settingsLocal.Containers.ContainsKey("SageSalesContainer"))
             {
-                Constants.AccessToken = settingsLocal.Containers["SageSalesContainer"].Values["AccessToken"] == null ? null : settingsLocal.Containers["SageSalesContainer"].Values["AccessToken"].ToString();
-                Constants.TrackingId = settingsLocal.Containers["SageSalesContainer"].Values["TrackingId"] == null ? null : settingsLocal.Containers["SageSalesContainer"].Values["TrackingId"].ToString();
+                Constants.AccessToken = settingsLocal.Containers["SageSalesContainer"].Values["AccessToken"] == null
+                    ? null
+                    : settingsLocal.Containers["SageSalesContainer"].Values["AccessToken"].ToString();
+                Constants.TrackingId = settingsLocal.Containers["SageSalesContainer"].Values["TrackingId"] == null
+                    ? null
+                    : settingsLocal.Containers["SageSalesContainer"].Values["TrackingId"].ToString();
                 if (settingsLocal.Containers["SageSalesContainer"].Values["syncQueryEntity"] != null)
                 {
                     Constants.syncQueryEntity =
@@ -123,7 +127,7 @@ namespace SageMobileSales.UILogic.Common
             Constants.SelectedType = "Ash";
             Constants.RedirectUrl = "https://signon.sso.staging.services.sage.com/oauth/native";
 
-            ApplicationDataContainer configSettings = ApplicationData.Current.LocalSettings;
+            var configSettings = ApplicationData.Current.LocalSettings;
             if (configSettings.Containers != null)
             {
                 if (configSettings.Containers.ContainsKey("ConfigurationSettingsContainer"))

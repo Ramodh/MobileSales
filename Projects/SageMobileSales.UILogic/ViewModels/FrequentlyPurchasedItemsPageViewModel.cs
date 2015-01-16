@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
-using Microsoft.Practices.Prism.PubSubEvents;
-using Microsoft.Practices.Prism.StoreApps;
-using Microsoft.Practices.Prism.StoreApps.Interfaces;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Entities;
 using SageMobileSales.DataAccess.Repositories;
@@ -21,7 +18,6 @@ namespace SageMobileSales.UILogic.ViewModels
         private readonly ISalesRepService _salesRepService;
         private readonly ISyncCoordinatorService _syncCoordinatorService;
         private readonly ITenantRepository _tenantRepository;
-
         private string _customerId;
         private string _customerName;
         private List<FrequentlyPurchasedItem> _frequentlyPurchasedItems;
@@ -71,7 +67,6 @@ namespace SageMobileSales.UILogic.ViewModels
             private set { SetProperty(ref _customerName, value); }
         }
 
-
         public override async void OnNavigatedTo(object navigationParameter, NavigationMode navigationMode,
             Dictionary<string, object> viewModelState)
         {
@@ -82,7 +77,7 @@ namespace SageMobileSales.UILogic.ViewModels
                     await _frequentlyPurchasedItemRepository.GetFrequentlyPurchasedItems(_customerId);
                 // GetFrequentlyPurchasedItems();
 
-                Customer customer = await _customerRepository.GetCustomerDataAsync(_customerId);
+                var customer = await _customerRepository.GetCustomerDataAsync(_customerId);
                 CustomerName = customer.CustomerName;
                 base.OnNavigatedTo(navigationParameter, navigationMode, viewModelState);
             }
@@ -138,23 +133,5 @@ namespace SageMobileSales.UILogic.ViewModels
             _navigationService.ClearHistory();
             _navigationService.Navigate("CustomersGroup", null);
         }
-
-        /// TODO
-        /// Replace dummy data with real data.
-        //private void GetFrequentlyPurchasedItems()
-        //{
-        //    FrequentlyPurchasedItems = new List<FrequentlyPurchasedItems>();
-
-        //    for (int i = 0; i < 20; i++)
-        //    {
-        //        FrequentlyPurchasedItems obj = new FrequentlyPurchasedItems();
-        //        obj.ItemNo = "1" + i;
-        //        obj.ItemName = "ProductName" + i;
-        //        obj.QuantityYTD = 334 + i;
-        //        obj.PriorYTD = 1 + i;
-        //        FrequentlyPurchasedItems.Add(obj);
-        //    }
-        //    OnPropertyChanged("FrequentlyPurchasedItems");
-        //}
     }
 }

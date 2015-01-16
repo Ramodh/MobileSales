@@ -13,7 +13,7 @@
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     prism:ViewModelLocator.AutoWireViewModel="true"
-    mc:Ignorable="d" 
+    mc:Ignorable="d"
     x:Uid="Page">
 
 
@@ -45,8 +45,7 @@
                               Label="Refresh"
                               Icon="Refresh"
                               Margin="0,1,0,-1"
-                              Command="{Binding StartSyncCommand}">
-                </AppBarButton>
+                              Command="{Binding StartSyncCommand}" />
             </CommandBar.SecondaryCommands>
 
         </CommandBar>
@@ -103,7 +102,7 @@
                 <core:EventTriggerBehavior EventName="ItemClick">
                     <core:CallMethodAction MethodName="GridViewItemClick"
                                            TargetObject="{Binding Mode=OneWay}" />
-                </core:EventTriggerBehavior>          
+                </core:EventTriggerBehavior>
             </interactivity:Interaction.Behaviors>
 
         </GridView>
@@ -128,7 +127,7 @@
                      Grid.Column="1"
                      HorizontalAlignment="Right"
                      PlaceholderText=""
-                     AcceptsReturn="False"                  
+                     AcceptsReturn="False"
                      Style="{StaticResource FilterTextBoxStyle}" Height="Auto">
 
                 <interactivity:Interaction.Behaviors>

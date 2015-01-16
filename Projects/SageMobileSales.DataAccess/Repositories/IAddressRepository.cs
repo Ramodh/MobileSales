@@ -13,7 +13,6 @@ namespace SageMobileSales.DataAccess.Repositories
         Task AddAddressToDbAsync(Address address);
         Task UpdateAddressToDbAsync(Address address);
         Task DeleteAddressFromDbAsync(Address address);
-
         Task<Address> SavePostedAddressToDbAsync(JsonObject sDataAddress, string customerId, string addressPendingId);
         Task<Address> GetShippingAddressForCustomer(string customerId);
         Task<Address> GetShippingAddress(string addressId);
@@ -21,7 +20,5 @@ namespace SageMobileSales.DataAccess.Repositories
         Task<List<Address>> GetAddressesForCustomer(string customerId);
         Task<List<Address>> GetOtherAddresses(string customerId);
         Task<Address> GetCustomerMailingAddress(string customerId);
-        //Task<Address> GetShippingAddressForQuote(string customerId);
-        //Task<List<CustomerDetails>> GetOtherAddressesForCustomer(string customerId);
     }
 }

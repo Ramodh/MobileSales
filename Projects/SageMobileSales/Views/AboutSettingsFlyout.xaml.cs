@@ -1,6 +1,4 @@
 ﻿using Windows.UI.Xaml.Controls;
-using Microsoft.Practices.Prism.PubSubEvents;
-using Microsoft.Practices.Prism.StoreApps.Interfaces;
 
 // The Settings Flyout item template is documented at http://go.microsoft.com/fwlink/?LinkId=273769
 

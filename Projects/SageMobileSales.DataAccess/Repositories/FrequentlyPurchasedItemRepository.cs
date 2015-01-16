@@ -24,7 +24,7 @@ namespace SageMobileSales.DataAccess.Repositories
         # region public metods
 
         /// <summary>
-        /// Extracts frequently purchased item data from json, save in local dB
+        ///     Extracts frequently purchased item data from json, save in local dB
         /// </summary>
         /// <param name="sDataFrequentlyPurchasedItem"></param>
         /// <returns></returns>
@@ -37,7 +37,7 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        JsonArray sDataFrequentlyPurchasedItemArray =
+                        var sDataFrequentlyPurchasedItemArray =
                             sDataFrequentlyPurchasedItem.GetNamedArray("$resources");
                         if (sDataFrequentlyPurchasedItemArray.Count > 0)
                         {
@@ -60,7 +60,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Gets list of frequently purchased items
+        ///     Gets list of frequently purchased items
         /// </summary>
         /// <param name="customerId"></param>
         /// <returns></returns>
@@ -72,8 +72,10 @@ namespace SageMobileSales.DataAccess.Repositories
                 //select distinct FPI.ItemDescription,FPI.ItemId, FPI.ItemNumber, FPI.QuantityYtd, FPI.QuantityPriorYtd, (select Url from ProductAssociatedBlob as PAB where PAB.ProductId = PRD.ProductId AND PAB.IsPrimary='1') as Url from FrequentlyPurchasedItem as FPI join Product as PRD on PRD.ProductId = FPI.ItemId and PRD.EntityStatus='Active' where CustomerId=?
                 FrequentlyPurchasedItemList =
                     await
-                        _sageSalesDB.QueryAsync<FrequentlyPurchasedItem>("select distinct FPI.NumberOfInvoices,FPI.ItemDescription,FPI.ItemId, FPI.ItemNumber, FPI.QuantityYtd, FPI.QuantityPriorYtd, (select Url from ProductAssociatedBlob as PAB where PAB.ProductId = PRD.ProductId AND PAB.IsPrimary='1') as Url from FrequentlyPurchasedItem as FPI join Product as PRD on PRD.ProductId = FPI.ItemId and PRD.EntityStatus='Active' where CustomerId=? order by FPI.NumberOfInvoices desc", customerId);
-                      //      "Select * from FrequentlyPurchasedItem where CustomerId=?", customerId);
+                        _sageSalesDB.QueryAsync<FrequentlyPurchasedItem>(
+                            "select distinct FPI.NumberOfInvoices,FPI.ItemDescription,FPI.ItemId, FPI.ItemNumber, FPI.QuantityYtd, FPI.QuantityPriorYtd, (select Url from ProductAssociatedBlob as PAB where PAB.ProductId = PRD.ProductId AND PAB.IsPrimary='1') as Url from FrequentlyPurchasedItem as FPI join Product as PRD on PRD.ProductId = FPI.ItemId and PRD.EntityStatus='Active' where CustomerId=? order by FPI.NumberOfInvoices desc",
+                            customerId);
+                //      "Select * from FrequentlyPurchasedItem where CustomerId=?", customerId);
             }
             catch (SQLiteException ex)
             {
@@ -94,21 +96,21 @@ namespace SageMobileSales.DataAccess.Repositories
         #region private methods
 
         /// <summary>
-        /// Extracts frequentlyPurchasedItem from Json, update the same
+        ///     Extracts frequentlyPurchasedItem from Json, update the same
         /// </summary>
         /// <param name="sDataFrequentlyPurchasedItemArray"></param>
         /// <returns></returns>
         private async Task SaveFrequentlyPurchasedItemDetailsAsync(JsonArray sDataFrequentlyPurchasedItemArray)
         {
-            foreach (IJsonValue frequentlyPurchasedItem in sDataFrequentlyPurchasedItemArray)
+            foreach (var frequentlyPurchasedItem in sDataFrequentlyPurchasedItemArray)
             {
-                JsonObject sDataFrequentlyPurchasedItem = frequentlyPurchasedItem.GetObject();
+                var sDataFrequentlyPurchasedItem = frequentlyPurchasedItem.GetObject();
                 await AddOrUpdateFrequentlyPurchasedItemJsonToDbAsync(sDataFrequentlyPurchasedItem);
             }
         }
 
         /// <summary>
-        /// Add or update extracted json to local dB
+        ///     Add or update extracted json to local dB
         /// </summary>
         /// <param name="sDataFrequentlyPurchasedItem"></param>
         /// <returns></returns>
@@ -149,7 +151,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Update frequntlyPurchasedItem in local dB
+        ///     Update frequntlyPurchasedItem in local dB
         /// </summary>
         /// <param name="sDataFrequentlyPurchasedItem"></param>
         /// <param name="frequentlyPurchasedItemDbObj"></param>
@@ -176,7 +178,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Add frequntlyPurchasedItem in local dB
+        ///     Add frequntlyPurchasedItem in local dB
         /// </summary>
         /// <param name="sDataFrequentlyPurchasedItem"></param>
         /// <returns></returns>
@@ -207,7 +209,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Extract frequntlyPurchasedItem from json
+        ///     Extract frequntlyPurchasedItem from json
         /// </summary>
         /// <param name="sDataFrequentlyPurchasedItem"></param>
         /// <param name="frequentlyPurchasedItem"></param>

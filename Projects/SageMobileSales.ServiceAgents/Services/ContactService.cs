@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Windows.Data.Json;
 using SageMobileSales.DataAccess.Entities;
 using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
@@ -15,7 +14,6 @@ namespace SageMobileSales.ServiceAgents.Services
         private readonly ICustomerRepository _customerRepository;
         private readonly IServiceAgent _serviceAgent;
         private Dictionary<string, string> parameters;
-
 
         public ContactService(IServiceAgent serviceAgent, IContactRepository contactRepository,
             ICustomerRepository customerRepository)
@@ -35,7 +33,7 @@ namespace SageMobileSales.ServiceAgents.Services
             parameters = new Dictionary<string, string>();
             parameters.Add("include", "PeriodToDateSales,Addresses,Contacts");
 
-            string customerEntityId = Constants.CustomerDetailEntity + "('" + customerId + "')";
+            var customerEntityId = Constants.CustomerDetailEntity + "('" + customerId + "')";
             HttpResponseMessage contactResponse = null;
             contactResponse =
                 await
@@ -43,7 +41,7 @@ namespace SageMobileSales.ServiceAgents.Services
                         Constants.AccessToken, parameters);
             if (contactResponse != null && contactResponse.IsSuccessStatusCode)
             {
-                JsonObject sDataCustomer = await _serviceAgent.ConvertTosDataObject(contactResponse);
+                var sDataCustomer = await _serviceAgent.ConvertTosDataObject(contactResponse);
                 await _customerRepository.SaveCustomerAsync(sDataCustomer);
             }
         }
@@ -80,7 +78,7 @@ namespace SageMobileSales.ServiceAgents.Services
                             null, conatctJsonObject);
                 if (contactResponse != null && contactResponse.IsSuccessStatusCode)
                 {
-                    JsonObject sDataContact = await _serviceAgent.ConvertTosDataObject(contactResponse);
+                    var sDataContact = await _serviceAgent.ConvertTosDataObject(contactResponse);
 
                     //JsonObject customerObj = sDataContact.GetNamedObject("Customer");
                     //Customer customer =
@@ -101,10 +99,10 @@ namespace SageMobileSales.ServiceAgents.Services
         /// <returns></returns>
         public async Task SyncOfflineContacts(string customerId)
         {
-            List<Contact> unSyncedContacts = await _contactRepository.GetUnsyncedContacts(customerId);
+            var unSyncedContacts = await _contactRepository.GetUnsyncedContacts(customerId);
             if (unSyncedContacts.Count > 0)
             {
-                foreach (Contact contact in unSyncedContacts)
+                foreach (var contact in unSyncedContacts)
                 {
                     await PostContact(contact);
                 }

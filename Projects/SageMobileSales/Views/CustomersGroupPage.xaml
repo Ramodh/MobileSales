@@ -50,8 +50,7 @@
                               Label="Refresh"
                               Icon="Refresh"
                               Margin="0,1,0,-1"
-                              Command="{Binding StartSyncCommand}">
-                </AppBarButton>
+                              Command="{Binding StartSyncCommand}" />
             </CommandBar.SecondaryCommands>
 
         </CommandBar>
@@ -107,7 +106,7 @@
                     IsSwipeEnabled="false"
                     IsItemClickEnabled="True"
                     ItemTemplate="{StaticResource CustomerSemanticZoomedInItemTemplate}"
-                      Loaded="itemsGridView_Loaded">
+                    Loaded="itemsGridView_Loaded">
                     <interactivity:Interaction.Behaviors>
                         <core:EventTriggerBehavior EventName="ItemClick">
                             <core:CallMethodAction MethodName="GridViewItemClick"

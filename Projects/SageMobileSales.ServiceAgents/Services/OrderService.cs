@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Windows.Data.Json;
-using Microsoft.Practices.Prism.PubSubEvents;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Entities;
 using SageMobileSales.DataAccess.Events;
@@ -11,7 +9,6 @@ using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
 using SageMobileSales.ServiceAgents.JsonHelpers;
 using SQLite;
-using System.Net;
 
 namespace SageMobileSales.ServiceAgents.Services
 {
@@ -81,7 +78,7 @@ namespace SageMobileSales.ServiceAgents.Services
                             Constants.AccessToken, null, obj);
                 if (quoteResponse != null && quoteResponse.IsSuccessStatusCode)
                 {
-                    JsonObject sDataQuote = await _serviceAgent.ConvertTosDataObject(quoteResponse);
+                    var sDataQuote = await _serviceAgent.ConvertTosDataObject(quoteResponse);
                     //TO DO 
                     // Need to confirm as what needs to be done here after posting order(with the response).
                     quote.QuoteStatus = "IsOrder";
@@ -137,7 +134,7 @@ namespace SageMobileSales.ServiceAgents.Services
         {
             try
             {
-                LocalSyncDigest digest =
+                var digest =
                     await _localSyncDigestRepository.GetLocalSyncDigestDtlsAsync(Constants.OrderEntity);
                 parameters = new Dictionary<string, string>();
                 if (digest != null)
@@ -175,7 +172,7 @@ namespace SageMobileSales.ServiceAgents.Services
                             Constants.AccessToken, parameters);
                 if (ordersResponse != null && ordersResponse.IsSuccessStatusCode)
                 {
-                    JsonObject sDataOrders = await _serviceAgent.ConvertTosDataObject(ordersResponse);
+                    var sDataOrders = await _serviceAgent.ConvertTosDataObject(ordersResponse);
                     if (Convert.ToInt32(sDataOrders.GetNamedNumber("$totalResults")) >
                         DataAccessUtils.OrdersTotalCount)
                         DataAccessUtils.OrdersTotalCount =
@@ -184,17 +181,17 @@ namespace SageMobileSales.ServiceAgents.Services
                     {
                         _eventAggregator.GetEvent<OrderDataChangedEvent>().Publish(true);
                     }
-                    int _totalCount = Convert.ToInt32(sDataOrders.GetNamedNumber("$totalResults"));
+                    var _totalCount = Convert.ToInt32(sDataOrders.GetNamedNumber("$totalResults"));
                     ErrorLog("Order total count : " + _totalCount);
-                    JsonArray ordersObject = sDataOrders.GetNamedArray("$resources");
-                    int _returnedCount = ordersObject.Count;
+                    var ordersObject = sDataOrders.GetNamedArray("$resources");
+                    var _returnedCount = ordersObject.Count;
                     ErrorLog("Order returned count : " + _returnedCount);
                     if (_returnedCount > 0 && _totalCount - _returnedCount >= 0 &&
                         !(DataAccessUtils.IsOrdersSyncCompleted))
                     {
-                        JsonObject lastOrderObject = ordersObject.GetObjectAt(Convert.ToUInt32(_returnedCount - 1));
+                        var lastOrderObject = ordersObject.GetObjectAt(Convert.ToUInt32(_returnedCount - 1));
                         digest.LastRecordId = lastOrderObject.GetNamedString("$key");
-                        int _syncEndpointTick = Convert.ToInt32(lastOrderObject.GetNamedNumber("SyncTick"));
+                        var _syncEndpointTick = Convert.ToInt32(lastOrderObject.GetNamedNumber("SyncTick"));
                         ErrorLog("Order sync tick : " + _syncEndpointTick);
                         if (_syncEndpointTick > digest.localTick)
                         {
@@ -267,7 +264,7 @@ namespace SageMobileSales.ServiceAgents.Services
         }
 
         /// <summary>
-        /// Error log
+        ///     Error log
         /// </summary>
         /// <param name="message"></param>
         private void ErrorLog(string message)

@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
-using Microsoft.Practices.Prism.StoreApps;
-using Microsoft.Practices.Prism.StoreApps.Interfaces;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Entities;
 using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
 using SageMobileSales.ServiceAgents.Services;
 using SageMobileSales.UILogic.Common;
-using Windows.UI.Xaml;
 
 namespace SageMobileSales.UILogic.ViewModels
 {
@@ -22,12 +20,12 @@ namespace SageMobileSales.UILogic.ViewModels
         private readonly IQuoteRepository _quoteRepository;
         private readonly IQuoteService _quoteService;
         private Address _address;
+        private bool _inProgress;
         private bool _isEnabled;
+        private bool _isSaveEnabled;
         private string _log = string.Empty;
         private Quote _quote;
         private string _quoteId;
-        private bool _isSaveEnabled;
-        private bool _inProgress;
 
         public CreateShippingAddressPageViewModel(INavigationService navigationService,
             IAddressRepository addressRepository, IQuoteService quoteService, IQuoteRepository quoteRepository)
@@ -78,6 +76,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 }
             }
         }
+
         /// <summary>
         ///     Data loading indicator
         /// </summary>
@@ -108,8 +107,8 @@ namespace SageMobileSales.UILogic.ViewModels
                 var Frame = Window.Current.Content as Frame;
 
                 if (Frame != null)
-                {                  
-                        Frame.BackStack.RemoveAt(Frame.BackStack.Count - 1);                 
+                {
+                    Frame.BackStack.RemoveAt(Frame.BackStack.Count - 1);
                 }
 
                 var errorsCollection =
@@ -155,7 +154,7 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             if (ValidateForm())
             {
-                string errorMessage = string.Empty;
+                var errorMessage = string.Empty;
 
                 try
                 {
@@ -174,7 +173,7 @@ namespace SageMobileSales.UILogic.ViewModels
 
                         if (Constants.ConnectedToInternet())
                         {
-                            Address address = await _quoteService.UpdateQuoteShippingAddress(_quote, _address.AddressId);
+                            var address = await _quoteService.UpdateQuoteShippingAddress(_quote, _address.AddressId);
 
                             if ((_quote.QuoteId.Contains(PageUtils.Pending)))
                             {
@@ -231,9 +230,9 @@ namespace SageMobileSales.UILogic.ViewModels
             var errors = new Dictionary<string, ReadOnlyCollection<string>>();
 
             // Property keys format: address.{Propertyname}
-            foreach (string propkey in modelValidationResults.ModelState.Keys)
+            foreach (var propkey in modelValidationResults.ModelState.Keys)
             {
-                string propertyName = propkey.Substring(propkey.IndexOf('.') + 1);
+                var propertyName = propkey.Substring(propkey.IndexOf('.') + 1);
 
                 errors.Add(propertyName, new ReadOnlyCollection<string>(modelValidationResults.ModelState[propkey]));
             }

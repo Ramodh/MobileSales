@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using Windows.ApplicationModel.Resources;
 using Windows.UI.Xaml.Navigation;
-using Microsoft.Practices.Prism.StoreApps;
-using Microsoft.Practices.Prism.StoreApps.Interfaces;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Entities;
 using SageMobileSales.DataAccess.Repositories;
@@ -15,8 +13,6 @@ namespace SageMobileSales.UILogic.ViewModels
         private readonly IContactRepository _contactRepository;
         private readonly ICustomerRepository _customerRepository;
         private readonly INavigationService _navigationService;
-
-
         private List<Contact> _customerContactList;
         private string _customerId;
         private string _customerName;
@@ -53,7 +49,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 _customerId = navigationParameter as string;
 
                 CustomerContactList = await _contactRepository.GetContactDetailsAsync(_customerId);
-                Customer customer = await _customerRepository.GetCustomerDataAsync(_customerId);
+                var customer = await _customerRepository.GetCustomerDataAsync(_customerId);
                 CustomerName = ResourceLoader.GetForCurrentView("Resources").GetString("SeperatorSymbol") +
                                customer.CustomerName;
                 base.OnNavigatedTo(navigationParameter, navigationMode, viewModelState);

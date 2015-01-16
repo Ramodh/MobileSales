@@ -39,7 +39,7 @@
                     <interactivity:Interaction.Behaviors>
                         <core:EventTriggerBehavior EventName="Click">
                             <core:CallMethodAction MethodName="AddContactsButton_Click"
-                                                       TargetObject="{Binding Mode=OneWay}" />
+                                                   TargetObject="{Binding Mode=OneWay}" />
                         </core:EventTriggerBehavior>
                     </interactivity:Interaction.Behaviors>
                 </AppBarButton>
@@ -47,7 +47,7 @@
                     <interactivity:Interaction.Behaviors>
                         <core:EventTriggerBehavior EventName="Click">
                             <core:CallMethodAction MethodName="CreateQuoteButton_Click"
-                                                       TargetObject="{Binding Mode=OneWay}" />
+                                                   TargetObject="{Binding Mode=OneWay}" />
                         </core:EventTriggerBehavior>
                     </interactivity:Interaction.Behaviors>
                 </AppBarButton>
@@ -170,16 +170,17 @@
                         <TextBlock x:Uid="SalesThisMonth" Style="{StaticResource SubHeaderCustomerDashBoardTextStyle}"
                                    VerticalAlignment="Bottom" />
                         <TextBlock Text="{Binding SalesThisMonth}"
-                                   Style="{StaticResource DetailsPageTextblockTextStyle}" VerticalAlignment="Bottom" HorizontalAlignment="Left" FontWeight="Bold"/>
+                                   Style="{StaticResource DetailsPageTextblockTextStyle}" VerticalAlignment="Bottom"
+                                   HorizontalAlignment="Left" FontWeight="Bold" />
                     </StackPanel>
                     <StackPanel Grid.Row="4">
                         <TextBlock x:Uid="SalesYTD" Style="{StaticResource SubHeaderCustomerDashBoardTextStyle}"
                                    VerticalAlignment="Bottom" />
                         <TextBlock Text="{Binding SalesYTD}" Style="{StaticResource DetailsPageTextblockTextStyle}"
-                                   VerticalAlignment="Bottom" HorizontalAlignment="Left" FontWeight="Bold"/>
+                                   VerticalAlignment="Bottom" HorizontalAlignment="Left" FontWeight="Bold" />
                     </StackPanel>
                     <StackPanel Grid.Row="6">
-                        <TextBlock x:Uid="Account" Style="{StaticResource SubHeaderCustomerDashBoardTextStyle}" 
+                        <TextBlock x:Uid="Account" Style="{StaticResource SubHeaderCustomerDashBoardTextStyle}"
                                    VerticalAlignment="Bottom" />
                         <Grid x:Name="customerAccountDetailsGrid">
                             <Grid.RowDefinitions>
@@ -221,7 +222,8 @@
                         </Grid>
                     </StackPanel>
                 </Grid>
-                <Grid x:Name="frequentlyPurchaseItemsGrid" Grid.Column="3"  Visibility="{Binding IsFrequentlyPurchasedItemsVisible}">
+                <Grid x:Name="frequentlyPurchaseItemsGrid" Grid.Column="3"
+                      Visibility="{Binding IsFrequentlyPurchasedItemsVisible}">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
@@ -229,7 +231,8 @@
                     </Grid.RowDefinitions>
                     <Button Grid.Row="0" Foreground="{ThemeResource ApplicationHeaderForegroundThemeBrush}"
                             AutomationProperties.Name="Group Title"
-                            Style="{StaticResource TextBlockButtonStyle}" Command="{Binding FrequentlyPurchasedItemsNavigationCommand}">
+                            Style="{StaticResource TextBlockButtonStyle}"
+                            Command="{Binding FrequentlyPurchasedItemsNavigationCommand}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock x:Uid="frequentlyPurchasedItems" Text="" Style="{StaticResource SubHeaderStyle}" />
                             <TextBlock Text="{StaticResource ChevronGlyph}"
@@ -324,7 +327,7 @@
                               SelectionMode="None"
                               IsSwipeEnabled="false"
                               IsItemClickEnabled="True"
-                            
+
                               ItemTemplateSelector="{StaticResource SeeMoreQuotesDataTemplateSelector}">
 
                         <interactivity:Interaction.Behaviors>
@@ -344,7 +347,8 @@
                     </Grid.RowDefinitions>
                     <Button Grid.Row="0" Foreground="{ThemeResource ApplicationHeaderForegroundThemeBrush}"
                             AutomationProperties.Name="Group Title"
-                            Style="{StaticResource TextBlockButtonStyle}" Command="{Binding OtherAddressesNavigationCommand}">
+                            Style="{StaticResource TextBlockButtonStyle}"
+                            Command="{Binding OtherAddressesNavigationCommand}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Other Addresses" Style="{StaticResource SubHeaderStyle}" />
                             <TextBlock Text="{StaticResource ChevronGlyph}"
@@ -365,7 +369,8 @@
                               ItemTemplateSelector="{StaticResource SeeMoreOtherAddressDataTemplateSelector}">
                         <interactivity:Interaction.Behaviors>
                             <core:EventTriggerBehavior EventName="ItemClick">
-                                <core:CallMethodAction MethodName="GridViewOtherAddresstItemClick" TargetObject="{Binding Mode=OneWay}" />
+                                <core:CallMethodAction MethodName="GridViewOtherAddresstItemClick"
+                                                       TargetObject="{Binding Mode=OneWay}" />
                             </core:EventTriggerBehavior>
                         </interactivity:Interaction.Behaviors>
                         <!--<GridView.ItemsPanel>
@@ -408,10 +413,11 @@
                               IsSwipeEnabled="false"
                               IsItemClickEnabled="True"
                               ItemTemplateSelector="{StaticResource SeeMoreContactsDataTemplateSelector}">
-                     
+
                         <interactivity:Interaction.Behaviors>
                             <core:EventTriggerBehavior EventName="ItemClick">
-                                <core:CallMethodAction MethodName="GridViewContactItemClick" TargetObject="{Binding Mode=OneWay}" />
+                                <core:CallMethodAction MethodName="GridViewContactItemClick"
+                                                       TargetObject="{Binding Mode=OneWay}" />
                             </core:EventTriggerBehavior>
                         </interactivity:Interaction.Behaviors>
                     </GridView>

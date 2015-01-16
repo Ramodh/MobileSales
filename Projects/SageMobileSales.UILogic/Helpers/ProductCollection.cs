@@ -21,14 +21,14 @@ namespace SageMobileSales.UILogic.Helpers
 
         public IAsyncOperation<LoadMoreItemsResult> LoadMoreItemsAsync(uint count)
         {
-            int nextItemIndex = 0;
+            var nextItemIndex = 0;
             // Simulate a delay
-            Task delay = Task.Delay(50);
+            var delay = Task.Delay(50);
 
-            Task<LoadMoreItemsResult> load = delay.ContinueWith(
+            var load = delay.ContinueWith(
                 t =>
                 {
-                    int startSize = Count;
+                    var startSize = Count;
                     count = (uint) Math.Min(count, (ProductList.Count - startSize));
 
                     while (nextItemIndex < count)

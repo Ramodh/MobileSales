@@ -3,7 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:SageMobileSales"
     xmlns:controls="using:SageMobileSales.Views"
-      xmlns:behaviors="using:SageMobileSales.Behaviors">
+    xmlns:behaviors="using:SageMobileSales.Behaviors">
 
     <!-- CatalogItemTemlate -->
     <DataTemplate x:Key="CatalogItemTemplate">
@@ -52,7 +52,8 @@
             </Border>
             <StackPanel VerticalAlignment="Bottom"
                         Background="{StaticResource ListViewItemOverlayBackgroundThemeBrush}">
-                <TextBlock Text="{Binding ProductName}" Foreground="{StaticResource ListViewItemOverlayForegroundThemeBrush}"
+                <TextBlock Text="{Binding ProductName}"
+                           Foreground="{StaticResource ListViewItemOverlayForegroundThemeBrush}"
                            Height="60" Margin="15,15,15,0" FontSize="18"
                            Style="{StaticResource SubheaderTextBlockStyle}" TextTrimming="WordEllipsis"
                            TextWrapping="NoWrap" />
@@ -300,11 +301,11 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <Border Background="{StaticResource ListViewItemPlaceholderBackgroundThemeBrush}" Grid.Column="0"
-                       Height="120" Width="120"  Margin="10" >
+                        Height="120" Width="120" Margin="10">
                     <!--<Image Source="{Binding Url}" Stretch="UniformToFill" Height="100" Width="100"/>-->
                     <controls:ImageplaceHolderUserControl Placeholder="/Assets/imagePlaceholder_100x100.png"
-                                                      Source="{Binding Url}" Height="110" Width="110"/>
-                </Border>                                               
+                                                          Source="{Binding Url}" Height="110" Width="110" />
+                </Border>
                 <Grid Grid.Column="1">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -413,7 +414,7 @@
     </DataTemplate>
 
     <DataTemplate x:Key="QuoteItemsTemplate">
-        <controls:QuoteLineItemUserControl/>      
+        <controls:QuoteLineItemUserControl />
     </DataTemplate>
 
     <DataTemplate x:Key="ChangeAddressDataTemplate">
@@ -432,7 +433,7 @@
     <DataTemplate x:Key="CustomerQuotesTemplate">
         <StackPanel Height="120" Margin="2" Background="#FF355B4E" Width="400">
             <TextBlock Text="{Binding CustomerName}" Style="{StaticResource SubheaderTextBlockStyle}"
-                       VerticalAlignment="Top" TextWrapping="NoWrap" Margin="7,5"  TextTrimming="WordEllipsis" />
+                       VerticalAlignment="Top" TextWrapping="NoWrap" Margin="7,5" TextTrimming="WordEllipsis" />
             <TextBlock Text="{Binding QuoteDescription}" Style="{StaticResource AddressTextStyle}"
                        TextWrapping="NoWrap" TextTrimming="WordEllipsis" />
             <StackPanel Orientation="Horizontal">
@@ -458,37 +459,44 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />                
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="90" />
-                <ColumnDefinition Width="Auto" />               
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <TextBlock x:Uid="RecentOrderDate" Grid.Row="1" Text="Date:" Style="{StaticResource AddressTextStyle}"
-                      TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="0" />
-            <TextBlock Grid.Row="1" Text="{Binding InvoiceDate,Converter={StaticResource StringFormatConverter},ConverterParameter='{}{0:MM/dd/yyyy}'}" Style="{StaticResource AddressTextStyle}"
-                       TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="1"/>
+                       TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="0" />
+            <TextBlock Grid.Row="1"
+                       Text="{Binding InvoiceDate,Converter={StaticResource StringFormatConverter},ConverterParameter='{}{0:MM/dd/yyyy}'}"
+                       Style="{StaticResource AddressTextStyle}"
+                       TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="1" />
 
-            <TextBlock x:Uid="RecentOrderInvoice" Grid.Row="0" Text="Invoice:" Style="{StaticResource AddressTextStyle}"
+            <TextBlock x:Uid="RecentOrderInvoice" Grid.Row="0" Text="Invoice:"
+                       Style="{StaticResource AddressTextStyle}"
                        TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="0" />
             <TextBlock Grid.Row="0"
                        Text="{Binding InvoiceNumber}"
                        Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis"
-                       Grid.Column="1"/>
+                       Grid.Column="1" />
             <TextBlock x:Uid="RecentOrderQty" Grid.Row="2" Style="{StaticResource AddressTextStyle}"
-                       TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="0"/>
+                       TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="0" />
             <TextBlock Grid.Row="2"
                        Text="{Binding Quantity}"
                        Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis"
                        Grid.Column="1" />
             <TextBlock x:Uid="RecentOrderUnitPrice" Grid.Row="3" Style="{StaticResource AddressTextStyle}"
                        TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="0" />
-            <TextBlock Grid.Row="3" Text="{Binding Price,Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:C}'}" Style="{StaticResource AddressTextStyle}"
+            <TextBlock Grid.Row="3"
+                       Text="{Binding Price,Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:C}'}"
+                       Style="{StaticResource AddressTextStyle}"
                        TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="1" />
             <TextBlock x:Uid="RecentOrderTotal" Grid.Row="4" Style="{StaticResource AddressTextStyle}"
                        TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="0" />
-            <TextBlock Grid.Row="4" Text="{Binding Total,Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:C}'}" Style="{StaticResource AddressTextStyle}"
+            <TextBlock Grid.Row="4"
+                       Text="{Binding Total,Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:C}'}"
+                       Style="{StaticResource AddressTextStyle}"
                        TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="1" />
 
         </Grid>
@@ -507,12 +515,13 @@
             </Grid.RowDefinitions>
 
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="80" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <Border Background="{StaticResource ListViewItemPlaceholderBackgroundThemeBrush}" Width="110" Height="120" Grid.Column="0" Grid.RowSpan="4"
+            <Border Background="{StaticResource ListViewItemPlaceholderBackgroundThemeBrush}" Width="110" Height="120"
+                    Grid.Column="0" Grid.RowSpan="4"
                     VerticalAlignment="Top">
                 <!--<Image Source="{Binding Url}" Stretch="UniformToFill" Height="100" Width="100"/>-->
                 <controls:ImageplaceHolderUserControl Placeholder="/Assets/imagePlaceholder_100x100.png"
@@ -520,22 +529,22 @@
             </Border>
 
             <TextBlock x:Uid="ItemName" Grid.Row="0" Style="{StaticResource AddressTextStyle}"
-                      TextWrapping="NoWrap" TextTrimming="WordEllipsis"  Grid.Column="1" />
+                       TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="1" />
             <TextBlock Grid.Row="0" Text="{Binding ItemDescription}" Style="{StaticResource AddressTextStyle}"
-                       TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="2"/>
+                       TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="2" />
             <TextBlock x:Uid="ItemNo" Grid.Row="1" Style="{StaticResource AddressTextStyle}"
                        TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="1" />
             <TextBlock Grid.Row="1"
                        Text="{Binding ItemNumber}"
                        Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis"
-                       Grid.Column="2"/>
+                       Grid.Column="2" />
             <TextBlock x:Uid="QuantityYTD" Grid.Row="2" Style="{StaticResource AddressTextStyle}"
-                       TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="1"/>
+                       TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="1" />
             <TextBlock Grid.Row="2"
                        Text="{Binding QuantityYtd}"
                        Style="{StaticResource AddressTextStyle}" TextWrapping="NoWrap" TextTrimming="WordEllipsis"
                        Grid.Column="2" />
-            <TextBlock x:Uid="PriorYTD"  Grid.Row="3" Style="{StaticResource AddressTextStyle}"
+            <TextBlock x:Uid="PriorYTD" Grid.Row="3" Style="{StaticResource AddressTextStyle}"
                        TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="1" />
             <TextBlock Grid.Row="3" Text="{Binding QuantityPriorYtd}" Style="{StaticResource AddressTextStyle}"
                        TextWrapping="NoWrap" TextTrimming="WordEllipsis" Grid.Column="2" />
@@ -547,39 +556,32 @@
 
     <DataTemplate x:Key="ImageDataTemplate">
         <Grid HorizontalAlignment="Left" Width="400" Height="140">
-            <Border Background=
-                    "{StaticResource ListViewItemPlaceholderBackgroundThemeBrush}">
-                <Image Source="/Assets/img_see_more.png" Stretch="UniformToFill"/>
+            <Border Background="{StaticResource ListViewItemPlaceholderBackgroundThemeBrush}">
+                <Image Source="/Assets/img_see_more.png" Stretch="UniformToFill" />
             </Border>
         </Grid>
     </DataTemplate>
 
 
     <behaviors:SeeMoreDataTemplateSelector x:Key="SeeMoreQuotesDataTemplateSelector"
-        GridItemsTemplate="{StaticResource QuotesTemplate}"
-        ImageTemplate="{StaticResource ImageDataTemplate}">
-    </behaviors:SeeMoreDataTemplateSelector>
+                                           GridItemsTemplate="{StaticResource QuotesTemplate}"
+                                           ImageTemplate="{StaticResource ImageDataTemplate}" />
 
     <behaviors:SeeMoreDataTemplateSelector x:Key="SeeMoreOrderDataTemplateSelector"
-        GridItemsTemplate="{StaticResource OrdersTemplate}"
-        ImageTemplate="{StaticResource ImageDataTemplate}">
-    </behaviors:SeeMoreDataTemplateSelector>
+                                           GridItemsTemplate="{StaticResource OrdersTemplate}"
+                                           ImageTemplate="{StaticResource ImageDataTemplate}" />
 
     <behaviors:SeeMoreDataTemplateSelector x:Key="SeeMorePurcahsedItemsDataTemplateSelector"
-        GridItemsTemplate="{StaticResource FrequentlyPurchasedItemsTemplate}"
-        ImageTemplate="{StaticResource ImageDataTemplate}">
-    </behaviors:SeeMoreDataTemplateSelector>
+                                           GridItemsTemplate="{StaticResource FrequentlyPurchasedItemsTemplate}"
+                                           ImageTemplate="{StaticResource ImageDataTemplate}" />
     <behaviors:SeeMoreDataTemplateSelector x:Key="SeeMoreOtherAddressDataTemplateSelector"
-        GridItemsTemplate="{StaticResource CustomerOtherAddressDarkTemplate}"
-        ImageTemplate="{StaticResource ImageDataTemplate}">
-    </behaviors:SeeMoreDataTemplateSelector>
+                                           GridItemsTemplate="{StaticResource CustomerOtherAddressDarkTemplate}"
+                                           ImageTemplate="{StaticResource ImageDataTemplate}" />
     <behaviors:SeeMoreDataTemplateSelector x:Key="SeeMoreContactsDataTemplateSelector"
-        GridItemsTemplate="{StaticResource CustomerContactsDashBoardDarkTemplate}"
-        ImageTemplate="{StaticResource ImageDataTemplate}">
-    </behaviors:SeeMoreDataTemplateSelector>
+                                           GridItemsTemplate="{StaticResource CustomerContactsDashBoardDarkTemplate}"
+                                           ImageTemplate="{StaticResource ImageDataTemplate}" />
     <behaviors:SeeMoreDataTemplateSelector x:Key="SeeMoreRecentOrdersDataTemplateSelector"
-        GridItemsTemplate="{StaticResource recentOrdersTemplate}"
-        ImageTemplate="{StaticResource ImageDataTemplate}">
-    </behaviors:SeeMoreDataTemplateSelector>
-    
+                                           GridItemsTemplate="{StaticResource recentOrdersTemplate}"
+                                           ImageTemplate="{StaticResource ImageDataTemplate}" />
+
 </ResourceDictionary>

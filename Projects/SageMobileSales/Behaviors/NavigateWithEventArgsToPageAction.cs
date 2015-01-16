@@ -15,23 +15,23 @@ namespace SageMobileSales.Behaviors
         object IAction.Execute(object sender, object parameter)
         {
             //Walk the ParameterPath for nested properties.
-            string[] propertyPathParts = EventArgsParameterPath.Split('.');
-            object propertyValue = parameter;
-            foreach (string propertyPathPart in propertyPathParts)
+            var propertyPathParts = EventArgsParameterPath.Split('.');
+            var propertyValue = parameter;
+            foreach (var propertyPathPart in propertyPathParts)
             {
-                PropertyInfo propInfo = propertyValue.GetType().GetTypeInfo().GetDeclaredProperty(propertyPathPart);
+                var propInfo = propertyValue.GetType().GetTypeInfo().GetDeclaredProperty(propertyPathPart);
                 propertyValue = propInfo.GetValue(propertyValue);
             }
 
-            Type pageType = Type.GetType(TargetPage);
+            var pageType = Type.GetType(TargetPage);
 
-            Frame frame = GetFrame(sender as DependencyObject);
+            var frame = GetFrame(sender as DependencyObject);
             return frame.Navigate(pageType, propertyValue);
         }
 
         private Frame GetFrame(DependencyObject dependencyObject)
         {
-            DependencyObject parent = VisualTreeHelper.GetParent(dependencyObject);
+            var parent = VisualTreeHelper.GetParent(dependencyObject);
             var parentFrame = parent as Frame;
             if (parentFrame != null) return parentFrame;
             return GetFrame(parent);

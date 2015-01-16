@@ -5,8 +5,6 @@ using Windows.ApplicationModel.Resources;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
-using Microsoft.Practices.Prism.StoreApps;
-using Microsoft.Practices.Prism.StoreApps.Interfaces;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Entities;
 using SageMobileSales.DataAccess.Model;
@@ -139,8 +137,8 @@ namespace SageMobileSales.UILogic.ViewModels
             {
                 InProgress = true;
                 var rootFrame = Window.Current.Content as Frame;
-                List<PageStackEntry> navigationHistory = rootFrame.BackStack.ToList();
-                PageStackEntry pageStack = navigationHistory.LastOrDefault();
+                var navigationHistory = rootFrame.BackStack.ToList();
+                var pageStack = navigationHistory.LastOrDefault();
                 if (pageStack.SourcePageType.Name == "QuoteDetailsPage")
                 {
                     _quoteDetails = navigationParameter as QuoteDetails;

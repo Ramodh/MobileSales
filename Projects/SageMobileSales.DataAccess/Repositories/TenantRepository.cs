@@ -24,7 +24,7 @@ namespace SageMobileSales.DataAccess.Repositories
         #region public methods
 
         /// <summary>
-        ///    Extract Tenants from json, save into  local dB
+        ///     Extract Tenants from json, save into  local dB
         /// </summary>
         /// <param name="sDataTenantDtls"></param>
         /// <returns></returns>
@@ -56,14 +56,14 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Gets tenantId
+        ///     Gets tenantId
         /// </summary>
         /// <returns></returns>
         public async Task<string> GetTenantId()
         {
             try
             {
-                List<Tenant> tenants =
+                var tenants =
                     await _sageSalesDB.QueryAsync<Tenant>("select * from Tenant");
                 if (tenants.Count > 0)
                 {
@@ -92,7 +92,7 @@ namespace SageMobileSales.DataAccess.Repositories
         {
             try
             {
-                List<Tenant> tenants =
+                var tenants =
                     await _sageSalesDB.QueryAsync<Tenant>("select * from Tenant where Tenant.TenantId=?", tenantId);
                 if (tenants.Count > 0)
                 {
@@ -114,7 +114,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Update tenant dtls to local dB
+        ///     Update tenant dtls to local dB
         /// </summary>
         /// <param name="sDataTenants"></param>
         /// <param name="tenantGuid"></param>
@@ -136,8 +136,8 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        JsonArray sDataTenantArray = sDataTenants.GetNamedArray("$resources");
-                        foreach (IJsonValue tenant in sDataTenantArray)
+                        var sDataTenantArray = sDataTenants.GetNamedArray("$resources");
+                        foreach (var tenant in sDataTenantArray)
                             sDataTenantDetails = tenant.GetObject();
                         //_tenantRepository.SaveTenantAsync(sDataTenants, salesRepDBObj.RepId);
                     }
@@ -163,22 +163,22 @@ namespace SageMobileSales.DataAccess.Repositories
         # region private methods
 
         /// <summary>
-        /// Save tenant details to local dB
+        ///     Save tenant details to local dB
         /// </summary>
         /// <param name="sDataTenantArray"></param>
         /// <param name="repId"></param>
         /// <returns></returns>
         private async Task SaveTenantDetailsAsync(JsonArray sDataTenantArray, string repId)
         {
-            foreach (IJsonValue tenant in sDataTenantArray)
+            foreach (var tenant in sDataTenantArray)
             {
-                JsonObject sDataTenant = tenant.GetObject();
+                var sDataTenant = tenant.GetObject();
                 await AddOrUpdateTenantJsonToDbAsync(sDataTenant, repId);
             }
         }
 
         /// <summary>
-        /// Add or Update tenant to local dB
+        ///     Add or Update tenant to local dB
         /// </summary>
         /// <param name="sDataTenant"></param>
         /// <param name="repId"></param>
@@ -222,7 +222,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Add tenant to local dB
+        ///     Add tenant to local dB
         /// </summary>
         /// <param name="sDataTenant"></param>
         /// <param name="repId"></param>
@@ -253,7 +253,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Update tenant to local dB
+        ///     Update tenant to local dB
         /// </summary>
         /// <param name="sDataTenantDetails"></param>
         /// <param name="tenantObj"></param>
@@ -320,7 +320,7 @@ namespace SageMobileSales.DataAccess.Repositories
         //}
 
         /// <summary>
-        /// Extract tenant from json
+        ///     Extract tenant from json
         /// </summary>
         /// <param name="sDataTenant"></param>
         /// <param name="tenant"></param>

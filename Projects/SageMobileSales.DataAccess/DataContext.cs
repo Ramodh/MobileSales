@@ -7,10 +7,8 @@ namespace SageMobileSales.DataAccess
 {
     public class DataContext : IDataContext
     {
-        private static string _dbName = "SageMobileSales.db";
-
+        private static readonly string _dbName = "SageMobileSales.db";
         private readonly IDatabase _database;
-
 
         public DataContext(IDatabase database)
         {
@@ -27,7 +25,6 @@ namespace SageMobileSales.DataAccess
             return _database.GetAsyncConnection();
         }
 
-
         /// <summary>
         ///     Deletes local database
         /// </summary>
@@ -35,7 +32,7 @@ namespace SageMobileSales.DataAccess
         public async Task DeleteDatabase()
         {
             SQLiteConnectionPool.Shared.Reset();
-            StorageFile sageSalesDBFile = await ApplicationData.Current.LocalFolder.GetFileAsync(_dbName);
+            var sageSalesDBFile = await ApplicationData.Current.LocalFolder.GetFileAsync(_dbName);
             await sageSalesDBFile.DeleteAsync();
         }
     }

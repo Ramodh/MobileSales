@@ -103,7 +103,7 @@ namespace SageMobileSales.DataAccess.Common
         /// </returns>
         protected override bool SetProperty<T>(ref T storage, T value, [CallerMemberName] string propertyName = null)
         {
-            bool result = base.SetProperty(ref storage, value, propertyName);
+            var result = base.SetProperty(ref storage, value, propertyName);
 
             if (result && !string.IsNullOrEmpty(propertyName))
             {

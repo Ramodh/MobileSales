@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Windows.ApplicationModel.Resources;
+using Windows.UI.Popups;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
-using Microsoft.Practices.Prism.StoreApps;
-using Microsoft.Practices.Prism.StoreApps.Interfaces;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Entities;
 using SageMobileSales.DataAccess.Model;
@@ -12,8 +12,6 @@ using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
 using SageMobileSales.ServiceAgents.Services;
 using SageMobileSales.UILogic.Common;
-using Windows.UI.Popups;
-using Windows.ApplicationModel.Resources;
 
 namespace SageMobileSales.UILogic.ViewModels
 {
@@ -104,7 +102,6 @@ namespace SageMobileSales.UILogic.ViewModels
             set { SetProperty(ref _customerAddress, value); }
         }
 
-
         /// <summary>
         ///     Load add contact page
         /// </summary>
@@ -168,17 +165,17 @@ namespace SageMobileSales.UILogic.ViewModels
                 if ((string.IsNullOrEmpty(Contact.FirstName) && string.IsNullOrEmpty(Contact.LastName)) &&
                     IsSaveEnabled)
                 {
-                    MessageDialog msgDialog = new MessageDialog(
-                          ResourceLoader.GetForCurrentView("Resources").GetString(" MesDialogAddContactSaveMessage"),
-                          ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogAddContactTitle"));
-                        msgDialog.Commands.Add(new UICommand("Ok"));
-                        await msgDialog.ShowAsync();
+                    var msgDialog = new MessageDialog(
+                        ResourceLoader.GetForCurrentView("Resources").GetString(" MesDialogAddContactSaveMessage"),
+                        ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogAddContactTitle"));
+                    msgDialog.Commands.Add(new UICommand("Ok"));
+                    await msgDialog.ShowAsync();
                 }
-                else if(IsSaveEnabled)
+                else if (IsSaveEnabled)
                 {
                     if (ValidateForm())
                     {
-                        string errorMessage = string.Empty;
+                        var errorMessage = string.Empty;
                         IsSaveEnabled = false;
                         InProgress = true;
                         _contact.IsPending = true;
@@ -190,7 +187,7 @@ namespace SageMobileSales.UILogic.ViewModels
                         InProgress = false;
 
                         _navigationService.GoBack();
-                    }                
+                    }
                 }
             }
             catch (EntityValidationException ex)
@@ -213,9 +210,9 @@ namespace SageMobileSales.UILogic.ViewModels
             var errors = new Dictionary<string, ReadOnlyCollection<string>>();
 
             // Property keys format: address.{Propertyname}
-            foreach (string propkey in modelValidationResults.ModelState.Keys)
+            foreach (var propkey in modelValidationResults.ModelState.Keys)
             {
-                string propertyName = propkey.Substring(propkey.IndexOf('.') + 1);
+                var propertyName = propkey.Substring(propkey.IndexOf('.') + 1);
 
                 errors.Add(propertyName, new ReadOnlyCollection<string>(modelValidationResults.ModelState[propkey]));
             }
@@ -231,8 +228,8 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             if (!string.IsNullOrEmpty(((TextBox) args).Text))
             {
-                string searchTerm = ((TextBox) args).Text.Trim();
-                string formated = string.Format("{0:(###) ###-####}",
+                var searchTerm = ((TextBox) args).Text.Trim();
+                var formated = string.Format("{0:(###) ###-####}",
                     Convert.ToDouble(searchTerm));
                 Contact.PhoneWork = formated;
                 OnPropertyChanged("PhoneWork");

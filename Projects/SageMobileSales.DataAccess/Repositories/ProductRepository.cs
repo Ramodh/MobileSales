@@ -18,7 +18,6 @@ namespace SageMobileSales.DataAccess.Repositories
         private readonly SQLiteAsyncConnection _sageSalesDB;
         private string _log = string.Empty;
 
-
         public ProductRepository(IDatabase database, ILocalSyncDigestRepository localSyncDigestRepository,
             IProductAssociatedBlobsRepository productAssociatedBlobsRepository)
         {
@@ -41,12 +40,12 @@ namespace SageMobileSales.DataAccess.Repositories
         {
             try
             {
-                JsonArray sDataProductsArray = sDataProducts.GetNamedArray("$resources");
+                var sDataProductsArray = sDataProducts.GetNamedArray("$resources");
                 DataAccessUtils.ProductReturnedCount += sDataProductsArray.Count;
 
-                for (int product = 0; product < sDataProductsArray.Count; product++)
+                for (var product = 0; product < sDataProductsArray.Count; product++)
                 {
-                    JsonObject sDataProduct = sDataProductsArray[product].GetObject();
+                    var sDataProduct = sDataProductsArray[product].GetObject();
                     await AddOrUpdateProductJsonToDbAsync(sDataProduct);
 
                     if (localSyncDigest != null)
@@ -92,7 +91,7 @@ namespace SageMobileSales.DataAccess.Repositories
         {
             try
             {
-                await AddOrUpdateProductJsonToDbAsync(sDataProduct);                
+                await AddOrUpdateProductJsonToDbAsync(sDataProduct);
             }
             catch (SQLiteException ex)
             {
@@ -153,7 +152,7 @@ namespace SageMobileSales.DataAccess.Repositories
         {
             try
             {
-                List<Product> productDetails =
+                var productDetails =
                     await _sageSalesDB.QueryAsync<Product>("select * from Product where ProductId=?", productId);
                 if (productDetails != null)
                 {
@@ -226,16 +225,16 @@ namespace SageMobileSales.DataAccess.Repositories
             try
             {
                 // Retrieve the search suggestions from LocalDB
-                List<ProductDetails> searchSuggestions =                   
-                      await
+                var searchSuggestions =
+                    await
                         _sageSalesDB.QueryAsync<ProductDetails>(
-                         "select distinct PRD.ProductId, PRD.ProductName, PRD.Sku, PRD.PriceStd, (select Url from ProductAssociatedBlob as PAB where PAB.ProductId = PRD.ProductId AND (PAB.IsPrimary='1' OR PAB.IsPrimary='0')) as Url from Product as PRD join ProductCategoryLink as PCL on PRD.ProductId = PCL.ProductId and PRD.EntityStatus='Active' AND (ProductName like '%" +
+                            "select distinct PRD.ProductId, PRD.ProductName, PRD.Sku, PRD.PriceStd, (select Url from ProductAssociatedBlob as PAB where PAB.ProductId = PRD.ProductId AND (PAB.IsPrimary='1' OR PAB.IsPrimary='0')) as Url from Product as PRD join ProductCategoryLink as PCL on PRD.ProductId = PCL.ProductId and PRD.EntityStatus='Active' AND (ProductName like '%" +
                             searchTerm + "%') OR (SKU like '%" +
-                searchTerm + "%') order by ProductName asc");
-                    //await
-                    //    _sageSalesDB.QueryAsync<ProductDetails>(
-                    //        "SELECT distinct PAB.Url,PRD.ProductName,PRD.ProductId,PRD.Sku,PRD.PriceStd from ProductAssociatedBlob as PAB JOIN Product as PRD ON PRD.productid = PAB.productid where PAB.IsPrimary='1' AND ProductName like '%" +
-                    //        searchTerm + "%'");
+                            searchTerm + "%') order by ProductName asc");
+                //await
+                //    _sageSalesDB.QueryAsync<ProductDetails>(
+                //        "SELECT distinct PAB.Url,PRD.ProductName,PRD.ProductId,PRD.Sku,PRD.PriceStd from ProductAssociatedBlob as PAB JOIN Product as PRD ON PRD.productid = PAB.productid where PAB.IsPrimary='1' AND ProductName like '%" +
+                //        searchTerm + "%'");
                 return searchSuggestions;
             }
             catch (SQLiteException ex)
@@ -349,7 +348,7 @@ namespace SageMobileSales.DataAccess.Repositories
         # region Private Methods
 
         /// <summary>
-        ///     Extract product, product related items, blobs json        
+        ///     Extract product, product related items, blobs json
         /// </summary>
         /// <param name="sDataProduct"></param>
         /// <returns>Product</returns>
@@ -444,14 +443,14 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        JsonArray sDataRelatedItemsArray = sDataProduct.GetNamedArray("RelatedItems");
+                        var sDataRelatedItemsArray = sDataProduct.GetNamedArray("RelatedItems");
                         if (sDataRelatedItemsArray.Count > 0)
                         {
                             var lstProductRelatedItem = new List<ProductRelatedItem>();
 
-                            foreach (IJsonValue relatedItem in sDataRelatedItemsArray)
+                            foreach (var relatedItem in sDataRelatedItemsArray)
                             {
-                                JsonObject sDataRelatedItem = relatedItem.GetObject();
+                                var sDataRelatedItem = relatedItem.GetObject();
                                 var productRelatedItem = new ProductRelatedItem();
                                 productRelatedItem.ProductId = product.ProductId;
                                 productRelatedItem.RelatedItemId = sDataRelatedItem.GetNamedString("$key").ToLower();
@@ -467,12 +466,12 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        JsonArray sDataAssociatedBlobsArray = sDataProduct.GetNamedArray("Images");
+                        var sDataAssociatedBlobsArray = sDataProduct.GetNamedArray("Images");
                         if (sDataAssociatedBlobsArray.Count > 0)
                         {
-                            foreach (IJsonValue associatedBlob in sDataAssociatedBlobsArray)
+                            foreach (var associatedBlob in sDataAssociatedBlobsArray)
                             {
-                                JsonObject sDataAssociatedBlob = associatedBlob.GetObject();
+                                var sDataAssociatedBlob = associatedBlob.GetObject();
                                 await
                                     _productAssociatedBlobsRepository.AddOrUpdateProductAssociatedBlobJsonToDbAsync(
                                         sDataAssociatedBlob);
@@ -504,12 +503,12 @@ namespace SageMobileSales.DataAccess.Repositories
         {
             try
             {
-                List<ProductRelatedItem> oldProductRelatedItems =
+                var oldProductRelatedItems =
                     await
                         _sageSalesDB.QueryAsync<ProductRelatedItem>(
                             "select * from ProductRelatedItem where ProductId=?", productId);
 
-                foreach (ProductRelatedItem productRelatedItem in oldProductRelatedItems)
+                foreach (var productRelatedItem in oldProductRelatedItems)
                 {
                     await _sageSalesDB.DeleteAsync(productRelatedItem);
                 }

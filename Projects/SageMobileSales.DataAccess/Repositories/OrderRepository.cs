@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Data.Json;
-using Microsoft.Practices.Prism.PubSubEvents;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Entities;
 using SageMobileSales.DataAccess.Events;
@@ -16,17 +15,18 @@ namespace SageMobileSales.DataAccess.Repositories
     {
         private readonly IAddressRepository _addressRepository;
         private readonly ICustomerRepository _customerRepository;
+        private readonly IDatabase _database;
         private readonly IEventAggregator _eventAggregator;
         private readonly ILocalSyncDigestRepository _localSyncDigestRepository;
         private readonly IOrderLineItemRepository _orderLineItemRepository;
+        private readonly SQLiteAsyncConnection _sageSalesDB;
         private readonly ISalesRepRepository _salesRepRepository;
-        private readonly SQLiteAsyncConnection _sageSalesDB;        
-        private IDatabase _database;
         private string _log = string.Empty;
 
         public OrderRepository(IDatabase database, ILocalSyncDigestRepository localSyncDigestRepository,
             ICustomerRepository customerRepository, IAddressRepository addressRepository,
-            IOrderLineItemRepository orderLineItemRepository, IEventAggregator eventAggregator, ISalesRepRepository salesRepRepository)
+            IOrderLineItemRepository orderLineItemRepository, IEventAggregator eventAggregator,
+            ISalesRepRepository salesRepRepository)
         {
             _database = database;
             _sageSalesDB = _database.GetAsyncConnection();
@@ -48,12 +48,12 @@ namespace SageMobileSales.DataAccess.Repositories
         /// <returns></returns>
         public async Task SaveOrdersAsync(JsonObject sDataOrders, LocalSyncDigest localSyncDigest)
         {
-            JsonArray sDataOrdersArray = sDataOrders.GetNamedArray("$resources");
+            var sDataOrdersArray = sDataOrders.GetNamedArray("$resources");
             DataAccessUtils.OrdersReturnedCount += sDataOrdersArray.Count;
 
-            for (int order = 0; order < sDataOrdersArray.Count; order++)
+            for (var order = 0; order < sDataOrdersArray.Count; order++)
             {
-                JsonObject sDataOrder = sDataOrdersArray[order].GetObject();
+                var sDataOrder = sDataOrdersArray[order].GetObject();
 
                 await
                     _orderLineItemRepository.SaveOrderLineItemsAsync(sDataOrder,
@@ -95,16 +95,16 @@ namespace SageMobileSales.DataAccess.Repositories
         {
             IJsonValue value;
 
-            Orders order = await SaveOrderDetailsAsync(sDataOrder);
+            var order = await SaveOrderDetailsAsync(sDataOrder);
 
             if (sDataOrder.TryGetValue("ShippingAddress", out value))
             {
                 if (value.ValueType.ToString() != DataAccessUtils.Null)
                 {
-                    JsonObject sDataShippingAdress = sDataOrder.GetNamedObject("ShippingAddress");
+                    var sDataShippingAdress = sDataOrder.GetNamedObject("ShippingAddress");
                     if (!string.IsNullOrEmpty(order.CustomerId))
                     {
-                        Address address =
+                        var address =
                             await
                                 _addressRepository.AddOrUpdateAddressJsonToDbAsync(sDataShippingAdress, order.CustomerId);
                         if (address != null)
@@ -156,19 +156,20 @@ namespace SageMobileSales.DataAccess.Repositories
         public async Task<List<OrderDetails>> GetOrdersForCustomerAsync(string customerId)
         {
             List<OrderDetails> orderList = null;
-            string salesRepId = await _salesRepRepository.GetSalesRepId();
+            var salesRepId = await _salesRepRepository.GetSalesRepId();
             try
             {
                 orderList =
                     await
                         _sageSalesDB.QueryAsync<OrderDetails>(
                             "SELECT distinct customer.customerName, orders.CustomerId,orders.OrderNumber, orders.AddressId, orders.TenantId, orders.OrderId, orders.CreatedOn, orders.amount, orders.DiscountPercent, orders.ShippingAndHandling, orders.Tax, orders.OrderStatus,orders.OrderDescription,(select RepName from SalesRep as RP where RP.RepId='" +
-                            salesRepId + "') as RepName FROM customer, orders where Orders.OrderStatus!='IsOrder' And Orders.OrderStatus!='Error' And Orders.OrderStatus!='Temporary' and customer.customerId=orders.customerId and customer.IsActive=1 and orders.customerId=? order by orders.createdOn desc",
-                            customerId);                    
-                    //await
-                    //    _sageSalesDB.QueryAsync<OrderDetails>(
-                    //        "SELECT distinct customer.customerName, orders.CustomerId,orders.OrderNumber, orders.AddressId, orders.TenantId, orders.OrderId, orders.CreatedOn, orders.amount, orders.DiscountPercent, orders.ShippingAndHandling, orders.Tax, orders.OrderStatus,orders.OrderDescription, SalesRep.RepName FROM customer, orders left Join SalesRep On SalesRep.RepId=Orders.RepId where Orders.OrderStatus!='IsOrder'  And Orders.OrderStatus!='Temporary' and customer.customerId=orders.customerId and customer.IsActive=1 and orders.customerId=? order by orders.createdOn desc",
-                    //        customerId);
+                            salesRepId +
+                            "') as RepName FROM customer, orders where Orders.OrderStatus!='IsOrder' And Orders.OrderStatus!='Error' And Orders.OrderStatus!='Temporary' and customer.customerId=orders.customerId and customer.IsActive=1 and orders.customerId=? order by orders.createdOn desc",
+                            customerId);
+                //await
+                //    _sageSalesDB.QueryAsync<OrderDetails>(
+                //        "SELECT distinct customer.customerName, orders.CustomerId,orders.OrderNumber, orders.AddressId, orders.TenantId, orders.OrderId, orders.CreatedOn, orders.amount, orders.DiscountPercent, orders.ShippingAndHandling, orders.Tax, orders.OrderStatus,orders.OrderDescription, SalesRep.RepName FROM customer, orders left Join SalesRep On SalesRep.RepId=Orders.RepId where Orders.OrderStatus!='IsOrder'  And Orders.OrderStatus!='Temporary' and customer.customerId=orders.customerId and customer.IsActive=1 and orders.customerId=? order by orders.createdOn desc",
+                //        customerId);
                 //"SELECT distinct customer.customerName, quote.CustomerId, quote.QuoteId, quote.CreatedOn, quote.amount, quote.quoteStatus,quote.QuoteDescription, SalesRep.RepName FROM customer, quote left Join SalesRep On SalesRep.RepId=Quote.RepId where Quote.QuoteStatus!='IsOrder'  And Quote.QuoteStatus!='Temporary' and customer.customerId=quote.customerId and quote.customerId=? order by quote.createdOn desc", customerId);
             }
             catch (Exception ex)
@@ -186,7 +187,6 @@ namespace SageMobileSales.DataAccess.Repositories
         /// <returns></returns>
         public async Task<List<OrderDetails>> GetOrdersListAsync(string salesRepId)
         {
-
             //salesRepId is not required, Check and remove
             List<OrderDetails> ordersList = null;
             try
@@ -212,11 +212,10 @@ namespace SageMobileSales.DataAccess.Repositories
         /// <returns></returns>
         public async Task<List<OrderDetails>> GetOrderStatusListForCustomerAsync(string customerId)
         {
-
             //salesRepId is not required, Check and remove
             List<OrderDetails> ordersList = null;
             try
-            {                
+            {
                 ordersList =
                     await
                         _sageSalesDB.QueryAsync<OrderDetails>(
@@ -238,7 +237,6 @@ namespace SageMobileSales.DataAccess.Repositories
         /// <returns></returns>
         public async Task<List<OrderDetails>> GetOrdersStatusListForSalesRepAsync(string salesRepId)
         {
-
             //salesRepId is not required, Check and remove
             List<OrderDetails> ordersList = null;
             try
@@ -301,7 +299,7 @@ namespace SageMobileSales.DataAccess.Repositories
                         {
                             return await UpdateOrderJsonToDbAsync(sDataOrder, orderList.FirstOrDefault());
                         }
-                        var order = new Orders { OrderId = sDataOrder.GetNamedString("OrderId") };
+                        var order = new Orders {OrderId = sDataOrder.GetNamedString("OrderId")};
                         await _sageSalesDB.InsertAsync(order);
                         return await UpdateOrderJsonToDbAsync(sDataOrder, order);
                     }
@@ -395,7 +393,7 @@ namespace SageMobileSales.DataAccess.Repositories
                     {
                         order.OrderDescription = sDataOrder.GetNamedString("Description");
                     }
-                }                
+                }
                 if (sDataOrder.TryGetValue("CreatedOn", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
@@ -438,7 +436,7 @@ namespace SageMobileSales.DataAccess.Repositories
                     {
                         order.Amount = Convert.ToDecimal(sDataOrder.GetNamedNumber("OrderTotal"));
                     }
-                }                
+                }
                 if (sDataOrder.TryGetValue("DiscountPercent", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
@@ -480,7 +478,7 @@ namespace SageMobileSales.DataAccess.Repositories
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
                         //JsonObject sDataCustomer = sDataOrder.GetNamedObject("Customer");                        
-                        List<Customer> customerDb =
+                        var customerDb =
                             await
                                 _sageSalesDB.QueryAsync<Customer>("SELECT * FROM CUSTOMER WHERE CustomerId=?",
                                     sDataOrder.GetNamedString("CustomerId"));
@@ -513,7 +511,7 @@ namespace SageMobileSales.DataAccess.Repositories
 
                         if (!string.IsNullOrEmpty(order.CustomerId))
                         {
-                            List<Address> addressDb =
+                            var addressDb =
                                 await
                                     _sageSalesDB.QueryAsync<Address>("SELECT * FROM ADDRESS WHERE AddressId=?",
                                         sDataOrder.GetNamedString("ShippingAddressId"));

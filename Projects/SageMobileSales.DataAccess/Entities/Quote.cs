@@ -25,7 +25,6 @@ namespace SageMobileSales.DataAccess.Entities
         public bool IsPending { get; set; }
         public bool IsDeleted { get; set; }
         public decimal SubTotal { get; set; }
-
         //public string QuoteType { get; set; }
         public string ToOrderAmountPaid { get; set; }
         public string ToOrderAuthorizationCode { get; set; }

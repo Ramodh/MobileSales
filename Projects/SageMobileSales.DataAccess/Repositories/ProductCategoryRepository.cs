@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Data.Json;
-using Microsoft.Practices.Prism.PubSubEvents;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Entities;
 using SageMobileSales.DataAccess.Events;
@@ -19,7 +18,6 @@ namespace SageMobileSales.DataAccess.Repositories
         private readonly SQLiteAsyncConnection _sageSalesDB;
         private string _log = string.Empty;
 
-
         public ProductCategoryRepository(IDatabase database, ILocalSyncDigestRepository localSyncDigestRepository,
             IEventAggregator eventAggregator)
         {
@@ -30,6 +28,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         #region public methods
+
         /// <summary>
         ///     Extract data from json, saves data into ProductCategory, ProductCategoryLinks &
         ///     LocalSyncDigest tables in LocalDB
@@ -41,12 +40,12 @@ namespace SageMobileSales.DataAccess.Repositories
         {
             try
             {
-                JsonArray sDataCategoriesArray = sDataProductCategory.GetNamedArray("$resources");
+                var sDataCategoriesArray = sDataProductCategory.GetNamedArray("$resources");
                 DataAccessUtils.ProductCategoryReturnedCount += sDataCategoriesArray.Count;
 
-                for (int category = 0; category < sDataCategoriesArray.Count; category++)
+                for (var category = 0; category < sDataCategoriesArray.Count; category++)
                 {
-                    JsonObject sDataCategory = sDataCategoriesArray[category].GetObject();
+                    var sDataCategory = sDataCategoriesArray[category].GetObject();
                     await AddOrUpdateProductCategoryJsonToDbAsync(sDataCategory);
 
                     if (localSyncDigest != null)
@@ -128,7 +127,8 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     productCategoriesList =
                         await
-                            _sageSalesDB.QueryAsync<ProductCategory>("select * from ProductCategory where ParentId=? order by CategoryName",
+                            _sageSalesDB.QueryAsync<ProductCategory>(
+                                "select * from ProductCategory where ParentId=? order by CategoryName",
                                 parentId);
                 }
                 else
@@ -204,6 +204,7 @@ namespace SageMobileSales.DataAccess.Repositories
         #endregion
 
         #region private methods
+
         /// <summary>
         ///     Add productCategory json to local dB
         /// </summary>
@@ -237,7 +238,7 @@ namespace SageMobileSales.DataAccess.Repositories
             try
             {
                 IJsonValue value;
-                bool entityStatusDeleted = false;
+                var entityStatusDeleted = false;
                 if (sDataProductCategory.TryGetValue("$key", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
@@ -288,7 +289,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Extract productCategory from json
+        ///     Extract productCategory from json
         /// </summary>
         /// <param name="sDataProductCategory"></param>
         /// <param name="productCategory"></param>
@@ -318,20 +319,20 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        JsonObject sDataParentIds = sDataProductCategory.GetNamedObject("Parent");
+                        var sDataParentIds = sDataProductCategory.GetNamedObject("Parent");
                         productCategory.ParentId = sDataParentIds.GetNamedString("$key");
                     }
                 }
                 // JsonObject sDataAssociatedItems = sDataProductCategory.GetNamedObject("AssociatedItems");
-                JsonArray sDataAssociatedItemsArray = sDataProductCategory.GetNamedArray("AssociatedItems");
+                var sDataAssociatedItemsArray = sDataProductCategory.GetNamedArray("AssociatedItems");
 
                 if (sDataAssociatedItemsArray.Count > 0)
                 {
                     var lstProductCategoryLink = new List<ProductCategoryLink>();
 
-                    foreach (IJsonValue associatedItem in sDataAssociatedItemsArray)
+                    foreach (var associatedItem in sDataAssociatedItemsArray)
                     {
-                        JsonObject sDataAssociatedItem = associatedItem.GetObject();
+                        var sDataAssociatedItem = associatedItem.GetObject();
                         var productCategoryLink = new ProductCategoryLink();
                         productCategoryLink.CategoryId = productCategory.CategoryId;
                         productCategoryLink.ProductId = sDataAssociatedItem.GetNamedString("$key");

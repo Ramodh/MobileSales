@@ -12,10 +12,8 @@ namespace SageMobileSales.DataAccess.Entities
         public decimal Price { set; get; }
         public int Quantity { set; get; }
         public string tenantId { set; get; }
-
         public string QuoteId { set; get; }
         public string ProductId { set; get; }
-
         public bool IsPending { get; set; }
         public bool IsDeleted { get; set; }
     }

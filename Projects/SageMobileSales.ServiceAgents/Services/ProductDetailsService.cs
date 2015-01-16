@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Windows.Data.Json;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
@@ -23,7 +22,6 @@ namespace SageMobileSales.ServiceAgents.Services
             _productRepository = productRepository;
         }
 
-
         /// <summary>
         ///     makes call to BuildAndSendRequest method to make service call to get ProductDetails data.
         ///     Once we get the response converts it into JsonObject.
@@ -34,7 +32,7 @@ namespace SageMobileSales.ServiceAgents.Services
         {
             try
             {
-                string syncQueryEntity = Constants.ItemsEntity + "('" + productId + "')";
+                var syncQueryEntity = Constants.ItemsEntity + "('" + productId + "')";
                 parameters = new Dictionary<string, string>();
 
                 parameters.Add("include", "Images,RelatedItems");
@@ -48,7 +46,7 @@ namespace SageMobileSales.ServiceAgents.Services
                             Constants.AccessToken, parameters);
                 if (productDetailsResponse != null && productDetailsResponse.IsSuccessStatusCode)
                 {
-                    JsonObject sDataProductDetails = await _serviceAgent.ConvertTosDataObject(productDetailsResponse);
+                    var sDataProductDetails = await _serviceAgent.ConvertTosDataObject(productDetailsResponse);
 
                     // Saves ProductDetails data into LocalDB
                     await _productRepository.UpdatProductsAsync(sDataProductDetails);

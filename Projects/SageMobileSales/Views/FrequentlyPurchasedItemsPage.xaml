@@ -25,7 +25,7 @@
 
     </prism:VisualStateAwarePage.Resources>
 
-  <prism:VisualStateAwarePage.TopAppBar>
+    <prism:VisualStateAwarePage.TopAppBar>
         <AppBar x:Name="TopAppBar1" Style="{StaticResource TopAppBarUserControlStyle}" x:Uid="TopAppBar1">
             <views:TopAppBarUserControl />
         </AppBar>
@@ -75,7 +75,7 @@
             </interactivity:Interaction.Behaviors>
         </GridView>
 
-            <!--<GridView 
+        <!--<GridView 
             x:Name="itemGridView"
             AutomationProperties.AutomationId="ItemsGridView"
             AutomationProperties.Name="Items"
@@ -98,9 +98,9 @@
         <!-- Back button and page title -->
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="120"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="120" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <Button x:Name="backButton" Margin="39,59,39,0"
                     Command="{Binding NavigationHelper.GoBackCommand, ElementName=pageRoot}"
@@ -109,10 +109,13 @@
                     AutomationProperties.Name="Back"
                     AutomationProperties.AutomationId="BackButton"
                     AutomationProperties.ItemType="Navigation Button" />
-            <TextBlock x:Uid="FrequentlyPurchasedItemsPageTitle" x:Name="pageTitle" Style="{StaticResource PageTitleTextStyle}" Grid.Column="1" Text=""
-                        IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="0,0,30,40"/>
-            <TextBlock x:Name="CustomerName" Text="{Binding CustomerName}" Style="{StaticResource PageTitleTextStyle}" Grid.Column="2" Foreground="Black" 
-                        IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="0,0,30,40" FontSize="45"/>
+            <TextBlock x:Uid="FrequentlyPurchasedItemsPageTitle" x:Name="pageTitle"
+                       Style="{StaticResource PageTitleTextStyle}" Grid.Column="1" Text=""
+                       IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="0,0,30,40" />
+            <TextBlock x:Name="CustomerName" Text="{Binding CustomerName}" Style="{StaticResource PageTitleTextStyle}"
+                       Grid.Column="2" Foreground="Black"
+                       IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="0,0,30,40"
+                       FontSize="45" />
         </Grid>
     </Grid>
 

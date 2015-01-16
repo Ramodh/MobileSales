@@ -30,14 +30,14 @@ namespace SageMobileSales.DataAccess.Common
         {
             get
             {
-                string result = string.Empty;
-                bool firstItem = true;
+                var result = string.Empty;
+                var firstItem = true;
 
-                foreach (string key in ValidationResult.ModelState.Keys)
+                foreach (var key in ValidationResult.ModelState.Keys)
                 {
                     if (!firstItem) result += "\n";
 
-                    string errors = string.Join(", ", ValidationResult.ModelState[key].ToArray());
+                    var errors = string.Join(", ", ValidationResult.ModelState[key].ToArray());
                     result += string.Format(CultureInfo.CurrentCulture, "{0} : {1}", key, errors);
                     firstItem = false;
                 }

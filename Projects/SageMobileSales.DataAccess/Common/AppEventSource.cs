@@ -37,10 +37,9 @@ namespace SageMobileSales.DataAccess.Common
             WriteEvent(5, message);
         }
 
-
         public string WriteLine(Exception e)
         {
-            string s =
+            var s =
                 WriteLineExcep("EXCEPTION :{0} {1} STACK TRACE: {2}", e.Message,
                     e.InnerException != null ? " HAS INNER EXCEPTION" : "", e.StackTrace);
 
@@ -54,7 +53,7 @@ namespace SageMobileSales.DataAccess.Common
 
         private string WriteLineExcep(string format, params object[] args)
         {
-            string s = string.Format(format, args);
+            var s = string.Format(format, args);
 
             return s;
         }

@@ -1,13 +1,10 @@
-﻿using Microsoft.Practices.Prism.StoreApps;
-using SageMobileSales.Common;
-using SageMobileSales.DataAccess.Model;
-using SageMobileSales.UILogic.Common;
-using System;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
+using SageMobileSales.Common;
 
 // The Items Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234233
 
@@ -19,9 +16,10 @@ namespace SageMobileSales.Views
     /// </summary>
     public sealed partial class QuotesPage : VisualStateAwarePage
     {
-        private double _scrollViewerOffsetProportion;       
         private bool _isPageLoading = true;
         private ScrollViewer _itemsGridViewScrollViewer;
+        private double _scrollViewerOffsetProportion;
+
         public QuotesPage()
         {
             InitializeComponent();
@@ -42,7 +40,7 @@ namespace SageMobileSales.Views
         {
             if (e.PropertyName == "QuoteDetails")
             {
-                (itemsGridView as ListViewBase).ItemsSource = itemsViewSource.Source;
+                itemsGridView.ItemsSource = itemsViewSource.Source;
             }
         }
 
@@ -56,17 +54,19 @@ namespace SageMobileSales.Views
             }
             base.OnNavigatedFrom(e);
         }
+
         private void ScrollBarVisibilityChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            var helper = (DependencyPropertyChangedHelper)sender;
+            var helper = (DependencyPropertyChangedHelper) sender;
 
             var scrollViewer = VisualTreeUtilities.GetVisualChild<ScrollViewer>(itemsGridView);
 
-            if (((Visibility)e.NewValue) == Visibility.Visible)
+            if (((Visibility) e.NewValue) == Visibility.Visible)
             {
                 ScrollViewerUtilities.ScrollToProportion(scrollViewer, _scrollViewerOffsetProportion);
                 helper.PropertyChanged -= ScrollBarVisibilityChanged;
-            };
+            }
+            ;
 
             if (_isPageLoading)
             {
@@ -75,17 +75,17 @@ namespace SageMobileSales.Views
             }
         }
 
-        protected override void SaveState(System.Collections.Generic.Dictionary<string, object> pageState)
+        protected override void SaveState(Dictionary<string, object> pageState)
         {
             if (pageState == null) return;
 
             base.SaveState(pageState);
 
-            pageState["scrollViewerOffsetProportion"] = ScrollViewerUtilities.GetScrollViewerOffsetProportion(_itemsGridViewScrollViewer);
-        
+            pageState["scrollViewerOffsetProportion"] =
+                ScrollViewerUtilities.GetScrollViewerOffsetProportion(_itemsGridViewScrollViewer);
         }
 
-        protected override void LoadState(object navigationParameter, System.Collections.Generic.Dictionary<string, object> pageState)
+        protected override void LoadState(object navigationParameter, Dictionary<string, object> pageState)
         {
             if (pageState == null) return;
 
@@ -93,44 +93,44 @@ namespace SageMobileSales.Views
 
             if (pageState.ContainsKey("scrollViewerOffsetProportion"))
             {
-                _scrollViewerOffsetProportion = double.Parse(pageState["scrollViewerOffsetProportion"].ToString(), CultureInfo.InvariantCulture.NumberFormat);
+                _scrollViewerOffsetProportion = double.Parse(pageState["scrollViewerOffsetProportion"].ToString(),
+                    CultureInfo.InvariantCulture.NumberFormat);
             }
-            
         }
 
-        void Page_SizeChanged(object sender, SizeChangedEventArgs e)
+        private void Page_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             var scrollViewer = VisualTreeUtilities.GetVisualChild<ScrollViewer>(itemsGridView);
 
             if (scrollViewer != null)
             {
-                if (scrollViewer.ComputedHorizontalScrollBarVisibility == Visibility.Visible && scrollViewer.ComputedVerticalScrollBarVisibility == Visibility.Visible)
+                if (scrollViewer.ComputedHorizontalScrollBarVisibility == Visibility.Visible &&
+                    scrollViewer.ComputedVerticalScrollBarVisibility == Visibility.Visible)
                 {
                     ScrollViewerUtilities.ScrollToProportion(scrollViewer, _scrollViewerOffsetProportion);
                 }
                 else
                 {
-                    DependencyPropertyChangedHelper horizontalHelper = new DependencyPropertyChangedHelper(scrollViewer, "ComputedHorizontalScrollBarVisibility");
+                    var horizontalHelper = new DependencyPropertyChangedHelper(scrollViewer,
+                        "ComputedHorizontalScrollBarVisibility");
                     horizontalHelper.PropertyChanged += ScrollBarVisibilityChanged;
 
-                    DependencyPropertyChangedHelper verticalHelper = new DependencyPropertyChangedHelper(scrollViewer, "ComputedVerticalScrollBarVisibility");
+                    var verticalHelper = new DependencyPropertyChangedHelper(scrollViewer,
+                        "ComputedVerticalScrollBarVisibility");
                     verticalHelper.PropertyChanged += ScrollBarVisibilityChanged;
                 }
             }
-            
-
         }
 
         private void itemsGridView_LayoutUpdated(object sender, object e)
         {
-            _scrollViewerOffsetProportion = ScrollViewerUtilities.GetScrollViewerOffsetProportion(_itemsGridViewScrollViewer);
+            _scrollViewerOffsetProportion =
+                ScrollViewerUtilities.GetScrollViewerOffsetProportion(_itemsGridViewScrollViewer);
         }
 
         private void itemsGridView_Loaded(object sender, RoutedEventArgs e)
         {
             _itemsGridViewScrollViewer = VisualTreeUtilities.GetVisualChild<ScrollViewer>(itemsGridView);
         }
-
-
     }
 }

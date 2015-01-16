@@ -23,9 +23,9 @@ namespace SageMobileSales.Behaviors
         /// True to allow a decimal point.
         public bool AllowDecimal
         {
-            get { return (bool) base.GetValue(AllowDecimalProperty); }
+            get { return (bool) GetValue(AllowDecimalProperty); }
 
-            set { base.SetValue(AllowDecimalProperty, value); }
+            set { SetValue(AllowDecimalProperty, value); }
         }
 
         /// Used to attach this behavior to an element.

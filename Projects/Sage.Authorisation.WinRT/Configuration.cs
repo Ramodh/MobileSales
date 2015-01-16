@@ -15,7 +15,6 @@ namespace Sage.Authorisation.WinRT
         internal const string ClientCredentialFormat = @"pfx";
         internal const string GetTokensGrantType = "authorization_code";
         internal const string RefreshAccessTokenPostGrantType = "refresh_token";
-
         private const string RedirectErrorPatternDefault = "/error/";
 
         private const string GetClientCredentialPostDataFormatterDefault =
@@ -27,11 +26,10 @@ namespace Sage.Authorisation.WinRT
         private readonly string GetAccessTokenUriDefault =
             @"https://services.sso.services.sage.com/SSO/OAuthServiceMutualSSL/WebGetAccessToken";
 
-
-
         private readonly string GetClientCredentialUriDefault =
             @"https://signon.sso.services.sage.com/SSO/OAuthService/WebGetClientCredential";
 
+        private readonly bool IsSageIdProduction = true;
         private readonly string RedirectUriDefault = @"https://signon.sso.services.sage.com/oauth/native";
 
         private readonly string StartAuthorisationAttemptUriDefault =
@@ -39,9 +37,6 @@ namespace Sage.Authorisation.WinRT
 
         private readonly string StartAuthorisationAttemptUriDefault_WithCredential =
             @"https://services.sso.services.sage.com/SSO/OAuthServiceMutualSSL/WebStartAuthorisationAttempt?response_type={RESPONSETYPE}&client_id={CLIENTID}&redirect_uri={REDIRECTURI}&scope={SCOPE}&state={STATE}&template_name=WinRT";
-
-        private bool IsSageIdProduction = true;
-
 
         //#elif(ALPHA)
 //        private const string RedirectUriDefault =                                   @"https://qa1-signon.sso.sagessdp.co.uk/oauth/native";
@@ -62,7 +57,7 @@ namespace Sage.Authorisation.WinRT
         /// </summary>
         public Configuration()
         {
-            ApplicationDataContainer configSettings = ApplicationData.Current.LocalSettings;
+            var configSettings = ApplicationData.Current.LocalSettings;
 #if(PRODUCTION)
 
 
@@ -81,7 +76,6 @@ namespace Sage.Authorisation.WinRT
                         Convert.ToBoolean(
                             configSettings.Containers["ConfigurationSettingsContainer"].Values["IsSageProduction"]);
                 }
-             
             }
 
             // for non production we need to use staging URLs, so change it

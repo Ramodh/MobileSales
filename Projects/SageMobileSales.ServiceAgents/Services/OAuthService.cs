@@ -10,20 +10,7 @@ namespace SageMobileSales.ServiceAgents.Services
 {
     public class OAuthService : IOAuthService
     {
-        # region Local Variables
-
-        private OAuthClient _client;
-        private string _clientId = String.Empty;
-        private string _deviceName = String.Empty;
-        private string _log = String.Empty;
-        private string _scope = String.Empty;
-        private string _state = String.Empty;
-        private string _token = String.Empty;
-
-        # endregion
-
         private readonly IDatabase _database;
-
         // Constructor
         public OAuthService(IDatabase database)
         {
@@ -36,6 +23,118 @@ namespace SageMobileSales.ServiceAgents.Services
             _deviceName = "mobilesalesiosclient";
             _token = String.Empty;
         }
+
+        /// <summary>
+        ///     Makes call to OAuthClient(Authorisation Library) where it will validate the AuthorisationInfo which we are passing
+        ///     and inturn returns AccessToken.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<String> Authorize()
+        {
+            try
+            {
+                _clientId = Constants.ClientId;
+
+                _scope = Constants.Scope;
+                var settingsLocal = ApplicationData.Current.LocalSettings;
+                var authinfo = new AuthorisationInfo();
+                authinfo.Scope = Scope;
+                authinfo.State = State;
+                authinfo.DeviceName = DeviceName;
+
+                _client = new OAuthClient(ClientId);
+                _client.LogEvent += onLogEvent;
+                var result = await _client.AuthoriseAsync(authinfo);
+                Token = result.AccessToken;
+                // Adding AccessToken to Application Data.
+                // So that we can use this in the enitre application when ever we need.
+                settingsLocal.Containers["SageSalesContainer"].Values["AccessToken"] = Token;
+                Constants.AccessToken = Token;
+                //Token = Constants.AccessToken;
+            }
+            catch (NullReferenceException ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+            catch (Exception ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+                Log = ex.Message + Environment.NewLine + Log;
+            }
+            //finally
+            //{
+            //    _client.LogEvent -= onLogEvent;
+            //}
+            return Token;
+        }
+
+        /// <summary>
+        ///     Makes call to OAuthClient to remove the AccessToken which is internally saved by Authorisation library.
+        /// </summary>
+        /// <returns></returns>
+        public async Task Cleanup()
+        {
+            try
+            {
+                Constants.IsDbDeleted = true;
+                var settingsLocal = ApplicationData.Current.LocalSettings;
+                settingsLocal.DeleteContainer("SageSalesContainer");
+                var isServerChanged = false;
+                if (_client == null)
+                {
+                    _client = new OAuthClient(ClientId);
+                }
+
+                if (settingsLocal.Containers.ContainsKey("ConfigurationSettingsContainer"))
+                {
+                    if (settingsLocal.Containers["ConfigurationSettingsContainer"].Values["IsServerChanged"] != null)
+                    {
+                        isServerChanged =
+                            Convert.ToBoolean(
+                                settingsLocal.Containers["ConfigurationSettingsContainer"].Values["IsServerChanged"]);
+                    }
+                }
+                await _client.CleanupAsync(isServerChanged);
+                _client.LogEvent += onLogEvent;
+                Token = String.Empty;
+                //  await _database.Delete();
+            }
+            catch (NullReferenceException ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+            }
+            catch (Exception ex)
+            {
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
+                Log = ex.Message + Environment.NewLine + Log;
+            }
+
+            finally
+            {
+                _client.LogEvent -= onLogEvent;
+            }
+        }
+
+        private void onLogEvent(object sender, LogEvent e)
+        {
+            Log = e.Message + Environment.NewLine + Log;
+        }
+
+        # region Local Variables
+
+        private OAuthClient _client;
+        private string _clientId = String.Empty;
+        private string _deviceName = String.Empty;
+        private string _log = String.Empty;
+        private string _scope = String.Empty;
+        private string _state = String.Empty;
+        private string _token = String.Empty;
+
+        # endregion
 
         #region Properties
 
@@ -80,104 +179,5 @@ namespace SageMobileSales.ServiceAgents.Services
         }
 
         #endregion
-
-        /// <summary>
-        ///     Makes call to OAuthClient(Authorisation Library) where it will validate the AuthorisationInfo which we are passing
-        ///     and inturn returns AccessToken.
-        /// </summary>
-        /// <returns></returns>
-        public async Task<String> Authorize()
-        {
-            try
-            {
-                _clientId = Constants.ClientId;
-
-                _scope = Constants.Scope;
-                ApplicationDataContainer settingsLocal = ApplicationData.Current.LocalSettings;
-                var authinfo = new AuthorisationInfo();
-                authinfo.Scope = Scope;
-                authinfo.State = State;
-                authinfo.DeviceName = DeviceName;
-
-                _client = new OAuthClient(ClientId);
-                _client.LogEvent += onLogEvent;
-                AuthorisationResult result = await _client.AuthoriseAsync(authinfo);
-                Token = result.AccessToken;
-                // Adding AccessToken to Application Data.
-                // So that we can use this in the enitre application when ever we need.
-                settingsLocal.Containers["SageSalesContainer"].Values["AccessToken"] = Token;
-                Constants.AccessToken = Token;
-                //Token = Constants.AccessToken;
-            }
-            catch (NullReferenceException ex)
-            {
-                _log = AppEventSource.Log.WriteLine(ex);
-                AppEventSource.Log.Error(_log);
-            }
-            catch (Exception ex)
-            {
-                _log = AppEventSource.Log.WriteLine(ex);
-                AppEventSource.Log.Error(_log);
-                Log = ex.Message + Environment.NewLine + Log;
-            }
-            //finally
-            //{
-            //    _client.LogEvent -= onLogEvent;
-            //}
-            return Token;
-        }
-
-        /// <summary>
-        ///     Makes call to OAuthClient to remove the AccessToken which is internally saved by Authorisation library.
-        /// </summary>
-        /// <returns></returns>
-        public async Task Cleanup()
-        {
-            try
-            {
-                Constants.IsDbDeleted = true;
-                ApplicationDataContainer settingsLocal = ApplicationData.Current.LocalSettings;
-                settingsLocal.DeleteContainer("SageSalesContainer");
-                bool isServerChanged = false;
-                if (_client == null)
-                {
-                    _client = new OAuthClient(ClientId);
-                }
-
-                if (settingsLocal.Containers.ContainsKey("ConfigurationSettingsContainer"))
-                {
-                    if (settingsLocal.Containers["ConfigurationSettingsContainer"].Values["IsServerChanged"] != null)
-                    {
-                        isServerChanged = Convert.ToBoolean(settingsLocal.Containers["ConfigurationSettingsContainer"].Values["IsServerChanged"]);
-                    }
-                }
-                await _client.CleanupAsync(isServerChanged);
-                _client.LogEvent += onLogEvent;
-                Token = String.Empty;               
-                //  await _database.Delete();
-            }
-            catch (NullReferenceException ex)
-            {
-                _log = AppEventSource.Log.WriteLine(ex);
-                AppEventSource.Log.Error(_log);
-            }
-            catch (Exception ex)
-            {
-                _log = AppEventSource.Log.WriteLine(ex);
-                AppEventSource.Log.Error(_log);
-                Log = ex.Message + Environment.NewLine + Log;
-            }
-
-            finally
-            {
-                _client.LogEvent -= onLogEvent;
-            }
-        }
-
-
-        private void onLogEvent(object sender, LogEvent e)
-        {
-            Log = e.Message + Environment.NewLine + Log;
-        }
     }
 }

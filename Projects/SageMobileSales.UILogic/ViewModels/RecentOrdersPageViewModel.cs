@@ -5,8 +5,6 @@ using System.Windows.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
-using Microsoft.Practices.Prism.StoreApps;
-using Microsoft.Practices.Prism.StoreApps.Interfaces;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Entities;
 using SageMobileSales.DataAccess.Model;
@@ -37,7 +35,7 @@ namespace SageMobileSales.UILogic.ViewModels
         private Product _productDetail;
         private List<ProductAssociatedBlob> _productImage;
         private string _productName = string.Empty;
-        private int _productQuantity;  
+        private int _productQuantity;
         private string _productSku = string.Empty;
         private QuoteDetails _quoteDetails;
         private List<SalesHistory> _salesHistoryList;
@@ -202,8 +200,8 @@ namespace SageMobileSales.UILogic.ViewModels
             Dictionary<string, object> viewModelState)
         {
             var rootFrame = Window.Current.Content as Frame;
-            List<PageStackEntry> navigationHistory = rootFrame.BackStack.ToList();
-            PageStackEntry pageStack = navigationHistory.LastOrDefault();
+            var navigationHistory = rootFrame.BackStack.ToList();
+            var pageStack = navigationHistory.LastOrDefault();
 
             InProgress = true;
             if (navigationParameter != null && pageStack.SourcePageType.Name == PageUtils.ItemDetailPage)
@@ -242,10 +240,10 @@ namespace SageMobileSales.UILogic.ViewModels
             }
             if (LineItemDetail != null)
             {
-                QuoteDetails quoteDetails = await _quoteRepository.GetQuoteDetailsAsync(LineItemDetail.QuoteId);
+                var quoteDetails = await _quoteRepository.GetQuoteDetailsAsync(LineItemDetail.QuoteId);
                 LineItemDetail.CustomerId = quoteDetails.CustomerId;
                 await _salesHistoryService.SyncSalesHistory(LineItemDetail.CustomerId, LineItemDetail.ProductId);
-                Customer customer = await _customerRepository.GetCustomerDataAsync(quoteDetails.CustomerId);
+                var customer = await _customerRepository.GetCustomerDataAsync(quoteDetails.CustomerId);
                 CustomerName = customer.CustomerName;
             }
 
@@ -309,13 +307,13 @@ namespace SageMobileSales.UILogic.ViewModels
                 {
                     if (IsAscending)
                     {
-                        List<SalesHistory> sortedRecentOrders =
+                        var sortedRecentOrders =
                             SalesHistoryList.OrderBy(sortby => sortby.InvoiceNumber).ToList();
                         SalesHistoryList = sortedRecentOrders;
                     }
                     else
                     {
-                        List<SalesHistory> sortedRecentOrders =
+                        var sortedRecentOrders =
                             SalesHistoryList.OrderByDescending(sortby => sortby.InvoiceNumber).ToList();
                         SalesHistoryList = sortedRecentOrders;
                     }
@@ -326,13 +324,13 @@ namespace SageMobileSales.UILogic.ViewModels
                 {
                     if (IsAscending)
                     {
-                        List<SalesHistory> sortedRecentOrders =
+                        var sortedRecentOrders =
                             SalesHistoryList.OrderBy(sortby => sortby.InvoiceDate).ToList();
                         SalesHistoryList = sortedRecentOrders;
                     }
                     else
                     {
-                        List<SalesHistory> sortedRecentOrders =
+                        var sortedRecentOrders =
                             SalesHistoryList.OrderByDescending(sortby => sortby.InvoiceDate).ToList();
                         SalesHistoryList = sortedRecentOrders;
                     }
@@ -343,13 +341,13 @@ namespace SageMobileSales.UILogic.ViewModels
                 {
                     if (IsAscending)
                     {
-                        List<SalesHistory> sortedRecentOrders =
+                        var sortedRecentOrders =
                             SalesHistoryList.OrderBy(sortby => sortby.Quantity).ToList();
                         SalesHistoryList = sortedRecentOrders;
                     }
                     else
                     {
-                        List<SalesHistory> sortedRecentOrders =
+                        var sortedRecentOrders =
                             SalesHistoryList.OrderByDescending(sortby => sortby.Quantity).ToList();
                         SalesHistoryList = sortedRecentOrders;
                     }
@@ -360,13 +358,13 @@ namespace SageMobileSales.UILogic.ViewModels
                 {
                     if (IsAscending)
                     {
-                        List<SalesHistory> sortedRecentOrders =
+                        var sortedRecentOrders =
                             SalesHistoryList.OrderBy(sortby => sortby.Total).ToList();
                         SalesHistoryList = sortedRecentOrders;
                     }
                     else
                     {
-                        List<SalesHistory> sortedRecentOrders =
+                        var sortedRecentOrders =
                             SalesHistoryList.OrderByDescending(sortby => sortby.Total).ToList();
                         SalesHistoryList = sortedRecentOrders;
                         SelectedColumn = false;
@@ -377,13 +375,13 @@ namespace SageMobileSales.UILogic.ViewModels
                 {
                     if (IsAscending)
                     {
-                        List<SalesHistory> sortedRecentOrders =
+                        var sortedRecentOrders =
                             SalesHistoryList.OrderBy(sortby => sortby.Price).ToList();
                         SalesHistoryList = sortedRecentOrders;
                     }
                     else
                     {
-                        List<SalesHistory> sortedRecentOrders =
+                        var sortedRecentOrders =
                             SalesHistoryList.OrderByDescending(sortby => sortby.Price).ToList();
                         SalesHistoryList = sortedRecentOrders;
                     }

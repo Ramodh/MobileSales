@@ -1,26 +1,22 @@
-﻿using Microsoft.Practices.Prism.StoreApps;
-using Microsoft.Practices.Prism.StoreApps.Interfaces;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Windows.Storage;
+using Windows.UI.Xaml.Navigation;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
 using SageMobileSales.ServiceAgents.Services;
 using SageMobileSales.UILogic.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.Storage;
 
 namespace SageMobileSales.UILogic.ViewModels
 {
     internal class LoadingIndicatorPageViewModel : ViewModel
     {
-
+        private readonly ILocalSyncDigestRepository _localSyncDigestRepository;
         private readonly INavigationService _navigationService;
         private readonly ISalesRepService _salesRepService;
         private readonly ITenantRepository _tenantRepository;
-        private readonly ILocalSyncDigestRepository _localSyncDigestRepository;
         private readonly ITenantService _tenantService;
         private bool _inProgress;
         private string _log = string.Empty;
@@ -36,7 +32,6 @@ namespace SageMobileSales.UILogic.ViewModels
             _localSyncDigestRepository = localSyncDigestRepository;
         }
 
-
         /// <summary>
         ///     Data loading indicator
         /// </summary>
@@ -46,16 +41,17 @@ namespace SageMobileSales.UILogic.ViewModels
             private set { SetProperty(ref _inProgress, value); }
         }
 
-        public async override void OnNavigatedTo(object navigationParameter, Windows.UI.Xaml.Navigation.NavigationMode navigationMode, Dictionary<string, object> viewModelState)
+        public override async void OnNavigatedTo(object navigationParameter, NavigationMode navigationMode,
+            Dictionary<string, object> viewModelState)
         {
             try
             {
                 InProgress = true;
 
                 //Loading all global variables
-                ApplicationDataContainer settingsLocal = ApplicationData.Current.LocalSettings;
-                object _isAuthorised = settingsLocal.Containers["SageSalesContainer"].Values["IsAuthorised"];
-                object _isLaunched = settingsLocal.Containers["SageSalesContainer"].Values["IsLaunched"];
+                var settingsLocal = ApplicationData.Current.LocalSettings;
+                var _isAuthorised = settingsLocal.Containers["SageSalesContainer"].Values["IsAuthorised"];
+                var _isLaunched = settingsLocal.Containers["SageSalesContainer"].Values["IsLaunched"];
 
                 PageUtils.GetConfigurationSettings();
                 PageUtils.GetApplicationData();
@@ -83,7 +79,7 @@ namespace SageMobileSales.UILogic.ViewModels
         }
 
         /// <summary>
-        /// Sync user data/tenant info
+        ///     Sync user data/tenant info
         /// </summary>
         /// <returns></returns>
         public async Task SyncUserData()
@@ -96,7 +92,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 Constants.TenantId = await _tenantRepository.GetTenantId();
 
                 //Company Settings/SalesTeamMember
-                bool salesPersonChanged = await _tenantService.SyncTenant();
+                var salesPersonChanged = await _tenantService.SyncTenant();
 
                 //Delete localSyncDigest for Customer and set all customers isActive to false
                 if (salesPersonChanged)

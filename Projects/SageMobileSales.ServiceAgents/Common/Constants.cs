@@ -1,6 +1,6 @@
 ﻿using System;
 using Windows.Networking.Connectivity;
-using Windows.Security.Cryptography;
+using Windows.Storage.Streams;
 using Windows.System.Profile;
 using Windows.UI.Popups;
 using Newtonsoft.Json;
@@ -92,7 +92,7 @@ namespace SageMobileSales.ServiceAgents.Common
         {
             var token = HardwareIdentification.GetPackageSpecificToken(null);
             var hardwareId = token.Id;
-            var dataReader = Windows.Storage.Streams.DataReader.FromBuffer(hardwareId);
+            var dataReader = DataReader.FromBuffer(hardwareId);
 
             //var bytes = new byte[hardwareId.Length];
             //dataReader.ReadBytes(bytes);
@@ -108,12 +108,12 @@ namespace SageMobileSales.ServiceAgents.Common
         /// <returns>bool</returns>
         public static bool ConnectedToInternet()
         {
-            ConnectionProfile InternetConnectionProfile = NetworkInformation.GetInternetConnectionProfile();
+            var InternetConnectionProfile = NetworkInformation.GetInternetConnectionProfile();
             if (InternetConnectionProfile == null)
             {
                 return false;
             }
-            NetworkConnectivityLevel level = InternetConnectionProfile.GetNetworkConnectivityLevel();
+            var level = InternetConnectionProfile.GetNetworkConnectivityLevel();
             return level == NetworkConnectivityLevel.InternetAccess;
         }
 

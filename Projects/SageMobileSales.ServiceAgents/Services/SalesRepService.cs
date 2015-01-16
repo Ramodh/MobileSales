@@ -1,13 +1,12 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Windows.Data.Json;
 using Windows.Storage;
+using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Repositories;
 using SageMobileSales.ServiceAgents.Common;
-using SageMobileSales.DataAccess.Common;
-using System.Text.RegularExpressions;
 using SQLite;
-using System;
 
 namespace SageMobileSales.ServiceAgents.Services
 {
@@ -32,14 +31,14 @@ namespace SageMobileSales.ServiceAgents.Services
         {
             try
             {
-                HttpResponseMessage salesRepResponse =
+                var salesRepResponse =
                     await
                         _serviceAgent.BuildAndSendRequest(null, Constants.CurrentUserEnitty, null, null,
                             Constants.AccessToken,
                             null);
                 if (salesRepResponse.IsSuccessStatusCode)
                 {
-                    JsonObject sDataSalesRep = await _serviceAgent.ConvertTosDataObject(salesRepResponse);
+                    var sDataSalesRep = await _serviceAgent.ConvertTosDataObject(salesRepResponse);
 
                     await SaveSalesRepDtls(sDataSalesRep);
                 }
@@ -59,21 +58,20 @@ namespace SageMobileSales.ServiceAgents.Services
                 _log = AppEventSource.Log.WriteLine(e);
                 AppEventSource.Log.Error(_log);
             }
-
         }
 
         public async Task UpdateSalesRep()
         {
-            string repId = await _salesRepRepository.GetSalesRepId() + "SalesSalesTeamMember";
-            string salesTeamMember = Constants.UpdateUserEntity + "('" + repId + "')";
-            HttpResponseMessage salesRepResponse =
+            var repId = await _salesRepRepository.GetSalesRepId() + "SalesSalesTeamMember";
+            var salesTeamMember = Constants.UpdateUserEntity + "('" + repId + "')";
+            var salesRepResponse =
                 await
                     _serviceAgent.BuildAndSendRequest(Constants.TenantId, salesTeamMember, null, null,
                         Constants.AccessToken,
                         null);
             if (salesRepResponse.IsSuccessStatusCode)
             {
-                JsonObject sDataSalesRep = await _serviceAgent.ConvertTosDataObject(salesRepResponse);
+                var sDataSalesRep = await _serviceAgent.ConvertTosDataObject(salesRepResponse);
 
                 //await SaveSalesRepDtls(sDataSalesRep);
                 await _salesRepRepository.UpdateSalesRepDtlsAsync(sDataSalesRep);
@@ -91,7 +89,7 @@ namespace SageMobileSales.ServiceAgents.Services
         {
             //var sageSalesDB = await DataContext.InitializeDatabase();
 
-            string userId = await _salesRepRepository.SaveSalesRepDtlsAsync(sDataSalesRep);
+            var userId = await _salesRepRepository.SaveSalesRepDtlsAsync(sDataSalesRep);
             Constants.TrackingId = Constants.GetDeviceId() + userId;
 
             //Constants.TrackingId = "BQCvYQYAAQAEAIPkAQCGJwIA/OUJALQY737208ec-d8a0-4388-b7f1-2d166bb8d28a";
@@ -99,7 +97,7 @@ namespace SageMobileSales.ServiceAgents.Services
 
             // Adding TrackingId to Applicationdata Container as we are using this in every Servicerequest.
             // And this will be usefull when we are doing partial sync for particular Service.
-            ApplicationDataContainer settingsLocal = ApplicationData.Current.LocalSettings;
+            var settingsLocal = ApplicationData.Current.LocalSettings;
             settingsLocal.Containers["SageSalesContainer"].Values["TrackingId"] = Constants.TrackingId;
 
             /*

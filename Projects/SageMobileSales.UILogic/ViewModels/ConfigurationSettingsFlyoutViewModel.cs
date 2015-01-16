@@ -3,10 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.UI.Xaml.Controls;
-using Microsoft.Practices.Prism.PubSubEvents;
-using Microsoft.Practices.Prism.StoreApps;
-using Microsoft.Practices.Prism.StoreApps.Interfaces;
-using Microsoft.Practices.Unity;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.ServiceAgents.Common;
 using SageMobileSales.ServiceAgents.Services;
@@ -23,10 +19,8 @@ namespace SageMobileSales.UILogic.ViewModels
         private string _clientId;
         private Action _closeFlyout;
         private bool _isOpened;
-
         private bool _isSageIdProduction;
         private string _log;
-
         private string _previousSelectedType;
         private string _redirectUrl;
         private string _scope;
@@ -54,12 +48,11 @@ namespace SageMobileSales.UILogic.ViewModels
             Servers.Add("Elm");
             Servers.Add("Teak");
             Servers.Add("Preview");
-            
+
             SelectedType = Constants.SelectedType;
         }
 
         public DelegateCommand<object> SelectionChangedCommand { get; set; }
-
         public DelegateCommand LogOutInCommand { get; private set; }
 
         public string ClientId
@@ -92,13 +85,11 @@ namespace SageMobileSales.UILogic.ViewModels
             private set { SetProperty(ref _isSageIdProduction, value); }
         }
 
-
         public List<string> Servers
         {
             get { return _servers; }
             private set { SetProperty(ref _servers, value); }
         }
-
 
         /// <summary>
         ///     List for selecting method of creating a quote
@@ -126,7 +117,6 @@ namespace SageMobileSales.UILogic.ViewModels
             set { SetProperty(ref _closeFlyout, value); }
         }
 
-
         private void Close()
         {
             IsOpened = false;
@@ -134,10 +124,10 @@ namespace SageMobileSales.UILogic.ViewModels
 
         private void ServerSelectionchnaged(object args)
         {
-            ApplicationDataContainer configSettings = ApplicationData.Current.LocalSettings;
+            var configSettings = ApplicationData.Current.LocalSettings;
             configSettings.CreateContainer("ConfigurationSettingsContainer", ApplicationDataCreateDisposition.Always);
 
-            var selected = ((ComboBox)args);
+            var selected = ((ComboBox) args);
 
             if (selected.SelectedItem.ToString() == "Preview")
             {
@@ -318,12 +308,11 @@ namespace SageMobileSales.UILogic.ViewModels
             }
         }
 
-
         private async void SetConfigurationValues()
         {
             _previousSelectedType = Constants.SelectedType;
 
-            ApplicationDataContainer configSettings = ApplicationData.Current.LocalSettings;
+            var configSettings = ApplicationData.Current.LocalSettings;
             configSettings.Containers["ConfigurationSettingsContainer"].Values["_previousSelectedType"] =
                 _previousSelectedType;
             configSettings.Containers["ConfigurationSettingsContainer"].Values["ClientId"] = ClientId;

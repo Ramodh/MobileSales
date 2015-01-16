@@ -1,16 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Resources;
-using Windows.ApplicationModel.Search;
 using Windows.Storage.Streams;
 using Windows.UI.Xaml.Controls;
-using Microsoft.Practices.Prism.PubSubEvents;
-using Microsoft.Practices.Prism.StoreApps;
-using Microsoft.Practices.Prism.StoreApps.Interfaces;
 using SageMobileSales.DataAccess.Common;
 using SageMobileSales.DataAccess.Entities;
-using SageMobileSales.DataAccess.Model;
 using SageMobileSales.DataAccess.Repositories;
 
 namespace SageMobileSales.UILogic.ViewModels
@@ -66,7 +60,7 @@ namespace SageMobileSales.UILogic.ViewModels
         /// <param name="eventArgs"></param>
         private void SearchBoxQuerySubmitted(SearchBoxQuerySubmittedEventArgs eventArgs)
         {
-            string searchTerm = eventArgs.QueryText != null ? eventArgs.QueryText.Trim() : null;
+            var searchTerm = eventArgs.QueryText != null ? eventArgs.QueryText.Trim() : null;
             if (!string.IsNullOrEmpty(searchTerm) &&
                 searchTerm != ResourceLoader.GetForCurrentView("Resources").GetString("NoSuggestions"))
                 NoSuggestions = false;
@@ -93,7 +87,7 @@ namespace SageMobileSales.UILogic.ViewModels
         /// <param name="args"></param>
         private void OnResultSuggestionChosen(SearchBoxResultSuggestionChosenEventArgs eventArgs)
         {
-            string productId = eventArgs.Tag != null ? eventArgs.Tag.Trim() : null;
+            var productId = eventArgs.Tag != null ? eventArgs.Tag.Trim() : null;
             if (!string.IsNullOrEmpty(productId))
             {
                 _navigationService.Navigate("ItemDetail", productId);
@@ -106,13 +100,13 @@ namespace SageMobileSales.UILogic.ViewModels
         /// <param name="args"></param>
         private async Task SearchBoxSuggestionsRequested(SearchBoxSuggestionsRequestedEventArgs eventArgs)
         {
-            string queryText = eventArgs.QueryText != null ? eventArgs.QueryText.Trim() : null;
+            var queryText = eventArgs.QueryText != null ? eventArgs.QueryText.Trim() : null;
             if (string.IsNullOrEmpty(queryText)) return;
-            SearchSuggestionsRequestDeferral deferral = eventArgs.Request.GetDeferral();
+            var deferral = eventArgs.Request.GetDeferral();
 
             try
             {
-                SearchSuggestionCollection suggestionCollection = eventArgs.Request.SearchSuggestionCollection;
+                var suggestionCollection = eventArgs.Request.SearchSuggestionCollection;
                 if (queryText == "'")
                 {
                     queryText = queryText.Trim().Replace("'", "''");
@@ -121,10 +115,10 @@ namespace SageMobileSales.UILogic.ViewModels
                 {
                     queryText = queryText.Trim().Replace("'", string.Empty);
                 }
-                List<ProductDetails> querySuggestions = await _productRepository.GetSearchSuggestionsAsync(queryText);
+                var querySuggestions = await _productRepository.GetSearchSuggestionsAsync(queryText);
                 if (querySuggestions != null && querySuggestions.Count > 0)
                 {
-                    foreach (ProductDetails suggestion in querySuggestions)
+                    foreach (var suggestion in querySuggestions)
                     {
                         ImageUrl = suggestion.Url;
                         if (string.IsNullOrWhiteSpace(suggestion.ProductName))
@@ -143,10 +137,10 @@ namespace SageMobileSales.UILogic.ViewModels
                         }
                         else
                         {
-                            Uri uri = string.IsNullOrWhiteSpace(ImageUrl)
+                            var uri = string.IsNullOrWhiteSpace(ImageUrl)
                                 ? new Uri(ResourceLoader.GetForCurrentView("Resources").GetString("NoImageUrl"))
                                 : new Uri(ImageUrl);
-                            RandomAccessStreamReference imageSource = RandomAccessStreamReference.CreateFromUri(uri);
+                            var imageSource = RandomAccessStreamReference.CreateFromUri(uri);
                             suggestionCollection.AppendResultSuggestion(suggestion.ProductName, suggestion.Sku,
                                 suggestion.ProductId, imageSource,
                                 ResourceLoader.GetForCurrentView("Resources").GetString("NoImage"));

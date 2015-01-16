@@ -136,7 +136,7 @@ namespace Sage.Authorisation.WinRT
 
             var startUri = new Uri(startUriString);
 
-            Uri resultUri =
+            var resultUri =
                 await _httpHelper.AuthenticateUsingBrokerAsync(startUri, new Uri(_configuration.RedirectUri));
 
             var formDecoder = new WwwFormUrlDecoder(resultUri.Query);
@@ -165,7 +165,7 @@ namespace Sage.Authorisation.WinRT
                         , formDecoder.GetFirstValueByName(Configuration.RedirectUriErrorDescription));
                 }
 
-                IWwwFormUrlDecoderEntry accessCodeParameter =
+                var accessCodeParameter =
                     formDecoder.FirstOrDefault(x => x.Name == _configuration.StartAuthorisationResponseType);
                 if (accessCodeParameter == null || String.IsNullOrEmpty(accessCodeParameter.Value))
                 {
@@ -173,12 +173,12 @@ namespace Sage.Authorisation.WinRT
                     throw new AuthorisationException();
                 }
 
-                bool requestCredential = false;
-                IWwwFormUrlDecoderEntry requestCredentialParameter =
+                var requestCredential = false;
+                var requestCredentialParameter =
                     formDecoder.FirstOrDefault(x => x.Name == Configuration.RedirectUriCred);
                 bool.TryParse(requestCredentialParameter.Value, out requestCredential);
 
-                AuthorisationResultThinClient result = AuthorisationResultThinClient.CreateResult(true,
+                var result = AuthorisationResultThinClient.CreateResult(true,
                     accessCodeParameter.Value, requestCredential);
 
                 _busy = false;

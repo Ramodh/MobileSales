@@ -48,7 +48,7 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        JsonArray sDataContactArray = sDataCustomer.GetNamedArray("Contacts");
+                        var sDataContactArray = sDataCustomer.GetNamedArray("Contacts");
                         if (sDataContactArray.Count > 0)
                         {
                             await SaveContactDetailsAsync(sDataContactArray, customerId);
@@ -208,9 +208,9 @@ namespace SageMobileSales.DataAccess.Repositories
         {
             await DeleteContactsFromDbAsync(sDataContactArray, customerId);
 
-            foreach (IJsonValue contact in sDataContactArray)
+            foreach (var contact in sDataContactArray)
             {
-                JsonObject sDataContact = contact.GetObject();
+                var sDataContact = contact.GetObject();
                 await AddOrUpdateContactJsonToDbAsync(sDataContact, customerId);
             }
         }
@@ -378,15 +378,15 @@ namespace SageMobileSales.DataAccess.Repositories
             List<Contact> contactIdJsonList;
             List<Contact> contactIdDbList;
             List<Contact> contactRemoveList;
-            bool idExists = false;
+            var idExists = false;
 
             try
             {
                 // Retrieve list of contactId from Json
                 contactIdJsonList = new List<Contact>();
-                foreach (IJsonValue contact in sDataContactArray)
+                foreach (var contact in sDataContactArray)
                 {
-                    JsonObject sDataContact = contact.GetObject();
+                    var sDataContact = contact.GetObject();
                     var contactJsonObj = new Contact();
                     if (sDataContact.TryGetValue("$key", out value))
                     {
@@ -405,10 +405,10 @@ namespace SageMobileSales.DataAccess.Repositories
                     await _sageSalesDB.QueryAsync<Contact>("SELECT * FROM Contact where customerId=?", customerId);
 
 
-                for (int i = 0; i < contactIdDbList.Count; i++)
+                for (var i = 0; i < contactIdDbList.Count; i++)
                 {
                     idExists = false;
-                    for (int j = 0; j < contactIdJsonList.Count; j++)
+                    for (var j = 0; j < contactIdJsonList.Count; j++)
                     {
                         if (contactIdDbList[i].ContactId.Contains(DataAccessUtils.Pending))
                         {
@@ -427,7 +427,7 @@ namespace SageMobileSales.DataAccess.Repositories
 
                 if (contactRemoveList.Count() > 0)
                 {
-                    foreach (Contact contactRemove in contactRemoveList)
+                    foreach (var contactRemove in contactRemoveList)
                     {
                         await _sageSalesDB.DeleteAsync(contactRemove);
                     }
@@ -457,7 +457,7 @@ namespace SageMobileSales.DataAccess.Repositories
         {
             try
             {
-                List<Contact> contactList =
+                var contactList =
                     await
                         _sageSalesDB.QueryAsync<Contact>("Select * from Contact where ContactId=? and IsPending='1'",
                             contactPending.ContactId);

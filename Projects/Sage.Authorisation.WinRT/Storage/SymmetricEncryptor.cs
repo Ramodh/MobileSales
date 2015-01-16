@@ -47,19 +47,19 @@ namespace Sage.Authorisation.WinRT.Storage
         /// </returns>
         internal async Task<string> EncryptAsync(string plainText)
         {
-            Task<CryptographicKey> keyTask = _keyManager.GetCryptographicKeyAsync();
+            var keyTask = _keyManager.GetCryptographicKeyAsync();
 
-            IBuffer iv = CryptographicBuffer.GenerateRandom(_provider.BlockLength);
+            var iv = CryptographicBuffer.GenerateRandom(_provider.BlockLength);
 
-            CryptographicKey key = await keyTask;
+            var key = await keyTask;
 
-            IBuffer cypherData = CryptographicEngine.Encrypt(
+            var cypherData = CryptographicEngine.Encrypt(
                 key,
                 CryptographicBuffer.ConvertStringToBinary(plainText, BinaryStringEncoding.Utf8),
                 iv);
 
-            string ivString = CryptographicBuffer.EncodeToBase64String(iv);
-            string cypherText = CryptographicBuffer.EncodeToBase64String(cypherData);
+            var ivString = CryptographicBuffer.EncodeToBase64String(iv);
+            var cypherText = CryptographicBuffer.EncodeToBase64String(cypherData);
 
             return ivString + IvDataSplitChar + cypherText;
         }
@@ -75,26 +75,26 @@ namespace Sage.Authorisation.WinRT.Storage
         internal async Task<string> DecryptAsync(IBuffer data)
         {
             // start getting the key, we'll await this when we have done everything else
-            Task<CryptographicKey> keyTask = _keyManager.GetCryptographicKeyAsync();
+            var keyTask = _keyManager.GetCryptographicKeyAsync();
 
-            string cypherText = CryptographicBuffer.ConvertBinaryToString(BinaryStringEncoding.Utf8, data);
+            var cypherText = CryptographicBuffer.ConvertBinaryToString(BinaryStringEncoding.Utf8, data);
 
             // extracts the IV from the front of the cypher text
-            string[] parts = cypherText.Split(IvDataSplitChar);
+            var parts = cypherText.Split(IvDataSplitChar);
             if (parts.Length != 2)
             {
                 throw new Exception("Cannot find IV for cypher text");
             }
 
-            IBuffer iv = CryptographicBuffer.DecodeFromBase64String(parts[0]);
-            IBuffer cypherData = CryptographicBuffer.DecodeFromBase64String(parts[1]);
+            var iv = CryptographicBuffer.DecodeFromBase64String(parts[0]);
+            var cypherData = CryptographicBuffer.DecodeFromBase64String(parts[1]);
 
             // now we've done everything else we need, ensure we've got the key
-            CryptographicKey key = await keyTask;
+            var key = await keyTask;
 
-            IBuffer clearData = CryptographicEngine.Decrypt(key, cypherData, iv);
+            var clearData = CryptographicEngine.Decrypt(key, cypherData, iv);
 
-            string clearText = CryptographicBuffer.ConvertBinaryToString(BinaryStringEncoding.Utf8, clearData);
+            var clearText = CryptographicBuffer.ConvertBinaryToString(BinaryStringEncoding.Utf8, clearData);
             return clearText;
         }
     }

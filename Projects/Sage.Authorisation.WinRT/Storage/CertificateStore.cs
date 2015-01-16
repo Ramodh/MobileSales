@@ -50,7 +50,7 @@ namespace Sage.Authorisation.WinRT.Storage
 
             var expiryAsUtcFileTime =
                 (long) ApplicationData.Current.LocalSettings.Values[_clientId + CertificateExpiryKey];
-            DateTime expiry = DateTime.FromFileTimeUtc(expiryAsUtcFileTime);
+            var expiry = DateTime.FromFileTimeUtc(expiryAsUtcFileTime);
             if (expiry > DateTime.UtcNow)
             {
                 return true;
@@ -83,9 +83,9 @@ namespace Sage.Authorisation.WinRT.Storage
         /// <returns>Task for asynchronus</returns>
         internal async Task RetrieveAndImportCredentialAsync(string accessCode, string deviceName, string state)
         {
-            string password = PasswordGenerator.NewPassword(8);
+            var password = PasswordGenerator.NewPassword(8);
 
-            CertificateMetadata certificate =
+            var certificate =
                 await _httpHelper.GetClientCredentialAsync(accessCode, password, deviceName, state);
 
             await ImportCertificateAsync(certificate.credential, password, certificate.friendly_name);

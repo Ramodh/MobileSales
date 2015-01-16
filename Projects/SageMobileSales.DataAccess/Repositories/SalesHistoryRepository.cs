@@ -24,7 +24,7 @@ namespace SageMobileSales.DataAccess.Repositories
         #region public methods
 
         /// <summary>
-        /// Extract salesHistory, save to local dB
+        ///     Extract salesHistory, save to local dB
         /// </summary>
         /// <param name="sDataSalesHistory"></param>
         /// <returns></returns>
@@ -37,7 +37,7 @@ namespace SageMobileSales.DataAccess.Repositories
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
                     {
-                        JsonArray sDataSalesHistoryArray = sDataSalesHistory.GetNamedArray("$resources");
+                        var sDataSalesHistoryArray = sDataSalesHistory.GetNamedArray("$resources");
                         if (sDataSalesHistoryArray.Count > 0)
                         {
                             await SaveSalesHistoryDetailsAsync(sDataSalesHistoryArray);
@@ -59,7 +59,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Gets sales history for that customerId, productId
+        ///     Gets sales history for that customerId, productId
         /// </summary>
         /// <param name="CustomerId"></param>
         /// <param name="ProductId"></param>
@@ -88,7 +88,7 @@ namespace SageMobileSales.DataAccess.Repositories
         #region private methods
 
         /// <summary>
-        /// Save sDataSaleHistory json to salesHistory table
+        ///     Save sDataSaleHistory json to salesHistory table
         /// </summary>
         /// <param name="sDataSalesHistoryArray"></param>
         /// <returns></returns>
@@ -97,14 +97,15 @@ namespace SageMobileSales.DataAccess.Repositories
             // Delete - Need confirmation
             //await DeleteSalesHistoryFromDbAsync(sDataSalesHistoryArray, customerId);
 
-            foreach (IJsonValue salesHistory in sDataSalesHistoryArray)
+            foreach (var salesHistory in sDataSalesHistoryArray)
             {
-                JsonObject sDataSalesHistory = salesHistory.GetObject();
+                var sDataSalesHistory = salesHistory.GetObject();
                 await AddOrUpdatesalesHistoryJsonToDbAsync(sDataSalesHistory);
             }
         }
+
         /// <summary>
-        /// Add or update salesHistory to local dB
+        ///     Add or update salesHistory to local dB
         /// </summary>
         /// <param name="sDataSalesHistory"></param>
         /// <returns></returns>
@@ -144,7 +145,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Update salesHistory to local dB
+        ///     Update salesHistory to local dB
         /// </summary>
         /// <param name="sDataSalesHistory"></param>
         /// <param name="salesHistoryDbObj"></param>
@@ -172,7 +173,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Add salesHistory to local dB
+        ///     Add salesHistory to local dB
         /// </summary>
         /// <param name="sDataSalesHistory"></param>
         /// <returns></returns>
@@ -202,7 +203,7 @@ namespace SageMobileSales.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Extract salesHistory from json
+        ///     Extract salesHistory from json
         /// </summary>
         /// <param name="sDataSalesHistory"></param>
         /// <param name="salesHistory"></param>

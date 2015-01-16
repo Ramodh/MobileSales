@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Windows.Data.Json;
 using SageMobileSales.DataAccess.Common;
@@ -35,14 +34,14 @@ namespace SageMobileSales.ServiceAgents.Services
         {
             try
             {
-                HttpResponseMessage localDigestResponse =
+                var localDigestResponse =
                     await
                         _serviceAgent.BuildAndSendRequest(Constants.TenantId, entity, queryEntity, null,
                             Constants.AccessToken, null);
                 if (localDigestResponse != null && localDigestResponse.StatusCode == HttpStatusCode.OK)
                 {
                     // Make's call to ConvertToJsonObject and inturn we will get JsonObject
-                    JsonObject sDataLocalDigest = await _serviceAgent.ConvertTosDataObject(localDigestResponse);
+                    var sDataLocalDigest = await _serviceAgent.ConvertTosDataObject(localDigestResponse);
 
                     // Check's whether Sync is available or not to go forward
                     _isSyncAvailable = await CheckSyncAvailable(sDataLocalDigest, entity);
@@ -66,9 +65,6 @@ namespace SageMobileSales.ServiceAgents.Services
             }
             return _isSyncAvailable;
         }
-
-
-
 
         /// <summary>
         ///     Makes call to BuildAndPostRequest method to make POST request to service.
@@ -100,7 +96,6 @@ namespace SageMobileSales.ServiceAgents.Services
                     _serviceAgent.BuildAndPostRequest(Constants.TenantId, entity, queryEntity, Constants.AccessToken,
                         parameters);
         }
-
 
         # region Private Methods
 

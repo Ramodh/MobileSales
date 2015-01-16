@@ -29,9 +29,9 @@ namespace Sage.Authorisation.WinRT.Storage
 
             CryptographicBuffer.CopyToByteArray(buffer, out data);
 
-            int i = 0;
-            int index = 0;
-            int digit = 0;
+            var i = 0;
+            var index = 0;
+            var digit = 0;
             int current_byte;
             int next_byte;
 

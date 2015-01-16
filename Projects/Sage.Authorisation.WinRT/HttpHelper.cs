@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 using System.Xml;
 using Windows.ApplicationModel.Resources;
 using Windows.Security.Authentication.Web;
+using Windows.UI.Popups;
 using Newtonsoft.Json;
 using Sage.Authorisation.WinRT.Exceptions;
 using Sage.Authorisation.WinRT.Storage;
-using Windows.UI.Popups;
 
 namespace Sage.Authorisation.WinRT
 {
@@ -50,7 +50,7 @@ namespace Sage.Authorisation.WinRT
         {
             _log.Info(LogEventType.AuthenticateUsingBroker, _loader.GetString("LogAuthenticateUsingBroker"));
 
-            WebAuthenticationResult auth = await WebAuthenticationBroker.AuthenticateAsync(
+            var auth = await WebAuthenticationBroker.AuthenticateAsync(
                 WebAuthenticationOptions.None
                 , startUri
                 , endUri);
@@ -96,24 +96,24 @@ namespace Sage.Authorisation.WinRT
             {
                 client = new HttpClient();
 
-                string xmlDateTimeUtc = XmlConvert.ToString(DateTime.UtcNow, "yyyy-MM-ddTHH:mm:ss.fffffffK");
+                var xmlDateTimeUtc = XmlConvert.ToString(DateTime.UtcNow, "yyyy-MM-ddTHH:mm:ss.fffffffK");
 
                 var requestUri = new Uri(_configuration.GetClientCredentialUri, UriKind.Absolute);
 
-                string postData = String.Format(_configuration.GetClientCredentialPostDataFormatter
+                var postData = String.Format(_configuration.GetClientCredentialPostDataFormatter
                     , Uri.EscapeDataString(accessCode)
                     , Uri.EscapeDataString(Configuration.ClientCredentialFormat)
                     , Uri.EscapeDataString(password) // password 
                     , Uri.EscapeDataString(deviceName) // device name
                     , Uri.EscapeDataString(xmlDateTimeUtc)); // current client UTC time
 
-                HttpResponseMessage result = await client.PostAsync(requestUri, new StringContent(postData));
+                var result = await client.PostAsync(requestUri, new StringContent(postData));
 
                 _log.Info(LogEventType.HttpGetClientCredential, _loader.GetString("LogHttpGetClientCredentialComplete"));
 
                 if (result.StatusCode == HttpStatusCode.OK)
                 {
-                    string responseString = await result.Content.ReadAsStringAsync();
+                    var responseString = await result.Content.ReadAsStringAsync();
 
                     var certData = ParseJsonString<CertificateMetadata>(responseString);
 
@@ -168,22 +168,22 @@ namespace Sage.Authorisation.WinRT
 
                 var request = new HttpRequestMessage(HttpMethod.Post, _configuration.GetAccessTokenUri);
 
-                string postData = String.Format(_configuration.GetAccessTokenPostDataFormatter
+                var postData = String.Format(_configuration.GetAccessTokenPostDataFormatter
                     , Uri.EscapeDataString(Configuration.GetTokensGrantType)
                     , Uri.EscapeDataString(accessCode)
                     , Uri.EscapeDataString(_configuration.RedirectUri));
 
                 request.Content = new StringContent(postData);
 
-                HttpResponseMessage result = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+                var result = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
 
                 _log.Info(LogEventType.HttpGetTokensComplete, _loader.GetString("LogHttpGetTokensComplete"));
 
-                string responseString = await result.Content.ReadAsStringAsync();
+                var responseString = await result.Content.ReadAsStringAsync();
 
                 if (result.StatusCode == HttpStatusCode.OK)
                 {
-                    TokenResponse tokenResponse = TokenResponse.Parse(responseString);
+                    var tokenResponse = TokenResponse.Parse(responseString);
                     return tokenResponse;
                 }
                 else
@@ -242,18 +242,18 @@ namespace Sage.Authorisation.WinRT
 
                 var request = new HttpRequestMessage(HttpMethod.Post, _configuration.GetAccessTokenUri);
 
-                string postData = String.Format(_configuration.RefreshAccessTokenPostDataFormatter
+                var postData = String.Format(_configuration.RefreshAccessTokenPostDataFormatter
                     , Uri.EscapeDataString(Configuration.RefreshAccessTokenPostGrantType)
                     , Uri.EscapeDataString(refreshToken.Token)
                     , Uri.EscapeDataString(refreshToken.Scope));
 
                 request.Content = new StringContent(postData);
 
-                HttpResponseMessage result = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+                var result = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
 
                 _log.Info(LogEventType.HttpGetTokensComplete, _loader.GetString("LogHttpGetTokensComplete"));
 
-                string responseString = await result.Content.ReadAsStringAsync();
+                var responseString = await result.Content.ReadAsStringAsync();
 
                 if (result.StatusCode == HttpStatusCode.BadRequest)
                 {
@@ -264,7 +264,7 @@ namespace Sage.Authorisation.WinRT
 
                 if (result.StatusCode == HttpStatusCode.OK)
                 {
-                    TokenResponse tokenResponse = TokenResponse.Parse(responseString);
+                    var tokenResponse = TokenResponse.Parse(responseString);
                     return tokenResponse;
                 }
 
@@ -310,7 +310,7 @@ namespace Sage.Authorisation.WinRT
 
             _log.Info(LogEventType.HttpStartAuthorisation, _loader.GetString("LogHttpStartAuthorisation"));
 
-            Uri uri = startInfo.GetTemplatedUri(hasCert, _configuration);
+            var uri = startInfo.GetTemplatedUri(hasCert, _configuration);
 
             if (hasCert)
             {
@@ -362,7 +362,7 @@ namespace Sage.Authorisation.WinRT
                 client = new HttpClient(handler);
                 request = new HttpRequestMessage(HttpMethod.Get, uri);
 
-                HttpResponseMessage result = await client.SendAsync(request);
+                var result = await client.SendAsync(request);
 
                 if (result.StatusCode != HttpStatusCode.Found)
                 {
@@ -433,7 +433,7 @@ namespace Sage.Authorisation.WinRT
                     break;
             }
 
-            var msgDialog = new MessageDialog(errorText,errorTitle);
+            var msgDialog = new MessageDialog(errorText, errorTitle);
             await msgDialog.ShowAsync();
         }
     }

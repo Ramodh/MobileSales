@@ -6,7 +6,6 @@ namespace SageMobileSales.DataAccess.Model
     {
         private static readonly char[] NewLineChars = Environment.NewLine.ToCharArray();
         private string _orderdescription;
-
         public string OrderId { get; set; }
         public string CustomerName { get; set; }
         public DateTime CreatedOn { get; set; }
