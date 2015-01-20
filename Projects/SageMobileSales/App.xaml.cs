@@ -25,6 +25,8 @@ using Microsoft.Practices.Unity;
 using Microsoft.Practices.Prism.StoreApps;
 using Microsoft.Practices.Prism.PubSubEvents;
 using Microsoft.Practices.Prism.StoreApps.Interfaces;
+using Windows.ApplicationModel.Core;
+using Windows.UI.Core;
 
 // The Blank Application template is documented at http://go.microsoft.com/fwlink/?LinkId=234227
 
@@ -168,6 +170,9 @@ namespace SageMobileSales
                 return viewModelType;
             });
             //var resourceLoader = _container.Resolve<IResourceLoader>();                       
+
+            //Event handler for network status change
+            NetworkStatusChange();
         }
 
         protected override object Resolve(Type type)
@@ -194,8 +199,8 @@ namespace SageMobileSales
                 resourceLoader.GetString("CopyrightInfo"),
                 async c => await Launcher.LaunchUriAsync(new Uri(resourceLoader.GetString("CopyrightURL")))));
             settingsCommands.Add(new SettingsCommand(Guid.NewGuid().ToString(),
-                resourceLoader.GetString("FeedbackLinkText"),
-                async c => await Launcher.LaunchUriAsync(new Uri(resourceLoader.GetString("FeedbackMailtoURL")))));
+                resourceLoader.GetString("ContactSageText"),
+                async c => await Launcher.LaunchUriAsync(new Uri(resourceLoader.GetString("ContactSageUrl")))));
             settingsCommands.Add(new SettingsCommand(Guid.NewGuid().ToString(), resourceLoader.GetString("About"),
                 c => new AboutSettingsFlyout(eventAggregator).Show()));
 #if(!PRODUCTION)
@@ -273,36 +278,49 @@ namespace SageMobileSales
             }
         }
 
-        private void OnNetworkStatusChange(object sender)
+        private async void OnNetworkStatusChange(object sender)
         {
             try
             {
-                // get the ConnectionProfile that is currently used to connect to the Internet                
+                // get the ConnectionProfile that is currently used to connect to the Internet
                 var InternetConnectionProfile = NetworkInformation.GetInternetConnectionProfile();
+                MessageDialog msgDialog = null;
 
                 if (InternetConnectionProfile == null)
                 {
-                    Debug.WriteLine("if :  Not connected to internet");
-                    //await _cd.RunAsync(CoreDispatcherPriority.Normal, () =>
-                    //{
-                    //    rootPage.NotifyUser("Not connected to Internet\n", NotifyType.StatusMessage);
-                    //});
+                    await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
+                        async () =>
+                        {
+                            msgDialog = new MessageDialog(
+                                           ResourceLoader.GetForCurrentView("Resources").GetString("DataNotUpdatedText"),
+                                           ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogConnectionUnavailableTitle"));
+                            msgDialog.Commands.Add(new UICommand("Close"));
+
+                            await msgDialog.ShowAsync();
+                        });
                 }
                 else
                 {
                     //var connectionProfileInfo = GetConnectionProfile(InternetConnectionProfile);
-                    var connectionProfileInfo = InternetConnectionProfile.GetNetworkConnectivityLevel();
-                    Debug.WriteLine("else :  connected to internet");
-                    //await _cd.RunAsync(CoreDispatcherPriority.Normal, () =>
-                    //{
-                    //    rootPage.NotifyUser(connectionProfileInfo, NotifyType.StatusMessage);
-                    //});
+                    Debug.WriteLine(" Internet : " + InternetConnectionProfile.GetNetworkConnectivityLevel());
+                    await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
+                        async () =>
+                        {
+                            if (InternetConnectionProfile.GetNetworkConnectivityLevel() == NetworkConnectivityLevel.LocalAccess ||
+                                InternetConnectionProfile.GetNetworkConnectivityLevel() == NetworkConnectivityLevel.ConstrainedInternetAccess ||
+                                InternetConnectionProfile.GetNetworkConnectivityLevel() == NetworkConnectivityLevel.None)
+                            {
+                                msgDialog = new MessageDialog(ResourceLoader.GetForCurrentView("Resources").GetString("DataNotUpdatedText"), ResourceLoader.GetForCurrentView("Resources").GetString("MesDialogConnectionUnavailableTitle"));
+                                msgDialog.Commands.Add(new UICommand("Close"));
+                                await msgDialog.ShowAsync();
+                            }
+                        });
                 }
-                //internetProfileInfo = "";
             }
             catch (Exception ex)
             {
-                //rootPage.NotifyUser("Unexpected exception occured: " + ex.ToString(), NotifyType.ErrorMessage);
+                _log = AppEventSource.Log.WriteLine(ex);
+                AppEventSource.Log.Error(_log);
             }
         }
 

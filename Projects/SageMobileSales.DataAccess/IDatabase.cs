@@ -8,5 +8,6 @@ namespace SageMobileSales.DataAccess
         Task Initialize();
         SQLiteAsyncConnection GetAsyncConnection();
         Task Delete();
+        //Task<bool> isDBFilePresent();
     }
 }

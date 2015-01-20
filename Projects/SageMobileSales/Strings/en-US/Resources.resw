@@ -609,13 +609,13 @@
     <value>Confirm</value>
     <comment>Confirm button text in place order</comment>
   </data>
-  <data name="FeedbackLinkText" xml:space="preserve">
-    <value>Send Feedback</value>
-    <comment>Feedback link text for settings</comment>
+  <data name="ContactSageText" xml:space="preserve">
+    <value>Contact Sage</value>
+    <comment>Contact link for Sage</comment>
   </data>
-  <data name="FeedbackMailtoURL" xml:space="preserve">
-    <value>mailto:?to=sagemobilesolutions@sage.com&amp;subject=Sage Mobile Sales Windows App</value>
-    <comment>Feedback mailto link</comment>
+  <data name="ContactSageUrl" xml:space="preserve">
+    <value>http://help.mobilesales.na.sage.com/en-us/tablet/ios/Content/Contact_Mobile.htm</value>
+    <comment>Contact Sage link</comment>
   </data>
   <data name="About" xml:space="preserve">
     <value>About</value>
@@ -807,6 +807,9 @@
     <comment>At least one item must be added before you can submit the quote.</comment>
   </data>
   <data name="CurrentUser" xml:space="preserve">
-    <value>LoggedIn User</value>
+    <value>Signed in user</value>
+  </data>
+  <data name="DataNotUpdatedText" xml:space="preserve">
+    <value>Information displayed in this app may be out of date</value>
   </data>
 </root>

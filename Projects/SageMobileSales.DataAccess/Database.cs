@@ -70,5 +70,11 @@ namespace SageMobileSales.DataAccess
                 AppEventSource.Log.Error(_log);
             }
         }
+
+        //public async Task<bool> isDBFilePresent()
+        //{
+        //    var item = await ApplicationData.Current.LocalFolder.TryGetItemAsync(_dbName);
+        //    return item != null;
+        //}
     }
 }
