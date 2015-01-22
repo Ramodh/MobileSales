@@ -10,6 +10,8 @@ using SageMobileSales.ServiceAgents.Services;
 using SageMobileSales.UILogic.Common;
 using Microsoft.Practices.Prism.StoreApps;
 using Microsoft.Practices.Prism.StoreApps.Interfaces;
+using Windows.UI.Popups;
+using Windows.ApplicationModel.Resources;
 
 namespace SageMobileSales.UILogic.ViewModels
 {
@@ -90,25 +92,44 @@ namespace SageMobileSales.UILogic.ViewModels
             {
                 // Sync SalesRep(Loggedin User) data
                 await _salesRepService.SyncSalesRep();
+                if (DataAccessUtils.EntitlementKind)
+                {
+                    var msgDialog = new MessageDialog(
+                           ResourceLoader.GetForCurrentView("Resources").GetString("EntitlementKindText"),
+                           ResourceLoader.GetForCurrentView("Resources").GetString("EntitlementKindTitle"));
+                    msgDialog.Commands.Add(new UICommand("Ok", UICommandInvokedHandler => { ResetData(); }));
+                    await msgDialog.ShowAsync();
+                }
+                else
+                {
 
-                Constants.TenantId = await _tenantRepository.GetTenantId();
+                    Constants.TenantId = await _tenantRepository.GetTenantId();
 
-                //Company Settings/SalesTeamMember
-                var salesPersonChanged = await _tenantService.SyncTenant();
+                    //Company Settings/SalesTeamMember
+                    var salesPersonChanged = await _tenantService.SyncTenant();
 
-                //Delete localSyncDigest for Customer and set all customers isActive to false
-                if (salesPersonChanged)
-                    await _localSyncDigestRepository.DeleteLocalSyncDigestForCustomer();
+                    //Delete localSyncDigest for Customer and set all customers isActive to false
+                    if (salesPersonChanged)
+                        await _localSyncDigestRepository.DeleteLocalSyncDigestForCustomer();
 
-                InProgress = false;
-                _navigationService.ClearHistory();
-                _navigationService.Navigate("CustomersGroup", null);
+                    InProgress = false;
+                    _navigationService.ClearHistory();
+                    _navigationService.Navigate("CustomersGroup", null);
+                }
             }
             catch (Exception ex)
             {
                 _log = AppEventSource.Log.WriteLine(ex);
                 AppEventSource.Log.Error(_log);
             }
+        }
+
+        private void ResetData()
+        {
+            ApplicationDataContainer settingsLocal = ApplicationData.Current.LocalSettings;
+            settingsLocal.DeleteContainer("SageSalesContainer");
+            _navigationService.Navigate("Signin", null);
+            InProgress = false;
         }
     }
 }

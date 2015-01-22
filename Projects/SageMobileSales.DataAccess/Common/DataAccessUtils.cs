@@ -22,6 +22,7 @@
         public static bool IsQuotesSyncCompleted = false;
         public static bool IsOrdersSyncCompleted = false;
         public static string Null = "Null";
+        public static bool EntitlementKind = false;
         public static string IsOrderQuoteStatus = "IsOrder";
         public static string TemporaryQuoteStatus = "Temporary";
         public static string Pending = "Pending";

@@ -324,23 +324,23 @@ namespace SageMobileSales.DataAccess.Repositories
                         productCategory.ParentId = sDataParentIds.GetNamedString("$key");
                     }
                 }
-                // JsonObject sDataAssociatedItems = sDataProductCategory.GetNamedObject("AssociatedItems");
-                var sDataAssociatedItemsArray = sDataProductCategory.GetNamedArray("AssociatedItems");
+                //// JsonObject sDataAssociatedItems = sDataProductCategory.GetNamedObject("AssociatedItems");
+                //var sDataAssociatedItemsArray = sDataProductCategory.GetNamedArray("AssociatedItems");
 
-                if (sDataAssociatedItemsArray.Count > 0)
-                {
-                    var lstProductCategoryLink = new List<ProductCategoryLink>();
+                //if (sDataAssociatedItemsArray.Count > 0)
+                //{
+                //    var lstProductCategoryLink = new List<ProductCategoryLink>();
 
-                    foreach (var associatedItem in sDataAssociatedItemsArray)
-                    {
-                        var sDataAssociatedItem = associatedItem.GetObject();
-                        var productCategoryLink = new ProductCategoryLink();
-                        productCategoryLink.CategoryId = productCategory.CategoryId;
-                        productCategoryLink.ProductId = sDataAssociatedItem.GetNamedString("$key");
-                        lstProductCategoryLink.Add(productCategoryLink);
-                    }
-                    await _sageSalesDB.InsertAllAsync(lstProductCategoryLink);
-                }
+                //    foreach (var associatedItem in sDataAssociatedItemsArray)
+                //    {
+                //        var sDataAssociatedItem = associatedItem.GetObject();
+                //        var productCategoryLink = new ProductCategoryLink();
+                //        productCategoryLink.CategoryId = productCategory.CategoryId;
+                //        productCategoryLink.ProductId = sDataAssociatedItem.GetNamedString("$key");
+                //        lstProductCategoryLink.Add(productCategoryLink);
+                //    }
+                //    await _sageSalesDB.InsertAllAsync(lstProductCategoryLink);
+                //}
             }
             catch (Exception ex)
             {

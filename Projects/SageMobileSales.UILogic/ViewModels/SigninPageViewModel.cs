@@ -168,31 +168,42 @@ namespace SageMobileSales.UILogic.ViewModels
             // Sync SalesRep(Loggedin User) data
             await _salesRepService.SyncSalesRep();
 
-            Constants.TenantId = await _tenantRepository.GetTenantId();
-            if (string.IsNullOrEmpty(Constants.TenantId))
+            if (DataAccessUtils.EntitlementKind)
             {
-                InProgress = false;
-                isSignInDisabled = true;
                 var msgDialog = new MessageDialog(
-                    ResourceLoader.GetForCurrentView("Resources").GetString("InternalServerErrorText"),
-                    ResourceLoader.GetForCurrentView("Resources").GetString("InternalServerErrorTitle"));
+                           ResourceLoader.GetForCurrentView("Resources").GetString("EntitlementKindText"),
+                           ResourceLoader.GetForCurrentView("Resources").GetString("EntitlementKindTitle"));
                 msgDialog.Commands.Add(new UICommand("Ok", UICommandInvokedHandler => { ResetData(); }));
                 await msgDialog.ShowAsync();
-
-                await _oAuthService.Cleanup();
             }
             else
             {
-                //Company Settings/SalesTeamMember
-                var salesPersonChanged = await _tenantService.SyncTenant();
+                Constants.TenantId = await _tenantRepository.GetTenantId();
+                if (string.IsNullOrEmpty(Constants.TenantId))
+                {
+                    InProgress = false;
+                    isSignInDisabled = true;
+                    var msgDialog = new MessageDialog(
+                        ResourceLoader.GetForCurrentView("Resources").GetString("InternalServerErrorText"),
+                        ResourceLoader.GetForCurrentView("Resources").GetString("InternalServerErrorTitle"));
+                    msgDialog.Commands.Add(new UICommand("Ok", UICommandInvokedHandler => { ResetData(); }));
+                    await msgDialog.ShowAsync();
 
-                //Delete localSyncDigest for Customer and set all customers isActive to false
-                if (salesPersonChanged)
-                    await _localSyncDigestRepository.DeleteLocalSyncDigestForCustomer();
+                    await _oAuthService.Cleanup();
+                }
+                else
+                {
+                    //Company Settings/SalesTeamMember
+                    var salesPersonChanged = await _tenantService.SyncTenant();
 
-                InProgress = false;
-                isSignInDisabled = true;
-                _navigationService.Navigate("CustomersGroup", null);
+                    //Delete localSyncDigest for Customer and set all customers isActive to false
+                    if (salesPersonChanged)
+                        await _localSyncDigestRepository.DeleteLocalSyncDigestForCustomer();
+
+                    InProgress = false;
+                    isSignInDisabled = true;
+                    _navigationService.Navigate("CustomersGroup", null);
+                }
             }
         }
 

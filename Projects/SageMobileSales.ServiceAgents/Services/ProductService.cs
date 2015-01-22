@@ -69,6 +69,7 @@ namespace SageMobileSales.ServiceAgents.Services
                 }
                 ErrorLog("Product local tick : " + digest.localTick);
                 parameters.Add("Count", "100");
+                parameters.Add("include", "AssociatedCategories&select=*,AssociatedCategories/Id");
                 HttpResponseMessage productsResponse = null;
                 productsResponse =
                     await

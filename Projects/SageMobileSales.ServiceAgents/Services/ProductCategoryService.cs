@@ -79,7 +79,9 @@ namespace SageMobileSales.ServiceAgents.Services
                 }
                 ErrorLog("Product Category local tick : " + digest.localTick);
                 parameters.Add("Count", "100");
-                parameters.Add("include", "AssociatedItems");
+                parameters.Add("include", "Parent&select=*,Parent/Id");
+                
+                //parameters.Add("include", "AssociatedItems");
                 //parameters.Add("Parent&select", "*");
                 HttpResponseMessage productCategoryResponse = null;
 
@@ -89,12 +91,12 @@ namespace SageMobileSales.ServiceAgents.Services
                 var settingsLocal = ApplicationData.Current.LocalSettings;
                 settingsLocal.Containers["SageSalesContainer"].Values["syncQueryEntity"] = Constants.syncQueryEntity;
 
-
+                //Changed Constants.AssociatedItems to null here.
                 productCategoryResponse =
                     await
                         _serviceAgent.BuildAndSendRequest(Constants.TenantId, Constants.CategoryEntity,
                             Constants.syncQueryEntity,
-                            Constants.AssociatedItems, Constants.AccessToken, parameters);
+                            null, Constants.AccessToken, parameters);
                 if (productCategoryResponse != null && productCategoryResponse.IsSuccessStatusCode)
                 {
                     var sDataProductCategory = await _serviceAgent.ConvertTosDataObject(productCategoryResponse);

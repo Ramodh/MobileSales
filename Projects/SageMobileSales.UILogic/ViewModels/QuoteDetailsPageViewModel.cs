@@ -605,7 +605,7 @@ namespace SageMobileSales.UILogic.ViewModels
             if (DiscountPercent != 0)
             {
                 // discountPercentage = Math.Round(((1 - ((SubTotal - DiscountPercentageValue) / SubTotal)) * 100), 2);
-                discountPercentage = Math.Round(((DiscountPercent/100)*SubTotal), 2);
+                discountPercentage = Math.Round(((DiscountPercent / 100) * SubTotal), 2);
             }
             return discountPercentage;
         }
@@ -989,11 +989,18 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             try
             {
+                MessageDialog msgDialog;
+                if (!Constants.ConnectedToInternet())
+                {
+                    Constants.ShowMessageDialog(
+                        ResourceLoader.GetForCurrentView("Resources").GetString("NoInternetConnection"));
+                    return;
+                }
+
                 if (IsSubmitQuoteEnabled)
                 {
                     var _canSubmit = false;
                     QuoteLineItemsList = await _quoteLineItemRepository.GetQuoteLineItemDetailsAsync(_quoteId);
-                    MessageDialog msgDialog;
                     if (QuoteLineItemsList.Count > 0)
                     {
                         _canSubmit = QuoteLineItemsList.Any(lineItem => lineItem.LineItemQuantity > 0);
@@ -1137,9 +1144,9 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             try
             {
-                if (((TextBox) args).Text != null && ((TextBox) args).Text != string.Empty)
+                if (((TextBox)args).Text != null && ((TextBox)args).Text != string.Empty)
                 {
-                    _shippingAndHandling = Convert.ToDecimal(((TextBox) args).Text);
+                    _shippingAndHandling = Convert.ToDecimal(((TextBox)args).Text);
                     _shippingAndHandling = Math.Round(_shippingAndHandling, 2);
                 }
                 else
@@ -1165,11 +1172,11 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             try
             {
-                if (((TextBox) args).Text != null && ((TextBox) args).Text != string.Empty)
+                if (((TextBox)args).Text != null && ((TextBox)args).Text != string.Empty)
                 {
                     var salesRep = (await _salesRepRepository.GetSalesRepDtlsAsync()).FirstOrDefault();
 
-                    DiscountPercent = Convert.ToDecimal(((TextBox) args).Text);
+                    DiscountPercent = Convert.ToDecimal(((TextBox)args).Text);
                     if (salesRep.MaximumDiscountPercent == null)
                     {
                         DiscountPercent = 0;
@@ -1247,7 +1254,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 var requestData = request.Data;
                 requestData.Properties.Title = "Quote";
                 requestData.Properties.Description = CustomerDetails.CustomerName;
-                    // The description is optional.                
+                // The description is optional.                
                 //requestData.SetData(HtmlContentString,HtmlContentString);
                 requestData.SetHtmlFormat(HtmlFormatHelper.CreateHtmlFormat(HtmlContentString));
 

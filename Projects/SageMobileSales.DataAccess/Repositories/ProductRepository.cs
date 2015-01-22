@@ -260,6 +260,8 @@ namespace SageMobileSales.DataAccess.Repositories
             try
             {
                 IJsonValue value;
+                var entityStatusDeleted = false;
+
                 if (sDataProduct.TryGetValue("$key", out value))
                 {
                     if (value.ValueType.ToString() != DataAccessUtils.Null)
@@ -270,11 +272,30 @@ namespace SageMobileSales.DataAccess.Repositories
                                 _sageSalesDB.QueryAsync<Product>("SELECT * FROM Product where ProductId=?",
                                     sDataProduct.GetNamedString("$key"));
 
+                        if (sDataProduct.TryGetValue("EntityStatus", out value))
+                        {
+                            if (value.ValueType.ToString() != DataAccessUtils.Null)
+                            {
+                                if (sDataProduct.GetNamedString("EntityStatus").Contains("Deleted"))
+                                    entityStatusDeleted = true;
+                            }
+                        }
+
                         if (productList.FirstOrDefault() != null)
                         {
-                            return await UpdateProductJsonToDbAsync(sDataProduct, productList.FirstOrDefault());
+                            if (entityStatusDeleted)
+                                await
+                                    _sageSalesDB.QueryAsync<ProductCategory>(
+                                        "DELETE FROM ProductCategoryLink where ProductId=?",
+                                        sDataProduct.GetNamedString("$key"));
+                            else
+                                return await UpdateProductJsonToDbAsync(sDataProduct, productList.FirstOrDefault());
                         }
-                        return await AddProductJsonToDbAsync(sDataProduct);
+                        else
+                        {
+                            if (!entityStatusDeleted)
+                                return await AddProductJsonToDbAsync(sDataProduct);
+                        }
                     }
                 }
             }
@@ -476,6 +497,29 @@ namespace SageMobileSales.DataAccess.Repositories
                                     _productAssociatedBlobsRepository.AddOrUpdateProductAssociatedBlobJsonToDbAsync(
                                         sDataAssociatedBlob);
                             }
+                        }
+                    }
+                }
+
+                if (sDataProduct.TryGetValue("AssociatedCategories", out value))
+                {
+                    if (value.ValueType.ToString() != DataAccessUtils.Null)
+                    {
+                        var sDataAssociatedCategoriesArray = sDataProduct.GetNamedArray("AssociatedCategories");
+
+                        if (sDataAssociatedCategoriesArray.Count > 0)
+                        {
+                            var lstProductCategoryLink = new List<ProductCategoryLink>();
+
+                            foreach (var associatedCategory in sDataAssociatedCategoriesArray)
+                            {
+                                var sDataAssociatedItem = associatedCategory.GetObject();
+                                var productCategoryLink = new ProductCategoryLink();
+                                productCategoryLink.CategoryId = sDataAssociatedItem.GetNamedString("$key");
+                                productCategoryLink.ProductId = product.ProductId;
+                                lstProductCategoryLink.Add(productCategoryLink);
+                            }
+                            await _sageSalesDB.InsertAllAsync(lstProductCategoryLink);
                         }
                     }
                 }
