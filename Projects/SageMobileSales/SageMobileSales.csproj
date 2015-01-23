@@ -143,6 +143,9 @@
     <Compile Include="Views\AddContactPage.xaml.cs">
       <DependentUpon>AddContactPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\AuthenticateInfoPage.xaml.cs">
+      <DependentUpon>AuthenticateInfoPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\BackgroundSyncIndicatorUserControl.xaml.cs">
       <DependentUpon>BackgroundSyncIndicatorUserControl.xaml</DependentUpon>
     </Compile>
@@ -291,6 +294,10 @@
     <Page Include="Views\AddContactPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\AuthenticateInfoPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\BackgroundSyncIndicatorUserControl.xaml">
       <SubType>Designer</SubType>
