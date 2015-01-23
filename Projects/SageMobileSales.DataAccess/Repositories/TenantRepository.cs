@@ -490,6 +490,30 @@ namespace SageMobileSales.DataAccess.Repositories
                 }
             }
 
+            if (sDataTenant.TryGetValue("Applications", out value))
+            {
+                if (value.ValueType.ToString() != DataAccessUtils.Null)
+                {
+                    var Applications = sDataTenant.GetNamedArray("Applications");
+                    foreach (var application in Applications)
+                    {
+                        var sDataTenantApplications = application.GetObject();
+                        if (sDataTenantApplications.TryGetValue("Application", out value))
+                        {
+                            if (value.ValueType.ToString() != DataAccessUtils.Null)
+                            {
+                                var sDataTenantApplication = sDataTenantApplications.GetNamedObject("Application");
+                                if (sDataTenantApplication.GetNamedString("Name").Equals("SageMobileSales"))
+                                {
+                                    if (sDataTenantApplications.GetNamedString("EntitlementKind").Equals("Free"))
+                                        DataAccessUtils.EntitlementKind = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             return tenant;
         }
 

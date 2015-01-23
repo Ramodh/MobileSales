@@ -10,7 +10,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Resources;
 using Windows.Storage;
+using Windows.UI.Popups;
 
 namespace SageMobileSales.UILogic.ViewModels
 {
@@ -22,18 +24,20 @@ namespace SageMobileSales.UILogic.ViewModels
         private readonly ITenantRepository _tenantRepository;
         private readonly ILocalSyncDigestRepository _localSyncDigestRepository;
         private readonly ITenantService _tenantService;
+        private readonly IOAuthService _oAuthService;
         private bool _inProgress;
         private string _log = string.Empty;
 
         public LoadingIndicatorPageViewModel(INavigationService navigationService, ISalesRepService salesRepService,
             ITenantRepository tenantRepository, ITenantService tenantService,
-            ILocalSyncDigestRepository localSyncDigestRepository)
+            ILocalSyncDigestRepository localSyncDigestRepository, IOAuthService oAuthService)
         {
             _navigationService = navigationService;
             _salesRepService = salesRepService;
             _tenantService = tenantService;
             _tenantRepository = tenantRepository;
             _localSyncDigestRepository = localSyncDigestRepository;
+            _oAuthService = oAuthService;
         }
 
 
@@ -93,24 +97,46 @@ namespace SageMobileSales.UILogic.ViewModels
                 // Sync SalesRep(Loggedin User) data
                 await _salesRepService.SyncSalesRep();
 
-                Constants.TenantId = await _tenantRepository.GetTenantId();
+                if (DataAccessUtils.EntitlementKind)
+                {
+                    var msgDialog = new MessageDialog(
+                           ResourceLoader.GetForCurrentView("Resources").GetString("EntitlementKindText"),
+                           ResourceLoader.GetForCurrentView("Resources").GetString("EntitlementKindTitle"));
+                    msgDialog.Commands.Add(new UICommand("Ok", UICommandInvokedHandler => { ResetData(); }));
+                    await msgDialog.ShowAsync();
+                }
+                else
+                {
 
-                //Company Settings/SalesTeamMember
-                bool salesPersonChanged = await _tenantService.SyncTenant();
+                    Constants.TenantId = await _tenantRepository.GetTenantId();
 
-                //Delete localSyncDigest for Customer and set all customers isActive to false
-                if (salesPersonChanged)
-                    await _localSyncDigestRepository.DeleteLocalSyncDigestForCustomer();
+                    //Company Settings/SalesTeamMember
+                    var salesPersonChanged = await _tenantService.SyncTenant();
 
-                InProgress = false;
-                _navigationService.ClearHistory();
-                _navigationService.Navigate("CustomersGroup", null);
+                    //Delete localSyncDigest for Customer and set all customers isActive to false
+                    if (salesPersonChanged)
+                        await _localSyncDigestRepository.DeleteLocalSyncDigestForCustomer();
+
+                    InProgress = false;
+                    _navigationService.ClearHistory();
+                    _navigationService.Navigate("CustomersGroup", null);
+                }
             }
             catch (Exception ex)
             {
                 _log = AppEventSource.Log.WriteLine(ex);
                 AppEventSource.Log.Error(_log);
             }
+        }
+
+        private async void ResetData()
+        {
+            ApplicationDataContainer settingsLocal = ApplicationData.Current.LocalSettings;
+            settingsLocal.DeleteContainer("SageSalesContainer");
+            _navigationService.Navigate("Signin", null);
+            InProgress = false;
+
+            await _oAuthService.Cleanup();
         }
     }
 }
