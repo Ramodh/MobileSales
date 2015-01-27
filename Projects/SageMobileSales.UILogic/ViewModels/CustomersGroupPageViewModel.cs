@@ -234,9 +234,9 @@ namespace SageMobileSales.UILogic.ViewModels
             var CustomerAdressList = await _customerRepository.GetCustomerListDtlsAsync();
 
             var sortedCustomerAdressList = CustomerAdressList
-                .GroupBy(alphabet => char.ToUpper(alphabet.CustomerName[0]))
+                .GroupBy(alphabet => alphabet.CustomerName != null ? char.ToUpper(alphabet.CustomerName[0]) : '#')
                 .OrderBy(g => g.Key)
-                .Select(g => new CustomerGroupByAlphabet {GroupName = g.Key, CustomerAddressList = g.ToList()})
+                .Select(g => new CustomerGroupByAlphabet { GroupName = g.Key, CustomerAddressList = g.ToList() })
                 .ToList();
 
             GroupedCustomerList = sortedCustomerAdressList;
@@ -274,9 +274,9 @@ namespace SageMobileSales.UILogic.ViewModels
                 var CustomerAdressList = await _customerRepository.GetCustomerListDtlsAsync();
 
                 var sortedCustomerAdressList = CustomerAdressList
-                    .GroupBy(alphabet => char.ToUpper(alphabet.CustomerName[0]))
+                    .GroupBy(alphabet => alphabet.CustomerName != null ? char.ToUpper(alphabet.CustomerName[0]) : '#')
                     .OrderBy(g => g.Key)
-                    .Select(g => new CustomerGroupByAlphabet {GroupName = g.Key, CustomerAddressList = g.ToList()})
+                    .Select(g => new CustomerGroupByAlphabet { GroupName = g.Key, CustomerAddressList = g.ToList() })
                     .ToList();
 
                 GroupedCustomerList = sortedCustomerAdressList;

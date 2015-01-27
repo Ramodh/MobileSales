@@ -175,6 +175,8 @@ namespace SageMobileSales.UILogic.ViewModels
                            ResourceLoader.GetForCurrentView("Resources").GetString("EntitlementKindTitle"));
                 msgDialog.Commands.Add(new UICommand("Ok", UICommandInvokedHandler => { ResetData(); }));
                 await msgDialog.ShowAsync();
+
+                await _oAuthService.Cleanup();
             }
             else
             {

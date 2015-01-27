@@ -22,18 +22,20 @@ namespace SageMobileSales.UILogic.ViewModels
         private readonly ISalesRepService _salesRepService;
         private readonly ITenantRepository _tenantRepository;
         private readonly ITenantService _tenantService;
+        private readonly IOAuthService _oAuthService;
         private bool _inProgress;
         private string _log = string.Empty;
 
         public LoadingIndicatorPageViewModel(INavigationService navigationService, ISalesRepService salesRepService,
             ITenantRepository tenantRepository, ITenantService tenantService,
-            ILocalSyncDigestRepository localSyncDigestRepository)
+            ILocalSyncDigestRepository localSyncDigestRepository, IOAuthService oAuthService)
         {
             _navigationService = navigationService;
             _salesRepService = salesRepService;
             _tenantService = tenantService;
             _tenantRepository = tenantRepository;
             _localSyncDigestRepository = localSyncDigestRepository;
+            _oAuthService = oAuthService;
         }
 
         /// <summary>
@@ -124,12 +126,14 @@ namespace SageMobileSales.UILogic.ViewModels
             }
         }
 
-        private void ResetData()
+        private async void ResetData()
         {
             ApplicationDataContainer settingsLocal = ApplicationData.Current.LocalSettings;
             settingsLocal.DeleteContainer("SageSalesContainer");
             _navigationService.Navigate("Signin", null);
             InProgress = false;
+
+            await _oAuthService.Cleanup();
         }
     }
 }
