@@ -818,4 +818,13 @@
   <data name="EntitlementKindTitle" xml:space="preserve">
     <value>Unable to sign in</value>
   </data>
+  <data name="MerchantIdTitle.Text" xml:space="preserve">
+    <value>Merchant Id</value>
+  </data>
+  <data name="MerchantKeyTitle.Text" xml:space="preserve">
+    <value>Merchant Key</value>
+  </data>
+  <data name="SPSInformation" xml:space="preserve">
+    <value>SPS Information</value>
+  </data>
 </root>

@@ -227,6 +227,9 @@
     <Compile Include="Views\SigninPage.xaml.cs">
       <DependentUpon>SigninPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\SPSInformationSettingsFlyout.xaml.cs">
+      <DependentUpon>SPSInformationSettingsFlyout.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\TopAppBarUserControl.xaml.cs">
       <DependentUpon>TopAppBarUserControl.xaml</DependentUpon>
     </Compile>
@@ -401,6 +404,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\SigninPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SPSInformationSettingsFlyout.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

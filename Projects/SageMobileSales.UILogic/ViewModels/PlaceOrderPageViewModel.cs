@@ -12,6 +12,7 @@ using SageMobileSales.ServiceAgents.Common;
 using SageMobileSales.ServiceAgents.Services;
 using Microsoft.Practices.Prism.StoreApps;
 using Microsoft.Practices.Prism.StoreApps.Interfaces;
+using Windows.UI.Xaml.Controls;
 
 namespace SageMobileSales.UILogic.ViewModels
 {
@@ -51,6 +52,7 @@ namespace SageMobileSales.UILogic.ViewModels
             _quoteLineItemRepository = quoteLineItemRepository;
             _salesRepRepository = salesRepRepository;
             ConfirmCommand = DelegateCommand.FromAsyncHandler(PlaceOrder);
+            PaymentListViewSelectionChanged = new DelegateCommand<object>(SelectedPaymentType);
             BindItemsToListView();
         }
 
@@ -122,6 +124,7 @@ namespace SageMobileSales.UILogic.ViewModels
         public DelegateCommand ConfirmCommand { get; private set; }
         public DelegateCommand<object> ShippingAndHandlingTextChangedCommand { get; private set; }
         public DelegateCommand<object> DiscountTextChangedCommand { get; private set; }
+        public DelegateCommand<object> PaymentListViewSelectionChanged { get; set; }
 
         public override async void OnNavigatedTo(object navigationParameter, NavigationMode navigationMode,
             Dictionary<string, object> viewModelState)
@@ -162,7 +165,7 @@ namespace SageMobileSales.UILogic.ViewModels
             {
                 foreach (var quoteLineItem in _quoteLineItemsList)
                 {
-                    SubTotal += Math.Round((quoteLineItem.LineItemQuantity*quoteLineItem.LineItemPrice), 2);
+                    SubTotal += Math.Round((quoteLineItem.LineItemQuantity * quoteLineItem.LineItemPrice), 2);
                 }
             }
             return SubTotal;
@@ -176,7 +179,7 @@ namespace SageMobileSales.UILogic.ViewModels
                 if (QuoteDetails.DiscountPercent != 0)
                 {
                     // discountPercentage = Math.Round(((1 - ((SubTotal - DiscountPercentageValue) / SubTotal)) * 100), 2);
-                    discountPercentage = Math.Round(((QuoteDetails.DiscountPercent/100)*SubTotal), 2);
+                    discountPercentage = Math.Round(((QuoteDetails.DiscountPercent / 100) * SubTotal), 2);
                 }
             }
             return discountPercentage;
@@ -230,6 +233,18 @@ namespace SageMobileSales.UILogic.ViewModels
             }
         }
 
+        private void SelectedPaymentType(object args)
+        {
+            var paymentTypeListView = ((ListView)args);
+            if (paymentTypeListView != null && paymentTypeListView.SelectedItem != null)
+            {
+                SelectedType = (PaymentType)paymentTypeListView.SelectedItem;
+                //if (SelectedType.payFrom == "On Account")
+                //    if (SelectedType.payFrom == "On Account with deposit")
+                //        if (SelectedType.payFrom == "Buy now")
+            }
+        }
+
         /// <summary>
         ///     Bind Items for Listview to select method for Place Order
         /// </summary>
@@ -241,8 +256,8 @@ namespace SageMobileSales.UILogic.ViewModels
                 payFrom = ResourceLoader.GetForCurrentView("Resources").GetString("OnAccount"),
                 payFromText = ResourceLoader.GetForCurrentView("Resources").GetString("OnAccountSubText")
             });
-            //PaymentMethods.Add(new PaymentType() { payFrom = ResourceLoader.GetForCurrentView("Resources").GetString("OnAccountWithdeposit"), payFromText = ResourceLoader.GetForCurrentView("Resources").GetString("OnAccountWithdepositSubText") });
-            //PaymentMethods.Add(new PaymentType() { payFrom = ResourceLoader.GetForCurrentView("Resources").GetString("Buynow"), payFromText = ResourceLoader.GetForCurrentView("Resources").GetString("BuynowSubText") });
+            PaymentMethods.Add(new PaymentType() { payFrom = ResourceLoader.GetForCurrentView("Resources").GetString("OnAccountWithdeposit"), payFromText = ResourceLoader.GetForCurrentView("Resources").GetString("OnAccountWithdepositSubText") });
+            PaymentMethods.Add(new PaymentType() { payFrom = ResourceLoader.GetForCurrentView("Resources").GetString("Buynow"), payFromText = ResourceLoader.GetForCurrentView("Resources").GetString("BuynowSubText") });
         }
     }
 

@@ -182,37 +182,50 @@ namespace SageMobileSales
 
         protected override IList<SettingsCommand> GetSettingsCommands()
         {
-            var eventAggregator = _container.Resolve<IEventAggregator>();
-            var settingsCommands = new List<SettingsCommand>();
-            var resourceLoader = _container.Resolve<IResourceLoader>();
+            try
+            {
+                var eventAggregator = _container.Resolve<IEventAggregator>();
+                var settingsCommands = new List<SettingsCommand>();
+                var resourceLoader = _container.Resolve<IResourceLoader>();
 
-            settingsCommands.Add(new SettingsCommand(Guid.NewGuid().ToString(), resourceLoader.GetString("CurrentUser"),
-                c => new LoggedInUserSettingsFlyout(eventAggregator).Show()));
-            settingsCommands.Add(new SettingsCommand(Guid.NewGuid().ToString(), resourceLoader.GetString("Logout"),
-                c => LogoutHandler()));
-            settingsCommands.Add(new SettingsCommand(Guid.NewGuid().ToString(), resourceLoader.GetString("HelpText"),
-                async c => await Launcher.LaunchUriAsync(new Uri(resourceLoader.GetString("HelpURL")))));
-            settingsCommands.Add(new SettingsCommand(Guid.NewGuid().ToString(),
-                resourceLoader.GetString("PrivacyPolicy"),
-                async c => await Launcher.LaunchUriAsync(new Uri(resourceLoader.GetString("PrivacyPolicyURL")))));
-            settingsCommands.Add(new SettingsCommand(Guid.NewGuid().ToString(),
-                resourceLoader.GetString("CopyrightInfo"),
-                async c => await Launcher.LaunchUriAsync(new Uri(resourceLoader.GetString("CopyrightURL")))));
-            settingsCommands.Add(new SettingsCommand(Guid.NewGuid().ToString(),
-                resourceLoader.GetString("ContactSageText"),
-                async c => await Launcher.LaunchUriAsync(new Uri(resourceLoader.GetString("ContactSageUrl")))));
-            settingsCommands.Add(new SettingsCommand(Guid.NewGuid().ToString(), resourceLoader.GetString("About"),
-                c => new AboutSettingsFlyout(eventAggregator).Show()));
+                settingsCommands.Add(new SettingsCommand(Guid.NewGuid().ToString(), resourceLoader.GetString("SPSInformation"),
+                    c => new SPSInformationSettingsFlyout(eventAggregator).Show()));
+                settingsCommands.Add(new SettingsCommand(Guid.NewGuid().ToString(), resourceLoader.GetString("CurrentUser"),
+                    c => new LoggedInUserSettingsFlyout(eventAggregator).Show()));
+                settingsCommands.Add(new SettingsCommand(Guid.NewGuid().ToString(), resourceLoader.GetString("Logout"),
+                    c => LogoutHandler()));
+                settingsCommands.Add(new SettingsCommand(Guid.NewGuid().ToString(), resourceLoader.GetString("HelpText"),
+                    async c => await Launcher.LaunchUriAsync(new Uri(resourceLoader.GetString("HelpURL")))));
+                settingsCommands.Add(new SettingsCommand(Guid.NewGuid().ToString(),
+                    resourceLoader.GetString("PrivacyPolicy"),
+                    async c => await Launcher.LaunchUriAsync(new Uri(resourceLoader.GetString("PrivacyPolicyURL")))));
+                //settingsCommands.Add(new SettingsCommand(Guid.NewGuid().ToString(),
+                //    resourceLoader.GetString("CopyrightInfo"),
+                //    async c => await Launcher.LaunchUriAsync(new Uri(resourceLoader.GetString("CopyrightURL")))));
+                settingsCommands.Add(new SettingsCommand(Guid.NewGuid().ToString(),
+                    resourceLoader.GetString("ContactSageText"),
+                    async c => await Launcher.LaunchUriAsync(new Uri(resourceLoader.GetString("ContactSageUrl")))));
+                settingsCommands.Add(new SettingsCommand(Guid.NewGuid().ToString(), resourceLoader.GetString("About"),
+                    c => new AboutSettingsFlyout(eventAggregator).Show()));
 #if(!PRODUCTION)
 
-            settingsCommands.Add(new SettingsCommand(Guid.NewGuid().ToString(),
-                resourceLoader.GetString("DeploymentSettings"),
-                c => new ConfigurationSettingsFlyout(eventAggregator).Show()));
+                settingsCommands.Add(new SettingsCommand(Guid.NewGuid().ToString(),
+                    resourceLoader.GetString("DeploymentSettings"),
+                    c => new ConfigurationSettingsFlyout(eventAggregator).Show()));
 
 #endif
 
 
-            return settingsCommands;
+                return settingsCommands;
+
+            }
+
+            catch(Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+            }
+
+            return null;
         }
 
         // Logout Settings Command Handler

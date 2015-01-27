@@ -143,6 +143,7 @@
     <Compile Include="ViewModels\SearchResultsPageViewModel.cs" />
     <Compile Include="ViewModels\SearchUserControlViewModel.cs" />
     <Compile Include="ViewModels\SigninPageViewModel.cs" />
+    <Compile Include="ViewModels\SPSInformationSettingsFlyoutViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Practices.Prism.PubSubEvents">
