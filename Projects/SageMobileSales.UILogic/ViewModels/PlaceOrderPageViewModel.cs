@@ -199,32 +199,66 @@ namespace SageMobileSales.UILogic.ViewModels
         {
             try
             {
-                InProgress = true;
-                if (Constants.ConnectedToInternet())
+                if (!Constants.ConnectedToInternet())
                 {
-                    var order = await _orderService.PostOrder(QuoteDtls);
-                    if (order != null)
-                    {
-                        InProgress = false;
-                        _navigationService.ClearHistory();
-                        var orderDtls = await _orderRepository.GetOrderDetailsAsync(order.OrderId);
-                        _navigationService.Navigate("OrderDetails", orderDtls);
-                    }
-                    else
-                    {
+                    Constants.ShowMessageDialog(
+                        ResourceLoader.GetForCurrentView("Resources").GetString("NoInternetConnection"));
+                    return;
+                }
+                if (SelectedType == null)
+                {
+                    Constants.ShowMessageDialog(
+                          ResourceLoader.GetForCurrentView("Resources").GetString("PaymentMethodSelect"));
+                    return;
+                }
+                switch (SelectedType.payFrom)
+                {
+                    case "On Account":
+                        InProgress = true;
+                        var order = await _orderService.PostOrder(QuoteDtls);
+                        if (order != null)
+                        {
+                            InProgress = false;
+                            _navigationService.ClearHistory();
+                            var orderDtls = await _orderRepository.GetOrderDetailsAsync(order.OrderId);
+                            _navigationService.Navigate("OrderDetails", orderDtls);
+                        }
+                        break;
+
+                    case "On Account with deposit":
+                        break;
+
+                    case "Buy now":
+                        _navigationService.Navigate("CardPayment", QuoteDtls);
+                        break;
+
+                    default:
                         InProgress = false;
                         var msgDialog = new MessageDialog(
                             ResourceLoader.GetForCurrentView("Resources").GetString("PlaceOrderErrorText"),
                             ResourceLoader.GetForCurrentView("Resources").GetString("PlaceOrderErrorTitle"));
                         msgDialog.Commands.Add(new UICommand("Ok"));
                         await msgDialog.ShowAsync();
-                    }
+                        break;
                 }
-                else
-                {
-                    Constants.ShowMessageDialog(
-                        ResourceLoader.GetForCurrentView("Resources").GetString("NoInternetConnection"));
-                }
+                //var order = await _orderService.PostOrder(QuoteDtls);
+                //if (order != null)
+                //{
+                //    InProgress = false;
+                //    _navigationService.ClearHistory();
+                //    var orderDtls = await _orderRepository.GetOrderDetailsAsync(order.OrderId);
+                //    _navigationService.Navigate("OrderDetails", orderDtls);
+                //}
+                //else
+                //{
+                //    InProgress = false;
+                //    var msgDialog = new MessageDialog(
+                //        ResourceLoader.GetForCurrentView("Resources").GetString("PlaceOrderErrorText"),
+                //        ResourceLoader.GetForCurrentView("Resources").GetString("PlaceOrderErrorTitle"));
+                //    msgDialog.Commands.Add(new UICommand("Ok"));
+                //    await msgDialog.ShowAsync();
+                //}
+
             }
             catch (Exception ex)
             {

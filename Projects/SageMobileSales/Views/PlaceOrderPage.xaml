@@ -41,7 +41,7 @@
                 <ColumnDefinition Width="450" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <ListView Grid.Column="0" Width="400" ItemsSource="{Binding PaymentMethods}"
+            <ListView x:Name="PaymentListView" Grid.Column="0" Width="400" ItemsSource="{Binding PaymentMethods}"
                       SelectedItem="{Binding SelectedType, Mode=TwoWay}" SelectionMode="Single">
                 <ListView.ItemTemplate>
                     <DataTemplate>
@@ -57,7 +57,7 @@
                 <interactivity:Interaction.Behaviors>
                     <core:EventTriggerBehavior EventName="SelectionChanged">
                         <core:InvokeCommandAction Command="{Binding PaymentListViewSelectionChanged}"
-                                                  CommandParameter="{Binding ElementName=payFrom,Path=SelectedItem}" />
+                                                  CommandParameter="{Binding ElementName=PaymentListView}" />
                     </core:EventTriggerBehavior>
                 </interactivity:Interaction.Behaviors>
             </ListView>

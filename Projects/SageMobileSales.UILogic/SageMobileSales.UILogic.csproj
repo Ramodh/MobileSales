@@ -109,6 +109,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Common\PageUtils.cs" />
+    <Compile Include="Common\WindowsPreferenceProvider.cs" />
     <Compile Include="Helpers\ProductCategoryCollection.cs" />
     <Compile Include="Helpers\ProductCollection.cs" />
     <Compile Include="Model\CustomerGroupByAlphabet.cs" />
@@ -116,6 +117,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\AboutSettingsFlyoutViewModel.cs" />
     <Compile Include="ViewModels\AddContactPageViewModel.cs" />
+    <Compile Include="ViewModels\CardPaymentPageViewModel.cs" />
     <Compile Include="ViewModels\CategoryLevelFourPageViewModel.cs" />
     <Compile Include="ViewModels\CategoryLevelOnePageViewModel.cs" />
     <Compile Include="ViewModels\CategoryLevelThreePageViewModel.cs" />
@@ -160,6 +162,9 @@
     </Reference>
     <Reference Include="Microsoft.Xaml.Interactivity">
       <HintPath>C:\Program Files (x86)\Microsoft SDKs\Windows\v8.1\ExtensionSDKs\BehaviorsXamlSDKManaged\12.0\References\CommonConfiguration\Neutral\Microsoft.Xaml.Interactivity.dll</HintPath>
+    </Reference>
+    <Reference Include="SageSDK">
+      <HintPath>..\..\SageSDK.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

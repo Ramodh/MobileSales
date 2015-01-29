@@ -146,6 +146,9 @@
     <Compile Include="Views\BackgroundSyncIndicatorUserControl.xaml.cs">
       <DependentUpon>BackgroundSyncIndicatorUserControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\CardPaymentPage.xaml.cs">
+      <DependentUpon>CardPaymentPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\CategoryLevelFourPage.xaml.cs">
       <DependentUpon>CategoryLevelFourPage.xaml</DependentUpon>
     </Compile>
@@ -296,6 +299,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\BackgroundSyncIndicatorUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\CardPaymentPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

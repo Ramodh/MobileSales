@@ -22,14 +22,15 @@
         <StackPanel Style="{StaticResource SettingsFlyoutSectionStyle}">
 
             <!-- Section 1 header -->
-            <TextBlock x:Uid="MerchantIdTitle" Style="{StaticResource FormTitleStyle}" Text="" />
-            <TextBox x:Uid="MerchantId"  Width="260"/>
+            <!--<TextBlock x:Uid="MerchantIdTitle" Style="{StaticResource FormTitleStyle}" Text="" />-->
+            <TextBox x:Uid="merchantId" x:Name="merchantId" Header="" Width="260" Text="{Binding MerchantId,Mode=TwoWay}" Style="{StaticResource AddContactTextBoxStyle}"/>
+            
             <!-- Section 1 body -->
-            <TextBlock x:Uid="MerchantKeyTitle" Style="{StaticResource FormTitleStyle}" TextWrapping="Wrap" Text=""
-                       HorizontalAlignment="Left" />
-            <TextBox x:Uid="MerchantKey" Width="260"/>
+            <!--<TextBlock x:Uid="MerchantKeyTitle" Style="{StaticResource FormTitleStyle}" TextWrapping="Wrap" Text=""
+                       HorizontalAlignment="Left" />-->
+            <TextBox x:Uid="merchantKey" x:Name="merchantKey" Header="" Width="260" Text="{Binding MerchantKey,Mode=TwoWay}" Style="{StaticResource AddContactTextBoxStyle}"/>
 
-            <Button Style="{StaticResource ButtonNormalStyle}" Content="Save" Margin="5,10"/>
+            <Button Style="{StaticResource ButtonNormalStyle}" Content="Save" Margin="0,20" Command="{Binding SaveCommand}"/>
 
         </StackPanel>
 

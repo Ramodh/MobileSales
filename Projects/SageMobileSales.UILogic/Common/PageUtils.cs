@@ -12,6 +12,8 @@ namespace SageMobileSales.UILogic.Common
         # region StaticVariables
 
         public static string IsAuthorised = "IsAuthorised";
+        public static string MerchantId = "";
+        public static string MerchantKey = "";
         public static string TrackingId = string.Empty;
         public static string AccessToken = string.Empty;
         public static string IsLaunched = "IsLaunched";

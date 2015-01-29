@@ -818,13 +818,34 @@
   <data name="EntitlementKindTitle" xml:space="preserve">
     <value>Unable to sign in</value>
   </data>
-  <data name="MerchantIdTitle.Text" xml:space="preserve">
+  <data name="merchantId.Header" xml:space="preserve">
     <value>Merchant Id</value>
   </data>
-  <data name="MerchantKeyTitle.Text" xml:space="preserve">
+  <data name="merchantKey.Header" xml:space="preserve">
     <value>Merchant Key</value>
   </data>
   <data name="SPSInformation" xml:space="preserve">
     <value>SPS Information</value>
+  </data>
+  <data name="cardNumber.Header" xml:space="preserve">
+    <value>Credit Card Number</value>
+  </data>
+  <data name="CardPaymentPageTitle.Text" xml:space="preserve">
+    <value>Card payment</value>
+  </data>
+  <data name="cVV.Header" xml:space="preserve">
+    <value>CVV</value>
+  </data>
+  <data name="expiry.Header" xml:space="preserve">
+    <value>Expiry</value>
+  </data>
+  <data name="MerchantDetails" xml:space="preserve">
+    <value>Please enter merchant id and merchnat key under SPS information</value>
+  </data>
+  <data name="PaymentMethodSelect" xml:space="preserve">
+    <value>Please select payment method</value>
+  </data>
+  <data name="zip.Header" xml:space="preserve">
+    <value>ZIP</value>
   </data>
 </root>
