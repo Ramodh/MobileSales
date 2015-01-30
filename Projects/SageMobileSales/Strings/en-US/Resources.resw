@@ -514,7 +514,7 @@
     <comment>OnAccount ListViewItem text in PlaceOrder</comment>
   </data>
   <data name="OnAccountSubText" xml:space="preserve">
-    <value>The Order will be submitted to the ERP system for invoicing</value>
+    <value>The order will be submitted to the accounting or ERP system</value>
     <comment>OnAccount ListViewItem Sub text in PlaceOrder</comment>
   </data>
   <data name="OnAccountWithdeposit" xml:space="preserve">
